@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  waha:
+    image: devlikeapro/waha
+    container_name: waha
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - WHATSAPP_DEFAULT_ENGINE=WEBJS
+      - WAHA_DASHBOARD_NO_PASSWORD=true
+      - WAHA_API_KEY=123
+    volumes:
+      - ./waha_data:/app/.waha
+
+  fastapi_app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: fastapi_backend
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - WAHA_URL=${WAHA_URL}
+      - WAHA_SESSION=${WAHA_SESSION}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    depends_on:
+      - waha
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      - PMA_HOST=${DB_HOST}
+      - PMA_USER=${DB_USER}
+      - PMA_PASSWORD=${DB_PASS}
+      - PMA_AUTH_TYPE=config
