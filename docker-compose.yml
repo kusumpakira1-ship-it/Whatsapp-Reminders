@@ -11,6 +11,8 @@ services:
       - WHATSAPP_DEFAULT_ENGINE=WEBJS
       - WAHA_DASHBOARD_NO_PASSWORD=true
       - WAHA_API_KEY=123
+      - WAHA_WEBHOOK_URL=http://fastapi_backend:8000/webhook
+      - WAHA_WEBHOOK_EVENTS=message,message.any
     volumes:
       - ./waha_data:/app/.waha
 
@@ -32,6 +34,10 @@ services:
       - WAHA_URL=${WAHA_URL}
       - WAHA_SESSION=${WAHA_SESSION}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - AI_PROVIDER=${AI_PROVIDER}
+      - OLLAMA_URL=${OLLAMA_URL}
+      - OLLAMA_MODEL=${OLLAMA_MODEL}
+      - OLLAMA_VISION_MODEL=${OLLAMA_VISION_MODEL}
     depends_on:
       - waha
 

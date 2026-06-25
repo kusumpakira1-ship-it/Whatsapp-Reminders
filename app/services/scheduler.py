@@ -32,9 +32,24 @@ async def scheduled_report_job():
         if excel_path:
             send_waha_file(phone, excel_path, caption=f"Excel Report - {excel_path.split('/')[-1]}")
 
+async def scheduled_reminder_job():
+    logger.info("Starting scheduled 6 PM data entry reminder...")
+    db = SessionLocal()
+    recipients = db.query(ReportRecipient).filter(ReportRecipient.is_active == True).all()
+    db.close()
+    
+    if not recipients:
+        return
+        
+    reminder_text = "⏰ *Friendly Reminder*\nPlease submit today's farm data (egg production, feed usage, sales, expenses) so your daily P&L report is accurate!"
+    for r in recipients:
+        send_waha_message(r.phone_number, reminder_text)
+
 def setup_scheduler():
     scheduler = AsyncIOScheduler()
-    # Schedule at 23:00 (11:00 PM) everyday
-    scheduler.add_job(scheduled_report_job, CronTrigger(hour=23, minute=0))
+    # Schedule reminder at 11:00 PM IST (Requested)
+    scheduler.add_job(scheduled_reminder_job, CronTrigger(hour=23, minute=0, timezone="Asia/Kolkata"))
+    # Schedule report at 11:00 PM IST everyday
+    scheduler.add_job(scheduled_report_job, CronTrigger(hour=23, minute=0, timezone="Asia/Kolkata"))
     scheduler.start()
-    logger.info("APScheduler started. Daily report job scheduled at 23:00.")
+    logger.info("APScheduler started. Reminder scheduled at 12:45 and Report at 23:00.")
