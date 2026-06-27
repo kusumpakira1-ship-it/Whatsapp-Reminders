@@ -1902,5 +1902,501 @@
                 }
             ]
         }
+    },
+    {
+        "timestamp": "2026-06-27T06:51:23.149780",
+        "message_id": "false_82798413090865@lid_AC695A8E68D1C4D2A496133E9BFBBFC9",
+        "sender": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f (82798413090865)",
+        "sender_name": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "Shead 4, Shead 5, Shead 6",
+            "category": "sales",
+            "quantity": 4200,
+            "unit": "trays",
+            "amount": 819000.0,
+            "notes": "Invoice: INV-000960, Date: 25/06/2026, Bill To: Shankar naidu. Breakdown: Shead 4: 800 trays at 195.00 (Amount: 156000.00), Shead 5: 1800 trays at 195.00 (Amount: 351000.00), Shead 6: 900 trays at 195.00 (Amount: 175500.00), Shead 6: 700 trays at 195.00 (Amount: 136500.00).",
+            "confidence_score": 0.98,
+            "processed_text": "Tax invoice for sales to Shankar naidu, including eggs from Shead 4, Shead 5, and Shead 6. A total of 4200 trays were sold for 819000.00."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T06:52:16.487484",
+        "message_id": "false_120363046205890693@g.us_ACE944AB5FBA41A0EDEC0C49060BDEE0_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] Jay Sri Ram (141927630536871)",
+        "sender_name": "Jay Sri Ram",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "500 Trays of production 1st Shead first collection",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "egg",
+            "quantity": 500,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Shead 1: 500 trays (first collection)",
+            "confidence_score": 0.98,
+            "processed_text": "500 Trays of production 1st Shead first collection"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T06:55:27.741860",
+        "message_id": "false_82798413090865@lid_AC4C2DB88B0305329141269078ED32D4",
+        "sender": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f (82798413090865)",
+        "sender_name": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Ollama processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Gemini PDF processing failed"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T06:55:34.335451",
+        "message_id": "false_120363212822578807@g.us_AC3F5553BF4D349FE0B690F4DB84E691_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6 \n400 trey collection ok",
+        "ai_extracted": {
+            "shead_name": "Shead 6",
+            "category": "egg",
+            "quantity": 400,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Shead 6: 400 trays collection",
+            "confidence_score": 0.98,
+            "processed_text": "Shead 6 400 tray collection ok"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T06:57:25.416465",
+        "message_id": "false_120363212822578807@g.us_AC0765EF99391294DA861E8D209DDECF_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 8 \nFlushout",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Ollama processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Sed 8 \nFlushout"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T06:57:51.182358",
+        "message_id": "false_120363212822578807@g.us_AC6ECFE04391EE573980B98424A2DC81_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T06:58:05.747545",
+        "message_id": "false_120363212822578807@g.us_AC5886C5FC19EF4402EF6F2373CABB4D_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead stall grid stone powder",
+        "ai_extracted": {
+            "shead_name": "Shead 4",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Stall grid stone powder",
+            "confidence_score": 0.75,
+            "processed_text": "Shead 4 stall grid stone powder"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T06:58:32.353209",
+        "message_id": "false_120363212822578807@g.us_ACB0611CDA2713EB0985D5BB9348044B_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 8 \nSpreying",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Ollama processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Sed 8 \nSpreying"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T06:59:48.238789",
+        "message_id": "false_120363212822578807@g.us_ACA76398742208BF2F7218315ACEDCDE_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead \n430 trey collection ok",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Ollama processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "4th Shead \n430 trey collection ok"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:01:05.822172",
+        "message_id": "false_120363405469158412@g.us_3A932F61EA8B897E29EB_112300593815672@lid",
+        "sender": "[Payments - Sunfra Farms] Nani Chinnam (112300593815672)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Please pay",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Payment requested, no details provided.",
+            "confidence_score": 0.4,
+            "processed_text": "Please pay"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:01:20.616589",
+        "message_id": "false_120363405469158412@g.us_3AC68D0432B5F3F31A27_112300593815672@lid",
+        "sender": "[Payments - Sunfra Farms] Nani Chinnam (112300593815672)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Okay",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Ollama processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Okay"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:01:47.194057",
+        "message_id": "false_120363212822578807@g.us_AC194B26BF6346620A479B02B0A6B74A_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead water spraying",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Ollama processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "2nd Shead water spraying"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:01:55.563059",
+        "message_id": "false_120363212822578807@g.us_AC379C25C89F4D702A9E383299BA3318_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "204trey collection ok",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Ollama processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "204trey collection ok"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:02:00.028052",
+        "message_id": "false_120363212822578807@g.us_AC219A9ED0E01E4464693515429F6EAB_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Ollama processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Shead3"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:03:34.347408",
+        "message_id": "false_120363212822578807@g.us_ACD049EDC2996628F0EBCE0AF5D4F043_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T07:04:02.397005",
+        "message_id": "false_120363212822578807@g.us_AC9E0FBE1E98231A01C322A15D40D288_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 7",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Ollama processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Sed, 7"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:04:06.456604",
+        "message_id": "false_120363212822578807@g.us_AC8D58DE4A44A9AD358B8ADA1CEE69C1_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T07:06:56.258644",
+        "message_id": "false_120363212822578807@g.us_AC75A03F158D5F18C56BAB1285B905D1_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6\nStone",
+        "ai_extracted": {
+            "shead_name": "Shead 6",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Stone mentioned for Shead 6",
+            "confidence_score": 0.8,
+            "processed_text": "Shed 6 - Stone"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:08:44.458093",
+        "message_id": "false_120363405469158412@g.us_3EB0C0A20EDDC23FBDDC3B_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "soya purchase",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "purchase",
+            "quantity": 0,
+            "unit": "",
+            "amount": 2021828.0,
+            "notes": "Date: 27/06/2026\nRef No: CR0BIXKQK8\nBeneficiary: Sunstar Soya Extractions\nType: RTGS\nTransfer Amount: \u20b9 20,21,828.00\nRemarks: soya purchase",
+            "confidence_score": 0.98,
+            "processed_text": "RTGS transfer of \u20b9 20,21,828.00 to Sunstar Soya Extractions on 27/06/2026 for soya purchase."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:08:54.899925",
+        "message_id": "false_120363212822578807@g.us_AC35E09ECB01BD7E3D7225DF41485067_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead1 water spraying",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Activity: Water spraying",
+            "confidence_score": 0.95,
+            "processed_text": "Shead 1 water spraying"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:10:38.024270",
+        "message_id": "false_82798413090865@lid_ACCDDE9EDC105EC3EBA45A8BCC78D807",
+        "sender": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f (82798413090865)",
+        "sender_name": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "Shead 4, Shead 5, Shead 6",
+            "category": "sales",
+            "quantity": 4200,
+            "unit": "trays",
+            "amount": 819000.0,
+            "notes": "Invoice: INV-000960\nCustomer: Shankar naidu\nShead 4: 800 trays @ 195.00 (Amount: 1,56,000.00)\nShead 5: 1800 trays @ 195.00 (Amount: 3,51,000.00)\nShead 6: 900 trays @ 195.00 (Amount: 1,75,500.00)\nShead 6: 700 trays @ 195.00 (Amount: 1,36,500.00)",
+            "confidence_score": 1.0,
+            "processed_text": "Tax Invoice INV-000960 from Sunfra Farms to Shankar naidu dated 25/06/2026 for sale of 4200 egg trays from Shead 4, Shead 5, and Shead 6, totaling 8,19,000.00 INR."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:11:02.233071",
+        "message_id": "false_82798413090865@lid_ACCAAA384FD796307A3D97DC077C0A56",
+        "sender": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f (82798413090865)",
+        "sender_name": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "feed",
+            "quantity": 35010,
+            "unit": "kg",
+            "amount": 2021828.0,
+            "notes": "Invoice No: 1336/26-27\nDate: 27-Jun-26\nSeller: SUNSTAR EXTRACTION PVT LTD\nBuyer: Sunfra Farms\nItem: SOYA DOC (MEAL)\nQuantity: 35,010.000 kg\nRate: 55.00 per kg\nTaxable Value: 1,925,550.00\nIGST (5%): 96,277.50\nRound Off: 0.50\nVehicle No: AP39VC2566",
+            "confidence_score": 0.99,
+            "processed_text": "Purchased 35,010 kg of Soya DOC (Meal) feed from Sunstar Extraction Pvt Ltd for Sunfra Farms on 27-Jun-2026. Total invoice amount: INR 2,021,828.00."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:11:21.274853",
+        "message_id": "false_120363212822578807@g.us_AC8C82E9F0B8B06AEB86CE6F022FBCA6_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead \n540 trey collection",
+        "ai_extracted": {
+            "shead_name": "Shead 2",
+            "category": "egg",
+            "quantity": 540,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Shead 2:\n540 trays collected",
+            "confidence_score": 0.98,
+            "processed_text": "Shead 2 egg collection of 540 trays"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:12:28.820138",
+        "message_id": "false_120363212822578807@g.us_ACC590F4733E8DF433A642955921356E_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 7",
+        "ai_extracted": {
+            "shead_name": "Shead 7",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Extracted 'Sed' as Shead and '7' as the shed number. No other data provided.",
+            "confidence_score": 0.5,
+            "processed_text": "Shead 7"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:12:29.729889",
+        "message_id": "false_120363212822578807@g.us_ACDCFD27F55D864FE5A60A0F5732A606_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T07:13:07.548398",
+        "message_id": "false_120363405469158412@g.us_3EB07FCC1B58323AC4E8B4_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "dorb transport charges",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "rupees",
+            "amount": 50350.0,
+            "notes": "Date: 27/06/2026\nBeneficiary: Lakshmi Narayana\nRef No: IMPS00105822693\nRemarks: Transportation charges\nUser Caption: dorb transport charges",
+            "confidence_score": 0.98,
+            "processed_text": "Successfully processed IMPS transaction of 50,350.00 rupees to Lakshmi Narayana on 27/06/2026 for DORB transport charges."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:13:23.065594",
+        "message_id": "false_120363212822578807@g.us_ACC7CA516069B91D3441E38DA22F6DF9_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 7\n410,trs",
+        "ai_extracted": {
+            "shead_name": "Shead 7",
+            "category": "egg",
+            "quantity": 410,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Shead 7: 410 trays",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 7, 410 trays"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:13:53.972478",
+        "message_id": "false_120363212822578807@g.us_ACCA1D10279D0E9D23110D0BD77453D5_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead stall grid stone powder",
+        "ai_extracted": {
+            "shead_name": "Shead 2",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Stall grid stone powder",
+            "confidence_score": 0.85,
+            "processed_text": "Stall grid stone powder for Shed 2"
+        }
     }
 ]

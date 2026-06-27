@@ -197,28 +197,16 @@ async def waha_webhook(request: Request):
 
     # 5. Save Processed Data
     if ai_result:
-        # Normalize ai_result to a list of records
-        records_list = []
-        if isinstance(ai_result, dict):
-            if "records" in ai_result and isinstance(ai_result["records"], list):
-                records_list = ai_result["records"]
-            else:
-                # Legacy single-record dictionary
-                records_list = [ai_result]
-        elif isinstance(ai_result, list):
-            # If Ollama returned a list directly
-            records_list = ai_result
+        # Resolve to a single record dictionary
+        record = ai_result
+        if isinstance(ai_result, list) and len(ai_result) > 0:
+            record = ai_result[0]
+        elif isinstance(ai_result, dict) and "records" in ai_result and isinstance(ai_result["records"], list) and len(ai_result["records"]) > 0:
+            record = ai_result["records"][0]
             
-        fresh_db = SessionLocal()
-        try:
-            saved_count = 0
-            for record in records_list:
-                if not isinstance(record, dict):
-                    continue
-                if record.get("category", "unknown") == "unknown":
-                    logger.info(f"Ignored record with unknown category. Text: {text}")
-                    continue
-                
+        if isinstance(record, dict) and record.get("category", "unknown") != "unknown":
+            fresh_db = SessionLocal()
+            try:
                 proc_data = ProcessedData(
                     shead_name=record.get("shead_name", ""),
                     category=record.get("category", "unknown"),
@@ -234,18 +222,15 @@ async def waha_webhook(request: Request):
                     message_id=message_id
                 )
                 fresh_db.add(proc_data)
-                saved_count += 1
-                
-            if saved_count > 0:
                 fresh_db.commit()
-                logger.info(f"Successfully processed message {message_id}: saved {saved_count} records")
-            else:
-                logger.info(f"No valid farm records found in message {message_id}")
-        except Exception as e:
-            fresh_db.rollback()
-            logger.error(f"Failed to save processed data (fresh session): {e}")
-        finally:
-            fresh_db.close()
+                logger.info(f"Successfully processed message {message_id}")
+            except Exception as e:
+                fresh_db.rollback()
+                logger.error(f"Failed to save processed data (fresh session): {e}")
+            finally:
+                fresh_db.close()
+        else:
+            logger.info(f"Ignored non-farm message. Category is unknown or invalid record format. Text: {text}")
 
     # 6. Save to local JSON file
     try:

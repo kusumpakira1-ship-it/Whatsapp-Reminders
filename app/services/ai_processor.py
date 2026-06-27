@@ -28,48 +28,46 @@ class FarmExtraction(typing.TypedDict):
     processed_text: str
 
 def get_system_prompt() -> str:
-    return """
+    return r"""
 You are a specialized agricultural data extraction AI.
 Your job is to read user messages (in English, Hindi, Telugu, Tamil, Kannada, Malayalam, broken English, or SMS shorthand) or document content (such as PDFs/images)
-and extract all relevant farm records into a clean, structured JSON format containing a list of records.
+and extract all relevant farm records into a clean, structured JSON format containing a SINGLE summary object.
 
 RULES:
 1. Translate everything into clean English.
-2. Identify the shead name if mentioned (e.g., 'shead3' or 'shead 3' -> 'Shead 3'). If not mentioned, use empty string.
-3. Classify into ONE category per record: egg, feed, medicine, mortality, sales, purchase, expense, unknown.
-4. Extract quantity as a number.
+2. Identify the shead name if mentioned (e.g., 'shead3' or 'shead 3' -> 'Shead 3'). If multiple sheds are mentioned, list them separated by commas (e.g., 'Shead 1, Shead 2'). If not mentioned, use empty string.
+3. Classify into ONE primary category: egg, feed, medicine, mortality, sales, purchase, expense, unknown.
+4. Extract quantity as a number. If there are multiple transactions/items in the document, SUM their quantities and store the total quantity.
 5. Extract unit (trays, bags, kg, pieces, rupees).
-6. Extract monetary amount as a float. If a calculation is provided (e.g., '100 * 5'), perform the math and store the total. If none, use 0.0.
-7. Any additional dynamic or custom fields (like date, invoice number, vehicle number, customer name) should be formatted and appended to the 'notes' field (e.g., "Invoice: 123, Vehicle: AP39").
+6. Extract monetary amount as a float. If there are multiple transactions/items in the document, SUM their amounts and store the grand total.
+7. Any line items, individual transactions, sheds breakdown, dates, invoices, customers, and other dynamic details MUST be formatted as a readable breakdown list separated by escaped newlines (line breaks '\n') so that the data is displayed vertically (going down, not going right) in the database (e.g. "Invoice: INV-001\nCustomer: John\nShead 1: 10 trays (1000rs)\nShead 2: 20 trays (2000rs)"). Do not write literal newlines in the JSON output; use the escaped '\n' characters.
 8. Store the translated, clean English version in 'processed_text'.
 9. Estimate your confidence (0.0 to 1.0) in 'confidence_score'.
-10. If the input describes MULTIPLE transactions, items, days, or rows, extract EACH of them as a separate item in the 'records' list.
-11. If the input is a single transaction, the 'records' list must contain exactly one record item.
-12. YOU MUST ONLY RETURN VALID JSON. NO MARKDOWN. NO CODE BLOCKS. NO OTHER TEXT.
+10. YOU MUST ONLY RETURN VALID JSON. NO MARKDOWN. NO CODE BLOCKS. NO OTHER TEXT.
 
 EXPECTED JSON SCHEMA:
 {
-  "records": [
-    {
-      "shead_name": "string",
-      "category": "string",
-      "quantity": number,
-      "unit": "string",
-      "amount": number,
-      "notes": "string",
-      "confidence_score": number,
-      "processed_text": "string"
-    }
-  ]
+  "shead_name": "string",
+  "category": "string",
+  "quantity": number,
+  "unit": "string",
+  "amount": number,
+  "notes": "string",
+  "confidence_score": number,
+  "processed_text": "string"
 }
 
 EXAMPLES:
-"250 ట్రేలు వచ్చాయి" -> {"records": [{"shead_name":"", "category":"egg", "quantity":250, "unit":"trays", "amount":0.0, "notes":"", "confidence_score": 0.95, "processed_text": "250 trays received"}]}
+"250 ట్రేలు వచ్చాయి" -> {"shead_name":"", "category":"egg", "quantity":250, "unit":"trays", "amount":0.0, "notes":"", "confidence_score": 0.95, "processed_text": "250 trays received"}
 "Shead 1 sold 100 trays at 520. Shead 2 sold 50 trays at 520." -> {
-  "records": [
-    {"shead_name":"Shead 1", "category":"sales", "quantity":100, "unit":"trays", "amount":520.0, "notes":"", "confidence_score": 0.98, "processed_text": "Shead 1 sold 100 trays at 520"},
-    {"shead_name":"Shead 2", "category":"sales", "quantity":50, "unit":"trays", "amount":520.0, "notes":"", "confidence_score": 0.98, "processed_text": "Shead 2 sold 50 trays at 520"}
-  ]
+  "shead_name": "Shead 1, Shead 2",
+  "category": "sales",
+  "quantity": 150,
+  "unit": "trays",
+  "amount": 78000.0,
+  "notes": "Shead 1: 100 trays at 520 (amount: 52000)\nShead 2: 50 trays at 520 (amount: 26000)",
+  "confidence_score": 0.98,
+  "processed_text": "Shead 1 sold 100 trays at 520. Shead 2 sold 50 trays at 520."
 }
 """
 
@@ -109,14 +107,14 @@ def _call_ollama(prompt: str, images: list = None, is_vision: bool = False) -> d
         print(f"Ollama Unexpected Error: {e}")
         return None
 
-def _call_gemini(prompt: str, images: list = None) -> dict:
+def _call_gemini(prompt: str, images: list = None, document_path: str = None) -> dict:
     if not settings.GEMINI_API_KEY:
         print("Gemini API Key is not configured in environment variables.")
         return None
         
     try:
         model = genai.GenerativeModel(
-            model_name="gemini-2.5-flash",
+            model_name="gemini-flash-latest",
             system_instruction=get_system_prompt(),
             generation_config={"response_mime_type": "application/json"}
         )
@@ -130,6 +128,18 @@ def _call_gemini(prompt: str, images: list = None) -> dict:
                     contents.append(img)
                 except Exception as e:
                     print(f"Failed to load image in Gemini: {e}")
+                    
+        if document_path and document_path.endswith('.pdf'):
+            try:
+                with open(document_path, "rb") as f:
+                    pdf_data = f.read()
+                contents.append({
+                    "mime_type": "application/pdf",
+                    "data": pdf_data
+                })
+                print(f"Directly appended PDF document {document_path} to Gemini payload")
+            except Exception as e:
+                print(f"Failed to read PDF file for Gemini: {e}")
         
         contents.append(prompt)
         response = model.generate_content(contents)
@@ -144,11 +154,11 @@ def _call_gemini(prompt: str, images: list = None) -> dict:
         print(f"Gemini API Error: {e}")
         return None
 
-def _call_ai(prompt: str, images: list = None, is_vision: bool = False) -> dict:
+def _call_ai(prompt: str, images: list = None, is_vision: bool = False, document_path: str = None) -> dict:
     provider = settings.AI_PROVIDER.lower()
     if provider == "gemini":
         print("Using Gemini API for processing...")
-        return _call_gemini(prompt, images)
+        return _call_gemini(prompt, images, document_path)
     else:
         print("Using Ollama API for processing...")
         return _call_ollama(prompt, images, is_vision)
@@ -181,7 +191,20 @@ def process_image(image_path: str, caption: str = "") -> dict:
     return _fallback_dummy_response(caption or "Image processing failed")
 
 def process_document(doc_path: str, caption: str = "") -> dict:
-    """Processes documents (PDFs) by extracting text and sending to configured AI provider."""
+    """Processes documents (PDFs) by passing directly to Gemini or extracting text locally for Ollama."""
+    provider = settings.AI_PROVIDER.lower()
+    if provider == "gemini":
+        print("Processing PDF document directly with Gemini...")
+        prompt = "Extract all relevant farm data records from this document."
+        if caption:
+            prompt += f" The user also provided this caption/note: {caption}"
+        
+        result = _call_ai(prompt, document_path=doc_path)
+        if result:
+            return result
+        return _fallback_dummy_response(caption or "Gemini PDF processing failed")
+        
+    # Local text extraction fallback (for Ollama)
     if not pypdf:
         print("pypdf is not installed. Cannot process PDF.")
         return _fallback_dummy_response(caption or "PDF processing not supported")
@@ -213,16 +236,12 @@ def process_document(doc_path: str, caption: str = "") -> dict:
 def _fallback_dummy_response(text: str) -> dict:
     """Fallback if Ollama fails or is unreachable."""
     return {
-        "records": [
-            {
-                "shead_name": "",
-                "category": "unknown",
-                "quantity": 0,
-                "unit": "",
-                "amount": 0.0,
-                "notes": "Ollama processing failed or unreachable",
-                "confidence_score": 0.0,
-                "processed_text": text
-            }
-        ]
+        "shead_name": "",
+        "category": "unknown",
+        "quantity": 0,
+        "unit": "",
+        "amount": 0.0,
+        "notes": "Ollama processing failed or unreachable",
+        "confidence_score": 0.0,
+        "processed_text": text
     }
