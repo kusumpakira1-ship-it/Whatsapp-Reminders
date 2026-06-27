@@ -40,7 +40,7 @@ RULES:
 4. Extract quantity as a number. If there are multiple transactions/items in the document, SUM their quantities and store the total quantity.
 5. Extract unit (trays, bags, kg, pieces, rupees).
 6. Extract monetary amount as a float. If there are multiple transactions/items in the document, SUM their amounts and store the grand total.
-7. Any line items, individual transactions, sheds breakdown, dates, invoices, customers, and other dynamic details MUST be formatted as a readable breakdown list separated by escaped newlines (line breaks '\n') so that the data is displayed vertically (going down, not going right) in the database (e.g. "Invoice: INV-001\nCustomer: John\nShead 1: 10 trays (1000rs)\nShead 2: 20 trays (2000rs)"). Do not write literal newlines in the JSON output; use the escaped '\n' characters.
+7. Any line items, individual transactions, sheds breakdown, dates, invoices, customers, and other dynamic details MUST be formatted as a readable breakdown list separated by escaped newlines (line breaks '\n') so that the data is displayed vertically (going down, not going right) in the database. Crucially, ALSO calculate the Grand Total quantity and Grand Total amount (if applicable) and output them clearly at the top of the 'notes' field (e.g. "Invoice: INV-001\nCustomer: John\nGrand Total Qty: 30 trays\nGrand Total Amt: 3000rs\n--------------------\nShead 1: 10 trays (1000rs)\nShead 2: 20 trays (2000rs)"). Do not write literal newlines in the JSON output; use the escaped '\n' characters.
 8. Store the translated, clean English version in 'processed_text'.
 9. Estimate your confidence (0.0 to 1.0) in 'confidence_score'.
 10. YOU MUST ONLY RETURN VALID JSON. NO MARKDOWN. NO CODE BLOCKS. NO OTHER TEXT.
@@ -65,7 +65,7 @@ EXAMPLES:
   "quantity": 150,
   "unit": "trays",
   "amount": 78000.0,
-  "notes": "Shead 1: 100 trays at 520 (amount: 52000)\nShead 2: 50 trays at 520 (amount: 26000)",
+  "notes": "Grand Total Qty: 150 trays\nGrand Total Amt: 78000.00\n--------------------\nShead 1: 100 trays at 520 (amount: 52000)\nShead 2: 50 trays at 520 (amount: 26000)",
   "confidence_score": 0.98,
   "processed_text": "Shead 1 sold 100 trays at 520. Shead 2 sold 50 trays at 520."
 }
@@ -114,7 +114,7 @@ def _call_gemini(prompt: str, images: list = None, document_path: str = None) ->
         
     try:
         model = genai.GenerativeModel(
-            model_name="gemini-flash-latest",
+            model_name="gemini-flash-lite-latest",
             system_instruction=get_system_prompt(),
             generation_config={"response_mime_type": "application/json"}
         )

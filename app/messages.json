@@ -2398,5 +2398,1043 @@
             "confidence_score": 0.85,
             "processed_text": "Stall grid stone powder for Shed 2"
         }
+    },
+    {
+        "timestamp": "2026-06-27T07:14:38.461071",
+        "message_id": "false_120363405469158412@g.us_3EB0CE82AEFF63001F4A20_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "weigh bridge sim recharge",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0.0,
+            "unit": "rupees",
+            "amount": 202.0,
+            "notes": "Date: 27/06/2026\nBeneficiary: Venkat sunfra\nRef No.: IMPS00105823045\nRemarks: weigh bridge sim recharge",
+            "confidence_score": 0.98,
+            "processed_text": "Transfer of 202.00 INR to Venkat sunfra on 27/06/2026 for weigh bridge sim recharge."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:15:03.872299",
+        "message_id": "false_120363212822578807@g.us_AC8DA1EA367F77A21BC76153B1B66CE8_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 5\n420,,trs",
+        "ai_extracted": {
+            "shead_name": "Shead 5",
+            "category": "egg",
+            "quantity": 420,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Shead 5: 420 trays",
+            "confidence_score": 0.92,
+            "processed_text": "Shead 5, 420 trays"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:16:08.981126",
+        "message_id": "false_120363405469158412@g.us_3EB024AB6F07EB5A90F0F4_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Weigh bridge sim",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Weigh bridge SIM",
+            "confidence_score": 0.8,
+            "processed_text": "Weigh bridge SIM"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:16:12.387813",
+        "message_id": "false_120363405469158412@g.us_3EB0E704CA383AFEFE1FD2_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Ollama processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Image processing failed"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:17:17.178578",
+        "message_id": "false_120363225998735559@g.us_ACEED83192F3F9A10D7CF3F120703767_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Panal bord raju in",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Ollama processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Panal bord raju in"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:18:27.875830",
+        "message_id": "false_120363225998735559@g.us_AC3305071E8DB042DDCC57AEC11AE4AE_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T07:18:32.138612",
+        "message_id": "false_120363225998735559@g.us_AC9A36A1603393207B6A66D7A7C3392C_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Ollama processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Image processing failed"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:18:36.457292",
+        "message_id": "false_120363225998735559@g.us_ACD053F2EDF398A01403CDC2C9B7CE4B_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Ollama processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Image processing failed"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:23:45.379182",
+        "message_id": "false_120363225998735559@g.us_ACD5BF08B82F109F2F960756D8BA091A_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T07:23:48.576208",
+        "message_id": "false_120363225998735559@g.us_ACDCAB7D09EF74AAF89DC74BA064062D_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Raw materials samples Dispatched to Namakkal",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Ollama processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Raw materials samples Dispatched to Namakkal"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:24:10.983158",
+        "message_id": "false_120363225998735559@g.us_ACB58E8CDF42602F5022445298FFC5DC_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Ollama processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Image processing failed"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:24:52.743008",
+        "message_id": "false_120363212822578807@g.us_ACB8787A7C08C079FF9C438009AEF151_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T07:24:55.278747",
+        "message_id": "false_120363212822578807@g.us_AC51226FD855D45CC100FAC2EFF934B9_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 5",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Ollama processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Sed, 5"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:25:06.533162",
+        "message_id": "true_207627359363311@lid_AC31DC03AB6D2068B992B92816B1B109",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (207627359363311)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Lunch?",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Ollama processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Lunch?"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:26:11.817592",
+        "message_id": "false_120363302334188208@g.us_AC3C87E73C7C2790A83CB4519C468F59_30532989632740@lid",
+        "sender": "[Final Year Team] Dhanush B K (30532989632740)",
+        "sender_name": "Dhanush B K",
+        "is_group": true,
+        "group_name": "Final Year Team",
+        "raw_text": "Hey \ud83d\udc4b\n\nHere are today's backend engineering opportunities \ud83d\ude80\n\n1\ufe0f\u20e3 Slikk \u2014 Backend Engineer (Python/Django)\n\ud83d\udd17 Apply:\nhttps://wellfound.com/jobs/4114833-backend-engineer\n\n2\ufe0f\u20e3 Trackzio \u2014 Backend Engineer (Node.js)\n\ud83d\udd17 Apply:\nhttps://wellfound.com/jobs/4322032-backend-engineer-node-js-mobile-apps\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\nKey Skills:\n\n\ud83d\udc0d Python / Django\n\ud83d\udfe2 Node.js / TypeScript\n\ud83d\uddc4\ufe0f PostgreSQL / MongoDB\n\u2601\ufe0f AWS & Cloud Infrastructure\n\u2699\ufe0f REST APIs & System Design\n\nMake sure your resume, GitHub, LinkedIn profile, and project portfolio are updated before applying.",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Content does not contain farm, egg, feed, or agricultural data. This is a list of software engineering job opportunities.",
+            "confidence_score": 1.0,
+            "processed_text": "Content contains backend engineering job listings for Slikk and Trackzio."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:26:14.730181",
+        "message_id": "true_207627359363311@lid_AC9F54EA429ACF0DB65380D4021C6C47",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (207627359363311)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Okay okay fasting?",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "User message is unclear and does not contain farm-related data.",
+            "confidence_score": 0.2,
+            "processed_text": "Okay okay fasting?"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:26:15.680437",
+        "message_id": "false_120363212822578807@g.us_ACA357FBC39051E73B213B0B8AC9E42D_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T07:26:18.974182",
+        "message_id": "false_120363212822578807@g.us_ACEAFA16098999C76F4A2D3A2E9E9070_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 5",
+        "ai_extracted": {
+            "shead_name": "Shead 5",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 0\nGrand Total Amt: 0.0\n--------------------\nShead 5 identified.",
+            "confidence_score": 0.6,
+            "processed_text": "Shead 5"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:26:20.854615",
+        "message_id": "false_120363212822578807@g.us_AC0658CBF3E805344168EAF6D8AD3B13_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead water spraying",
+        "ai_extracted": {
+            "shead_name": "Shead 4",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Activity: Water spraying\nGrand Total Qty: 0\nGrand Total Amt: 0.0",
+            "confidence_score": 0.95,
+            "processed_text": "Shead 4 water spraying"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:26:22.974431",
+        "message_id": "true_207627359363311@lid_ACD56A79DFD324E771D5BAAC2E179A65",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (207627359363311)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "You go temple also!",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No agricultural data found in the provided text.",
+            "confidence_score": 0.0,
+            "processed_text": "You go temple also!"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:26:24.741018",
+        "message_id": "true_207627359363311@lid_ACB842861EB37912471F1AF7685D14B6",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (207627359363311)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "?",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No information provided in the input.",
+            "confidence_score": 0.0,
+            "processed_text": "No information provided"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:26:29.552651",
+        "message_id": "false_207627359363311@lid_ACBACE739DCEEBA5FA052140890DCD73",
+        "sender": "Poorna (207627359363311)",
+        "sender_name": "Poorna",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Ya evening",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "User message is greeting only and contains no agricultural data.",
+            "confidence_score": 0.1,
+            "processed_text": "Good evening"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:26:42.432017",
+        "message_id": "true_207627359363311@lid_ACB788710D4C560A28BC0076A46203D6",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (207627359363311)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "From office only",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No specific agricultural data provided in the message.",
+            "confidence_score": 0.2,
+            "processed_text": "From office only"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:26:44.516966",
+        "message_id": "true_207627359363311@lid_AC21869817E14382686AF89FF9756308",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (207627359363311)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "?",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No valid agricultural data provided in input.",
+            "confidence_score": 0.0,
+            "processed_text": "Unable to extract information from the provided input."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:26:54.329507",
+        "message_id": "false_207627359363311@lid_AC957614D0910D4B4EF0C37E4A95A52B",
+        "sender": "Poorna (207627359363311)",
+        "sender_name": "Poorna",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "No after going to pg",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No information extracted from the message.",
+            "confidence_score": 0.2,
+            "processed_text": "No after going to pg"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:26:57.635604",
+        "message_id": "true_207627359363311@lid_AC315249DB037BD193A96B9554184388",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (207627359363311)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Okay okay",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No farm-related data provided in message.",
+            "confidence_score": 0.1,
+            "processed_text": "Okay okay"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:27:06.475570",
+        "message_id": "false_207627359363311@lid_ACB5D7E49395309356C2495265524545",
+        "sender": "Poorna (207627359363311)",
+        "sender_name": "Poorna",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Y u will come",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "User message does not contain farm data.",
+            "confidence_score": 0.2,
+            "processed_text": "When will you come?"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:27:14.271917",
+        "message_id": "true_207627359363311@lid_ACC8C85F5CA9387B347B9A5570F898E2",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (207627359363311)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Ha",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Insufficient data provided in message.",
+            "confidence_score": 0.1,
+            "processed_text": "Ha"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:27:29.451567",
+        "message_id": "false_207627359363311@lid_AC70403A674D4FED069F197774958BEE",
+        "sender": "Poorna (207627359363311)",
+        "sender_name": "Poorna",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Then come",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No farm data provided in the message.",
+            "confidence_score": 0.1,
+            "processed_text": "Then come"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:27:30.812118",
+        "message_id": "true_207627359363311@lid_ACC993C68879A727DB903C9150892061",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (207627359363311)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Okay",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No farm data provided.",
+            "confidence_score": 0.0,
+            "processed_text": "No farm data provided."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:27:37.131973",
+        "message_id": "true_207627359363311@lid_ACD875123CC9967612CF5729BB48C518",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (207627359363311)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "When you go log out today?",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Query regarding logout time.",
+            "confidence_score": 0.9,
+            "processed_text": "When are you logging out today?"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:27:39.025333",
+        "message_id": "false_207627359363311@lid_ACE9AD684EF2AC8792813D4E7E1DE471",
+        "sender": "Poorna (207627359363311)",
+        "sender_name": "Poorna",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "It is near to my pg",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No farm-related data found in the message.",
+            "confidence_score": 0.2,
+            "processed_text": "It is near to my pg"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:27:43.372034",
+        "message_id": "false_207627359363311@lid_AC49BFA9BF4EEFFE2F0CD53C8130989A",
+        "sender": "Poorna (207627359363311)",
+        "sender_name": "Poorna",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "7",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 7,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Quantity: 7",
+            "confidence_score": 0.5,
+            "processed_text": "7"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:27:50.176027",
+        "message_id": "true_207627359363311@lid_ACAFD523F93FDB43D0ADA662FA502723",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (207627359363311)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Okay okay",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "",
+            "confidence_score": 0.1,
+            "processed_text": "Okay okay"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:27:52.822353",
+        "message_id": "true_207627359363311@lid_ACE61FA5D775BCC8E2FE7D2B815F4267",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (207627359363311)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "I vll cm",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "User message is non-transactional/informational.",
+            "confidence_score": 0.3,
+            "processed_text": "I will come"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:27:55.559361",
+        "message_id": "false_207627359363311@lid_AC4F192AF1FB66F8C22B1B1BA03E66D9",
+        "sender": "Poorna (207627359363311)",
+        "sender_name": "Poorna",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Ok",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No farm-related data provided in message.",
+            "confidence_score": 1.0,
+            "processed_text": "Ok"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:27:58.179854",
+        "message_id": "true_207627359363311@lid_AC627F4FB2C07CEE5FFC4AFC5226D150",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (207627359363311)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Yup",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No farm data provided in the message.",
+            "confidence_score": 0.1,
+            "processed_text": "Yup"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:28:04.771091",
+        "message_id": "true_207627359363311@lid_AC7D61CDEC211B5DBB37499DC7AFBFCC",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (207627359363311)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T07:33:01.535277",
+        "message_id": "false_120363212822578807@g.us_ACE7792EA960A3B6367F5EB904D9E2FF_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6 \nSpreying",
+        "ai_extracted": {
+            "shead_name": "Shead 6",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "none",
+            "amount": 0.0,
+            "notes": "Activity: Spraying\nGrand Total Qty: 0\nGrand Total Amt: 0.0",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 6 - Spraying"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:39:50.541646",
+        "message_id": "false_120363046205890693@g.us_AC3F7B78C73EA67EEAB440D8CA68CA84_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] Jay Sri Ram (141927630536871)",
+        "sender_name": "Jay Sri Ram",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "400 Trays of production 6th Shead first collection",
+        "ai_extracted": {
+            "shead_name": "Shead 6",
+            "category": "egg",
+            "quantity": 400,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 400 trays\n--------------------\nShead 6: 400 trays (1st collection)",
+            "confidence_score": 0.98,
+            "processed_text": "400 trays of production, Shead 6, first collection"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:43:29.380939",
+        "message_id": "false_120363225998735559@g.us_AC5ED7BEF2B42154240358EDB2DC78DD_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Image depicts a person operating or checking an electrical control panel with safety labels. No transaction, sales, or production data found in the image.",
+            "confidence_score": 1.0,
+            "processed_text": "An electrical control panel is visible with no farm record information."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:45:45.547749",
+        "message_id": "true_176531796189398@lid_AC6D43D700FB99DF2AC64C0C6C1F6282",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (176531796189398)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Lunch?",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Input message does not contain agricultural data.",
+            "confidence_score": 0.1,
+            "processed_text": "Lunch?"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:51:33.079163",
+        "message_id": "false_120363405469158412@g.us_3EB0F52BE54FA3DA7148E4_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 210.0,
+            "notes": "Grand Total Amt: 210rs\n--------------------\nPayment To: Mr Ananda Reddy T\nPayment From: Mahalakshmi\nDate: 27 Jun 2026\nTime: 01:20 PM\nTransaction ID: 617813954581\nStatus: Successful\nPayment Method: Kotak Mahindra Bank (Savings . XX6058)",
+            "confidence_score": 1.0,
+            "processed_text": "Payment of 210rs made to Mr Ananda Reddy T from Mahalakshmi via Kotak Mahindra Bank on 27 Jun 2026."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:51:35.545368",
+        "message_id": "false_120363405469158412@g.us_3EB0E3367CF28CF2B28355_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Food expenses for panel board (2)\nand dorb vehical driver (1)\n70*3=210",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 3,
+            "unit": "units",
+            "amount": 210.0,
+            "notes": "Grand Total Qty: 3 units\nGrand Total Amt: 210.00\n--------------------\nPanel board food: 2 units\nVehicle driver food: 1 unit",
+            "confidence_score": 0.95,
+            "processed_text": "Food expenses for 2 panel boards and 1 vehicle driver, calculated as 70*3=210."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:51:58.689511",
+        "message_id": "false_176531796189398@lid_ACDA183515B40851EF17219DBE7DACD8",
+        "sender": "Yaswanth (176531796189398)",
+        "sender_name": "Yaswanth",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Ok",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No farm data provided in input.",
+            "confidence_score": 0.1,
+            "processed_text": "Ok"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:59:44.091670",
+        "message_id": "false_120363225998735559@g.us_3EB0DF026B2A5DBE0F3951_184791135711366@lid",
+        "sender": "[Gate Manager] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "Shead 4",
+            "category": "sales",
+            "quantity": 101,
+            "unit": "trays/pieces",
+            "amount": 0.0,
+            "notes": "Date: 20-06-26\nCustomer: Miss Nabiya\nGrand Total Qty: 101\n--------------------\nBig eggs: 16 trays\nShead 4 good eggs: 66 trays\nTotal egg sales: 82 trays\nPaper trays: 19 pieces",
+            "confidence_score": 0.95,
+            "processed_text": "Local sale record for Miss Nabiya dated 20-06-26. Sold 16 trays of big eggs, 66 trays of good eggs from 4th shead (total 82 trays), and 19 pieces of paper trays."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T07:59:48.272565",
+        "message_id": "false_120363225998735559@g.us_3EB0296983E9634AFF41F8_184791135711366@lid",
+        "sender": "[Gate Manager] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "Shead 4",
+            "category": "sales",
+            "quantity": 82,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Date: 20-06-26\nCustomer: Miss Nabiya\nGrand Total Qty: 82 trays\nGrand Total Amt: 0.0\n--------------------\nBig eggs: 16 trays\n4th Shead good eggs: 66 trays\nPaper trays: 19 pieces sold",
+            "confidence_score": 0.98,
+            "processed_text": "Local sale on 20-06-26 to Miss Nabiya. 16 trays of big eggs, 66 trays of good eggs from 4th shead (Total 82 trays). Also sold 19 pieces of paper trays."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T08:05:12.117678",
+        "message_id": "false_120363405469158412@g.us_3EB0FCCE9F6DD930D5F958_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Food Expenses for Karthik and akshay\nand Dorb vehical drivers (2) \n26/06/2026\n4*35=140",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 4,
+            "unit": "meals",
+            "amount": 140.0,
+            "notes": "Grand Total Qty: 4\nGrand Total Amt: 140.0\n--------------------\nDate: 26/06/2026\nDescription: Food expenses for Karthik, Akshay, and 2 vehicle drivers\nCalculation: 4 meals * 35 per meal",
+            "confidence_score": 0.95,
+            "processed_text": "Food expenses for Karthik, Akshay, and 2 vehicle drivers on 26/06/2026. 4 meals at 35 each, totaling 140."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T08:05:22.292786",
+        "message_id": "true_207627359363311@lid_AC4F319C2CEE15594B8CE3DDBEDDC1AF",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (207627359363311)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Come",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Message content is insufficient for agricultural data extraction.",
+            "confidence_score": 0.1,
+            "processed_text": "Come"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T08:05:46.417873",
+        "message_id": "false_120363405469158412@g.us_3AF883B0184A011C3A13_112300593815672@lid",
+        "sender": "[Payments - Sunfra Farms] Nani Chinnam (112300593815672)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Okay",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No data to extract.",
+            "confidence_score": 0.1,
+            "processed_text": "Okay"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T08:05:51.700350",
+        "message_id": "false_120363405469158412@g.us_3A3592FB4C5EA3308B69_112300593815672@lid",
+        "sender": "[Payments - Sunfra Farms] Nani Chinnam (112300593815672)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Please pay",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Payment request received.",
+            "confidence_score": 0.5,
+            "processed_text": "Please pay"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T08:09:13.890732",
+        "message_id": "false_120363405469158412@g.us_3EB0F84E44DCB8C3BDEDD5_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 15,
+            "unit": "pieces",
+            "amount": 930.0,
+            "notes": "Date: 27/8/26\nGrand Total Qty: 15 pieces\nGrand Total Amt: 930.0\n--------------------\nT. Oil: 5 (550)\nPDL: 4 (320)\nMota Nails: 4 (20)\nIr. Cubed: 2 (40)",
+            "confidence_score": 0.92,
+            "processed_text": "Invoice dated 27/8/26 for maintenance supplies including T. Oil, PDL, Mota Nails, and Iron Cubed, totaling 930."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T08:09:15.628767",
+        "message_id": "false_120363405469158412@g.us_3EB048F9CB1A0436F97CD1_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Purchase of nail , Gum For sunnam ,and iron cutting blades",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "purchase",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Items purchased: Nails, Gum for Sunnam, and Iron cutting blades.",
+            "confidence_score": 0.9,
+            "processed_text": "Purchase of nails, gum for lime (sunnam), and iron cutting blades."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T08:17:02.684536",
+        "message_id": "false_120363405469158412@g.us_3EB080E51A2A0F5A292536_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0.5,
+            "unit": "Litre",
+            "amount": 60.0,
+            "notes": "Grand Total Qty: 0.5 Litre\nGrand Total Amt: 60.00\n--------------------\nTransaction Details:\nQuantity: 0.5 Litre\nPrice/Litre: 118.0\nTotal Amount: 60.00",
+            "confidence_score": 0.95,
+            "processed_text": "Fuel purchase of 0.5 Litre at a price of 118.0 per Litre, totaling 60.00."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T08:17:04.684181",
+        "message_id": "false_120363405469158412@g.us_3EB042B0168CED42045FA7_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "mahendra petrol bill",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Description: Mahendra petrol bill",
+            "confidence_score": 0.9,
+            "processed_text": "Mahendra petrol bill"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T08:18:16.520384",
+        "message_id": "false_120363405469158412@g.us_3EB01F51E1146D7C6DF298_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 60.0,
+            "notes": "Grand Total Amt: 60rs\n--------------------\nRecipient: R K Filling Station\nDate: 27 Jun 2026\nRemarks: Petrol\nTransaction ID: 617813975302",
+            "confidence_score": 1.0,
+            "processed_text": "Payment of 60rs to R K Filling Station for petrol on 27 Jun 2026."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T08:18:18.360064",
+        "message_id": "false_120363405469158412@g.us_3EB0E521CC354BAF1D27A2_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Mahendra bike petrol",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "null",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 0\nGrand Total Amt: 0.0\n--------------------\nItem: Petrol for Mahendra's bike",
+            "confidence_score": 0.85,
+            "processed_text": "Expense for Mahendra's bike petrol"
+        }
     }
 ]
