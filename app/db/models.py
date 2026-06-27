@@ -27,7 +27,7 @@ class RawMessage(Base):
 class ProcessedData(Base):
     __tablename__ = "processed_data"
     id = Column(Integer, primary_key=True, index=True)
-    farm_name = Column(String(255))
+    shead_name = Column(String(255))
     category = Column(Enum('egg', 'feed', 'medicine', 'mortality', 'sales', 'purchase', 'expense', 'unknown'), default='unknown')
     quantity = Column(DECIMAL(15, 2))
     unit = Column(String(50))

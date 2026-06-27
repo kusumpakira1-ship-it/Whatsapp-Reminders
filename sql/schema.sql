@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS raw_messages (
 -- 3. Processed Data Table
 CREATE TABLE IF NOT EXISTS processed_data (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    farm_name VARCHAR(255) NULL,
+    shead_name VARCHAR(255) NULL,
     category ENUM('egg', 'feed', 'medicine', 'mortality', 'sales', 'purchase', 'expense', 'unknown') DEFAULT 'unknown',
     quantity DECIMAL(15, 2) NULL,
     unit VARCHAR(50) NULL,

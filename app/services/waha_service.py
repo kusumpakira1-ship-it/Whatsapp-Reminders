@@ -70,23 +70,41 @@ def send_waha_file(chat_id: str, file_path: str, caption: str = "") -> bool:
         print(f"Failed to send WAHA file: {e}")
         return False
 
-def download_waha_media(message_id: str) -> str:
-    """Download media from WAHA for a given message ID and save it locally."""
-    url = f"{settings.WAHA_URL}/api/{settings.WAHA_SESSION}/messages/{message_id}/download"
+def download_waha_media(message_id: str, media_url: str = None, mimetype: str = None, filename: str = None) -> str:
+    """Download media from WAHA and save it locally."""
+    import urllib.parse
     headers = {"Accept": "application/json"}
     api_key = os.getenv("WAHA_API_KEY", "123")
     if api_key:
         headers["X-Api-Key"] = api_key
         
+    if media_url:
+        try:
+            # Replace localhost or external hostname in media_url with waha's internal container name
+            parsed_media = urllib.parse.urlparse(media_url)
+            parsed_waha = urllib.parse.urlparse(settings.WAHA_URL)
+            url = parsed_media._replace(netloc=parsed_waha.netloc).geturl()
+        except Exception as e:
+            print(f"Failed to parse media URL {media_url}: {e}")
+            url = media_url
+    else:
+        encoded_msg_id = urllib.parse.quote(message_id)
+        url = f"{settings.WAHA_URL}/api/{settings.WAHA_SESSION}/messages/{encoded_msg_id}/download"
+        
     try:
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
-            # Check Content-Type to determine extension
-            content_type = response.headers.get("Content-Type", "")
+            # Determine extension using mimetype, Content-Type, or filename
+            check_mime = mimetype or response.headers.get("Content-Type", "")
             ext = ".bin"
-            if "jpeg" in content_type or "jpg" in content_type: ext = ".jpg"
-            elif "png" in content_type: ext = ".png"
-            elif "pdf" in content_type: ext = ".pdf"
+            if "jpeg" in check_mime or "jpg" in check_mime:
+                ext = ".jpg"
+            elif "png" in check_mime:
+                ext = ".png"
+            elif "pdf" in check_mime:
+                ext = ".pdf"
+            elif filename and "." in filename:
+                ext = f".{filename.split('.')[-1]}"
             
             os.makedirs("/app/media", exist_ok=True)
             file_path = f"/app/media/{message_id}{ext}"
@@ -94,23 +112,47 @@ def download_waha_media(message_id: str) -> str:
             with open(file_path, "wb") as f:
                 f.write(response.content)
             return file_path
+        else:
+            print(f"WAHA media download returned status code {response.status_code} for URL: {url}")
     except Exception as e:
         print(f"Failed to download media for {message_id}: {e}")
     return ""
 
 def get_waha_chat_name(chat_id: str) -> str:
     """Fetch chat/group name from WAHA API."""
-    if not chat_id.endswith('@g.us') and not chat_id.endswith('@c.us'):
+    if not chat_id.endswith('@g.us') and not chat_id.endswith('@c.us') and not chat_id.endswith('@s.whatsapp.net') and not chat_id.endswith('@lid'):
         if '-' in chat_id or len(chat_id) > 15:
             chat_id += '@g.us'
         else:
             chat_id += '@c.us'
 
-    # The typical WAHA API for chats is /api/{session}/chats
+    # If it is a group, try fetching from the groups endpoint first (more reliable in NOWEB)
+    if chat_id.endswith('@g.us'):
+        url = f"{settings.WAHA_URL}/api/{settings.WAHA_SESSION}/groups"
+        headers = {"Accept": "application/json"}
+        api_key = os.getenv("WAHA_API_KEY", "123")
+        if api_key:
+            headers["X-Api-Key"] = api_key
+        try:
+            response = requests.get(url, headers=headers, timeout=5)
+            if response.status_code == 200:
+                groups_dict = response.json()
+                if isinstance(groups_dict, dict):
+                    group_info = groups_dict.get(chat_id)
+                    if group_info and group_info.get("subject"):
+                        return group_info.get("subject")
+                elif isinstance(groups_dict, list):
+                    for g in groups_dict:
+                        g_id = g.get("id")
+                        if g_id == chat_id and g.get("subject"):
+                            return g.get("subject")
+        except Exception as e:
+            print(f"Failed to fetch group name from groups API: {e}")
+
+    # Fallback to the chats endpoint
     url = f"{settings.WAHA_URL}/api/{settings.WAHA_SESSION}/chats"
     headers = {"Accept": "application/json"}
     
-    # Check if we should pass API key
     api_key = os.getenv("WAHA_API_KEY", "123")
     if api_key:
         headers["X-Api-Key"] = api_key

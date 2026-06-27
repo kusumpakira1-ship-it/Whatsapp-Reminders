@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 from db.database import engine, Base, SessionLocal
 from db.models import Whitelist, RawMessage, ProcessedData
 from services.ai_processor import process_text, process_image, process_document
-from services.waha_service import download_waha_media, get_waha_chat_name, send_waha_message
+from services.waha_service import download_waha_media, get_waha_chat_name, send_waha_message, send_waha_file
 from services.scheduler import setup_scheduler
 from core.config import settings
 
@@ -26,10 +26,17 @@ async def lifespan(app: FastAPI):
     # Shutdown logic if needed
 
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 app = FastAPI(title="WAHA Farm Automation API", lifespan=lifespan)
 os.makedirs("/app/media/reports", exist_ok=True)
 app.mount("/media", StaticFiles(directory="/app/media"), name="media")
+
+@app.get("/messages.json")
+async def get_messages_json():
+    if os.path.exists("messages.json"):
+        return FileResponse("messages.json")
+    return {"status": "No messages.json found"}
 
 @app.post("/webhook")
 async def waha_webhook(request: Request):
@@ -49,15 +56,25 @@ async def waha_webhook(request: Request):
 
     message_id = msg.get("id")
     sender = msg.get("from", "")
+    
+    # Ignore Status Updates and Channels
+    if sender == "status@broadcast" or sender.endswith("@newsletter"):
+        logger.info(f"Ignoring status/channel message from {sender}")
+        return {"status": "ignored status/channel"}
+
     is_group = '@g.us' in sender
     group_id = sender if is_group else None
     
     sender_phone = msg.get("participant", sender) if is_group else sender
-    sender_phone = sender_phone.replace('@c.us', '')
+    for domain in ('@c.us', '@s.whatsapp.net', '@lid'):
+        sender_phone = sender_phone.replace(domain, '')
     if group_id:
         group_id = group_id.replace('@g.us', '')
 
-    sender_name = msg.get("_data", {}).get("notifyName", "")
+    sender_name = msg.get("pushName") or msg.get("_data", {}).get("pushName") or msg.get("_data", {}).get("notifyName") or ""
+    if sender_name.startswith('~'):
+        sender_name = sender_name[1:]
+    sender_name = sender_name.strip()
     
     if is_group:
         # Try to extract group name if available in typical WAHA payload locations
@@ -75,17 +92,32 @@ async def waha_webhook(request: Request):
 
     # 1. Extract Data
     message_type = msg.get("type", "unknown")
-    text = msg.get("body", "")
+    text = msg.get("body") or ""
     timestamp_val = msg.get("timestamp", 0)
     msg_time = datetime.fromtimestamp(timestamp_val) if timestamp_val else datetime.now()
-    has_media = msg.get("hasMedia", False)
+    has_media = msg.get("hasMedia", False) or msg.get("type") in ("image", "document")
     
     # 2. Handle Commands
     if text.startswith('!'):
         command = text.lower().strip()
         
         if command.startswith('!report'):
-            return {"status": "report manually requested"}
+            parts = command.split()
+            range_type = 'daily'
+            if len(parts) > 1 and parts[1] in ['weekly', 'monthly', 'yearly']:
+                range_type = parts[1]
+                
+            from services.report_generator import generate_custom_report
+            pdf_path, excel_path, summary_text = generate_custom_report(range_type)
+            
+            if summary_text:
+                send_waha_message(sender, summary_text)
+            if pdf_path:
+                send_waha_file(sender, pdf_path, caption=f"PDF Report - {pdf_path.split('/')[-1]}")
+            if excel_path:
+                send_waha_file(sender, excel_path, caption=f"Excel Report - {excel_path.split('/')[-1]}")
+                
+            return {"status": f"report {range_type} manually requested"}
         elif command == '!manager add':
             from db.models import ReportRecipient
             db = SessionLocal()
@@ -106,6 +138,12 @@ async def waha_webhook(request: Request):
     # 3. Save Raw Data
     db = SessionLocal()
     try:
+        existing_msg = db.query(RawMessage).filter(RawMessage.message_id == message_id).first()
+        if existing_msg:
+            logger.info(f"Message {message_id} already exists. Skipping duplicate event.")
+            db.close()
+            return {"status": "duplicate message"}
+
         raw_msg = RawMessage(
             message_id=message_id,
             sender=display_sender,
@@ -131,7 +169,11 @@ async def waha_webhook(request: Request):
     
     if has_media:
         # Download media
-        media_path = download_waha_media(message_id)
+        media_info = msg.get("media") or {}
+        media_url_direct = media_info.get("url")
+        media_mime = media_info.get("mimetype")
+        media_filename = media_info.get("filename")
+        media_path = download_waha_media(message_id, media_url=media_url_direct, mimetype=media_mime, filename=media_filename)
         if media_path:
             raw_msg.media_path = media_path
             db.commit()
@@ -155,25 +197,50 @@ async def waha_webhook(request: Request):
 
     # 5. Save Processed Data
     if ai_result:
+        # Normalize ai_result to a list of records
+        records_list = []
+        if isinstance(ai_result, dict):
+            if "records" in ai_result and isinstance(ai_result["records"], list):
+                records_list = ai_result["records"]
+            else:
+                # Legacy single-record dictionary
+                records_list = [ai_result]
+        elif isinstance(ai_result, list):
+            # If Ollama returned a list directly
+            records_list = ai_result
+            
         fresh_db = SessionLocal()
         try:
-            proc_data = ProcessedData(
-                farm_name=ai_result.get("farm_name", ""),
-                category=ai_result.get("category", "unknown"),
-                quantity=ai_result.get("quantity", 0),
-                unit=ai_result.get("unit", ""),
-                amount=ai_result.get("amount", 0.0),
-                notes=ai_result.get("notes", ""),
-                sender=display_sender,
-                group_name=group_name_str,
-                source_type=source_type,
-                confidence_score=ai_result.get("confidence_score", 0.0),
-                processed_time=datetime.now(),
-                message_id=message_id
-            )
-            fresh_db.add(proc_data)
-            fresh_db.commit()
-            logger.info(f"Successfully processed message {message_id}")
+            saved_count = 0
+            for record in records_list:
+                if not isinstance(record, dict):
+                    continue
+                if record.get("category", "unknown") == "unknown":
+                    logger.info(f"Ignored record with unknown category. Text: {text}")
+                    continue
+                
+                proc_data = ProcessedData(
+                    shead_name=record.get("shead_name", ""),
+                    category=record.get("category", "unknown"),
+                    quantity=record.get("quantity", 0),
+                    unit=record.get("unit", ""),
+                    amount=record.get("amount", 0.0),
+                    notes=record.get("notes", ""),
+                    sender=display_sender,
+                    group_name=group_name_str,
+                    source_type=source_type,
+                    confidence_score=record.get("confidence_score", 0.0),
+                    processed_time=datetime.now(),
+                    message_id=message_id
+                )
+                fresh_db.add(proc_data)
+                saved_count += 1
+                
+            if saved_count > 0:
+                fresh_db.commit()
+                logger.info(f"Successfully processed message {message_id}: saved {saved_count} records")
+            else:
+                logger.info(f"No valid farm records found in message {message_id}")
         except Exception as e:
             fresh_db.rollback()
             logger.error(f"Failed to save processed data (fresh session): {e}")

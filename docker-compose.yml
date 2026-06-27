@@ -8,11 +8,13 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - WHATSAPP_DEFAULT_ENGINE=WEBJS
+      - WHATSAPP_DEFAULT_ENGINE=NOWEB
       - WAHA_DASHBOARD_NO_PASSWORD=true
       - WAHA_API_KEY=123
-      - WAHA_WEBHOOK_URL=http://fastapi_backend:8000/webhook
+      - WAHA_WEBHOOK_URL=http://fastapi-backend.com:8000/webhook
       - WAHA_WEBHOOK_EVENTS=message,message.any
+      - WHATSAPP_HOOK_URL=http://fastapi-backend.com:8000/webhook
+      - WHATSAPP_HOOK_EVENTS=message,message.any
     volumes:
       - ./waha_data:/app/.waha
 
@@ -26,6 +28,10 @@ services:
       - "8000:8000"
     volumes:
       - ./app:/app
+    networks:
+      default:
+        aliases:
+          - fastapi-backend.com
     environment:
       - DB_HOST=${DB_HOST}
       - DB_NAME=${DB_NAME}

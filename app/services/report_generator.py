@@ -34,7 +34,7 @@ def generate_custom_report(range_type: str = 'daily'):
     
     # Convert to DataFrame
     df = pd.DataFrame([{
-        "Farm Name": d.farm_name,
+        "Shead Name": d.shead_name,
         "Category": d.category.capitalize(),
         "Quantity": float(d.quantity) if d.quantity else 0,
         "Unit": d.unit,
@@ -68,10 +68,10 @@ def generate_custom_report(range_type: str = 'daily'):
     summary_text += f"💰 *Net Profit:* ₹{net_profit:,.2f}\n\n"
     summary_text += "*Breakdown by Category:*\n"
     
-    summary = df.groupby(['Farm Name', 'Category'])['Quantity'].sum().reset_index()
+    summary = df.groupby(['Shead Name', 'Category'])['Quantity'].sum().reset_index()
     for _, row in summary.iterrows():
-        farm = row['Farm Name'] or 'Unknown Farm'
-        summary_text += f"- {farm}: {row['Quantity']} {row['Category']}\n"
+        shead = row['Shead Name'] or 'Unknown Shead'
+        summary_text += f"- {shead}: {row['Quantity']} {row['Category']}\n"
     
     # 3. Generate PDF
     c = canvas.Canvas(pdf_path, pagesize=letter)
@@ -93,8 +93,8 @@ def generate_custom_report(range_type: str = 'daily'):
     
     y_position = 570
     for _, row in summary.iterrows():
-        farm = row['Farm Name'] or 'Unknown Farm'
-        c.drawString(50, y_position, f"{farm}: {row['Quantity']} {row['Category']}")
+        shead = row['Shead Name'] or 'Unknown Shead'
+        c.drawString(50, y_position, f"{shead}: {row['Quantity']} {row['Category']}")
         y_position -= 20
         if y_position < 50:
             c.showPage()
