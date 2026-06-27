@@ -1,7 +1,8 @@
 import os
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+IST = timezone(timedelta(hours=5, minutes=30))
 from fastapi import FastAPI, Request, HTTPException
 from contextlib import asynccontextmanager
 
@@ -91,11 +92,25 @@ async def waha_webhook(request: Request):
         display_sender = f"{sender_name} ({sender_phone})" if sender_name else sender_phone
 
     # 1. Extract Data
-    message_type = msg.get("type", "unknown")
+    has_media = msg.get("hasMedia", False)
+    media_info = msg.get("media") or {}
+    mime_type = media_info.get("mimetype", "")
+    
+    if has_media:
+        if "pdf" in mime_type:
+            message_type = "pdf"
+        elif "image" in mime_type or "jpeg" in mime_type or "png" in mime_type:
+            message_type = "image"
+        elif "video" in mime_type:
+            message_type = "video"
+        else:
+            message_type = "document"
+    else:
+        message_type = "text"
+        
     text = msg.get("body") or ""
     timestamp_val = msg.get("timestamp", 0)
-    msg_time = datetime.fromtimestamp(timestamp_val) if timestamp_val else datetime.now()
-    has_media = msg.get("hasMedia", False) or msg.get("type") in ("image", "document")
+    msg_time = datetime.fromtimestamp(timestamp_val, tz=IST).replace(tzinfo=None) if timestamp_val else datetime.now(IST).replace(tzinfo=None)
     
     # 2. Handle Commands
     if text.startswith('!'):
@@ -151,7 +166,6 @@ async def waha_webhook(request: Request):
             timestamp=msg_time,
             message_type=message_type,
             raw_text=text,
-            media_url=None, # Update if waha provides URL directly
             full_webhook_json=json.dumps(payload)
         )
         db.add(raw_msg)
@@ -218,7 +232,7 @@ async def waha_webhook(request: Request):
                     group_name=group_name_str,
                     source_type=source_type,
                     confidence_score=record.get("confidence_score", 0.0),
-                    processed_time=datetime.now(),
+                    processed_time=datetime.now(IST).replace(tzinfo=None),
                     message_id=message_id
                 )
                 fresh_db.add(proc_data)
@@ -243,7 +257,7 @@ async def waha_webhook(request: Request):
                     pass
             
         messages.append({
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.now(IST).isoformat(),
             "message_id": message_id,
             "sender": display_sender,
             "sender_name": sender_name,

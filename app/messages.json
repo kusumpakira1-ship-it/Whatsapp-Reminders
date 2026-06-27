@@ -3436,5 +3436,1350 @@
             "confidence_score": 0.85,
             "processed_text": "Expense for Mahendra's bike petrol"
         }
+    },
+    {
+        "timestamp": "2026-06-27T08:53:12.252214",
+        "message_id": "false_176531796189398@lid_3EB03F202487B2DD404ECB",
+        "sender": "Yaswanth (176531796189398)",
+        "sender_name": "Yaswanth",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "she tol they  will discuss adn will say",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Information pending further discussion.",
+            "confidence_score": 0.4,
+            "processed_text": "She told they will discuss and will say."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T08:53:19.045565",
+        "message_id": "false_120363225998735559@g.us_AC4AAD8D1FBC6CC8964817D2553FCAEC_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "The image shows a standard industrial electrical control panel with a power factor controller and a hazard warning label (Danger 440 Volts). No specific farm records, quantities, or financial transactions are present in the image.",
+            "confidence_score": 1.0,
+            "processed_text": "Image shows an electrical control panel with no transactional data."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T08:53:35.653666",
+        "message_id": "true_176531796189398@lid_AC2DCBCB36E3E5C3B0334A239FC996C2",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (176531796189398)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Okay",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No farm data provided in the message.",
+            "confidence_score": 0.1,
+            "processed_text": "Okay"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T08:53:57.770298",
+        "message_id": "false_176531796189398@lid_3EB06A86FFECF608E49986",
+        "sender": "Yaswanth (176531796189398)",
+        "sender_name": "Yaswanth",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "haa",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No valid agricultural data found in input.",
+            "confidence_score": 0.1,
+            "processed_text": "No meaningful content provided."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T08:54:14.520331",
+        "message_id": "false_120363212822578807@g.us_AC2318EB33558C02060D969D745DABB2_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead water spraying",
+        "ai_extracted": {
+            "shead_name": "Shead 2",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Activity: Water spraying",
+            "confidence_score": 0.95,
+            "processed_text": "Shead 2 water spraying"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T08:55:03.354058",
+        "message_id": "false_120363212822578807@g.us_AC73B40C1EFDA46DD6672DACF7A2FECA_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6 \nFlushout",
+        "ai_extracted": {
+            "shead_name": "Shead 6",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Activity: Flushout",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 6 Flushout performed"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T08:55:23.207496",
+        "message_id": "false_120363212822578807@g.us_AC105222C01A661E0F6D286434376AD9_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6\nFeed raking",
+        "ai_extracted": {
+            "shead_name": "Shead 6",
+            "category": "feed",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Activity: Feed raking",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 6: Feed raking"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T08:55:33.079355",
+        "message_id": "false_176531796189398@lid_3EB06C800099E31A3F4E7C",
+        "sender": "Yaswanth (176531796189398)",
+        "sender_name": "Yaswanth",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "check in the extraction rules",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No transaction data provided in the message. Awaiting input for extraction.",
+            "confidence_score": 0.0,
+            "processed_text": "Check in the extraction rules."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T08:57:22.430762",
+        "message_id": "false_120363212822578807@g.us_AC2E3730537EC5AA010B1110A2C26B2A_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead1",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 1"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T08:57:30.423122",
+        "message_id": "false_120363212822578807@g.us_ACDFB785156A423599EB68A63A2B4860_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6\nMtm 1l",
+        "ai_extracted": {
+            "shead_name": "Shead 6",
+            "category": "mortality",
+            "quantity": 1,
+            "unit": "pieces",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 1 piece\nGrand Total Amt: 0.0\n--------------------\nShead 6: 1 mortality recorded",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 6 mortality 1"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T08:59:01.661855",
+        "message_id": "false_120363425347866009@g.us_ACD709BE3FC166EFA0500F743F2DAC54_176531796189398@lid",
+        "sender": "[Medicine Prices & Ordering] Yaswanth (176531796189398)",
+        "sender_name": "Yaswanth",
+        "is_group": true,
+        "group_name": "Medicine Prices & Ordering",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T08:59:42.372647",
+        "message_id": "false_120363212822578807@g.us_AC48D7AE8932CF54C340073C55019CD9_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead1",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 1"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:00:00.050079",
+        "message_id": "false_120363046205890693@g.us_AC0AF988B581E85AC4A200B96E38E8C7_241274569400567@lid",
+        "sender": "[Egg Gowdown & Sales] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "500 trays of production 7th shed Frist collection",
+        "ai_extracted": {
+            "shead_name": "Shead 7",
+            "category": "egg",
+            "quantity": 500,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 500 trays\nCollection: First collection of the day from Shead 7",
+            "confidence_score": 0.95,
+            "processed_text": "500 trays of egg production from Shead 7, first collection."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:00:58.621418",
+        "message_id": "false_120363212822578807@g.us_AC21DEDC0EA84C6392F0FF6B7FE774F9_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead feed raking",
+        "ai_extracted": {
+            "shead_name": "Shead 4",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Activity: Feed raking",
+            "confidence_score": 0.95,
+            "processed_text": "Shead 4 feed raking"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:04:49.756771",
+        "message_id": "false_120363212822578807@g.us_AC287089DF524FA178251C243A0D2BC3_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 5",
+        "ai_extracted": {
+            "shead_name": "Shed 5",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Reference to Shed 5",
+            "confidence_score": 0.6,
+            "processed_text": "Shed 5"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:04:51.998608",
+        "message_id": "false_120363212822578807@g.us_AC51E9AC330EE3E120ADEC29F9683AF2_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T09:05:35.214620",
+        "message_id": "false_120363212822578807@g.us_AC05BE72F0EF0489AD57E3BECFA3223B_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 3"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:05:43.185793",
+        "message_id": "false_120363212822578807@g.us_ACE4DBE3D4BD7015E86F024AFD701CD3_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 5",
+        "ai_extracted": {
+            "shead_name": "Shead 5",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Reference to Shead 5 identified.",
+            "confidence_score": 0.6,
+            "processed_text": "Shead 5"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:05:51.040393",
+        "message_id": "false_120363212822578807@g.us_ACE492BCF63D5E0B814C118A2C54AE66_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T09:06:04.662528",
+        "message_id": "true_176531796189398@lid_ACEA35F0249B5648DD37A696D1D0FF04",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (176531796189398)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Haan",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "",
+            "confidence_score": 0.1,
+            "processed_text": "Yes"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:06:08.961342",
+        "message_id": "false_120363212822578807@g.us_AC71149B5592C785C910EE6783F742AB_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6 \nSpreying",
+        "ai_extracted": {
+            "shead_name": "Shead 6",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Activity: Spraying",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 6 - Spraying"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:07:45.754730",
+        "message_id": "false_82798413090865@lid_AC07CEC6D549D0355DE856C023F7FC2D",
+        "sender": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f (82798413090865)",
+        "sender_name": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "purchase",
+            "quantity": 0,
+            "unit": "",
+            "amount": 210.0,
+            "notes": "Paid By: Mahalakshmi\nPaid To: Mr Ananda Reddy T\nBank: Kotak Mahindra Bank\nTransaction Ref: 617813954581\nDate: 27 Jun 2026\nGrand Total Amt: 210.0 Remarks: None",
+            "confidence_score": 1.0,
+            "processed_text": "Payment of 210 INR from Mahalakshmi to Mr Ananda Reddy T via Kotak Mahindra Bank on 27 Jun 2026. Transaction ID: 617813954581."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:10:33.682716",
+        "message_id": "false_176531796189398@lid_3EB0032170AB9F7D0EAC37",
+        "sender": "Yaswanth (176531796189398)",
+        "sender_name": "Yaswanth",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "\ud83d\udc4b Good Morning! Here's your daily poultry farm report for *June 27, 2026*! \ud83d\udc14\ud83d\udcc8\n\n---\n\n\ud83d\uddd3\ufe0f *Farm Overview: June 27, 2026*\n\n\ud83d\udcb0 *Financial & Major Transactions:*\n*   A significant purchase was made today: \u20b92,021,828.00 for *Soya* via RTGS transaction to Sunstar Soya Extractions. This ensures our feed supply remains robust.\n\n\ud83d\udcc8 *Market Rates - Paper Rates Today:*\n*   BWL: 614\n*   AJM: 620\n*   AMD: 650\n*   AKL: 655\n*   AND: 648\n*   HYD: 635\n*   INDR: 650\n*   MRJ: 655\n*   NGP: 670\n*   NKL: 630\n*   NVR: 670\n*   SIDPET: 655\n\n\ud83e\udd5a *Egg Stock Inventory (as of June 26th EOD):*\n_This reflects yesterday's closing stock across our sheds:_\n*   *Shed 1:* 610 Good Eggs, 0.25 Big Eggs, 6 Damaged Eggs (Total: 616.25 units)\n*   *Shed 2:* 649 Good Eggs, 0.21 Big Eggs, 2.23 Damaged Eggs (Total: 651.44 units)\n*   *Shed 3:* 305.21 Good Eggs, 7.17 Big Eggs, 5.09 Damaged Eggs (Total: 317.47 units)\n*   *Shed 4:* 634.2 Good Eggs, 0.1 Big Eggs, 4 Damaged Eggs (Total: 638.3 units)\n*   *Shed 5:* 545.14 Good Eggs, 3 Big Eggs, 11.01 Damaged Eggs (Total: 559.15 units)\n*   *Shed 6:* 602 Good Eggs, 0.05 Big Eggs, 7 Damaged Eggs (Total: 609.05 units)\n*   *Shed 7:* 585 Good Eggs, 0.04 Big Eggs, 5.06 Damaged Eggs (Total: 590.1 units)\n*   *Shed 8:* 704 Good Eggs, 2.13 Big Eggs, 2 Damaged Eggs (Total: 708.13 units)\n    _Total Eggs Recorded (June 26th EOD): 4,699.79 units_\n\n\ud83d\udc8a *Feed & Medicine Inventory Snapshot:*\n_Current stock levels and estimated days remaining:_\n*   AgeeMix Forte: 3570 KG (34.2 days)\n*   Choline Chloride: 2516 KG (130.5 days)\n*   CLOSTAT 365: 283.5 KG (33.9 days)\n*   CTC: 62 Liters (62.0 days)\n*   DCP: 1842 KG (10.8 days)\n*   Devitol Plus: 76.5 KG (14.7 days)\n*   DL Methionine: 575.7 KG (40.6 days)\n*   Improval BSF: 1160 KG (79.0 days)\n*   Lever Powder: 1927 KG (134.9 days)\n*   *\ud83d\udea8 Lysine: 116.3 KG (Critically Low - only 6.4 days remaining!)*\n*   Salt: 2721 KG (33.0 days)\n*   Soda: 1030 KG (49.4 days)\n*   Toxifin 300: 288.5 KG (27.7 days)\n*   Trace minerals: 437.5 KG (46.4 days)\n*   Tumalin: 177.5 KG (177.5 days)\n*   Zaitizer: 489 KG (46.9 days)\n    _Action needed: Please advise on reordering Lysine urgently._\n\n\u26a0\ufe0f *Important Updates & Observations:*\n*   A record was logged identifying an individual named *Chandrababu* on site, wearing a light pink collared shirt with a mobile phone. Another individual was partially visible.\n*   A general note regarding \"Egg\" was recorded at 12:01.\n\n---\n\nThe team is actively monitoring all operations and maintaining our high standards. We'll keep you informed of any further developments.\n\nHave a productive day!\n\nRegards,\n[Your Name/Farm Manager]",
+        "ai_extracted": {
+            "shead_name": "Shed 1, Shed 2, Shed 3, Shed 4, Shed 5, Shed 6, Shed 7, Shed 8",
+            "category": "purchase",
+            "quantity": 0,
+            "unit": "rupees",
+            "amount": 2021828.0,
+            "notes": "Grand Total Amt: 2021828.0\n--------------------\nPurchase: Soya from Sunstar Soya Extractions via RTGS (Amount: 2021828.0)\nEgg Inventory EOD June 26: 4699.79 units total across 8 sheds\nFeed Stocks: AgeeMix Forte (3570 KG), Choline Chloride (2516 KG), CLOSTAT 365 (283.5 KG), CTC (62 L), DCP (1842 KG), Devitol Plus (76.5 KG), DL Methionine (575.7 KG), Improval BSF (1160 KG), Lever Powder (1927 KG), Lysine (116.3 KG - Critical), Salt (2721 KG), Soda (1030 KG), Toxifin 300 (288.5 KG), Trace minerals (437.5 KG), Tumalin (177.5 KG), Zaitizer (489 KG)\nPersonnel Alert: Chandrababu seen on site.",
+            "confidence_score": 0.98,
+            "processed_text": "Farm daily report for June 27, 2026. A purchase of Soya for 2,021,828.00 via RTGS to Sunstar Soya Extractions. Total egg inventory as of June 26th is 4,699.79 units across 8 sheds. Feed and medicine stock levels detailed with a critical alert for Lysine."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:11:40.301208",
+        "message_id": "false_120363212822578807@g.us_ACDB601ED8C994C7968049FB673E19DD_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead flush out",
+        "ai_extracted": {
+            "shead_name": "Shead 4",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Action: Flush out\nShead: 4",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 4 flush out"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:13:35.413499",
+        "message_id": "false_120363212822578807@g.us_AC4AA284339267A4113697A79E79197B_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 7",
+        "ai_extracted": {
+            "shead_name": "Shead 7",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Shead identified as 7.",
+            "confidence_score": 0.8,
+            "processed_text": "Shead 7"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:13:37.489333",
+        "message_id": "false_120363212822578807@g.us_ACFDE65AEA4F9ECE0F705E6859F01BB4_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead \nMTM 1lt",
+        "ai_extracted": {
+            "shead_name": "Shead 4",
+            "category": "medicine",
+            "quantity": 1,
+            "unit": "lt",
+            "amount": 0.0,
+            "notes": "Item: MTM",
+            "confidence_score": 0.95,
+            "processed_text": "Shead 4, MTM 1 liter"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:13:39.363527",
+        "message_id": "false_120363212822578807@g.us_ACD07F5C802F784CFF98779E75FD962E_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T09:13:42.706200",
+        "message_id": "false_120363212822578807@g.us_ACCA77DF1D1AAC88711D6FFD58AAAA72_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 8 \nFlushout",
+        "ai_extracted": {
+            "shead_name": "Shead 8",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Activity: Flushout",
+            "confidence_score": 0.95,
+            "processed_text": "Shead 8: Flushout performed"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:14:48.279177",
+        "message_id": "false_120363212822578807@g.us_ACDBFD95E6E9A0D6D29A81D72204CA79_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 7",
+        "ai_extracted": {
+            "shead_name": "Shead 7",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Reference to Shead 7 detected, but no specific activity or item quantity provided.",
+            "confidence_score": 0.6,
+            "processed_text": "Shead 7"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:14:48.958053",
+        "message_id": "false_120363212822578807@g.us_ACE84AEF7D550804FFA8B57DEB82DCA7_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T09:15:43.193744",
+        "message_id": "false_176531796189398@lid_3EB03A038B77BAD69DD2AB",
+        "sender": "Yaswanth (176531796189398)",
+        "sender_name": "Yaswanth",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "\ud83c\udf1f Daily Farm Report - 27th June 2026 \ud83c\udf1f\n\nGood morning [Owner's Name],\n\nHere's a quick overview of today's key activities and updates from the farm:\n\n\ud83d\udccd *Unknown Farm*\n\n\ud83d\udcb0 *Financial Activities Today:*\n*   *Major Purchase:* An RTGS transaction of \u20b92,021,828.00 was processed today for a Soya purchase from Sunstar Soya Extractions. This ensures our feed stock is replenished! \u2705\n*   No other sales or significant expenses recorded for today.\n\n\ud83d\udcc8 *Market Rates Update (Today's Paper Rates):*\n*   We've recorded today's paper rates across various locations:\n    *   BWL: 614\n    *   AJM: 620\n    *   AMD: 650\n    *   AKL: 655\n    *   AND: 648\n    *   HYD: 635\n    *   INDR: 650\n    *   MRJ: 655\n    *   NGP: 670\n    *   NKL: 630\n    *   NVR: 670\n    *   SIDPET: 655\n\n\ud83d\udc8a *Feed & Medicine Inventory Alert (as of today's check):*\n*   *Critical Stock Alert!* \ud83d\udea8 Lysine stock is critically low with only ~6.4 days of supply remaining. Prompt action for replenishment is highly recommended.\n*   Other key feed medicines like Choline Chloride (130.5 days), Lever Powder (134.9 days), and Tumalin (177.5 days) show healthy stock levels.\n\n\ud83d\udcdd *Operational Notes & Records:*\n*   A general note concerning \"Egg\" was recorded at 12:01 PM today.\n*   Feed material and medicine formulas were reviewed and recorded today.\n\nThat's all for today's summary! Please let me know if you require any further details or have specific instructions.\n\nBest regards,\n[Your Name]\nFarm Manager \ud83d\udc14",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "purchase",
+            "quantity": 0,
+            "unit": "",
+            "amount": 2021828.0,
+            "notes": "Grand Total Qty: 0\nGrand Total Amt: 2021828.0\n--------------------\nTransaction: RTGS purchase of Soya from Sunstar Soya Extractions\nDate: 27th June 2026\nInventory Alert: Lysine stock at 6.4 days\nMarket Rates recorded for BWL, AJM, AMD, AKL, AND, HYD, INDR, MRJ, NGP, NKL, NVR, SIDPET",
+            "confidence_score": 0.95,
+            "processed_text": "Daily Farm Report for 27th June 2026. Purchased Soya from Sunstar Soya Extractions via RTGS for 2,021,828.00 INR. Lysine stock is critically low."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:17:36.615452",
+        "message_id": "false_120363212822578807@g.us_AC437777C7DCE90B68EA98398F2B01FC_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 7",
+        "ai_extracted": {
+            "shead_name": "Shead 7",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Shead 7 identified, but no specific activity or quantity provided.",
+            "confidence_score": 0.5,
+            "processed_text": "Shead 7"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:17:37.829691",
+        "message_id": "false_120363212822578807@g.us_AC4D2A83EFB70A34791FF0992DE874AF_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T09:21:06.143662",
+        "message_id": "false_120363212822578807@g.us_AC80A457A5E8141E8CE87A7D05CD2F65_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 8 \nMtm 1l",
+        "ai_extracted": {
+            "shead_name": "Shead 8",
+            "category": "mortality",
+            "quantity": 1,
+            "unit": "pieces",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 1 pieces\n--------------------\nShead 8: 1 bird mortality",
+            "confidence_score": 0.95,
+            "processed_text": "Shead 8, 1 mortality"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:22:29.775432",
+        "message_id": "false_82798413090865@lid_AC18C82B383EA624BAD90D2F3EAE9157",
+        "sender": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f (82798413090865)",
+        "sender_name": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "sales",
+            "quantity": 100,
+            "unit": "trays",
+            "amount": 100000.0,
+            "notes": "Grand Total Qty: 100 trays\nGrand Total Amt: 100000.00\n--------------------\nShead 1: 100 trays sold at 1000 per tray",
+            "confidence_score": 0.98,
+            "processed_text": "Shead 1 sold 100 trays at 1000 each."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:22:32.485004",
+        "message_id": "false_82798413090865@lid_AC6747D9267951F2320F439EB13087A7",
+        "sender": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f (82798413090865)",
+        "sender_name": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Shead 2 200 trays eggs",
+        "ai_extracted": {
+            "shead_name": "Shead 2",
+            "category": "egg",
+            "quantity": 200,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 200 trays\nGrand Total Amt: 0",
+            "confidence_score": 1.0,
+            "processed_text": "Shead 2 received 200 trays of eggs"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:22:37.520478",
+        "message_id": "false_82798413090865@lid_AC07E2E83B90AD0366CCF0828AE0BA7B",
+        "sender": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f (82798413090865)",
+        "sender_name": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "Shead 4, Shead 5, Shead 6",
+            "category": "sales",
+            "quantity": 4200.0,
+            "unit": "trays",
+            "amount": 819000.0,
+            "notes": "Invoice: INV-000960\nCustomer: Shankar naidu\nGrand Total Qty: 4200 trays\nGrand Total Amt: 819000.00\n--------------------\nShead 4: 800 trays (156000.00)\nShead 5: 1800 trays (351000.00)\nShead 6: 1600 trays (312000.00)",
+            "confidence_score": 1.0,
+            "processed_text": "Tax Invoice INV-000960 issued by Sunfra Farms to Shankar naidu on 25/06/2026 for 4200 trays of eggs across Sheads 4, 5, and 6, totaling 8,19,000.00 INR."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:22:40.932257",
+        "message_id": "false_82798413090865@lid_AC26CC2BCC1A487876F90C515047C0FC",
+        "sender": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f (82798413090865)",
+        "sender_name": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 210.0,
+            "notes": "Paid By: Mahalakshmi\nPaid To: Mr Ananda Reddy T\nBank: Kotak Mahindra Bank\nTransaction Ref: 617813954581\nDate: 27 Jun 2026 01:20 PM\nGrand Total Amt: 210.0\nRemarks: N/A",
+            "confidence_score": 1.0,
+            "processed_text": "Payment of 210 INR from Mahalakshmi to Mr Ananda Reddy T via Kotak Mahindra Bank on 27 Jun 2026."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:26:42.054373",
+        "message_id": "false_120363212822578807@g.us_AC83F9C76125369ED89C65D731AA542A_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 8 \nSpreying",
+        "ai_extracted": {
+            "shead_name": "Shead 8",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Activity: Spraying",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 8 spraying"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:26:49.231992",
+        "message_id": "true_183300681367688@lid_3EB04F26AB7AC28CA90821",
+        "sender": "183300681367688",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "\ud83d\udcca *Daily Financial Report*\n\ud83d\udcc5 2026-06-27 to 2026-06-27\n\n\ud83d\udcc8 *Revenue:* \u20b93,382,000.00\n\ud83d\udcc9 *Expenses:* \u20b98,140,616.00\n\ud83d\udcb0 *Net Profit:* \u20b9-4,758,616.00\n\n*Breakdown by Category:*\n- Unknown Shead: 289.5 Expense\n- Unknown Shead: 35110.0 Feed\n- Unknown Shead: 0.0 Purchase\n- Unknown Shead: 44.0 Sales\n- Shead 1: 700.0 Egg\n- Shead 1: 200.0 Sales\n- Shead 2: 940.0 Egg\n- Shead 2: 0.0 Expense\n- Shead 4: 801.0 Egg\n- Shead 4: 0.0 Expense\n- Shead 4: 1.0 Medicine\n- Shead 4: 983.0 Sales\n- Shead 4, Shead 5, Shead 6: 12600.0 Sales\n- Shead 5: 420.0 Egg\n- Shead 5: 2300.0 Sales\n- Shead 6: 2093.0 Egg\n- Shead 6: 0.0 Expense\n- Shead 6: 0.0 Feed\n- Shead 6: 1.0 Mortality\n- Shead 6: 1600.0 Sales\n- Shead 7: 2063.0 Egg\n- Shead 8: 0.0 Expense\n- Shead 8: 1.0 Mortality\n- Shed 1, Shed 2, Shed 3, Shed 4, Shed 5, Shed 6, Shed 7, Shed 8: 0.0 Purchase\n",
+        "ai_extracted": {
+            "shead_name": "Shead 1, Shead 2, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8",
+            "category": "expense",
+            "quantity": 25225.5,
+            "unit": "pieces",
+            "amount": 11522616.0,
+            "notes": "Daily Financial Report: 2026-06-27\nRevenue: 3382000.00\nExpenses: 8140616.00\nNet Profit: -4758616.00\n--------------------\nBreakdown by Category:\nUnknown Shead: 289.5 Expense\nUnknown Shead: 35110.0 Feed\nUnknown Shead: 0.0 Purchase\nUnknown Shead: 44.0 Sales\nShead 1: 700.0 Egg\nShead 1: 200.0 Sales\nShead 2: 940.0 Egg\nShead 2: 0.0 Expense\nShead 4: 801.0 Egg\nShead 4: 0.0 Expense\nShead 4: 1.0 Medicine\nShead 4: 983.0 Sales\nShead 4, Shead 5, Shead 6: 12600.0 Sales\nShead 5: 420.0 Egg\nShead 5: 2300.0 Sales\nShead 6: 2093.0 Egg\nShead 6: 0.0 Expense\nShead 6: 0.0 Feed\nShead 6: 1.0 Mortality\nShead 6: 1600.0 Sales\nShead 7: 2063.0 Egg\nShead 8: 0.0 Expense\nShead 8: 1.0 Mortality\nShed 1-8: 0.0 Purchase",
+            "confidence_score": 0.95,
+            "processed_text": "Daily Financial Report for 2026-06-27. Total Revenue 3,382,000.00, Total Expenses 8,140,616.00, Net Profit -4,758,616.00. Detailed category breakdown by shed provided."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:27:02.423521",
+        "message_id": "true_183300681367688@lid_3EB0B6C4A282585903F65C",
+        "sender": "183300681367688",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "PDF Report - Daily_Report_20260627_0926.pdf",
+        "ai_extracted": {
+            "shead_name": "Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8",
+            "category": "expense",
+            "quantity": 57942.5,
+            "unit": "pieces",
+            "amount": 8140616.0,
+            "notes": "Farm Financial Report - Daily (2026-06-27)\nGrand Total Revenue: 3,382,000.00\nGrand Total Expenses: 8,140,616.00\nNet Profit: -4,758,616.00\n--------------------\nBreakdown:\nUnknown Shead: 289.5 Expense, 35110.0 Feed, 44.0 Sales\nShead 1: 700.0 Egg, 200.0 Sales\nShead 2: 940.0 Egg\nShead 4: 801.0 Egg, 1.0 Medicine, 983.0 Sales\nShead 4, 5, 6: 12600.0 Sales\nShead 5: 420.0 Egg, 2300.0 Sales\nShead 6: 2093.0 Egg, 1.0 Mortality, 1600.0 Sales\nShead 7: 2063.0 Egg\nShead 8: 1.0 Mortality",
+            "confidence_score": 0.99,
+            "processed_text": "Farm Daily Financial Report for 2026-06-27 showing a total revenue of 3,382,000.00 Rs and total expenses of 8,140,616.00 Rs."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:27:03.944898",
+        "message_id": "true_183300681367688@lid_3EB039B166A8ABA283221A",
+        "sender": "183300681367688",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Excel Report - Daily_Report_20260627_0926.xlsx",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "File identified: Daily_Report_20260627_0926.xlsx. This appears to be a reference to an Excel spreadsheet file rather than direct transaction data. Please provide the content of the file or specific transaction details for extraction.",
+            "confidence_score": 0.4,
+            "processed_text": "Daily Report Excel file reference dated 2026-06-27."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:27:07.505999",
+        "message_id": "true_120363427726701686@g.us_3EB0BFD524ECC1925A20FD",
+        "sender": "[Ai_developers_sunfra] 120363427726701686@g.us",
+        "sender_name": "",
+        "is_group": true,
+        "group_name": "Ai_developers_sunfra",
+        "raw_text": "\ud83d\udcca *Daily Financial Report*\n\ud83d\udcc5 2026-06-27 to 2026-06-27\n\n\ud83d\udcc8 *Revenue:* \u20b93,382,000.00\n\ud83d\udcc9 *Expenses:* \u20b98,140,616.00\n\ud83d\udcb0 *Net Profit:* \u20b9-4,758,616.00\n\n*Breakdown by Category:*\n- Unknown Shead: 289.5 Expense\n- Unknown Shead: 35110.0 Feed\n- Unknown Shead: 0.0 Purchase\n- Unknown Shead: 44.0 Sales\n- Shead 1: 700.0 Egg\n- Shead 1: 200.0 Sales\n- Shead 2: 940.0 Egg\n- Shead 2: 0.0 Expense\n- Shead 4: 801.0 Egg\n- Shead 4: 0.0 Expense\n- Shead 4: 1.0 Medicine\n- Shead 4: 983.0 Sales\n- Shead 4, Shead 5, Shead 6: 12600.0 Sales\n- Shead 5: 420.0 Egg\n- Shead 5: 2300.0 Sales\n- Shead 6: 2093.0 Egg\n- Shead 6: 0.0 Expense\n- Shead 6: 0.0 Feed\n- Shead 6: 1.0 Mortality\n- Shead 6: 1600.0 Sales\n- Shead 7: 2063.0 Egg\n- Shead 8: 0.0 Expense\n- Shead 8: 1.0 Mortality\n- Shed 1, Shed 2, Shed 3, Shed 4, Shed 5, Shed 6, Shed 7, Shed 8: 0.0 Purchase\n",
+        "ai_extracted": {
+            "shead_name": "Shead 1, Shead 2, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8",
+            "category": "expense",
+            "quantity": 21721.5,
+            "unit": "pieces",
+            "amount": 11522616.0,
+            "notes": "Daily Financial Report (2026-06-27)\nGrand Total Revenue: 3382000.00\nGrand Total Expenses: 8140616.00\nNet Profit: -4758616.00\n--------------------\nBreakdown:\n- Unknown Shead: 289.5 Expense\n- Unknown Shead: 35110.0 Feed\n- Unknown Shead: 44.0 Sales\n- Shead 1: 700.0 Egg, 200.0 Sales\n- Shead 2: 940.0 Egg\n- Shead 4: 801.0 Egg, 1.0 Medicine, 983.0 Sales\n- Shead 4, 5, 6: 12600.0 Sales\n- Shead 5: 420.0 Egg, 2300.0 Sales\n- Shead 6: 2093.0 Egg, 1.0 Mortality, 1600.0 Sales\n- Shead 7: 2063.0 Egg\n- Shead 8: 1.0 Mortality",
+            "confidence_score": 0.95,
+            "processed_text": "Daily financial report for 2026-06-27. Total revenue 3,382,000.00 and total expenses 8,140,616.00, resulting in a net profit of -4,758,616.00. Detailed breakdowns provided for various sheds and categories including egg, feed, medicine, mortality, and sales."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:27:14.882211",
+        "message_id": "true_120363427726701686@g.us_3EB0E21857F77C4CB927A2",
+        "sender": "[Ai_developers_sunfra] 120363427726701686@g.us",
+        "sender_name": "",
+        "is_group": true,
+        "group_name": "Ai_developers_sunfra",
+        "raw_text": "PDF Report - Daily_Report_20260627_0926.pdf",
+        "ai_extracted": {
+            "shead_name": "Shead 1, Shead 2, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8",
+            "category": "expense",
+            "quantity": 58341.5,
+            "unit": "pieces",
+            "amount": 8140616.0,
+            "notes": "Grand Total Qty: 58341.5 units\nGrand Total Expenses Amt: 8140616.00\nGrand Total Revenue Amt: 3382000.00\n--------------------\nUnknown Shead: 289.5 Expense, 35110.0 Feed, 44.0 Sales\nShead 1: 700.0 Egg, 200.0 Sales\nShead 2: 940.0 Egg\nShead 4: 801.0 Egg, 1.0 Medicine, 983.0 Sales\nShead 4, Shead 5, Shead 6: 12600.0 Sales\nShead 5: 420.0 Egg, 2300.0 Sales\nShead 6: 2093.0 Egg, 1.0 Mortality, 1600.0 Sales\nShead 7: 2063.0 Egg\nShead 8: 1.0 Mortality",
+            "confidence_score": 0.95,
+            "processed_text": "Farm Financial Daily Report for 2026-06-27. Total Revenue: 3,382,000.00. Total Expenses: 8,140,616.00. Net Profit: -4,758,616.00. Various activities recorded across sheds including eggs, sales, feed, medicine, and mortality."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:27:16.923190",
+        "message_id": "true_120363427726701686@g.us_3EB0FC1035640A3125AB90",
+        "sender": "[Ai_developers_sunfra] 120363427726701686@g.us",
+        "sender_name": "",
+        "is_group": true,
+        "group_name": "Ai_developers_sunfra",
+        "raw_text": "Excel Report - Daily_Report_20260627_0926.xlsx",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "File name provided: Daily_Report_20260627_0926.xlsx. No content available for processing.",
+            "confidence_score": 0.1,
+            "processed_text": "The user provided a file name without the actual document content or data to extract."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:27:20.170824",
+        "message_id": "true_917975209680@c.us_3EB0BA0044CADEA8171342",
+        "sender": "917975209680",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "\ud83d\udcca *Daily Financial Report*\n\ud83d\udcc5 2026-06-27 to 2026-06-27\n\n\ud83d\udcc8 *Revenue:* \u20b93,382,000.00\n\ud83d\udcc9 *Expenses:* \u20b98,140,616.00\n\ud83d\udcb0 *Net Profit:* \u20b9-4,758,616.00\n\n*Breakdown by Category:*\n- Unknown Shead: 289.5 Expense\n- Unknown Shead: 35110.0 Feed\n- Unknown Shead: 0.0 Purchase\n- Unknown Shead: 44.0 Sales\n- Shead 1: 700.0 Egg\n- Shead 1: 200.0 Sales\n- Shead 2: 940.0 Egg\n- Shead 2: 0.0 Expense\n- Shead 4: 801.0 Egg\n- Shead 4: 0.0 Expense\n- Shead 4: 1.0 Medicine\n- Shead 4: 983.0 Sales\n- Shead 4, Shead 5, Shead 6: 12600.0 Sales\n- Shead 5: 420.0 Egg\n- Shead 5: 2300.0 Sales\n- Shead 6: 2093.0 Egg\n- Shead 6: 0.0 Expense\n- Shead 6: 0.0 Feed\n- Shead 6: 1.0 Mortality\n- Shead 6: 1600.0 Sales\n- Shead 7: 2063.0 Egg\n- Shead 8: 0.0 Expense\n- Shead 8: 1.0 Mortality\n- Shed 1, Shed 2, Shed 3, Shed 4, Shed 5, Shed 6, Shed 7, Shed 8: 0.0 Purchase\n",
+        "ai_extracted": {
+            "shead_name": "Shead 1, Shead 2, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8",
+            "category": "expense",
+            "quantity": 21721.5,
+            "unit": "pieces",
+            "amount": 11522616.0,
+            "notes": "Daily Financial Report (2026-06-27)\nGrand Total Revenue: 3,382,000.00\nGrand Total Expenses: 8,140,616.00\nNet Profit: -4,758,616.00\n--------------------\nBreakdown:\n- Unknown Shead: 289.5 Expense, 35110.0 Feed, 0.0 Purchase, 44.0 Sales\n- Shead 1: 700.0 Egg, 200.0 Sales\n- Shead 2: 940.0 Egg, 0.0 Expense\n- Shead 4: 801.0 Egg, 0.0 Expense, 1.0 Medicine, 983.0 Sales\n- Shead 4, 5, 6: 12600.0 Sales\n- Shead 5: 420.0 Egg, 2300.0 Sales\n- Shead 6: 2093.0 Egg, 0.0 Expense, 0.0 Feed, 1.0 Mortality, 1600.0 Sales\n- Shead 7: 2063.0 Egg\n- Shead 8: 0.0 Expense, 1.0 Mortality\n- Shed 1-8: 0.0 Purchase",
+            "confidence_score": 0.95,
+            "processed_text": "Daily Financial Report for 2026-06-27 showing revenue of 3,382,000.00, expenses of 8,140,616.00, and a net loss of 4,758,616.00 across various sheds."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:27:33.157360",
+        "message_id": "true_917975209680@c.us_3EB0FF0FD9C791250B120D",
+        "sender": "917975209680",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "PDF Report - Daily_Report_20260627_0926.pdf",
+        "ai_extracted": {
+            "shead_name": "Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8",
+            "category": "expense",
+            "quantity": 58643.5,
+            "unit": "pieces",
+            "amount": 8140616.0,
+            "notes": "Grand Total Qty: 58643.5\nGrand Total Amt: 8140616.00\n--------------------\nRevenue: 3,382,000.00\nExpenses: 8,140,616.00\nNet Profit: -4,758,616.00\nActivity Breakdown:\n- Unknown Shead: 289.5 Expense, 35110.0 Feed, 44.0 Sales\n- Shead 1: 700.0 Egg, 200.0 Sales\n- Shead 2: 940.0 Egg\n- Shead 4: 801.0 Egg, 1.0 Medicine, 983.0 Sales\n- Shead 4, 5, 6: 12600.0 Sales\n- Shead 5: 420.0 Egg, 2300.0 Sales\n- Shead 6: 2093.0 Egg, 1.0 Mortality, 1600.0 Sales\n- Shead 7: 2063.0 Egg\n- Shead 8: 1.0 Mortality",
+            "confidence_score": 0.98,
+            "processed_text": "Farm Financial Report for 2026-06-27 detailing daily P&L, production, sales, and mortality across multiple sheds."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:27:45.341641",
+        "message_id": "true_917975209680@c.us_3EB07DBAE41AC955ED097F",
+        "sender": "917975209680",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Excel Report - Daily_Report_20260627_0926.xlsx",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "File Name: Daily_Report_20260627_0926.xlsx\nStatus: Pending further data input or document analysis.",
+            "confidence_score": 0.3,
+            "processed_text": "Daily report file received for June 27, 2026. Data extraction requires document content."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:29:19.685420",
+        "message_id": "true_183300681367688@lid_3EB03D8F0E059A7651F615",
+        "sender": "183300681367688",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "\ud83d\udcca *Weekly Financial Report*\n\ud83d\udcc5 2026-06-20 to 2026-06-27\n\n\ud83d\udcc8 *Revenue:* \u20b93,618,778.00\n\ud83d\udcc9 *Expenses:* \u20b967,130,312.00\n\ud83d\udcb0 *Net Profit:* \u20b9-63,511,534.00\n\n*Breakdown by Category:*\n- Unknown Shead: 422.6 Egg\n- Unknown Shead: 334.5 Expense\n- Unknown Shead: 35130.0 Feed\n- Unknown Shead: 43.0 Mortality\n- Unknown Shead: 0.0 Purchase\n- Unknown Shead: 116404.0 Sales\n- Unknown Shead: 5857.8 Unknown\n- 5th shed: 559.15 Egg\n- 7th Shead: 400.0 Egg\n- 8th shead: 708.13 \n- Farm 1: 600.0 Sales\n- Farm 2: 200.0 Sales\n- Farm 3: 2200.0 Sales\n- Farm 4: 1100.0 Sales\n- Farm 5: 1000.0 Sales\n- Farm 6: 1200.0 Sales\n- Farm 7: 700.0 Sales\n- Farm 8: 800.0 Sales\n- First Shead: 200.0 Egg\n- Frist: 500.0 Egg\n- Production 1st Shead: 300.0 Egg\n- Second collection: 309.5 Sales\n- Shead 1: 700.0 Egg\n- Shead 1: 200.0 Sales\n- Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8: 116586.0 Expense\n- Shead 1, Shead 2, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8: 127010.0 Expense\n- Shead 2: 1130.1 Egg\n- Shead 2: 0.0 Expense\n- Shead 3: 250.0 Egg\n- Shead 4: 801.0 Egg\n- Shead 4: 0.0 Expense\n- Shead 4: 1.0 Medicine\n- Shead 4: 983.0 Sales\n- Shead 4, Shead 5, Shead 6: 12600.0 Sales\n- Shead 5: 420.0 Egg\n- Shead 5: 2300.0 Sales\n- Shead 6: 2393.0 Egg\n- Shead 6: 0.0 Expense\n- Shead 6: 0.0 Feed\n- Shead 6: 1.0 Mortality\n- Shead 6: 1600.0 Sales\n- Shead 7: 2063.0 Egg\n- Shead 8: 0.0 Expense\n- Shead 8: 1.0 Mortality\n- Shed 1, Shed 2, Shed 3, Shed 4, Shed 5, Shed 6, Shed 7, Shed 8: 0.0 Purchase\n",
+        "ai_extracted": {
+            "shead_name": "Unknown, 5th shed, 7th Shead, 8th shead, Farm 1, Farm 2, Farm 3, Farm 4, Farm 5, Farm 6, Farm 7, Farm 8, First Shead, Frist, Production 1st Shead, Second collection, Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shed 1, Shed 2, Shed 3, Shed 4, Shed 5, Shed 6, Shed 7, Shed 8",
+            "category": "expense",
+            "quantity": 305597.51,
+            "unit": "pieces",
+            "amount": 67130312.0,
+            "notes": "Grand Total Qty: 305597.51 pieces\nGrand Total Amt: 67130312.00\n--------------------\nRevenue: 3618778.00\nExpenses: 67130312.00\nNet Profit: -63511534.00\nBreakdown includes various eggs, feed, mortality, sales, and expense records across listed sheds and farms.",
+            "confidence_score": 0.95,
+            "processed_text": "Weekly Financial Report (2026-06-20 to 2026-06-27). Total Revenue: 3,618,778.00, Total Expenses: 67,130,312.00, Net Profit: -63,511,534.00."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:29:25.196308",
+        "message_id": "true_183300681367688@lid_3EB09A205B0F8E2EF76F8C",
+        "sender": "183300681367688",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "PDF Report - Weekly_Report_20260627_0929.pdf",
+        "ai_extracted": {
+            "shead_name": "Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8, Farm 1, Farm 2, Farm 3, Farm 4, Farm 5, Farm 6, Farm 7, Farm 8",
+            "category": "expense",
+            "quantity": 381666.23,
+            "unit": "various",
+            "amount": 70748908.0,
+            "notes": "Weekly Farm Financial Report (2026-06-20 to 2026-06-27)\nGrand Total Revenue: Rs. 3,618,778.00\nGrand Total Expenses: Rs. 67,130,312.00\nNet Profit: Rs. -63,511,534.00\n--------------------\nLine item details consolidated from multi-page PDF report covering Egg, Sales, Expense, Feed, Mortality, Medicine, and Purchase records across multiple sheds and farms.",
+            "confidence_score": 0.95,
+            "processed_text": "Weekly Farm Financial Report for the period 2026-06-20 to 2026-06-27 showing summary of revenue, expenses, and profit/loss, along with detailed activity breakdown for individual sheds and farms."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:29:37.064437",
+        "message_id": "true_120363427726701686@g.us_3EB08CF38BF0647D68A902",
+        "sender": "[Ai_developers_sunfra] 120363427726701686@g.us",
+        "sender_name": "",
+        "is_group": true,
+        "group_name": "Ai_developers_sunfra",
+        "raw_text": "\ud83d\udcca *Weekly Financial Report*\n\ud83d\udcc5 2026-06-20 to 2026-06-27\n\n\ud83d\udcc8 *Revenue:* \u20b93,618,778.00\n\ud83d\udcc9 *Expenses:* \u20b967,130,312.00\n\ud83d\udcb0 *Net Profit:* \u20b9-63,511,534.00\n\n*Breakdown by Category:*\n- Unknown Shead: 422.6 Egg\n- Unknown Shead: 334.5 Expense\n- Unknown Shead: 35130.0 Feed\n- Unknown Shead: 43.0 Mortality\n- Unknown Shead: 0.0 Purchase\n- Unknown Shead: 116404.0 Sales\n- Unknown Shead: 5857.8 Unknown\n- 5th shed: 559.15 Egg\n- 7th Shead: 400.0 Egg\n- 8th shead: 708.13 \n- Farm 1: 600.0 Sales\n- Farm 2: 200.0 Sales\n- Farm 3: 2200.0 Sales\n- Farm 4: 1100.0 Sales\n- Farm 5: 1000.0 Sales\n- Farm 6: 1200.0 Sales\n- Farm 7: 700.0 Sales\n- Farm 8: 800.0 Sales\n- First Shead: 200.0 Egg\n- Frist: 500.0 Egg\n- Production 1st Shead: 300.0 Egg\n- Second collection: 309.5 Sales\n- Shead 1: 700.0 Egg\n- Shead 1: 200.0 Sales\n- Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8: 116586.0 Expense\n- Shead 1, Shead 2, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8: 127010.0 Expense\n- Shead 2: 1130.1 Egg\n- Shead 2: 0.0 Expense\n- Shead 3: 250.0 Egg\n- Shead 4: 801.0 Egg\n- Shead 4: 0.0 Expense\n- Shead 4: 1.0 Medicine\n- Shead 4: 983.0 Sales\n- Shead 4, Shead 5, Shead 6: 12600.0 Sales\n- Shead 5: 420.0 Egg\n- Shead 5: 2300.0 Sales\n- Shead 6: 2393.0 Egg\n- Shead 6: 0.0 Expense\n- Shead 6: 0.0 Feed\n- Shead 6: 1.0 Mortality\n- Shead 6: 1600.0 Sales\n- Shead 7: 2063.0 Egg\n- Shead 8: 0.0 Expense\n- Shead 8: 1.0 Mortality\n- Shed 1, Shed 2, Shed 3, Shed 4, Shed 5, Shed 6, Shed 7, Shed 8: 0.0 Purchase\n",
+        "ai_extracted": {
+            "shead_name": "Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8, 5th shed, 7th Shead, 8th shead, Farm 1, Farm 2, Farm 3, Farm 4, Farm 5, Farm 6, Farm 7, Farm 8, First Shead, Frist, Production 1st Shead",
+            "category": "expense",
+            "quantity": 307223.96,
+            "unit": "pieces",
+            "amount": 67130312.0,
+            "notes": "Grand Total Qty: 307223.96 pieces\nGrand Total Amt: 67130312.00\n--------------------\nRevenue: 3,618,778.00\nExpenses: 67,130,312.00\nNet Profit: -63,511,534.00\nBreakdown includes mixed records for Egg, Feed, Mortality, Purchase, Sales, and Expense across various sheds.",
+            "confidence_score": 0.9,
+            "processed_text": "Weekly Financial Report (2026-06-20 to 2026-06-27): Revenue 3,618,778.00, Expenses 67,130,312.00, Net Profit -63,511,534.00. Detailed breakdown by shed and category provided."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:29:43.954510",
+        "message_id": "true_183300681367688@lid_3EB086756789A7619987BF",
+        "sender": "183300681367688",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Excel Report - Weekly_Report_20260627_0929.xlsx",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "File Name: Weekly_Report_20260627_0929.xlsx\nStatus: Document reference identified, requires content parsing.",
+            "confidence_score": 0.5,
+            "processed_text": "Weekly Report file identified: Weekly_Report_20260627_0929.xlsx"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:29:51.885765",
+        "message_id": "true_120363427726701686@g.us_3EB040A4BBCF744DCA359F",
+        "sender": "[Ai_developers_sunfra] 120363427726701686@g.us",
+        "sender_name": "",
+        "is_group": true,
+        "group_name": "Ai_developers_sunfra",
+        "raw_text": "PDF Report - Weekly_Report_20260627_0929.pdf",
+        "ai_extracted": {
+            "shead_name": "Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8, Farm 1, Farm 2, Farm 3, Farm 4, Farm 5, Farm 6, Farm 7, Farm 8",
+            "category": "expense",
+            "quantity": 381665.23,
+            "unit": "pieces",
+            "amount": 70748908.0,
+            "notes": "Weekly Farm Financial Report (2026-06-20 to 2026-06-27)\nGrand Total Qty (Units/Aggregated): 381665.23\nGrand Total Amt (Expenses): 70748908.00\n--------------------\nRevenue: 3,618,778.00\nExpenses: 67,130,312.00\nNet Profit: -63,511,534.00\nDetailed Breakdown available in original document OCR",
+            "confidence_score": 0.95,
+            "processed_text": "Weekly farm financial report for the period 2026-06-20 to 2026-06-27. Total revenue Rs 3,618,778.00, total expenses Rs 67,130,312.00, resulting in a net profit of Rs -63,511,534.00. Report contains aggregated data across multiple sheds and farms for egg production, feed, mortality, sales, and expenses."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:29:56.350281",
+        "message_id": "true_917975209680@c.us_3EB0C92BB6E1EC9BEA3156",
+        "sender": "917975209680",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "\ud83d\udcca *Weekly Financial Report*\n\ud83d\udcc5 2026-06-20 to 2026-06-27\n\n\ud83d\udcc8 *Revenue:* \u20b93,618,778.00\n\ud83d\udcc9 *Expenses:* \u20b967,130,312.00\n\ud83d\udcb0 *Net Profit:* \u20b9-63,511,534.00\n\n*Breakdown by Category:*\n- Unknown Shead: 422.6 Egg\n- Unknown Shead: 334.5 Expense\n- Unknown Shead: 35130.0 Feed\n- Unknown Shead: 43.0 Mortality\n- Unknown Shead: 0.0 Purchase\n- Unknown Shead: 116404.0 Sales\n- Unknown Shead: 5857.8 Unknown\n- 5th shed: 559.15 Egg\n- 7th Shead: 400.0 Egg\n- 8th shead: 708.13 \n- Farm 1: 600.0 Sales\n- Farm 2: 200.0 Sales\n- Farm 3: 2200.0 Sales\n- Farm 4: 1100.0 Sales\n- Farm 5: 1000.0 Sales\n- Farm 6: 1200.0 Sales\n- Farm 7: 700.0 Sales\n- Farm 8: 800.0 Sales\n- First Shead: 200.0 Egg\n- Frist: 500.0 Egg\n- Production 1st Shead: 300.0 Egg\n- Second collection: 309.5 Sales\n- Shead 1: 700.0 Egg\n- Shead 1: 200.0 Sales\n- Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8: 116586.0 Expense\n- Shead 1, Shead 2, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8: 127010.0 Expense\n- Shead 2: 1130.1 Egg\n- Shead 2: 0.0 Expense\n- Shead 3: 250.0 Egg\n- Shead 4: 801.0 Egg\n- Shead 4: 0.0 Expense\n- Shead 4: 1.0 Medicine\n- Shead 4: 983.0 Sales\n- Shead 4, Shead 5, Shead 6: 12600.0 Sales\n- Shead 5: 420.0 Egg\n- Shead 5: 2300.0 Sales\n- Shead 6: 2393.0 Egg\n- Shead 6: 0.0 Expense\n- Shead 6: 0.0 Feed\n- Shead 6: 1.0 Mortality\n- Shead 6: 1600.0 Sales\n- Shead 7: 2063.0 Egg\n- Shead 8: 0.0 Expense\n- Shead 8: 1.0 Mortality\n- Shed 1, Shed 2, Shed 3, Shed 4, Shed 5, Shed 6, Shed 7, Shed 8: 0.0 Purchase\n",
+        "ai_extracted": {
+            "shead_name": "Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8, 5th shed, 7th Shead, 8th shead, Farm 1, Farm 2, Farm 3, Farm 4, Farm 5, Farm 6, Farm 7, Farm 8, First Shead, Frist, Production 1st Shead",
+            "category": "expense",
+            "quantity": 308722.96,
+            "unit": "pieces",
+            "amount": 67130312.0,
+            "notes": "Grand Total Qty: 308722.96\nGrand Total Amt: 67130312.00\n--------------------\nRevenue: 3,618,778.00\nExpenses: 67,130,312.00\nNet Profit: -63,511,534.00\nBreakdown includes mixed categories (Egg, Feed, Medicine, Mortality, Sales, Purchase, Expense). Total quantities and financial aggregates provided in the summary above.",
+            "confidence_score": 0.95,
+            "processed_text": "Weekly Financial Report (2026-06-20 to 2026-06-27). Total Revenue: 3,618,778.00. Total Expenses: 67,130,312.00. Net Profit: -63,511,534.00. Detailed breakdown of items across various sheds and farms included."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:30:06.937199",
+        "message_id": "true_120363427726701686@g.us_3EB005B8861157C3E6489F",
+        "sender": "[Ai_developers_sunfra] 120363427726701686@g.us",
+        "sender_name": "",
+        "is_group": true,
+        "group_name": "Ai_developers_sunfra",
+        "raw_text": "Excel Report - Weekly_Report_20260627_0929.xlsx",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "File Name: Weekly_Report_20260627_0929.xlsx\nStatus: Document reference identified, requires actual content for parsing.",
+            "confidence_score": 0.5,
+            "processed_text": "Weekly report Excel file referenced: Weekly_Report_20260627_0929.xlsx"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:30:13.362912",
+        "message_id": "true_917975209680@c.us_3EB0FEA94FD677EE77BA05",
+        "sender": "917975209680",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "PDF Report - Weekly_Report_20260627_0929.pdf",
+        "ai_extracted": {
+            "shead_name": "Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8, Farm 1, Farm 2, Farm 3, Farm 4, Farm 5, Farm 6, Farm 7, Farm 8",
+            "category": "expense",
+            "quantity": 381665.68,
+            "unit": "pieces",
+            "amount": 67130312.0,
+            "notes": "Grand Total Qty: 381665.68\nGrand Total Amt: 67130312.0\n--------------------\nWeekly Report Period: 2026-06-20 to 2026-06-27\nTotal Revenue: 3,618,778.00 Rs\nTotal Expenses: 67,130,312.00 Rs\nNet Profit: -63,511,534.00 Rs\nDetailed breakdown includes various egg counts, sales, and expense logs per farm/shead as provided in the report.",
+            "confidence_score": 0.95,
+            "processed_text": "Weekly Farm Financial Report for the period 2026-06-20 to 2026-06-27. The report covers revenue, expenses, and activity breakdown across multiple sheds."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T09:30:15.824308",
+        "message_id": "true_917975209680@c.us_3EB01AF179C0B67176AD2A",
+        "sender": "917975209680",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Excel Report - Weekly_Report_20260627_0929.xlsx",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "File Name: Weekly_Report_20260627_0929.xlsx\nNote: The provided text contains only a filename; please provide the content or the file for detailed data extraction.",
+            "confidence_score": 0.5,
+            "processed_text": "Weekly report Excel file identified: Weekly_Report_20260627_0929.xlsx"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T15:25:59.111554+05:30",
+        "message_id": "true_183300681367688@lid_3EB01985B33FC7BB16A4CD",
+        "sender": "183300681367688",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "\ud83d\udcca *Daily Financial Report*\n\ud83d\udcc5 2026-06-27 to 2026-06-27\n\n\ud83d\udcc8 *Revenue:* \u20b93,382,000.00\n\ud83d\udcc9 *Expenses:* \u20b9477,149,376.00\n\ud83d\udcb0 *Net Profit:* \u20b9-473,767,376.00\n\n*Breakdown by Category:*\n- Unknown Shead: 289.5 Expense\n- Unknown Shead: 35110.0 Feed\n- Unknown Shead: 0.0 Purchase\n- Unknown Shead: 44.0 Sales\n- Shead 1: 700.0 Egg\n- Shead 1: 200.0 Sales\n- Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8: 116586.0 Expense\n- Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8, 5th shed, 7th Shead, 8th shead, Farm 1, Farm 2, Farm 3, Farm 4, Farm 5, Farm 6, Farm 7, Farm 8, First Shead, Frist, Production 1st Shead: 615946.92 Expense\n- Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8, Farm 1, Farm 2, Farm 3, Farm 4, Farm 5, Farm 6, Farm 7, Farm 8: 1144997.14 Expense\n- Shead 1, Shead 2, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8: 127010.0 Expense\n- Shead 2: 940.0 Egg\n- Shead 2: 0.0 Expense\n- Shead 4: 801.0 Egg\n- Shead 4: 0.0 Expense\n- Shead 4: 1.0 Medicine\n- Shead 4: 983.0 Sales\n- Shead 4, Shead 5, Shead 6: 12600.0 Sales\n- Shead 5: 420.0 Egg\n- Shead 5: 2300.0 Sales\n- Shead 6: 2093.0 Egg\n- Shead 6: 0.0 Expense\n- Shead 6: 0.0 Feed\n- Shead 6: 1.0 Mortality\n- Shead 6: 1600.0 Sales\n- Shead 7: 2063.0 Egg\n- Shead 8: 0.0 Expense\n- Shead 8: 1.0 Mortality\n- Shed 1, Shed 2, Shed 3, Shed 4, Shed 5, Shed 6, Shed 7, Shed 8: 0.0 Purchase\n- Unknown, 5th shed, 7th Shead, 8th shead, Farm 1, Farm 2, Farm 3, Farm 4, Farm 5, Farm 6, Farm 7, Farm 8, First Shead, Frist, Production 1st Shead, Second collection, Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shed 1, Shed 2, Shed 3, Shed 4, She: 305597.51 Expense\n",
+        "ai_extracted": {
+            "shead_name": "Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8, 5th shed, 7th Shead, 8th shead, Farm 1, Farm 2, Farm 3, Farm 4, Farm 5, Farm 6, Farm 7, Farm 8, First Shead, Frist, Production 1st Shead, Second collection, Shed 1, Shed 2, Shed 3, Shed 4, She",
+            "category": "expense",
+            "quantity": 128227.5,
+            "unit": "pieces",
+            "amount": 477149376.0,
+            "notes": "Grand Total Qty: 128227.5 pieces\nGrand Total Amt: 477149376.0\n--------------------\nUnknown Shead: 289.5 Expense\nUnknown Shead: 35110.0 Feed\nUnknown Shead: 44.0 Sales\nShead 1: 700.0 Egg\nShead 1: 200.0 Sales\nShead 1-8 Expense Sum: 116586.0\nMulti-Farm Expense Sum: 615946.92\nMulti-Farm Expense Sum: 1144997.14\nMulti-Shead Expense Sum: 127010.0\nShead 2: 940.0 Egg\nShead 4: 801.0 Egg\nShead 4: 1.0 Medicine\nShead 4: 983.0 Sales\nShead 4-6 Sales Sum: 12600.0\nShead 5: 420.0 Egg\nShead 5: 2300.0 Sales\nShead 6: 2093.0 Egg\nShead 6: 1.0 Mortality\nShead 6: 1600.0 Sales\nShead 7: 2063.0 Egg\nShead 8: 1.0 Mortality\nGeneral Expense Sum: 305597.51",
+            "confidence_score": 0.95,
+            "processed_text": "Daily Financial Report for 2026-06-27. Total Revenue: 3,382,000.00. Total Expenses: 477,149,376.00. Net Profit: -473,767,376.00. Various quantities and expenses across multiple sheds and farms reported."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T15:26:10.999739+05:30",
+        "message_id": "false_120363046205890693@g.us_AC4E6DDCFC9617C9F8A37ACF658ED982_141927630536871@lid",
+        "sender": "[120363046205890693] Jay Sri Ram (141927630536871)",
+        "sender_name": "Jay Sri Ram",
+        "is_group": true,
+        "group_name": "120363046205890693",
+        "raw_text": "500 Trays of production 4th Shead first collection",
+        "ai_extracted": {
+            "shead_name": "Shead 4",
+            "category": "egg",
+            "quantity": 500,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 500 trays\nCollection: First collection",
+            "confidence_score": 0.98,
+            "processed_text": "500 trays of production from Shead 4, first collection"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T15:26:32.786361+05:30",
+        "message_id": "false_120363225998735559@g.us_AC4221A6F30ACB284F0712A1024D41A8_241274569400567@lid",
+        "sender": "[120363225998735559] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "120363225998735559",
+        "raw_text": "Mahendra out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "User message indicates 'Mahendra out', status unclear.",
+            "confidence_score": 0.5,
+            "processed_text": "Mahendra out"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T15:26:53.341179+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB075C9833BC481154C78_184791135711366@lid",
+        "sender": "[120363405469158412] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "120363405469158412",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T15:27:08.724312+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0497AB1197F1CAFBC22_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Namakal lab sample  courier charges",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Purpose: Courier charges for Namakkal lab sample",
+            "confidence_score": 0.9,
+            "processed_text": "Namakkal lab sample courier charges"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T15:27:12.206366+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB09499C9A640D423E4D1_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Courier charges",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Item: Courier charges",
+            "confidence_score": 0.9,
+            "processed_text": "Courier charges"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T15:27:15.295959+05:30",
+        "message_id": "true_183300681367688@lid_3EB0BEAF241331987DA3AD",
+        "sender": "183300681367688",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "\ud83d\udcca *Daily Financial Report*\n\ud83d\udcc5 2026-06-27 to 2026-06-27\n\n\ud83d\udcc8 *Revenue:* \u20b93,382,000.00\n\ud83d\udcc9 *Expenses:* \u20b9477,149,376.00\n\ud83d\udcb0 *Net Profit:* \u20b9-473,767,376.00\n\n*Breakdown by Category:*\n- Unknown Shead: 289.5 Expense\n- Unknown Shead: 35110.0 Feed\n- Unknown Shead: 0.0 Purchase\n- Unknown Shead: 44.0 Sales\n- Shead 1: 700.0 Egg\n- Shead 1: 200.0 Sales\n- Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8: 116586.0 Expense\n- Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8, 5th shed, 7th Shead, 8th shead, Farm 1, Farm 2, Farm 3, Farm 4, Farm 5, Farm 6, Farm 7, Farm 8, First Shead, Frist, Production 1st Shead: 615946.92 Expense\n- Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8, Farm 1, Farm 2, Farm 3, Farm 4, Farm 5, Farm 6, Farm 7, Farm 8: 1144997.14 Expense\n- Shead 1, Shead 2, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8: 127010.0 Expense\n- Shead 2: 940.0 Egg\n- Shead 2: 0.0 Expense\n- Shead 4: 801.0 Egg\n- Shead 4: 0.0 Expense\n- Shead 4: 1.0 Medicine\n- Shead 4: 983.0 Sales\n- Shead 4, Shead 5, Shead 6: 12600.0 Sales\n- Shead 5: 420.0 Egg\n- Shead 5: 2300.0 Sales\n- Shead 6: 2093.0 Egg\n- Shead 6: 0.0 Expense\n- Shead 6: 0.0 Feed\n- Shead 6: 1.0 Mortality\n- Shead 6: 1600.0 Sales\n- Shead 7: 2063.0 Egg\n- Shead 8: 0.0 Expense\n- Shead 8: 1.0 Mortality\n- Shed 1, Shed 2, Shed 3, Shed 4, Shed 5, Shed 6, Shed 7, Shed 8: 0.0 Purchase\n- Unknown, 5th shed, 7th Shead, 8th shead, Farm 1, Farm 2, Farm 3, Farm 4, Farm 5, Farm 6, Farm 7, Farm 8, First Shead, Frist, Production 1st Shead, Second collection, Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shed 1, Shed 2, Shed 3, Shed 4, She: 305597.51 Expense\n",
+        "ai_extracted": {
+            "shead_name": "Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8, 5th shed, 7th Shead, 8th shead, Farm 1, Farm 2, Farm 3, Farm 4, Farm 5, Farm 6, Farm 7, Farm 8, First Shead, Frist, Production 1st Shead, Second collection, Shed 1, Shed 2, Shed 3, Shed 4, Shed 5, Shed 6, Shed 7, Shed 8, She",
+            "category": "expense",
+            "quantity": 117282.5,
+            "unit": "pieces",
+            "amount": 477149376.0,
+            "notes": "Daily Financial Report: 2026-06-27 to 2026-06-27\nGrand Total Qty: 117282.5\nGrand Total Amt: 477149376.0\n--------------------\nRevenue: 3,382,000.00\nExpenses: 477,149,376.00\nNet Profit: -473,767,376.00\nBreakdown includes mixed entries of Expense, Egg, Feed, Sales, Purchase, Medicine, and Mortality across multiple sheds.",
+            "confidence_score": 0.95,
+            "processed_text": "Daily Financial Report for 2026-06-27. Total Revenue: 3,382,000.00. Total Expenses: 477,149,376.00. Net Profit: -473,767,376.00. Detailed breakdown provided for various sheds and categories."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T15:27:15.703304+05:30",
+        "message_id": "true_917975209680@c.us_AC6F4CEB7940B09F66BFCE9C7B6EC522",
+        "sender": "917975209680",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T15:27:16.164825+05:30",
+        "message_id": "true_917975209680@c.us_AC9DE36F3175AE121D0501DD73E0F075",
+        "sender": "917975209680",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T15:28:39.837856+05:30",
+        "message_id": "false_82798413090865@lid_AC2C10455177AF5C2E665554FBF0C816",
+        "sender": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f (82798413090865)",
+        "sender_name": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Hi",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "",
+            "confidence_score": 0.0,
+            "processed_text": "Hi"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T15:30:51.108849+05:30",
+        "message_id": "false_82798413090865@lid_AC4BD66FF869A8B4EE01DDE660BCAD79",
+        "sender": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f (82798413090865)",
+        "sender_name": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 210.0,
+            "notes": "Paid By: Mahalakshmi\nPaid To: Mr Ananda Reddy T\nBank: Kotak Mahindra Bank\nTransaction Ref: 617813954581\nDate: 27 Jun 2026\nGrand Total Amt: 210\nRemarks: N/A",
+            "confidence_score": 1.0,
+            "processed_text": "Payment of 210 INR from Mahalakshmi to Mr Ananda Reddy T via Kotak Mahindra Bank on 27 June 2026. Transaction ID: 617813954581."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T15:30:55.031242+05:30",
+        "message_id": "false_82798413090865@lid_ACFFFD246D0057E62F1D6AE5C7C3E9EA",
+        "sender": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f (82798413090865)",
+        "sender_name": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "Shead 4, Shead 5, Shead 6",
+            "category": "sales",
+            "quantity": 4200,
+            "unit": "trays",
+            "amount": 819000.0,
+            "notes": "Invoice: INV-000960\nCustomer: Shankar naidu\nGrand Total Qty: 4200 trays\nGrand Total Amt: 819000.00\n--------------------\nShead 4: 800 trays at 195 (amount: 156000)\nShead 5: 1800 trays at 195 (amount: 351000)\nShead 6: 900 trays at 195 (amount: 175500)\nShead 6: 700 trays at 195 (amount: 136500)",
+            "confidence_score": 1.0,
+            "processed_text": "Tax Invoice INV-000960 issued to Shankar Naidu by Sunfra Farms on 25/06/2026 for the sale of 4200 trays across Shead 4, Shead 5, and Shead 6, totaling 8,19,000.00 INR."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T15:30:57.958807+05:30",
+        "message_id": "false_82798413090865@lid_AC9181688E78C094674AFC4A036C27CF",
+        "sender": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f (82798413090865)",
+        "sender_name": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 210.0,
+            "notes": "Paid By: Mahalakshmi\nPaid To: Mr Ananda Reddy T\nBank: Kotak Mahindra Bank\nTransaction Ref: 617813954581\nDate: 27 Jun 2026\nGrand Total Amt: 210.0\nRemarks: None",
+            "confidence_score": 1.0,
+            "processed_text": "Payment of 210 INR from Mahalakshmi to Mr Ananda Reddy T via Kotak Mahindra Bank on 27 Jun 2026. Transaction ID: 617813954581."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T15:31:05.016950+05:30",
+        "message_id": "false_82798413090865@lid_ACE9882978915123E881738923E9B772",
+        "sender": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f (82798413090865)",
+        "sender_name": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "sales",
+            "quantity": 100,
+            "unit": "trays",
+            "amount": 100000.0,
+            "notes": "Grand Total Qty: 100 trays\nGrand Total Amt: 100000.00\n--------------------\nShead 1: 100 trays sold at 1000 per tray",
+            "confidence_score": 0.98,
+            "processed_text": "Shead 1 sold 100 trays at 1000 per tray."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T15:32:41.077184+05:30",
+        "message_id": "false_82798413090865@lid_AC39768C5389BE724453B0C2732BE07F",
+        "sender": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f (82798413090865)",
+        "sender_name": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "rupees",
+            "amount": 540.0,
+            "notes": "Paid By: Mahalakshmi .\nPaid To: S Narendra Reddy\nBank: Kotak Mahindra Bank\nTransaction Ref: 617815035589\nDate: 27 Jun 2026\nGrand Total Amt: 540.0\nRemarks: Courier charges",
+            "confidence_score": 1.0,
+            "processed_text": "Payment of 540 INR from Mahalakshmi to S Narendra Reddy via Kotak Mahindra Bank for courier charges on 27 June 2026."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T15:34:28.847734+05:30",
+        "message_id": "false_120363212822578807@g.us_AC21A034AB2DDB7745F3E3D9E2DF9456_241274569400567@lid",
+        "sender": "[Farm Supervisors] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T15:34:49.261423+05:30",
+        "message_id": "false_120363212822578807@g.us_ACBC9F448EBFCCC73BAC6D881DB9478E_241274569400567@lid",
+        "sender": "[Farm Supervisors] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "5th shed\nElectrolyte 1kg Dispatched",
+        "ai_extracted": {
+            "shead_name": "Shead 5",
+            "category": "medicine",
+            "quantity": 1,
+            "unit": "kg",
+            "amount": 0.0,
+            "notes": "Item: Electrolyte\nQuantity: 1 kg",
+            "confidence_score": 0.95,
+            "processed_text": "Electrolyte 1kg dispatched to 5th shed"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T15:38:31.687944+05:30",
+        "message_id": "false_120363225998735559@g.us_AC4245E6C6A03208C44FDEC249B2556B_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Eicher in",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "The image shows a transport truck (Eicher Pro 2049, license plate AP39 TK 0735). No specific transaction details, quantity, or financial data are present.",
+            "confidence_score": 0.9,
+            "processed_text": "Photograph of an Eicher Pro 2049 truck, license plate AP39 TK 0735."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T15:40:57.691402+05:30",
+        "message_id": "false_120363225998735559@g.us_AC52AA95A5F7E645B9533153CB34198D_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
     }
 ]

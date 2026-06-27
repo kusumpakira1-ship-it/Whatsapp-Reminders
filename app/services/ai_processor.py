@@ -41,9 +41,25 @@ RULES:
 5. Extract unit (trays, bags, kg, pieces, rupees).
 6. Extract monetary amount as a float. If there are multiple transactions/items in the document, SUM their amounts and store the grand total.
 7. Any line items, individual transactions, sheds breakdown, dates, invoices, customers, and other dynamic details MUST be formatted as a readable breakdown list separated by escaped newlines (line breaks '\n') so that the data is displayed vertically (going down, not going right) in the database. Crucially, ALSO calculate the Grand Total quantity and Grand Total amount (if applicable) and output them clearly at the top of the 'notes' field (e.g. "Invoice: INV-001\nCustomer: John\nGrand Total Qty: 30 trays\nGrand Total Amt: 3000rs\n--------------------\nShead 1: 10 trays (1000rs)\nShead 2: 20 trays (2000rs)"). Do not write literal newlines in the JSON output; use the escaped '\n' characters.
-8. Store the translated, clean English version in 'processed_text'.
-9. Estimate your confidence (0.0 to 1.0) in 'confidence_score'.
-10. YOU MUST ONLY RETURN VALID JSON. NO MARKDOWN. NO CODE BLOCKS. NO OTHER TEXT.
+8. ONLINE PAYMENTS: If the message, screenshot, or document represents an online payment, bank transfer, UPI transaction (such as a Google Pay, PhonePe, Paytm receipt or screenshot), or bank SMS:
+   - Identify WHO sent the amount (the Sender / Payer / Paid By name).
+   - Identify WHO received the amount (the Recipient / Paid To name).
+   - Identify WHICH bank was used (the Bank Name, e.g. State Bank of India, HDFC, ICICI, etc.).
+   - Extract any transaction reference number or transaction ID.
+   - Extract the transaction date.
+   - Extract any transaction REMARKS, payment description, or notes.
+   - Write these fields clearly at the top of the 'notes' field in this EXACT line-by-line format:
+     Paid By: [Payer Name]
+     Paid To: [Recipient Name]
+     Bank: [Bank Name]
+     Transaction Ref: [Ref Number]
+     Date: [Transaction Date]
+     Grand Total Amt: [Amount]
+     Remarks: [Remarks]
+     (Ensure each field is on its own line separated by escaped '\n' characters).
+9. Store the translated, clean English version in 'processed_text'.
+10. Estimate your confidence (0.0 to 1.0) in 'confidence_score'.
+11. YOU MUST ONLY RETURN VALID JSON. NO MARKDOWN. NO CODE BLOCKS. NO OTHER TEXT.
 
 EXPECTED JSON SCHEMA:
 {

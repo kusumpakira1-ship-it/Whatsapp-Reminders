@@ -19,7 +19,6 @@ class RawMessage(Base):
     timestamp = Column(DateTime, nullable=False)
     message_type = Column(String(50), nullable=False)
     raw_text = Column(Text)
-    media_url = Column(Text)
     media_path = Column(String(500))
     full_webhook_json = Column(JSON, nullable=False)
     created_at = Column(DateTime, default=func.now())

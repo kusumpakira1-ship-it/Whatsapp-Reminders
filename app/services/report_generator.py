@@ -1,6 +1,7 @@
 import os
 import pandas as pd
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, timezone
+IST = timezone(timedelta(hours=5, minutes=30))
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from db.database import SessionLocal
@@ -52,7 +53,7 @@ def generate_custom_report(range_type: str = 'daily'):
     net_profit = total_revenue - total_expense
     
     os.makedirs("/app/media/reports", exist_ok=True)
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+    timestamp = datetime.now(IST).strftime("%Y%m%d_%H%M")
     
     excel_path = f"/app/media/reports/{range_type.capitalize()}_Report_{timestamp}.xlsx"
     pdf_path = f"/app/media/reports/{range_type.capitalize()}_Report_{timestamp}.pdf"
