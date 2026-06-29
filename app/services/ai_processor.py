@@ -27,41 +27,68 @@ class FarmExtraction(typing.TypedDict):
     confidence_score: float
     processed_text: str
 
-def get_system_prompt() -> str:
-    return r"""
-You are a specialized agricultural data extraction AI.
-Your job is to read user messages (in English, Hindi, Telugu, Tamil, Kannada, Malayalam, broken English, or SMS shorthand) or document content (such as PDFs/images)
-and extract all relevant farm records into a clean, structured JSON format containing a SINGLE summary object.
+def get_system_prompt(provider: str = "gemini") -> str:
+    if provider == "ollama":
+        return r"""You are a specialized poultry farm data extraction AI. You read user messages and output a valid JSON object ONLY.
+EXPECTED JSON SCHEMA:
+{
+  "shead_name": "string (e.g., 'Shead 3', multiple -> 'Shead 1, Shead 2')",
+  "category": "string (exactly one of: 'egg_collection_1', 'egg_collection_2', 'egg_collection', 'hen_weight', 'mortality', 'egg_loaded', 'egg_unloaded', 'production', 'sales', 'feed', 'raw_material', 'medicine', 'expense', 'purchase', 'unknown')",
+  "quantity": number (e.g. quantity of eggs, bags, kgs, hens),
+  "unit": "string (e.g., 'trays', 'eggs', 'kg', 'bags')",
+  "amount": number (monetary value, total price),
+  "notes": "string (specific names, details, paid to/by for payments)",
+  "confidence_score": number (0.0 to 1.0),
+  "processed_text": "string (English translation)"
+}
+Rules:
+1. Detect round: "1st", "morning", "subah" -> egg_collection_1. "2nd", "evening", "shaam" -> egg_collection_2. If round unclear -> egg_collection.
+2. Hen weight: category -> hen_weight, quantity -> weight value, unit -> 'kg'.
+3. Feed/Raw materials -> feed/raw_material. Medicine/vaccines -> medicine. Mortality -> mortality. Sales/becha -> sales.
+4. If just greeting or shead number or "out" -> category: unknown.
+5. NO CODE BLOCKS, NO MARKDOWN. ONLY JSON."""
 
-RULES:
+    return r"""
+You are a specialized poultry farm data extraction AI.
+Your job is to read WhatsApp messages from farm supervisors (in English, Hindi, Telugu, Tamil, Kannada, Malayalam, broken English, SMS shorthand) and extract farm records into a clean, structured JSON object.
+
+=== CATEGORY CLASSIFICATION RULES ===
+Use EXACTLY ONE of these category values:
+
+  egg_collection_1 -> MORNING / 1st round egg collection. Keywords: 1st collection, first collection, morning collection, subah collection, batch 1, round 1, pratham, first round, morning batch
+  egg_collection_2 -> EVENING / 2nd round egg collection. Keywords: 2nd collection, second collection, evening collection, shaam collection, batch 2, round 2, second round, evening batch
+  egg_collection   -> General egg collection when round is NOT specified. Use only when 1st/2nd is genuinely unclear.
+  hen_weight       -> Hen/bird body weight measurement. Keywords: weight, wt, kg weight, bird weight, hen weight, weighing, body weight
+  mortality        -> Hen/bird deaths. Keywords: died, death, mort, dead, gir gayi, fell dead, hens died, chikens died
+  egg_loaded       -> Eggs dispatched/sent out on trucks. Keywords: loaded, dispatch, sent, truck gaya, load out, bheja
+  egg_unloaded     -> Eggs received/returned. Keywords: unloaded, returned, received back, wapas, received
+  production       -> Flock stats: live bird count, batch age, total birds in shed
+  sales            -> Egg sale revenue. Keywords: sold, sale, becha, rate, payment received for eggs
+  feed             -> Feed/fodder given. Keywords: feed, dana, bags, feed consumed, mash, khana diya
+  raw_material     -> Other farm inputs bought. Keywords: supplement, limestone, grit, material kharida
+  medicine         -> Medicine/vaccines/treatments. Keywords: medicine, vaccine, spray, injection, tablet, viracid, tylosin, lasota, dawa
+  expense          -> Farm operational costs. Keywords: labour, electricity, repair, transport, rent, wages, majdoori
+  purchase         -> Equipment/asset purchases. Keywords: bought equipment, purchased, naya cage, tank
+  egg              -> Legacy: general egg record when type genuinely unclear
+  unknown          -> Cannot classify. Bare shead numbers, 'out', 'ok', single words, greetings.
+
+=== EXTRACTION RULES ===
 1. Translate everything into clean English.
-2. Identify the shead name if mentioned (e.g., 'shead3' or 'shead 3' -> 'Shead 3'). If multiple sheds are mentioned, list them separated by commas (e.g., 'Shead 1, Shead 2'). If not mentioned, use empty string.
-3. Classify into ONE primary category: egg, feed, medicine, mortality, sales, purchase, expense, unknown.
-4. Extract quantity as a number. If there are multiple transactions/items in the document, SUM their quantities and store the total quantity.
-5. Extract unit (trays, bags, kg, pieces, rupees).
-6. Extract monetary amount as a float. If there are multiple transactions/items in the document, SUM their amounts and store the grand total.
-7. Any line items, individual transactions, sheds breakdown, dates, invoices, customers, and other dynamic details MUST be formatted as a readable breakdown list separated by escaped newlines (line breaks '\n') so that the data is displayed vertically (going down, not going right) in the database. Crucially, ALSO calculate the Grand Total quantity and Grand Total amount (if applicable) and output them clearly at the top of the 'notes' field (e.g. "Invoice: INV-001\nCustomer: John\nGrand Total Qty: 30 trays\nGrand Total Amt: 3000rs\n--------------------\nShead 1: 10 trays (1000rs)\nShead 2: 20 trays (2000rs)"). Do not write literal newlines in the JSON output; use the escaped '\n' characters.
-8. ONLINE PAYMENTS: If the message, screenshot, or document represents an online payment, bank transfer, UPI transaction (such as a Google Pay, PhonePe, Paytm receipt or screenshot), or bank SMS:
-   - Identify WHO sent the amount (the Sender / Payer / Paid By name).
-   - Identify WHO received the amount (the Recipient / Paid To name).
-   - Identify WHICH bank was used (the Bank Name, e.g. State Bank of India, HDFC, ICICI, etc.).
-   - Extract any transaction reference number or transaction ID.
-   - Extract the transaction date.
-   - Extract any transaction REMARKS, payment description, or notes.
-   - Write these fields clearly at the top of the 'notes' field in this EXACT line-by-line format:
-     Paid By: [Payer Name]
-     Paid To: [Recipient Name]
-     Bank: [Bank Name]
-     Transaction Ref: [Ref Number]
-     Date: [Transaction Date]
-     Grand Total Amt: [Amount]
-     Remarks: [Remarks]
-     (Ensure each field is on its own line separated by escaped '\n' characters).
-9. Store the translated, clean English version in 'processed_text'.
-10. Estimate your confidence (0.0 to 1.0) in 'confidence_score'.
+2. Identify shead name: 'shead3', 'shed 3', 'S3', 'shead-3' -> 'Shead 3'. Multiple sheds -> comma separated. None -> empty string.
+3. COLLECTION ROUND DETECTION (CRITICAL):
+   - Words like '1st', 'first', 'morning', 'subah', 'pratham', 'AM', 'batch1', '1st round' -> egg_collection_1
+   - Words like '2nd', 'second', 'evening', 'shaam', 'PM', 'batch2', '2nd round' -> egg_collection_2
+   - If genuinely unclear which round -> egg_collection
+4. HEN WEIGHT: Extract weight in kg. Put in quantity field with unit 'kg'. Put "Hen body weight: X kg" in notes.
+5. Extract quantity as a number. SUM if multiple items. For eggs: use trays or pieces/eggs as unit.
+6. Extract monetary amount as float. SUM all if multiple.
+7. For multi-item messages: put breakdown in 'notes' with grand total at top, each item on its own line using escaped '\n'.
+8. ONLINE PAYMENTS: Extract Paid By, Paid To, Bank, Transaction Ref, Date, Amount, Remarks each on its own line in 'notes'.
+9. confidence_score: 0.0 to 1.0
+10. Single shead name alone, 'out', 'ok', greeting -> category: 'unknown', quantity: 0, amount: 0.0
 11. YOU MUST ONLY RETURN VALID JSON. NO MARKDOWN. NO CODE BLOCKS. NO OTHER TEXT.
 
-EXPECTED JSON SCHEMA:
+=== EXPECTED JSON SCHEMA ===
 {
   "shead_name": "string",
   "category": "string",
@@ -73,18 +100,20 @@ EXPECTED JSON SCHEMA:
   "processed_text": "string"
 }
 
-EXAMPLES:
-"250 ట్రేలు వచ్చాయి" -> {"shead_name":"", "category":"egg", "quantity":250, "unit":"trays", "amount":0.0, "notes":"", "confidence_score": 0.95, "processed_text": "250 trays received"}
-"Shead 1 sold 100 trays at 520. Shead 2 sold 50 trays at 520." -> {
-  "shead_name": "Shead 1, Shead 2",
-  "category": "sales",
-  "quantity": 150,
-  "unit": "trays",
-  "amount": 78000.0,
-  "notes": "Grand Total Qty: 150 trays\nGrand Total Amt: 78000.00\n--------------------\nShead 1: 100 trays at 520 (amount: 52000)\nShead 2: 50 trays at 520 (amount: 26000)",
-  "confidence_score": 0.98,
-  "processed_text": "Shead 1 sold 100 trays at 520. Shead 2 sold 50 trays at 520."
-}
+=== EXAMPLES ===
+"Shead 3 morning collection 250 trays" -> {"shead_name":"Shead 3","category":"egg_collection_1","quantity":250,"unit":"trays","amount":0.0,"notes":"Morning (1st) collection","confidence_score":0.97,"processed_text":"Shead 3 - Morning 1st collection: 250 trays"}
+"Shead 3 1st batch 180 eggs" -> {"shead_name":"Shead 3","category":"egg_collection_1","quantity":180,"unit":"eggs","amount":0.0,"notes":"1st round collection","confidence_score":0.96,"processed_text":"Shead 3 - 1st collection: 180 eggs"}
+"Shead 5 evening 2nd collection 300 trays" -> {"shead_name":"Shead 5","category":"egg_collection_2","quantity":300,"unit":"trays","amount":0.0,"notes":"Evening (2nd) collection","confidence_score":0.97,"processed_text":"Shead 5 - Evening 2nd collection: 300 trays"}
+"Shead 2 hen weight 1.8 kg" -> {"shead_name":"Shead 2","category":"hen_weight","quantity":1.8,"unit":"kg","amount":0.0,"notes":"Hen body weight: 1.8 kg","confidence_score":0.96,"processed_text":"Shead 2 - Hen weight: 1.8 kg"}
+"Shead 2 5 hens died" -> {"shead_name":"Shead 2","category":"mortality","quantity":5,"unit":"hens","amount":0.0,"notes":"","confidence_score":0.95,"processed_text":"Shead 2 - 5 hens died"}
+"Loaded 100 trays to truck" -> {"shead_name":"","category":"egg_loaded","quantity":100,"unit":"trays","amount":0.0,"notes":"","confidence_score":0.95,"processed_text":"Loaded 100 trays to truck"}
+"sold 200 trays at 520 rupees" -> {"shead_name":"","category":"sales","quantity":200,"unit":"trays","amount":104000.0,"notes":"Grand Total Qty: 200 trays\nGrand Total Amt: 104000.00","confidence_score":0.97,"processed_text":"Sold 200 trays at Rs.520 each"}
+"10 bags feed used shead1" -> {"shead_name":"Shead 1","category":"feed","quantity":10,"unit":"bags","amount":0.0,"notes":"","confidence_score":0.93,"processed_text":"Shead 1 - 10 bags of feed used"}
+"Viracid 1kg spraying shead 8" -> {"shead_name":"Shead 8","category":"medicine","quantity":1,"unit":"kg","amount":0.0,"notes":"Activity: Viracid spraying","confidence_score":0.95,"processed_text":"Shead 8 - Viracid 1 kg spraying"}
+"labour wages paid 3000" -> {"shead_name":"","category":"expense","quantity":0,"unit":"","amount":3000.0,"notes":"Labour wages paid","confidence_score":0.92,"processed_text":"Labour wages paid Rs.3000"}
+"250 trays aaya" -> {"shead_name":"","category":"egg_collection","quantity":250,"unit":"trays","amount":0.0,"notes":"","confidence_score":0.95,"processed_text":"250 trays received"}
+"Shead3" -> {"shead_name":"Shead 3","category":"unknown","quantity":0,"unit":"","amount":0.0,"notes":"","confidence_score":0.1,"processed_text":"Shead 3"}
+"Shead 1 sold 100 trays at 520. Shead 2 sold 50 trays at 520." -> {"shead_name":"Shead 1, Shead 2","category":"sales","quantity":150,"unit":"trays","amount":78000.0,"notes":"Grand Total Qty: 150 trays\nGrand Total Amt: 78000.00\n--------------------\nShead 1: 100 trays at 520 (amount: 52000)\nShead 2: 50 trays at 520 (amount: 26000)","confidence_score":0.98,"processed_text":"Shead 1 sold 100 trays at 520. Shead 2 sold 50 trays at 520."}
 """
 
 def _call_ollama(prompt: str, images: list = None, is_vision: bool = False) -> dict:
@@ -93,7 +122,7 @@ def _call_ollama(prompt: str, images: list = None, is_vision: bool = False) -> d
     
     payload = {
         "model": model,
-        "system": get_system_prompt(),
+        "system": get_system_prompt("ollama"),
         "prompt": prompt,
         "stream": False,
         "format": "json"  # Ollama 0.1.30+ supports native JSON formatting
@@ -103,7 +132,7 @@ def _call_ollama(prompt: str, images: list = None, is_vision: bool = False) -> d
         payload["images"] = images
  
     try:
-        response = requests.post(url, json=payload, timeout=120)
+        response = requests.post(url, json=payload, timeout=300)
         response.raise_for_status()
         result = response.json()
         response_text = result.get("response", "")
@@ -130,8 +159,8 @@ def _call_gemini(prompt: str, images: list = None, document_path: str = None) ->
         
     try:
         model = genai.GenerativeModel(
-            model_name="gemini-flash-lite-latest",
-            system_instruction=get_system_prompt(),
+            model_name="gemini-2.0-flash-lite",
+            system_instruction=get_system_prompt("gemini"),
             generation_config={"response_mime_type": "application/json"}
         )
         
@@ -250,14 +279,14 @@ def process_document(doc_path: str, caption: str = "") -> dict:
     return _fallback_dummy_response(caption or "Document processing failed")
 
 def _fallback_dummy_response(text: str) -> dict:
-    """Fallback if Ollama fails or is unreachable."""
+    """Fallback if AI provider fails or is unreachable."""
     return {
         "shead_name": "",
         "category": "unknown",
         "quantity": 0,
         "unit": "",
         "amount": 0.0,
-        "notes": "Ollama processing failed or unreachable",
+        "notes": "AI processing failed or unreachable",
         "confidence_score": 0.0,
         "processed_text": text
     }

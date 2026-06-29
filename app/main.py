@@ -222,16 +222,16 @@ async def waha_webhook(request: Request):
             fresh_db = SessionLocal()
             try:
                 proc_data = ProcessedData(
-                    shead_name=record.get("shead_name", ""),
-                    category=record.get("category", "unknown"),
-                    quantity=record.get("quantity", 0),
-                    unit=record.get("unit", ""),
-                    amount=record.get("amount", 0.0),
-                    notes=record.get("notes", ""),
+                    shead_name=record.get("shead_name") or "",
+                    category=record.get("category") or "unknown",
+                    quantity=record.get("quantity") or 0,
+                    unit=record.get("unit") or "",
+                    amount=record.get("amount") or 0.0,
+                    notes=record.get("notes") or "",
                     sender=display_sender,
                     group_name=group_name_str,
                     source_type=source_type,
-                    confidence_score=record.get("confidence_score", 0.0),
+                    confidence_score=record.get("confidence_score") or 0.0,
                     processed_time=datetime.now(IST).replace(tzinfo=None),
                     message_id=message_id
                 )

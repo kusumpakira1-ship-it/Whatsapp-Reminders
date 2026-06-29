@@ -27,7 +27,24 @@ class ProcessedData(Base):
     __tablename__ = "processed_data"
     id = Column(Integer, primary_key=True, index=True)
     shead_name = Column(String(255))
-    category = Column(Enum('egg', 'feed', 'medicine', 'mortality', 'sales', 'purchase', 'expense', 'unknown'), default='unknown')
+    category = Column(Enum(
+        'egg_collection_1', # Morning (1st) egg collection
+        'egg_collection_2', # Evening (2nd) egg collection
+        'egg_collection',   # General egg collection (unspecified round)
+        'hen_weight',       # Hen body weight measurement
+        'mortality',        # Hen/bird deaths
+        'egg_loaded',       # Eggs dispatched / loaded onto trucks
+        'egg_unloaded',     # Eggs received / returned / unloaded
+        'production',       # General flock stats
+        'sales',            # Egg sales revenue
+        'feed',             # Feed / fodder given
+        'raw_material',     # Other farm input materials
+        'medicine',         # Medicine / vaccines / treatments
+        'expense',          # General operational expenses
+        'purchase',         # Equipment / asset purchases
+        'egg',              # Legacy general egg record
+        'unknown'           # Cannot be classified
+    ), default='unknown')
     quantity = Column(DECIMAL(15, 2))
     unit = Column(String(50))
     amount = Column(DECIMAL(15, 2), default=0.0)

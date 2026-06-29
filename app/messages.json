@@ -4781,5 +4781,4011 @@
         "group_name": "Gate Manager",
         "raw_text": "",
         "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T15:47:15.897871+05:30",
+        "message_id": "false_120363212822578807@g.us_AC9101F4C5A6D97F5DFF730D31973C9F_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T15:47:25.154137+05:30",
+        "message_id": "false_120363212822578807@g.us_AC4B4900CBA0EF665F34CFFAB804B083_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 8 \nSpreying",
+        "ai_extracted": {
+            "shead_name": "Shead 8",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Activity: Spraying",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 8: Spraying"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T15:47:35.815807+05:30",
+        "message_id": "false_120363225998735559@g.us_AC37CBE73931DDD20C416D03D83B4DB7_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "In",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Image shows a delivery person on a motorcycle carrying a package. No farm data, invoices, or financial details are visible in the image or the caption.",
+            "confidence_score": 0.2,
+            "processed_text": "An image of a man on a motorcycle carrying a delivery box. No agricultural data found."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T15:54:25.858766+05:30",
+        "message_id": "false_120363212822578807@g.us_ACBA956FFA57E4457E972A4543F9ED80_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T15:54:32.020470+05:30",
+        "message_id": "false_120363212822578807@g.us_ACAC8D70FC89170C229D4AAB3EFA7D26_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 7",
+        "ai_extracted": {
+            "shead_name": "Shead 7",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Data insufficient to determine category or specific action related to Shead 7.",
+            "confidence_score": 0.4,
+            "processed_text": "Shead 7 identified."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T15:54:41.215986+05:30",
+        "message_id": "false_120363212822578807@g.us_ACEAEFA55FEE57E150B7038605C355BB_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T16:07:35.603210+05:30",
+        "message_id": "false_120363212822578807@g.us_AC5972504D7F683576E2912CDC04D12C_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Damage",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Damage recorded.",
+            "confidence_score": 0.5,
+            "processed_text": "Damage recorded."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:08:04.175404+05:30",
+        "message_id": "false_120363225998735559@g.us_AC127A7DD765FF850365BB7B9069640E_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Licious driver out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Image contains individuals; no farm records or financial transactions visible. Caption: Licious driver out",
+            "confidence_score": 0.1,
+            "processed_text": "Image depicts two men on a motorcycle and a woman standing in the background at an outdoor location. No agricultural or financial data present."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:08:20.672492+05:30",
+        "message_id": "false_120363212822578807@g.us_ACD14F9DFF832E794D38431D024BABAD_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3 water spraying motor",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "expense",
+            "quantity": 1,
+            "unit": "piece",
+            "amount": 0.0,
+            "notes": "Item: Water spraying motor\nGrand Total Qty: 1",
+            "confidence_score": 0.95,
+            "processed_text": "Shead 3 water spraying motor"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:21:27.818349+05:30",
+        "message_id": "false_120363212822578807@g.us_AC68971C50723398E190FCDAF8DD38DA_241274569400567@lid",
+        "sender": "[Farm Supervisors] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Viracid 1kg Dispatched for spray \n1234678 sheds",
+        "ai_extracted": {
+            "shead_name": "1234678",
+            "category": "expense",
+            "quantity": 1,
+            "unit": "kg",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 1 kg\n--------------------\nItem: Viracid (dispatched for spray)",
+            "confidence_score": 0.9,
+            "processed_text": "Viracid 1kg Dispatched for spray for sheds 1234678"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:22:46.911644+05:30",
+        "message_id": "false_120363046205890693@g.us_ACA4938776919C9F32E6CE8C4E44C465_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] Jay Sri Ram (141927630536871)",
+        "sender_name": "Jay Sri Ram",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "564.5 Trays of production 5th Shead",
+        "ai_extracted": {
+            "shead_name": "Shead 5",
+            "category": "egg",
+            "quantity": 564.5,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 564.5 trays\n--------------------\nProduction recorded for Shead 5.",
+            "confidence_score": 0.98,
+            "processed_text": "564.5 Trays of production 5th Shead"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:23:44.134478+05:30",
+        "message_id": "false_120363046205890693@g.us_AC2F7CCAA7CE9D097A63F66479874255_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] Jay Sri Ram (141927630536871)",
+        "sender_name": "Jay Sri Ram",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "88.21 Trays of production 7th Shead Second collection",
+        "ai_extracted": {
+            "shead_name": "Shead 7",
+            "category": "egg",
+            "quantity": 88.21,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 88.21 trays\nCollection: Second collection",
+            "confidence_score": 0.95,
+            "processed_text": "88.21 trays of egg production from Shead 7, second collection."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:25:08.333663+05:30",
+        "message_id": "false_120363212822578807@g.us_ACA9743C441202EA8EB2C3F5CD6B72BC_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead1",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 1"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:30:54.578471+05:30",
+        "message_id": "false_120363212822578807@g.us_ACE55FF30D119C067B1D913404CE4A73_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 8\nViracid 1kg spreying",
+        "ai_extracted": {
+            "shead_name": "Shead 8",
+            "category": "medicine",
+            "quantity": 1,
+            "unit": "kg",
+            "amount": 0.0,
+            "notes": "Activity: Viracid spraying\nShead: 8\nQuantity: 1kg",
+            "confidence_score": 0.95,
+            "processed_text": "Shead 8, Viracid 1kg spraying"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:32:34.476146+05:30",
+        "message_id": "false_120363212822578807@g.us_ACC58CE964990575A02737AF1088C4BB_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead1 water spraying",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Activity: Water spraying",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 1 water spraying"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:33:17.158456+05:30",
+        "message_id": "false_120363225998735559@g.us_AC0CE12398404BE5EDC7588C6577B6B9_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T16:33:24.542675+05:30",
+        "message_id": "false_120363225998735559@g.us_AC3065B3E78BFECC18415BEC78E67D08_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Pratap Reddy vehicle in",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Vehicle identification: Pratap Reddy vehicle\nLocation: Chenchugudi-NVpalli, Veperi, Andhra Pradesh\nDate/Time: Jun 27, 2026, 4:31:48 PM",
+            "confidence_score": 0.7,
+            "processed_text": "Photograph of a commercial vehicle (GOGO electric loader) belonging to Pratap Reddy, taken on June 27, 2026, in Chenchugudi-NVpalli, Veperi, Andhra Pradesh."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:34:08.153971+05:30",
+        "message_id": "false_120363212822578807@g.us_ACF8E52F97A54CF33B1C94A956B51ECE_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 7",
+        "ai_extracted": {
+            "shead_name": "Shead 7",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "",
+            "confidence_score": 0.7,
+            "processed_text": "Shead 7"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:34:11.860906+05:30",
+        "message_id": "false_120363212822578807@g.us_AC906EA0A221C0A56B6863549E47A362_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T16:37:48.880518+05:30",
+        "message_id": "false_120363212822578807@g.us_ACEA53C0C76553A0550620B8E5489AFE_241274569400567@lid",
+        "sender": "[Farm Supervisors] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "1234678 sheds\nVirarid 250grms Dispatched for tomorrow",
+        "ai_extracted": {
+            "shead_name": "Shead 1234678",
+            "category": "medicine",
+            "quantity": 7,
+            "unit": "cans",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 7 cans\n--------------------\nItem: Virarid 250grms\nQuantity: 7 units (cans visible in image)\nNote: Dispatched for tomorrow",
+            "confidence_score": 0.85,
+            "processed_text": "7 cans of Virarid 250grms dispatched for Shead 1234678 for tomorrow."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:39:37.093591+05:30",
+        "message_id": "false_120363212822578807@g.us_AC838D786C16982E9E4763AC7FF69876_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 3 mentioned."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:39:49.446006+05:30",
+        "message_id": "false_120363212822578807@g.us_AC32EAF68F4AB34CB70628CB27085C7C_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T16:40:07.700060+05:30",
+        "message_id": "false_120363212822578807@g.us_AC3E6FBBCF4337470C442950ACCC130C_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead viracid 1kg",
+        "ai_extracted": {
+            "shead_name": "Shead 2",
+            "category": "medicine",
+            "quantity": 1,
+            "unit": "kg",
+            "amount": 0.0,
+            "notes": "Item: Viracid\nQuantity: 1kg\nShead: Shead 2",
+            "confidence_score": 0.95,
+            "processed_text": "Shead 2, Viracid 1kg"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:40:10.963075+05:30",
+        "message_id": "false_120363212822578807@g.us_AC0AA0F016975036B59004640394CE7D_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead viracid 1kg",
+        "ai_extracted": {
+            "shead_name": "Shead 4",
+            "category": "medicine",
+            "quantity": 1,
+            "unit": "kg",
+            "amount": 0.0,
+            "notes": "Item: Viracid\nQuantity: 1kg\nShead: 4",
+            "confidence_score": 0.95,
+            "processed_text": "Shead 4 viracid 1kg"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:40:45.009167+05:30",
+        "message_id": "false_120363225998735559@g.us_ACE592815789D0BC69417D4D131DFC50_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T16:44:16.009740+05:30",
+        "message_id": "false_120363212822578807@g.us_AC0E4A39F484A9B63F0C0A963B087796_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 3"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:45:04.785520+05:30",
+        "message_id": "false_120363212822578807@g.us_AC583ED284F72CD1C44E5B84CA31EEF3_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6 \nViracid 1kg spreying",
+        "ai_extracted": {
+            "shead_name": "Shead 6",
+            "category": "medicine",
+            "quantity": 1,
+            "unit": "kg",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 1 kg\n--------------------\nActivity: Viracid spraying",
+            "confidence_score": 0.95,
+            "processed_text": "Shead 6: Viracid 1kg spraying"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:52:13.011553+05:30",
+        "message_id": "false_207627359363311@lid_ACE6A9B2FCC6AB71708B187627A6C895",
+        "sender": "Poorna (207627359363311)",
+        "sender_name": "Poorna",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Hii",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "",
+            "confidence_score": 0.1,
+            "processed_text": "Hi"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:52:15.386769+05:30",
+        "message_id": "false_207627359363311@lid_ACB244F75DC7F4567F3F6D736F4DBE79",
+        "sender": "Poorna (207627359363311)",
+        "sender_name": "Poorna",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "We will go for tea break",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Non-agricultural related message.",
+            "confidence_score": 1.0,
+            "processed_text": "We will go for tea break"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:53:08.122174+05:30",
+        "message_id": "false_120363046205890693@g.us_ACE1A2E866C9EB61684AEAAA628C108C_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] Jay Sri Ram (141927630536871)",
+        "sender_name": "Jay Sri Ram",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "703.5 Trays of production 8th Shead",
+        "ai_extracted": {
+            "shead_name": "Shead 8",
+            "category": "egg",
+            "quantity": 703.5,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Production data recorded.\nGrand Total Qty: 703.5 trays",
+            "confidence_score": 0.95,
+            "processed_text": "703.5 Trays of egg production recorded for Shead 8."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:53:20.407246+05:30",
+        "message_id": "false_120363212822578807@g.us_AC73E74BBAFB2E5CE401D7B15D2A114F_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead viracid 1kg spreying",
+        "ai_extracted": {
+            "shead_name": "Shead 4",
+            "category": "medicine",
+            "quantity": 1,
+            "unit": "kg",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 1kg\nGrand Total Amt: 0.00\n--------------------\nActivity: Spraying Viracid",
+            "confidence_score": 0.98,
+            "processed_text": "Shead 4 Viracid 1kg spraying"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:53:55.647672+05:30",
+        "message_id": "false_120363046205890693@g.us_AC1196AC334B51A59A39E1DE7403F289_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] Jay Sri Ram (141927630536871)",
+        "sender_name": "Jay Sri Ram",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "215.5 Trays of production 6th Shead second collection",
+        "ai_extracted": {
+            "shead_name": "Shead 6",
+            "category": "egg",
+            "quantity": 215.5,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Collection: Second collection\nGrand Total Qty: 215.5 trays",
+            "confidence_score": 0.95,
+            "processed_text": "215.5 trays of production, Shead 6, second collection"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:53:57.782273+05:30",
+        "message_id": "true_207627359363311@lid_ACF2D13665796D7FD7EF9F417653A580",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (207627359363311)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Come",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No valid agricultural data found in the input.",
+            "confidence_score": 0.1,
+            "processed_text": "Come"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:53:58.344212+05:30",
+        "message_id": "false_120363212822578807@g.us_ACEBAD444E05BA329686341F98507A86_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T16:54:54.921917+05:30",
+        "message_id": "false_120363212822578807@g.us_AC55A9E6A80EDD4D6397039E8541019E_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead water with viracid 1kg spreying",
+        "ai_extracted": {
+            "shead_name": "Shead 2",
+            "category": "medicine",
+            "quantity": 1,
+            "unit": "kg",
+            "amount": 0.0,
+            "notes": "Activity: Water with Viracid spraying\nGrand Total Qty: 1 kg",
+            "confidence_score": 0.98,
+            "processed_text": "Shead 2 water with Viracid 1kg spraying"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:56:21.092459+05:30",
+        "message_id": "false_120363212822578807@g.us_ACAFE1FF29CF5CF3234F773B744D49CC_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 7",
+        "ai_extracted": {
+            "shead_name": "Shead 7",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Shead identified as 7.",
+            "confidence_score": 0.6,
+            "processed_text": "Shead 7"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:56:40.867939+05:30",
+        "message_id": "false_120363212822578807@g.us_AC0D16737E2EDB548BDA3B505EBD04AE_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T16:56:50.134701+05:30",
+        "message_id": "true_207627359363311@lid_AC56FD564F1CAF3A8B80B8DFAB170974",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (207627359363311)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Come let's go",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "",
+            "confidence_score": 0.1,
+            "processed_text": "Come let's go"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:58:06.233382+05:30",
+        "message_id": "false_120363046205890693@g.us_ACA3570B680A41724CF811F3CACDA4CC_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] Jay Sri Ram (141927630536871)",
+        "sender_name": "Jay Sri Ram",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "( Local Sale) \nShead Big eggs 26 Trays\n3rd Shead Big eggs 18 Trays\n4th Shead good eggs 60 Trays\nTotal 104 Trays \nPaper trays 30 Piece\nSend To Local Sale",
+        "ai_extracted": {
+            "shead_name": "Shead Big, Shead 3, Shead 4",
+            "category": "sales",
+            "quantity": 104,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 104 trays\n--------------------\nShead Big eggs: 26 trays\nShead 3 Big eggs: 18 trays\nShead 4 good eggs: 60 trays\nPaper trays: 30 pieces\nRecipient: Local Sale",
+            "confidence_score": 0.95,
+            "processed_text": "Local Sale: Shead Big eggs 26 Trays, Shead 3 Big eggs 18 Trays, Shead 4 good eggs 60 Trays. Total 104 Trays. Paper trays 30 Piece. Sent to Local Sale."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:58:21.113299+05:30",
+        "message_id": "true_207627359363311@lid_ACB828111FED28E4B68E2E81890CFB87",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (207627359363311)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Oye",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "",
+            "confidence_score": 0.1,
+            "processed_text": "Oye"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:58:44.774545+05:30",
+        "message_id": "false_207627359363311@lid_AC64052B7D58A6A3A7AE1CF818B7C3E2",
+        "sender": "Poorna (207627359363311)",
+        "sender_name": "Poorna",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Cm",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Insufficient information provided.",
+            "confidence_score": 0.1,
+            "processed_text": "Cm"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T16:58:56.910200+05:30",
+        "message_id": "true_207627359363311@lid_AC8D1CED23A717EF9F03C79E414A6B5F",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (207627359363311)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Cm",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Insufficient data provided in the message.",
+            "confidence_score": 0.2,
+            "processed_text": "Cm"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:00:15.956411+05:30",
+        "message_id": "true_176531796189398@lid_AC5847DCCE601EFB775F6B307F65697D",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (176531796189398)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Come",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No valid agricultural data found in message.",
+            "confidence_score": 0.1,
+            "processed_text": "Come"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:00:45.549748+05:30",
+        "message_id": "true_176531796189398@lid_ACBE020A25264C5A1FA761BCEBA8EB5C",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (176531796189398)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Oye",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Invalid or incomplete input provided.",
+            "confidence_score": 0.1,
+            "processed_text": "Oye"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:01:59.913574+05:30",
+        "message_id": "true_176531796189398@lid_AC48626D50B180999570758E4E028B47",
+        "sender": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95 (176531796189398)",
+        "sender_name": "\ud83d\udc96 II.. Kusum ..II \ud83d\udc95",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Hello",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "User greeting.",
+            "confidence_score": 1.0,
+            "processed_text": "Hello"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:02:17.279806+05:30",
+        "message_id": "false_120363212822578807@g.us_AC62C93E633ECFA481BE5E4AE3EA46C0_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 3"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:02:26.276366+05:30",
+        "message_id": "false_120363212822578807@g.us_AC140E6F847641B63AC23E8F5BD3B154_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6 \nSpreying",
+        "ai_extracted": {
+            "shead_name": "Shed 6",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Activity: Spraying",
+            "confidence_score": 0.9,
+            "processed_text": "Shed 6 Spraying"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:06:17.792598+05:30",
+        "message_id": "false_120363225998735559@g.us_ACC89060EC24BFE05B0B2375BBBE0F56_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Narendra in",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Image of Mahindra Zor Grand electric vehicle. User provided caption: Narendra in. Location: Chenchugudi-NVpalli, Veperi, Andhra Pradesh. Date: Jun 27, 2026.",
+            "confidence_score": 0.8,
+            "processed_text": "Photograph of a Mahindra Zor Grand electric three-wheeler at Chenchugudi-NVpalli, Veperi, Andhra Pradesh on June 27, 2026. Caption provided: 'Narendra in'."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:07:24.803047+05:30",
+        "message_id": "false_120363225998735559@g.us_ACB46202876F2DA51FDD06AD60302222_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Narendra out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Image contains a person on a motorcycle at a farm location. Caption: Narendra out",
+            "confidence_score": 0.9,
+            "processed_text": "Narendra out"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:10:01.733154+05:30",
+        "message_id": "false_120363225998735559@g.us_AC26892DE1189870806D65483F40DDBA_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Sparying",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Activity: Spraying",
+            "confidence_score": 0.85,
+            "processed_text": "Spraying"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:10:54.328715+05:30",
+        "message_id": "false_120363212822578807@g.us_ACD6D361412B77EC5D533BBE72DE15C6_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 8 \nSpreying",
+        "ai_extracted": {
+            "shead_name": "Shead 8",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Activity: Spraying",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 8 spraying activity."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:12:25.880085+05:30",
+        "message_id": "false_120363212822578807@g.us_ACD46804DC57A9D7F97A7AE0CEC32136_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "Shead 1, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8",
+            "category": "egg",
+            "quantity": 3432,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Date: 07-06-26\nGrand Total Qty: 3432 trays\n--------------------\nShead 1: 500 trays\nShead 4: 500 trays\nShead 5: 564.5 + 11 trays = 575.5 trays\nShead 6: 400 + 215.5 + 15 eggs = 615.5 trays (approx 616)\nShead 7: 500 + 88.21 trays + 21 eggs = 588.21 trays\nShead 8: 713.5 + 12.5 + 21 trays = 747 trays\nOther: Dirty eggs 200 trays\n(Calculated total sum of all items)",
+            "confidence_score": 0.9,
+            "processed_text": "Farm egg production log for 07-06-26. Records for various sheds including big, small, and damaged eggs. Total trays calculated from row data."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:13:21.603013+05:30",
+        "message_id": "false_120363212822578807@g.us_ACC04B277FC2EAFC0049BF6BABDC71C2_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead getwaals",
+        "ai_extracted": {
+            "shead_name": "Shead 4",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Items received in Shead 4",
+            "confidence_score": 0.85,
+            "processed_text": "Received items in Shead 4"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:14:12.936144+05:30",
+        "message_id": "false_120363212822578807@g.us_ACA2DC0973987335A3F372A1788C14FB_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead getwaals",
+        "ai_extracted": {
+            "shead_name": "Shead 4",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Information indicates activity in Shead 4.",
+            "confidence_score": 0.85,
+            "processed_text": "Shead 4 activity."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:21:33.450274+05:30",
+        "message_id": "false_120363212822578807@g.us_AC3BAE04CA505A379072E1C52980AFC7_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 8 \nBering damage",
+        "ai_extracted": {
+            "shead_name": "Shead 8",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Reported damage to bearing in Shead 8.",
+            "confidence_score": 0.85,
+            "processed_text": "Shead 8: Bearing damage"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:25:46.140929+05:30",
+        "message_id": "false_120363225998735559@g.us_AC14A10FD223D01773ADB21FF93FBB63_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Lecious labours out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Image shows a group of farm labourers. No specific financial or inventory data found in the image or text.",
+            "confidence_score": 0.5,
+            "processed_text": "Group of farm laborers in Chenchugudi-NVpalli, Andhra Pradesh, dated June 27, 2026."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:31:23.618089+05:30",
+        "message_id": "false_120363212822578807@g.us_AC526A984F561C95AE069EB3953CA0EA_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead1",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 1"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:33:15.778809+05:30",
+        "message_id": "false_120363225998735559@g.us_ACE10D4AFE842FB00CD73B3F4A7EFD02_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Electrical panel bord out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Image shows a new Toyota car parked in front of a poultry shed premises. No specific farm transaction or electrical panel data is visible in the image. User caption provided: Electrical panel bord out.",
+            "confidence_score": 0.5,
+            "processed_text": "Image shows a car with a temporary license plate parked in front of a poultry facility. No relevant agricultural or financial data found."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:35:15.479742+05:30",
+        "message_id": "false_120363212822578807@g.us_AC0EC8930D374AD2D5669F76E484EA5E_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 5",
+        "ai_extracted": {
+            "shead_name": "Shead 5",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Shead 5 mentioned without context.",
+            "confidence_score": 0.6,
+            "processed_text": "Shead 5"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:35:21.098911+05:30",
+        "message_id": "false_120363212822578807@g.us_ACA5359F83E29EE684996700C03AA565_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Data captured from farm record book, 80th week. Contains mortality rates, feed prices, and egg production logs across multiple days.\nDetailed log summary includes:\n- Dates: 18/6/26 to 26/6/26\n- Mortality values logged daily.\n- Feed prices ranging from 21253 to 21293.\n- Egg production efficiency percentages (e.g., 80%, 83.1%).",
+            "confidence_score": 0.85,
+            "processed_text": "Farm inventory and production records for the 80th week including mortality, feed pricing, and egg laying percentages."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:35:26.172971+05:30",
+        "message_id": "false_120363225998735559@g.us_AC5A0B381E68C5730B59577EE3F8E524_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "purchase",
+            "quantity": 35510,
+            "unit": "kg",
+            "amount": 0.0,
+            "notes": "RST No: 124\nParty name: VNL MINERALS\nMaterial: STONE GRID\nVehicle No: AP39TX7159\nGross weight: 49800 Kg\nTare weight: 14290 Kg\nNet weight: 35510 Kg\nDate: 27/06/2026\nGrand Total Qty: 35510 kg\nGrand Total Amt: 0.0",
+            "confidence_score": 1.0,
+            "processed_text": "Weighment slip for VNL Minerals, Stone Grid material, Net weight 35510 kg, Date 27/06/2026, Vehicle AP39TX7159."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:36:16.615890+05:30",
+        "message_id": "false_120363212822578807@g.us_ACEBCA8B0D9882DD08222BFE4553F45C_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "mortality",
+            "quantity": 38,
+            "unit": "pieces",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 38 (Mortality Culls)\n--------------------\nDaily Mortality Culls Breakdown:\n22/6/26: 3\n23/6/26: 3\n24/6/26: 3\n25/6/26: 3\n26/6/26: 6\n27/6/26: 6\n16/6/26: 8\n18/6/26: 3\n19/6/26: 3",
+            "confidence_score": 0.9,
+            "processed_text": "Farm daily log showing egg production and mortality data for June 2026. Cumulative mortality culls summed from provided table rows."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:36:19.693867+05:30",
+        "message_id": "false_120363212822578807@g.us_AC88E12E1B30E2769BF7F57FCEE5755A_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 7",
+        "ai_extracted": {
+            "shead_name": "Shead 7",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Shead 7 identified.",
+            "confidence_score": 0.85,
+            "processed_text": "Shead 7"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:42:26.059339+05:30",
+        "message_id": "false_120363212822578807@g.us_AC0F0AB5FDCB78BFA7F83A0AEFAE353E_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6",
+        "ai_extracted": {
+            "shead_name": "Shead 6",
+            "category": "mortality",
+            "quantity": 54,
+            "unit": "pieces",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 54 mortality\n--------------------\n22/6/26: 4 mortality\n23/6/26: 7 mortality\n24/6/26: 7 mortality\n25/6/26: 16 mortality\n26/6/26: 10 mortality\n27/6/26: 10 mortality",
+            "confidence_score": 0.95,
+            "processed_text": "Farm mortality data for Shead 6 from 22/6/26 to 27/6/26: Total 54 birds lost."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:42:43.134916+05:30",
+        "message_id": "false_120363212822578807@g.us_AC85AAC047B7EFCA45742DB048ED65E4_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 8",
+        "ai_extracted": {
+            "shead_name": "Shead 8",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Daily record log for dates 24/06/26 to 27/06/26.\n--------------------\n24/06/26: Feed 708.7 kg, Mortality 1.7, Prod 709.14\n25/06/26: Feed 708.17 kg, Mortality 1.21, Prod 710.08\n26/06/26: Feed 706 kg, Mortality 2, Prod 708.13\n27/06/26: Feed 709 kg, Mortality 2, Prod 713.05",
+            "confidence_score": 0.85,
+            "processed_text": "Production and mortality log for Shead 8 spanning June 24th to June 27th, 2026."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:50:08.549123+05:30",
+        "message_id": "false_120363225998735559@g.us_ACA46A1751781B349F480B69ABB62DCA_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Eggoz out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Image contains a person on a motorcycle at a location in Chenchugudi-NVpalli, Veperi, Andhra Pradesh. No specific farm transaction or financial data found in the image or provided caption 'Eggoz out'.",
+            "confidence_score": 0.3,
+            "processed_text": "Person on motorcycle at Chenchugudi-NVpalli, Veperi, Andhra Pradesh on June 27, 2026."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:50:26.825222+05:30",
+        "message_id": "false_120363225998735559@g.us_AC32654FFAF5C1591E03A8C64C4DEE3B_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Stonegrite unload charges",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 3196.0,
+            "notes": "Paid By: Not specified\nPaid To: Sunfra Farms\nBank: State Bank of India (SBI)\nTransaction Ref: Not specified\nDate: 27 June 2026\nGrand Total Amt: 3196.0\nRemarks: Stonegrite unload charges",
+            "confidence_score": 0.95,
+            "processed_text": "Payment successful for Stonegrite unload charges to Sunfra Farms via State Bank of India account ending in 5698 on 27 June 2026."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:52:10.171452+05:30",
+        "message_id": "false_120363212822578807@g.us_AC1CE5BEC07C7F85C31B239329400210_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No transaction or agricultural data found in the provided image. The image shows plumbing and pipes.",
+            "confidence_score": 0.9,
+            "processed_text": "An image showing plumbing pipes with valves, taken on 27-Jun-2026 in Chenchugudi-NVpalli, Veperi, Andhra Pradesh."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:52:12.786879+05:30",
+        "message_id": "false_120363212822578807@g.us_ACFB10E587C050D748C90F30ED0B24B1_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 7",
+        "ai_extracted": {
+            "shead_name": "Shead 7",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Data refers to Shead 7, but no further details were provided.",
+            "confidence_score": 0.6,
+            "processed_text": "Shead 7 mentioned"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:53:19.466170+05:30",
+        "message_id": "false_120363212822578807@g.us_ACC189B8337AEB58ACF4B7975B242664_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 7",
+        "ai_extracted": {
+            "shead_name": "Shead 7",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No quantities or monetary values provided.",
+            "confidence_score": 0.85,
+            "processed_text": "Shead 7"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:53:42.675614+05:30",
+        "message_id": "false_120363212822578807@g.us_AC3DEA32ED8949FBA354D8CCC0E30DEF_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No agricultural transaction or farm data (eggs, feed, sales, etc.) found in the image. The image shows a locked gate.",
+            "confidence_score": 1.0,
+            "processed_text": "The image contains no relevant farm data; it is a photograph of a padlock on a gate."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:54:02.067270+05:30",
+        "message_id": "false_120363212822578807@g.us_ACDD2600B91D0D1936D4EC219DB92CF4_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "The image provided is a photograph of a water pipe with a valve installed at a farm site. No transactional data, quantities, or financial information are present in the image.",
+            "confidence_score": 1.0,
+            "processed_text": "Photograph of a water pipe valve at a farm location."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:54:05.907873+05:30",
+        "message_id": "false_120363212822578807@g.us_AC9B6E68A6D0F1B14C3361D9F6EB1A57_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 5",
+        "ai_extracted": {
+            "shead_name": "Shead 5",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Information provided is insufficient to determine category, quantity, or monetary value.",
+            "confidence_score": 0.4,
+            "processed_text": "Shead 5"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:55:06.096497+05:30",
+        "message_id": "false_120363212822578807@g.us_AC8BC66E5F5EDD878937EF3E7392F40E_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No farm data or textual information present in the image. The image shows a locked gate.",
+            "confidence_score": 0.0,
+            "processed_text": "No farm data found in image"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:55:08.291717+05:30",
+        "message_id": "false_120363212822578807@g.us_AC99FF3872C10B1FC4113AC4181B45C4_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 5",
+        "ai_extracted": {
+            "shead_name": "Shead 5",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Reference to Shead 5 identified but no action or metric specified.",
+            "confidence_score": 0.7,
+            "processed_text": "Shead 5"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:57:38.224010+05:30",
+        "message_id": "false_120363212822578807@g.us_AC4C95845E0F9C2EAF973D5D94CC5918_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead1",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "egg",
+            "quantity": 2452.93,
+            "unit": "pieces",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 2452.93 pieces\n--------------------\n22/6/26: 606.10 pieces (Normal 601.10, Damaged 5.10)\n23/6/26: 613.28 pieces (Normal 608.02, Damaged 5.26)\n24/6/26: 617.20 pieces (Normal 608, Damaged 9.20)\n25/6/26: 613.03 pieces (Normal 607.03, Damaged 6)\n26/6/26: 615.12 pieces (Normal 612.12, Damaged 3)",
+            "confidence_score": 0.92,
+            "processed_text": "Farm data for Shead 1 covering dates 22/6/26 to 26/6/26 showing daily egg production including normal and damaged eggs."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:58:34.773669+05:30",
+        "message_id": "false_120363212822578807@g.us_ACDAD0BEE213C59F0C87FDB8FB7979CB_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead today production",
+        "ai_extracted": {
+            "shead_name": "Shead 4",
+            "category": "egg",
+            "quantity": 3816.58,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 3816.58 trays\n--------------------\n22/6/26: 636.24 trays\n23/6/26: 636.24 trays\n24/6/26: 633 trays\n25/6/26: 636 trays\n26/6/26: 639 trays\n27/6/26: 637.1 trays",
+            "confidence_score": 0.95,
+            "processed_text": "Production data for Shead 4 for the week of 22/06/26 to 27/06/26, showing daily egg totals."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T17:58:41.590878+05:30",
+        "message_id": "false_120363212822578807@g.us_AC77AEAE956335C03ED0E1D3487B8682_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead today production",
+        "ai_extracted": {
+            "shead_name": "Shead 2",
+            "category": "egg",
+            "quantity": 651.14,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Daily Egg Production Log for Shead 2:\n22/06/26: 645.24 trays\n23/06/26: 643 trays\n24/06/26: 640 trays\n25/06/26: 648 trays\n26/06/26: 649.14 trays\n27/06/26: 651.14 trays\nGrand Total Qty: 3876.52 trays\n--------------------\nMedicine Notes:\n22/06/26: Olkin 200ml, Salt 1kg\n23/06/26: Olkin 200ml, Salt 1kg\n24/06/26: Olkin 200ml, Salt 1kg\n25/06/26: Olkin 200ml, Salt 1kg\n26/06/26: Improvement medicine\n27/06/26: Improvement medicine",
+            "confidence_score": 0.95,
+            "processed_text": "Production record for Shead 2 from 22/06/26 to 27/06/26 showing daily egg counts, mortality, feed intake, and medication details."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:01:52.362702+05:30",
+        "message_id": "false_120363212822578807@g.us_AC59743ECE70CF1A8E2A6C116E723468_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6 \nGetwel",
+        "ai_extracted": {
+            "shead_name": "Shead 6",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Item mention: Getwel",
+            "confidence_score": 0.7,
+            "processed_text": "Shead 6, Getwel"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:02:09.169032+05:30",
+        "message_id": "false_120363111757096162@g.us_AC4C8B23EE481B53713CA801EAF9C847_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "1-2\n2-2\n3-2\n4-2\n5-2\n6-2\n7-2\n8-2\nGrower-2\nTotall 16 tons feed grinded",
+        "ai_extracted": {
+            "shead_name": "Shead 1, Shead 2, Shead 3, Shead 4, Shead 5, Shead 6, Shead 7, Shead 8, Grower",
+            "category": "feed",
+            "quantity": 16,
+            "unit": "tons",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 16 tons\n--------------------\nShead 1: 2 tons\nShead 2: 2 tons\nShead 3: 2 tons\nShead 4: 2 tons\nShead 5: 2 tons\nShead 6: 2 tons\nShead 7: 2 tons\nShead 8: 2 tons\nGrower: 2 tons",
+            "confidence_score": 0.95,
+            "processed_text": "16 tons of feed ground across sheds 1-8 and grower shed, 2 tons each."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:02:16.964649+05:30",
+        "message_id": "false_120363225998735559@g.us_ACC845E76AA72455729F67BE20FF87EE_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "VNL minerals out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Truck image captured at Chenchugudi-NVPalli, Veperi, Andhra Pradesh on June 27, 2026. Caption provided by user: 'VNL minerals out'. No specific transaction details, quantities, or financial amounts available in this image.",
+            "confidence_score": 0.4,
+            "processed_text": "Image of a truck (Ashok Leyland) with license plate AP39TX 7159 at Chenchugudi-NVPalli. User notes: VNL minerals out."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:02:25.191696+05:30",
+        "message_id": "false_120363225998735559@g.us_AC0A8F58CD7C1D2A5AFA7F9FE46054BB_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Eggoz out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Image shows a person on a farm location with a tractor. Caption: 'Eggoz out'. No specific transaction data or quantities provided.",
+            "confidence_score": 0.5,
+            "processed_text": "Image captured on June 27, 2026, at 6:00:49 PM in Chenchugudi-NVpalli, Veperi, Andhra Pradesh showing a farm scene with a tractor. User caption is 'Eggoz out'."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:03:26.960126+05:30",
+        "message_id": "false_120363212822578807@g.us_AC4E8F1C63BD7D7461FFA37840BBC9E2_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "egg",
+            "quantity": 1690.66,
+            "unit": "pieces",
+            "amount": 0.0,
+            "notes": "Weekly Farm Data Extraction (18th Week):\nGrand Total Qty: 1690.66 eggs\n--------------------\n22/6/26: 191.15 eggs\n23/6/26: 195.16 eggs\n24/6/26: 260 eggs\n25/6/26: 266.20 eggs\n26/6/26: 318 eggs\n27/6/26: 350.25 eggs\nMedicine used: Olkin 200ml daily, Calcin 500 on 26/6/26",
+            "confidence_score": 0.92,
+            "processed_text": "Farm data for Shead 3 for the 18th week ranging from 22/6/26 to 27/6/26. Total egg production for the week is 1690.66. Mortality and feed data also recorded."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:04:11.827434+05:30",
+        "message_id": "false_120363212822578807@g.us_AC65C56B6098365F1D3EE87BE8039688_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6 \nLock \ud83d\udd10",
+        "ai_extracted": {
+            "shead_name": "Shed 6",
+            "category": "expense",
+            "quantity": 1,
+            "unit": "piece",
+            "amount": 0.0,
+            "notes": "Purchase of a new padlock for Shed 6.",
+            "confidence_score": 0.9,
+            "processed_text": "Shed 6 lock purchase recorded on June 27, 2026, at Chenchugudi-NVpalli, Veperi, Andhra Pradesh."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:04:30.880723+05:30",
+        "message_id": "false_120363046205890693@g.us_AC70E3F891846BA094366FE3135001D5_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] Jay Sri Ram (141927630536871)",
+        "sender_name": "Jay Sri Ram",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "651.12 Trays of production 2nd Shead",
+        "ai_extracted": {
+            "shead_name": "Shead 2",
+            "category": "egg",
+            "quantity": 651.12,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 651.12 trays\nNote: Production recorded for Shead 2.",
+            "confidence_score": 0.95,
+            "processed_text": "651.12 Trays of production 2nd Shead"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:06:38.072462+05:30",
+        "message_id": "false_120363212822578807@g.us_ACE3073BDF5E4DDC14CFA4462B72059F_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed.8\nGetwel",
+        "ai_extracted": {
+            "shead_name": "Shead 8",
+            "category": "medicine",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Product: Getwel",
+            "confidence_score": 0.85,
+            "processed_text": "Shead 8, Getwel (Medicine/Supplement)"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:07:18.528299+05:30",
+        "message_id": "false_120363225998735559@g.us_ACD4DC45004FC90929DA235D4F104DE6_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Eggoz out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Image contains a group of people at a location. No specific agricultural transaction or farm data (eggs, feed, etc.) found in the image or caption 'Eggoz out'.",
+            "confidence_score": 0.1,
+            "processed_text": "Photograph showing a group of people, captioned 'Eggoz out'."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:07:34.596235+05:30",
+        "message_id": "false_120363225998735559@g.us_ACECBB4B50F94B5CA6FF374938DD0647_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Labour out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Labour payment context. No specific financial details provided in image or caption.",
+            "confidence_score": 0.5,
+            "processed_text": "Image showing a woman at a farm site, caption provided: 'Labour out'"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:07:59.396937+05:30",
+        "message_id": "false_120363046205890693@g.us_ACA5EADA76D8C793E7578206CEEF2BE7_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] Jay Sri Ram (141927630536871)",
+        "sender_name": "Jay Sri Ram",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "138.7 Trays of production 4th Shead Second collection",
+        "ai_extracted": {
+            "shead_name": "Shead 4",
+            "category": "egg",
+            "quantity": 138.7,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 138.7 trays\n--------------------\nCollection: Second collection\nShead: 4",
+            "confidence_score": 0.95,
+            "processed_text": "138.7 Trays of production 4th Shead Second collection"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:10:05.508241+05:30",
+        "message_id": "false_120363225998735559@g.us_AC6162177276630741920641F2889E72_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Eggoz out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Image contains a person on a motorcycle at a farm site; no transactional data, numbers, or specific quantities visible in image or caption.",
+            "confidence_score": 0.1,
+            "processed_text": "Person on a motorcycle at a farm site. Caption: Eggoz out."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:10:21.312994+05:30",
+        "message_id": "false_120363212822578807@g.us_AC8615F114F468594C80E592CD6862D4_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed.8\nLock \ud83d\udd10",
+        "ai_extracted": {
+            "shead_name": "Shead 8",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Image of a locked shed door.\nLocation: Chenchugudi-NVpalli, Veperi, Andhra Pradesh\nDate/Time: Jun 27, 2026, 6:09:00 PM",
+            "confidence_score": 0.9,
+            "processed_text": "Photograph showing a locked shed (Shead 8) at Chenchugudi-NVpalli, Veperi, Andhra Pradesh, taken on June 27, 2026."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:10:35.317522+05:30",
+        "message_id": "false_120363046205890693@g.us_ACE4A3E4277FA5FB66A77111C3392A7B_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] Jay Sri Ram (141927630536871)",
+        "sender_name": "Jay Sri Ram",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "115.7 Trays of production 1st Shead second collection",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "egg",
+            "quantity": 115.7,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 115.7 trays\n--------------------\nProduction type: 2nd collection",
+            "confidence_score": 0.95,
+            "processed_text": "115.7 trays of production 1st Shead second collection"
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:15:46.080388+05:30",
+        "message_id": "false_120363225998735559@g.us_ACE5EDA516305235C90E11C6FDC35C56_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Prathap reddy eggs",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "egg",
+            "quantity": 384,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Egg delivery recorded from photo. Approximate count based on visual inspection of 16 stacks of 24 trays per column (approx 384 trays). Date: Jun 27, 2026. Location: Chenchugudi-NVpalli, Veperi, Andhra Pradesh.",
+            "confidence_score": 0.85,
+            "processed_text": "Egg delivery recorded from photo showing a Bajaj GOGO truck loaded with egg trays. Timestamp: June 27, 2026. Location: Chenchugudi-NVpalli, Veperi, Andhra Pradesh. Party: Prathap reddy eggs."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:19:26.104398+05:30",
+        "message_id": "false_120363225998735559@g.us_ACD5174265E3A308D0977A12D118C49B_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T18:19:30.762737+05:30",
+        "message_id": "false_120363225998735559@g.us_ACE17FB4FC07E13C2290D19BA7A4081E_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Prathap reddy eggs bill",
+        "ai_extracted": {
+            "shead_name": "Shead 2",
+            "category": "sales",
+            "quantity": 303,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Customer: Prathap Reddy\nDate: 27/06/2026\nGrand Total Qty: 303 trays\n--------------------\nEggoz Dirty: 185 trays\nEggoz Lite Damage: 100 trays\nFull Dirty Eggs: 18 trays",
+            "confidence_score": 0.95,
+            "processed_text": "Sales record for Prathap Reddy dated 27/06/2026. Shead 2: Eggoz Dirty 185 trays, Eggoz Lite Damage 100 trays, Full Dirty eggs 18 trays. Total quantity: 303 trays."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:19:35.976761+05:30",
+        "message_id": "false_120363225998735559@g.us_AC443E0B8A9233B642AECDBD647D9CBF_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "sales",
+            "quantity": 303,
+            "unit": "pieces",
+            "amount": 303.0,
+            "notes": "Grand Total Qty: 303\nGrand Total Amt: 303.0\n--------------------\nCalculation: 10 * 6 * 5 = 300\nAddition: 300 + 3 = 303",
+            "confidence_score": 0.9,
+            "processed_text": "Calculation: 10 * 6 * 5 = 300 plus 3 equals 303."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:22:55.374063+05:30",
+        "message_id": "false_120363225998735559@g.us_AC0BC715E584EC0BDED17EB110611A60_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Paid using PhonePe UPI.\nExplore the app now: https://phon.pe/download2025",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "purchase",
+            "quantity": 0,
+            "unit": "rupees",
+            "amount": 13140.0,
+            "notes": "Paid By: Not specified\nPaid To: Varadhi Agros\nBank: HDFC Bank (Receiver), State Bank of India (Sender account ending in 2129)\nTransaction Ref: T2606271822216573921257 / UTR: 461411563214\nDate: 27 Jun 2026\nGrand Total Amt: 13140.0\nRemarks: PhonePe UPI Payment",
+            "confidence_score": 1.0,
+            "processed_text": "Payment of 13140 INR to Varadhi Agros via PhonePe UPI on 27 June 2026."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:23:19.181897+05:30",
+        "message_id": "false_120363426039486670@g.us_AC2AC8BBD3FA6CD2923F739FAC225DEF_241274569400567@lid",
+        "sender": "[Cash & Attendance] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Cash & Attendance",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-27T18:23:43.451693+05:30",
+        "message_id": "false_120363225998735559@g.us_AC03959D7DC9073778A725529FA4E60A_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Pratapreddy eggs amount",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Inquiry regarding egg payment amount for Pratapreddy.",
+            "confidence_score": 0.85,
+            "processed_text": "Inquiry regarding egg payment amount for Pratapreddy."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:24:10.917680+05:30",
+        "message_id": "false_120363426039486670@g.us_AC19C2224093366C56B9B67E62959282_241274569400567@lid",
+        "sender": "[Cash & Attendance] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Cash & Attendance",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "rupees",
+            "amount": 51200.0,
+            "notes": "Grand Total Qty: 0\nGrand Total Amt: 51200.0\n--------------------\n26-6-26: Mestry 1000\n26-6-26: Mestry coolie 1200\n26-6-26: Licious labours 4000\n26-6-26: Licious labours 4500\n26-6-26: Eggoz labours (2 days) 8300\n26-6-26: Anand feed rounding (3x200) 600\n26-6-26: DORB unloading 200\n27-6-26: Anand feed rounding 200\n27-6-26: Stonegrite unloading 200\n27-6-26: Prathapreddy eggs (IN) 43000\nNote: Expenses (Out) total 11200; Income (In) 43000.",
+            "confidence_score": 0.95,
+            "processed_text": "Financial ledger record showing date, status, income (IN), and expenditure (OUT) details for June 26-27."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:25:15.417349+05:30",
+        "message_id": "false_120363046205890693@g.us_AC3C25CDC50D154D1B446C5F69C20D32_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] Jay Sri Ram (141927630536871)",
+        "sender_name": "Jay Sri Ram",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "350.24 Trays of production 3rd Shead",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "egg",
+            "quantity": 350.24,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Production record\nGrand Total Qty: 350.24 trays",
+            "confidence_score": 0.95,
+            "processed_text": "350.24 trays of production from Shead 3."
+        }
+    },
+    {
+        "timestamp": "2026-06-27T18:26:44.617151+05:30",
+        "message_id": "false_120363046205890693@g.us_AC86D8EF7F64E7B81F21C2202C584AAF_241274569400567@lid",
+        "sender": "[Egg Gowdown & Sales] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "All sheds production completed",
+        "ai_extracted": {
+            "shead_name": "Shead 1, Shead 2, Shead 3",
+            "category": "egg",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Production completion status update for all sheds.",
+            "confidence_score": 0.85,
+            "processed_text": "Production completed in all sheds."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T10:31:34.868860+05:30",
+        "message_id": "true_917975209680@c.us_AC72B938093BBB469791694D82F3A3F8",
+        "sender": "917975209680",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T10:31:35.188825+05:30",
+        "message_id": "true_917975209680@c.us_AC519C81E65B89B308D127B133F988CC",
+        "sender": "917975209680",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T10:37:22.112369+05:30",
+        "message_id": "false_82798413090865@lid_ACB50C680D9C20202F24D8AE6947BAB1",
+        "sender": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f (82798413090865)",
+        "sender_name": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Hello",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "User greeting.",
+            "confidence_score": 1.0,
+            "processed_text": "Hello"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T10:38:37.445823+05:30",
+        "message_id": "false_120363225998735559@g.us_AC57EEE408E01618E34230F55092F3B6_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T10:38:44.066168+05:30",
+        "message_id": "false_120363225998735559@g.us_AC0FE47CEA22802C4BF335B92D6F365C_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Lokesh out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "The image is a photo of a person on a motorcycle and does not contain any farm transactional data or financial records.",
+            "confidence_score": 0.1,
+            "processed_text": "The provided image shows a person sitting on a motorcycle. No agricultural or financial data is available to extract."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T10:53:33.856193+05:30",
+        "message_id": "false_120363225998735559@g.us_AC2D02E7765B0217ACF292BF60AA8E69_115784131051535@lid",
+        "sender": "[Gate Manager] Lokesh Reddy (115784131051535)",
+        "sender_name": "Lokesh Reddy",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Image displays vehicle dashboard: DTE (Distance to Empty) 94 km, Speed 0 km/h, Odometer 34705 km, SOC (State of Charge) indicator shows full battery level.",
+            "confidence_score": 0.9,
+            "processed_text": "Vehicle dashboard showing: DTE 94 km, 0 km/h, 34705 km odometer, full battery charge."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T11:03:46.722897+05:30",
+        "message_id": "false_120363225998735559@g.us_AC93FED0B79D78B792CC30E255228C72_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "In",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "No transaction details provided. The image shows a person standing in a rural/agricultural area.",
+            "confidence_score": 0.1,
+            "processed_text": "Photograph taken on June 29, 2026, at 11:02:16 AM in Chenchugudi-NVpalli, Veperi, Andhra Pradesh. No actionable farm records or financial transactions visible."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T11:03:57.070587+05:30",
+        "message_id": "false_120363225998735559@g.us_AC4358C46F49FA3515AEDD2363D05E16_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Out for hospital",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "The image shows a person with a child on a motorcycle. No agricultural data or transaction information is present.",
+            "confidence_score": 1.0,
+            "processed_text": "Image shows a person on a motorcycle. Caption: Out for hospital. Date: Jun 29, 2026. Location: Chenchugudi-NVpalli, Veperi, Andhra Pradesh."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T14:56:26.333815+05:30",
+        "message_id": "true_917975209680@c.us_AC7E85109E5AA90C181AC62D36BB3A7B",
+        "sender": "917975209680",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T14:56:28.079027+05:30",
+        "message_id": "true_917975209680@c.us_ACD721FF96F242D724DE954EA92AAD8C",
+        "sender": "917975209680",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T15:01:48.328430+05:30",
+        "message_id": "false_120363225998735559@g.us_ACE7BA53C4D752AED432B2CC1E6A7B0F_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T15:01:56.031273+05:30",
+        "message_id": "false_120363225998735559@g.us_AC93F24CB2433840E8422896D023CC1B_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Maiza vehicle in",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Image depicts a Bismillah Lorry Service truck with license plate AP39 WD4499. No specific farm transaction data such as egg quantity, feed, or sales figures are present in the image or caption. The caption states 'Maiza vehicle in'.",
+            "confidence_score": 0.2,
+            "processed_text": "Photograph of a Bismillah Lorry Service truck, plate AP39 WD4499, taken on June 29, 2026, in Chenchugudi-NVpalli, Veperi, Andhra Pradesh."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:02:01.372144+05:30",
+        "message_id": "false_120363225998735559@g.us_ACCF083CA9A7AD12C9DD7F4639A84013_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Sparying",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Activity: Spraying",
+            "confidence_score": 0.8,
+            "processed_text": "Spraying"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:04:11.892030+05:30",
+        "message_id": "false_120363212822578807@g.us_ACBA55717F7DBBD13AE17A99376483AB_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead \n7586\n7580\n7646\n7724\n7905\n7721\n7497\n7280\nAverage weight 1,523",
+        "ai_extracted": {
+            "shead_name": "Shead 4",
+            "category": "unknown",
+            "quantity": 60939,
+            "unit": "pieces",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 60939 pieces\nGrand Total Amt: 0.0\n--------------------\nReadings: 7586, 7580, 7646, 7724, 7905, 7721, 7497, 7280\nAverage weight: 1523",
+            "confidence_score": 0.95,
+            "processed_text": "Shead 4: Readings 7586, 7580, 7646, 7724, 7905, 7721, 7497, 7280. Average weight 1,523."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:04:22.164535+05:30",
+        "message_id": "false_120363225998735559@g.us_AC924D0F005FF41B606E82C2F13B1B24_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Bill",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 22,
+            "unit": "Tons",
+            "amount": 4000.0,
+            "notes": "Receipt No: 12996\nPaid By: S.N. Poultry Farm, Chittoor\nPaid To: Agricultural Market Committee, Addanki\nDate: 28.06.26\nVehicle No: AP39WD4499\nGrand Total Qty: 22 Tons\nGrand Total Amt: 4000.00\n--------------------\nItem: License Fee (AP Market Act 1966 Section 7(1) and Rule 48)\nQuantity: 22 Tons\nValue Basis: 4,00,000\nTotal Amount: 4000.00",
+            "confidence_score": 0.95,
+            "processed_text": "Agricultural Market Committee Receipt from Addanki. Payment made by S.N. Poultry Farm for License Fee under AP Market Act 1966. Quantity 22 Tons, Amount 4000 Rupees. Date 28.06.26, Vehicle AP39WD4499."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:05:42.866817+05:30",
+        "message_id": "false_120363212822578807@g.us_ACCEA4164CEAC2D8F86B7FAFEC316138_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T15:05:55.403457+05:30",
+        "message_id": "false_120363212822578807@g.us_AC88332DDC14CC408CAD1AA6C76E4E67_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 3"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:05:57.486858+05:30",
+        "message_id": "false_120363212822578807@g.us_ACD5FA97DD02F3A5A9AD0D96F7E17A02_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead flush out",
+        "ai_extracted": {
+            "shead_name": "Shead 4",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Activity: Flush out",
+            "confidence_score": 0.95,
+            "processed_text": "Shead 4 flush out"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:11:45.085496+05:30",
+        "message_id": "false_120363212822578807@g.us_AC1F90918A18A0D7D7CF93A28BDA9EB0_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead flush out",
+        "ai_extracted": {
+            "shead_name": "Shead 2",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Activity: Flush out of Shead 2",
+            "confidence_score": 0.95,
+            "processed_text": "Shead 2 flush out performed."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:12:14.912829+05:30",
+        "message_id": "false_120363225998735559@g.us_ACB4EE4AF1C8D2FC5D1C52F3E29A2465_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Nagaraj eggs",
+        "ai_extracted": {
+            "shead_name": "Shead 4, Shead 5, Shead 6, Shead 7",
+            "category": "sales",
+            "quantity": 4000,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 4000 trays\nDate: 29-06-26\nCustomer: Nagaraj (Tiruttani)\nVehicle: AP03 TC-5897\n--------------------\nShead 4: 1400 trays (Weight: 57.09)\nShead 5: 500 trays (Weight: 59.82)\nShead 6: 1300 trays (Weight: 58.00)\nShead 7: 800 trays (Weight: 59.33)",
+            "confidence_score": 0.98,
+            "processed_text": "Egg sale record for 29-06-26. Customer: Nagaraj, Tiruttani. Vehicle: AP03 TC-5897. Sales breakdown: Shead 4 (1400 trays), Shead 5 (500 trays), Shead 6 (1300 trays), Shead 7 (800 trays). Total: 4000 trays."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:12:22.867017+05:30",
+        "message_id": "false_120363225998735559@g.us_ACBB623251B9CE3948522F6CCE8E0F66_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 4000.0,
+            "notes": "Calculation: (7 * 35 * 16) + 80 = 3920 + 80 = 4000\nGrand Total Amt: 4000",
+            "confidence_score": 0.9,
+            "processed_text": "The image shows a calculation: 7 * 35 * 16 = 3920, plus an additional 80 equals 4000."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:13:00.048576+05:30",
+        "message_id": "false_120363225998735559@g.us_AC2E1109C697708CEC494D5135DF4C00_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T15:13:08.591085+05:30",
+        "message_id": "false_120363225998735559@g.us_ACE1BF3927B7EB17A7E3B7D63AD13587_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "egg",
+            "quantity": 380,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "Truck loaded with egg trays observed at Chenchugudi-NVpalli, Veperi, Andhra Pradesh on June 29, 2026. Estimated count based on visual stack assessment: Approximately 380 trays.",
+            "confidence_score": 0.85,
+            "processed_text": "Truck loaded with egg trays at Chenchugudi-NVpalli, Veperi, Andhra Pradesh. Date: June 29, 2026. Estimated quantity: 380 trays."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:13:13.654605+05:30",
+        "message_id": "false_120363225998735559@g.us_AC203DC64C955BBC638359EAAD800BC6_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Image shows a 'NAGARAJ' branded egg transport vehicle (Eicher truck) located in Chenchugudi-NVpalli, Veperi, Andhra Pradesh on June 29, 2026. No specific transaction data, quantity, or financial figures are present in the image.",
+            "confidence_score": 0.9,
+            "processed_text": "An image of a truck marked 'NAGARAJ EGG VAN' taken on June 29, 2026, at Chenchugudi-NVpalli, Veperi, Andhra Pradesh."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:13:15.401414+05:30",
+        "message_id": "false_120363225998735559@g.us_ACD0BB62C36FA3CAF32D8593A4B3EB89_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Insufficient information provided to categorize or quantify the record.",
+            "confidence_score": 0.2,
+            "processed_text": "Out"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:14:01.851809+05:30",
+        "message_id": "false_120363225998735559@g.us_ACA346141686033C34D7DEA3E3E042CD_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Image is a photograph of a person on a motorcycle in front of an 'Egg Van' truck. No specific transactional data, quantity, or financial amount found in the image or caption.",
+            "confidence_score": 0.3,
+            "processed_text": "Photograph of a man on a Hero Splendor motorcycle with an 'Egg Van' in the background at Chenchugudi-NVpalli, Veperi, Andhra Pradesh, dated June 29, 2026."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:16:55.594908+05:30",
+        "message_id": "false_120363212822578807@g.us_ACB6A86CD73AF505790CC178B559D535_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 3"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:18:35.134069+05:30",
+        "message_id": "false_120363225998735559@g.us_AC459D59D8B5593AA658574FF1FA00CD_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Soya katta",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "purchase",
+            "quantity": 34840,
+            "unit": "kg",
+            "amount": 0.0,
+            "notes": "RST No: 138\nParty Name: SUNSTAR\nMaterial: SOYA DOC\nVehicle No: AP39VC2566\nBags: 638\nGross Weight: 49050 Kg\nTare Weight: 14210 Kg\nNet Weight: 34840 Kg\nDate: 29/06/2026\nTime: 09:21 - 15:09",
+            "confidence_score": 0.98,
+            "processed_text": "Purchase receipt from SUNFRA for 34840 kg of Soya DOC. Vehicle AP39VC2566, 638 bags."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:19:34.228222+05:30",
+        "message_id": "false_120363225998735559@g.us_AC607A61CE919561CDA58B30C754C48E_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 3136.0,
+            "notes": "Paid By: Not specified\nPaid To: Sunfra Farms\nBank: State Bank of India (SBI)\nTransaction Ref: XXXXXX5698\nDate: 29 June 2026 at 03:19 PM\nGrand Total Amt: 3136\nRemarks: Payment Successful",
+            "confidence_score": 0.95,
+            "processed_text": "Payment successful for 3136 rupees made to Sunfra Farms via State Bank of India on 29 June 2026."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:19:42.685024+05:30",
+        "message_id": "false_120363225998735559@g.us_ACFB941599DD7CD9375DA07AAA8B6BB5_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Soya payment bill",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "purchase",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Pending: Payment details for Soya bill.",
+            "confidence_score": 0.7,
+            "processed_text": "Soya payment bill"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:29:35.434996+05:30",
+        "message_id": "false_120363225998735559@g.us_AC632D94C7DAC2879E22041623524152_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Soya out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "n/a",
+            "amount": 0.0,
+            "notes": "Truck 'Madeena' arriving at location. User caption: 'Soya out'. No specific transaction quantities or financial amounts provided in the image.",
+            "confidence_score": 0.85,
+            "processed_text": "Truck with license plate AP39 VC 2566 parked at Chenchugudi-NVpalli, Veperi, Andhra Pradesh on June 29, 2026. User context: Soya out."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:31:56.041720+05:30",
+        "message_id": "false_120363111757096162@g.us_A57674E8FCA8753B19F7108E3217F402_234952327213239@lid",
+        "sender": "[Feed Plant] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "purchase",
+            "quantity": 0,
+            "unit": "bags",
+            "amount": 0.0,
+            "notes": "Image shows a truck loaded with corn/feed bags being unloaded. No quantity or price details available in the image.",
+            "confidence_score": 0.9,
+            "processed_text": "Truck being unloaded with bags of feed/grain."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:32:34.540214+05:30",
+        "message_id": "false_120363212822578807@g.us_AC125CE561347CEE17E6492600765AE3_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T15:32:43.629697+05:30",
+        "message_id": "false_120363212822578807@g.us_AC9FA8AFDA382AD956721FF1D670C83E_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 5\nSailo feed 2tn",
+        "ai_extracted": {
+            "shead_name": "Shead 5",
+            "category": "feed",
+            "quantity": 2,
+            "unit": "tn",
+            "amount": 0.0,
+            "notes": "Description: Sailo feed\nGrand Total Qty: 2 tn\n--------------------\nLocation: Chenchugudi-NVPalli, Veperi, Andhra Pradesh\nDate: June 29, 2026",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 5: Sailo feed 2tn. Location: Chenchugudi-NVPalli, Veperi, Andhra Pradesh. Date: June 29, 2026."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:32:48.054529+05:30",
+        "message_id": "false_120363212822578807@g.us_AC30D20DDC328C71EB4EA52A8F7A7325_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead \n7198\n6986\n6883\n7516\n7660\n7113\n7201\n7128\nAverage weight. 1,442",
+        "ai_extracted": {
+            "shead_name": "Shead 2",
+            "category": "unknown",
+            "quantity": 56685,
+            "unit": "pieces",
+            "amount": 0.0,
+            "notes": "Grand Total Qty: 56685\n--------------------\nWeights: 7198, 6986, 6883, 7516, 7660, 7113, 7201, 7128\nAverage weight: 1442",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 2 data: 7198, 6986, 6883, 7516, 7660, 7113, 7201, 7128. Average weight: 1,442."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:35:48.000247+05:30",
+        "message_id": "false_120363212822578807@g.us_AC090638275CC53D9B705D5FA2A41463_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 7\n Sailo feed 3tn",
+        "ai_extracted": {
+            "shead_name": "Shead 7",
+            "category": "feed",
+            "quantity": 3,
+            "unit": "tn",
+            "amount": 0.0,
+            "notes": "Date: Jun 29, 2026 3:35:09 PM\nLocation: Chenchugudi-NVpalli, Veperi, Andhra Pradesh\nItem: Sailo feed\nQuantity: 3 tn\nShead: 7",
+            "confidence_score": 0.95,
+            "processed_text": "Shead 7: Received 3 tons of Sailo feed. Captured on June 29, 2026, at Chenchugudi-NVpalli, Veperi, Andhra Pradesh."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:38:38.037480+05:30",
+        "message_id": "false_120363212822578807@g.us_AC2FC6A02AB666A9DB7F794807950A43_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6 \nSailo feed 1tn",
+        "ai_extracted": {
+            "shead_name": "Shead 6",
+            "category": "feed",
+            "quantity": 1,
+            "unit": "ton",
+            "amount": 0.0,
+            "notes": "Location: Chenchugudi-NVPalli, Veperi, Andhra Pradesh\nDate: Jun 29, 2026",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 6 received 1 ton of silo feed."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:41:33.173474+05:30",
+        "message_id": "false_120363212822578807@g.us_AC3F6DB12A19177D5481CC4BD0F2638F_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6 \nSpreying",
+        "ai_extracted": {
+            "shead_name": "Shead 6",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Activity: Spraying",
+            "confidence_score": 0.9,
+            "processed_text": "Shead 6 - Spraying"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T15:54:59.572934+05:30",
+        "message_id": "false_120363212822578807@g.us_ACCC8692A88FBBF9AC15D1B7BCA7FF06_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead water spraying",
+        "ai_extracted": {
+            "shead_name": "Shead 2",
+            "category": "expense",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Activity: Water spraying",
+            "confidence_score": 0.95,
+            "processed_text": "Water spraying performed in Shead 2"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T16:55:38.167058+05:30",
+        "message_id": "true_183300681367688@lid_3EB0B769F3FDF3EE64F24A",
+        "sender": "183300681367688",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557\n\u2551  \ud83d\udc14 *DAILY FARM REPORT*\n\u2551  \ud83d\udcc5 29 Jun 2026\n\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d\n\n\ud83e\udd5a *EGG COLLECTIONS*\n  \u2022 General: 380 trays\n  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n  *Total: 380 trays*\n\n\ud83d\udcb5 *SALES / REVENUE*\n  \u2022 Shead 4, Shead 5, Shead 6, Shead 7: 4,000 trays\n  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n  *Total Revenue: \u20b90.00*\n\n\ud83d\udcc9 *EXPENSES*\n  \ud83c\udf3e Feed: 6 tn\n  \ud83d\udcb8 Other Expenses: \u20b97,136.00\n  \ud83d\uded2 Purchases: 34,840 \n  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n  *Total Expenses: \u20b97,136.00*\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n  \ud83d\udcb0 *Revenue:*  \u20b90.00\n  \ud83d\udcc9 *Expenses:* \u20b97,136.00\n  \u274c *NET LOSS: \u20b97,136.00*\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501",
+        "ai_extracted": [
+            {
+                "shead_name": "",
+                "category": "egg_collection",
+                "quantity": 380,
+                "unit": "trays",
+                "amount": 0.0,
+                "notes": "General egg collection",
+                "confidence_score": 0.95,
+                "processed_text": "General egg collection: 380 trays"
+            },
+            {
+                "shead_name": "Shead 4, Shead 5, Shead 6, Shead 7",
+                "category": "sales",
+                "quantity": 4000,
+                "unit": "trays",
+                "amount": 0.0,
+                "notes": "Total sales for sheds 4, 5, 6, and 7",
+                "confidence_score": 0.95,
+                "processed_text": "Sales for Shead 4, 5, 6, 7: 4000 trays"
+            },
+            {
+                "shead_name": "",
+                "category": "feed",
+                "quantity": 6,
+                "unit": "tons",
+                "amount": 0.0,
+                "notes": "Feed consumption",
+                "confidence_score": 0.96,
+                "processed_text": "Feed consumption: 6 tons"
+            },
+            {
+                "shead_name": "",
+                "category": "expense",
+                "quantity": 0,
+                "unit": "",
+                "amount": 7136.0,
+                "notes": "Other farm expenses",
+                "confidence_score": 0.97,
+                "processed_text": "Other expenses: 7136 INR"
+            },
+            {
+                "shead_name": "",
+                "category": "purchase",
+                "quantity": 34840,
+                "unit": "units",
+                "amount": 0.0,
+                "notes": "Equipment/asset purchases reported as 34,840",
+                "confidence_score": 0.85,
+                "processed_text": "Purchases: 34,840"
+            }
+        ]
+    },
+    {
+        "timestamp": "2026-06-29T16:55:40.633820+05:30",
+        "message_id": "false_120363046205890693@g.us_AC7821967F76831BF6629EEA5D61B569_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] Jay Sri Ram (141927630536871)",
+        "sender_name": "Jay Sri Ram",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "300 Trays of production 6th Shead first collection",
+        "ai_extracted": {
+            "shead_name": "Shead 6",
+            "category": "egg_collection_1",
+            "quantity": 300,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "First round collection",
+            "confidence_score": 0.99,
+            "processed_text": "Shead 6 - 300 Trays of production, first collection"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T16:55:43.272682+05:30",
+        "message_id": "false_120363046205890693@g.us_ACFD0C3BFEDAB66D36416DDECD414F02_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] Jay Sri Ram (141927630536871)",
+        "sender_name": "Jay Sri Ram",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "600 Trays of production 8th Shead first collection",
+        "ai_extracted": {
+            "shead_name": "Shead 8",
+            "category": "egg_collection_1",
+            "quantity": 600,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "First collection",
+            "confidence_score": 0.98,
+            "processed_text": "Shead 8 - 600 trays of production: 1st collection"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:26:54.779318+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB066B7AAB731C3FB4C59_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Bearing 2 for  feed plant \nincluding labour Charges",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "purchase",
+            "quantity": 1,
+            "unit": "bearing",
+            "amount": 0.0,
+            "notes": "Purchase for feed plant including labour charges",
+            "confidence_score": 0.85,
+            "processed_text": "Bearing 2 for feed plant including labour charges"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:26:56.363391+05:30",
+        "message_id": "false_120363408876484504@g.us_3EB0CF91929966E9DE605E_37546704822382@lid",
+        "sender": "[SS - NetApp Placements Group] Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97 (37546704822382)",
+        "sender_name": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97",
+        "is_group": true,
+        "group_name": "SS - NetApp Placements Group",
+        "raw_text": "Please find the attached sheet for Student Nominations for Data Annotation Hiring. If your name is listed in the sheet, please let me know personally",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Message content unrelated to poultry farm operations.",
+            "confidence_score": 1.0,
+            "processed_text": "Please find the attached sheet for Student Nominations for Data Annotation Hiring. If your name is listed in the sheet, please let me know personally"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:26:59.544433+05:30",
+        "message_id": "true_183300681367688@lid_3EB01866A91CC60B735B19",
+        "sender": "183300681367688",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557\n\u2551  \ud83d\udc14 *DAILY FARM REPORT*\n\u2551  \ud83d\udcc5 29 Jun 2026\n\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d\n\n\ud83c\udfe0 **\n  \u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\n  \ud83e\udd5a Eggs: *380 trays*\n  \ud83d\udcb8 Expenses: *\u20b97,136.00*\n\ud83d\uded2 Purchases: *34,840 *\n\n\ud83c\udfe0 *SHEAD 2*\n  \u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\n  \ud83d\udcb8 Expenses: recorded\n\n\ud83c\udfe0 *SHEAD 4*\n  \u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\n  \ud83d\udcb8 Expenses: recorded\n\n\ud83c\udfe0 *SHEAD 4, SHEAD 5, SHEAD 6, SHEAD 7*\n  \u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\n  \ud83d\udcb5 Sales: *4,000 trays*\n\n\ud83c\udfe0 *SHEAD 5*\n  \u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\n\ud83c\udf3e Feed: *2 tn*\n\n\ud83c\udfe0 *SHEAD 6*\n  \u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\n\ud83c\udf3e Feed: *1 ton*\n  \ud83d\udcb8 Expenses: recorded\n\n\ud83c\udfe0 *SHEAD 7*\n  \u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\n\ud83c\udf3e Feed: *3 tn*\n\n\ud83c\udfe0 *GENERAL / FARM-WIDE*\n  \u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\u2504\n  \ud83e\udd5a Eggs: *380 trays*\n  \ud83d\udcb8 Expenses: *\u20b97,136.00*\n\ud83d\uded2 Purchases: *34,840 *\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83d\udcca *DAILY TOTALS*\n  \ud83e\udd5a Total Eggs Collected: *380 trays*\n\n\ud83d\udcb0 *PROFIT & LOSS*\n  \ud83d\udcb5 Revenue (Sales):  \u20b90.00\n  \ud83d\udcb8 Expenses: \u20b97,136.00\n  \ud83d\udcc9 Total Expenses:   \u20b97,136.00\n  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n  \u274c *NET LOSS:   \u20b97,136.00*\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501",
+        "ai_extracted": [
+            {
+                "shead_name": "",
+                "category": "egg_collection",
+                "quantity": 380,
+                "unit": "trays",
+                "amount": 0.0,
+                "notes": "Farm-wide egg collection total",
+                "confidence_score": 0.98,
+                "processed_text": "Farm-wide egg collection: 380 trays"
+            },
+            {
+                "shead_name": "",
+                "category": "expense",
+                "quantity": 0,
+                "unit": "",
+                "amount": 7136.0,
+                "notes": "Farm-wide operational expenses",
+                "confidence_score": 0.98,
+                "processed_text": "Farm-wide expenses: 7,136.00"
+            },
+            {
+                "shead_name": "",
+                "category": "purchase",
+                "quantity": 1,
+                "unit": "transaction",
+                "amount": 34840.0,
+                "notes": "General farm purchases",
+                "confidence_score": 0.95,
+                "processed_text": "Farm-wide purchases: 34,840"
+            },
+            {
+                "shead_name": "Shead 4, Shead 5, Shead 6, Shead 7",
+                "category": "sales",
+                "quantity": 4000,
+                "unit": "trays",
+                "amount": 0.0,
+                "notes": "Egg sales across sheds 4, 5, 6, 7",
+                "confidence_score": 0.98,
+                "processed_text": "Sales of 4,000 trays across Sheds 4, 5, 6, 7"
+            },
+            {
+                "shead_name": "Shead 5, Shead 6, Shead 7",
+                "category": "feed",
+                "quantity": 6,
+                "unit": "tons",
+                "amount": 0.0,
+                "notes": "Total feed consumption: Shed 5 (2 tn), Shed 6 (1 tn), Shed 7 (3 tn)",
+                "confidence_score": 0.97,
+                "processed_text": "Total feed usage: 6 tons across sheds 5, 6, and 7"
+            }
+        ]
+    },
+    {
+        "timestamp": "2026-06-29T17:33:51.106923+05:30",
+        "message_id": "false_120363225998735559@g.us_ACD934DD53B3CC992A89B797E1677BE9_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Lucious out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Lucious out"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:36:47.808452+05:30",
+        "message_id": "false_120363225998735559@g.us_ACCF35E8CD6C05FCAEE8134ACB8A495A_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Hens vehicle in",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Hens vehicle in"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:42:15.264124+05:30",
+        "message_id": "true_183300681367688@lid_3EB087647E8B84E6224BE0",
+        "sender": "183300681367688",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "\ud83d\udc14 *Daily Farm Report*\n\ud83d\udcc5 29 Jun 2026\n\n\ud83e\udd5a *Egg Collections*\n  \ud83e\udd5a *Collection*\n    General \u2014 760 trays\n    *Total \u2014 760 trays*\n  \ud83e\udd5a *Eggs*\n    General \u2014 380 trays\n    *Total \u2014 380 trays*\n\n\ud83c\udf3e *Feed & Raw Materials*\n    Description: Sailo feed\nGrand Total Qty: 2 tn\n--------------------\nLocation: Chenchugudi-NVPalli, Veperi, Andhra Pradesh\nDate: June 29, 2026 \u2014 2 tn\n    Sailo feed \u2014 3 tn\n    Location: Chenchugudi-NVPalli, Veperi, Andhra Pradesh\nDate: Jun 29, 2026 \u2014 1 ton\n\n\ud83d\uded2 *Purchases*\n    SOYA DOC\n    Pending: Payment details for Soya bill.\n    Image shows a truck loaded with corn/feed bags being unloaded. No quantity or price details available in the image.\n    Purchase for feed plant including labour charges\n\n\ud83d\udcb8 *Other Expenses*\n    Spraying\n    License Fee (AP Market Act 1966 Section 7(1) and Rule 48)  \u20b94,000.00\n    Flush out\n    Flush out of Shead 2\n    Paid By: Not specified\nPaid To: Sunfra Farms\nBank: State Bank of India (SBI)\nTransaction Ref: XXXXXX5698\nDate: 29 June 2026 at 03:19 PM\nGrand Total Amt: 3136\nRemarks: Payment Successful  \u20b93,136.00\n    Truck 'Madeena' arriving at location. User caption: 'Soya out'. No specific transaction quantities or financial amounts provided in the image.\n    Spraying\n    Water spraying\n    *Total \u2014 \u20b97,136.00*\n\n\ud83d\udcb5 *Sales*\n    Shead 4, Shead 5, Shead 6, Shead 7 \u2014 4,000 trays\n    *Total Revenue \u2014 \u20b90.00*\n\n\ud83d\udcca *Profit & Loss*\n  \ud83d\udcb5 Revenue           \u20b90.00\n  \ud83d\udcb8 Other Expenses    \u20b97,136.00\n  \ud83d\udcc9 Total Expenses    \u20b97,136.00\n\n\u274c *Net Loss   \u20b97,136.00*",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "\ud83d\udc14 *Daily Farm Report*\n\ud83d\udcc5 29 Jun 2026\n\n\ud83e\udd5a *Egg Collections*\n  \ud83e\udd5a *Collection*\n    General \u2014 760 trays\n    *Total \u2014 760 trays*\n  \ud83e\udd5a *Eggs*\n    General \u2014 380 trays\n    *Total \u2014 380 trays*\n\n\ud83c\udf3e *Feed & Raw Materials*\n    Description: Sailo feed\nGrand Total Qty: 2 tn\n--------------------\nLocation: Chenchugudi-NVPalli, Veperi, Andhra Pradesh\nDate: June 29, 2026 \u2014 2 tn\n    Sailo feed \u2014 3 tn\n    Location: Chenchugudi-NVPalli, Veperi, Andhra Pradesh\nDate: Jun 29, 2026 \u2014 1 ton\n\n\ud83d\uded2 *Purchases*\n    SOYA DOC\n    Pending: Payment details for Soya bill.\n    Image shows a truck loaded with corn/feed bags being unloaded. No quantity or price details available in the image.\n    Purchase for feed plant including labour charges\n\n\ud83d\udcb8 *Other Expenses*\n    Spraying\n    License Fee (AP Market Act 1966 Section 7(1) and Rule 48)  \u20b94,000.00\n    Flush out\n    Flush out of Shead 2\n    Paid By: Not specified\nPaid To: Sunfra Farms\nBank: State Bank of India (SBI)\nTransaction Ref: XXXXXX5698\nDate: 29 June 2026 at 03:19 PM\nGrand Total Amt: 3136\nRemarks: Payment Successful  \u20b93,136.00\n    Truck 'Madeena' arriving at location. User caption: 'Soya out'. No specific transaction quantities or financial amounts provided in the image.\n    Spraying\n    Water spraying\n    *Total \u2014 \u20b97,136.00*\n\n\ud83d\udcb5 *Sales*\n    Shead 4, Shead 5, Shead 6, Shead 7 \u2014 4,000 trays\n    *Total Revenue \u2014 \u20b90.00*\n\n\ud83d\udcca *Profit & Loss*\n  \ud83d\udcb5 Revenue           \u20b90.00\n  \ud83d\udcb8 Other Expenses    \u20b97,136.00\n  \ud83d\udcc9 Total Expenses    \u20b97,136.00\n\n\u274c *Net Loss   \u20b97,136.00*"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:43:11.563371+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB084405A5D8DFD4A6DDB_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "payment For gurumurthy \n35500*2.35=83425",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "sales",
+            "quantity": 0,
+            "unit": "",
+            "amount": 83425.0,
+            "notes": "Payment for Gurumurthy (Rs. 83,425)",
+            "confidence_score": 0.95,
+            "processed_text": "payment For gurumurthy 35500*2.35=83425"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:44:20.592146+05:30",
+        "message_id": "true_183300681367688@lid_3EB0533E7895C32A0F96E9",
+        "sender": "183300681367688",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "\ud83d\udc14 *Daily Farm Report*\n\ud83d\udcc5 29 Jun 2026\n\n\ud83e\udd5a *Egg Collections*\n  \ud83e\udd5a *Collection*\n    General \u2014 760 trays\n    *Total \u2014 760 trays*\n  \ud83e\udd5a *Eggs*\n    General \u2014 380 trays\n    *Total \u2014 380 trays*\n\n\ud83c\udf3e *Feed & Raw Materials*\n    Description: Sailo feed\nGrand Total Qty: 2 tn\n--------------------\nLocation: Chenchugudi-NVPalli, Veperi, Andhra Pradesh\nDate: June 29, 2026 \u2014 2 tn\n    Sailo feed \u2014 3 tn\n    Location: Chenchugudi-NVPalli, Veperi, Andhra Pradesh\nDate: Jun 29, 2026 \u2014 1 ton\n\n\ud83d\uded2 *Purchases*\n    SOYA DOC\n    Pending: Payment details for Soya bill.\n    Image shows a truck loaded with corn/feed bags being unloaded. No quantity or price details available in the image.\n    Purchase for feed plant including labour charges\n\n\ud83d\udcb8 *Other Expenses*\n    Spraying\n    License Fee (AP Market Act 1966 Section 7(1) and Rule 48)  \u20b94,000.00\n    Flush out\n    Flush out of Shead 2\n    Paid By: Not specified\nPaid To: Sunfra Farms\nBank: State Bank of India (SBI)\nTransaction Ref: XXXXXX5698\nDate: 29 June 2026 at 03:19 PM\nGrand Total Amt: 3136\nRemarks: Payment Successful  \u20b93,136.00\n    Truck 'Madeena' arriving at location. User caption: 'Soya out'. No specific transaction quantities or financial amounts provided in the image.\n    Spraying\n    Water spraying\n    *Total \u2014 \u20b97,136.00*\n\n\ud83d\udcb5 *Sales*\n    Shead 4, Shead 5, Shead 6, Shead 7 \u2014 4,000 trays\n    *Total Revenue \u2014 \u20b90.00*\n\n\ud83d\udcca *Profit & Loss*\n  \ud83d\udcb5 Revenue           \u20b90.00\n  \ud83d\udcb8 Other Expenses    \u20b97,136.00\n  \ud83d\udcc9 Total Expenses    \u20b97,136.00\n\n\u274c *Net Loss   \u20b97,136.00*",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "egg_collection",
+            "quantity": 760,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "General egg collection: 760 trays",
+            "confidence_score": 0.98,
+            "processed_text": "General \u2014 760 trays"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:44:26.781462+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0C8FD25EBBB0585629C_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T17:45:26.990181+05:30",
+        "message_id": "false_120363407546430183@g.us_3EB0C98F6D8BD5BB7C29FD_37546704822382@lid",
+        "sender": "[NetApp Batch 3] Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97 (37546704822382)",
+        "sender_name": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97",
+        "is_group": true,
+        "group_name": "NetApp Batch 3",
+        "raw_text": "Please find the attached sheet for Student Nominations for Data Annotation Hiring. If your name is listed in the sheet, please let me know personally",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Not applicable",
+            "confidence_score": 0.1,
+            "processed_text": "Please find the attached sheet for Student Nominations for Data Annotation Hiring. If your name is listed in the sheet, please let me know personally"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:45:31.901755+05:30",
+        "message_id": "false_120363426039486670@g.us_AC0CB744FF83C0051FDBA7BB0CC8B68B_241274569400567@lid",
+        "sender": "[Cash & Attendance] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Cash & Attendance",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T17:48:31.758907+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB08F0955377A28FBBCA0_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Payment for CCTv Material Purchase",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "purchase",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0,
+            "notes": "CCTv Material Purchase",
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:48:54.980549+05:30",
+        "message_id": "false_120363212822578807@g.us_ACB9B27BE794BC68F55B083FFBAF101D_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": null,
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:49:27.345898+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB060951AA7F1769E85C7_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Payment for narashimha \n32000*24=768000",
+        "ai_extracted": {
+            "shead_name": "narashimha",
+            "category": "expense",
+            "quantity": 768000,
+            "unit": "rupees",
+            "amount": 768000.0,
+            "notes": "payment for narashimha",
+            "confidence_score": 1.0,
+            "processed_text": "Payment for narashimha"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:49:54.713877+05:30",
+        "message_id": "false_120363212822578807@g.us_AC37F39E6292CDD553A26EA06E4026DE_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead1",
+        "ai_extracted": {
+            "shead_name": "Shead1",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:49:59.548432+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB03D3075D4EA5B1B61FF_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T17:51:04.301188+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0234E8D216AB2EB6623_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Payment For Soya purchase \n34840*2.2=76648",
+        "ai_extracted": {
+            "shead_name": "Soya",
+            "category": "raw_material",
+            "quantity": 34840,
+            "unit": "bags",
+            "amount": 76648,
+            "notes": "Payment For Soya purchase",
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:51:25.952294+05:30",
+        "message_id": "false_82798413090865@lid_AC9C502ECEE7F15874322E7312748770",
+        "sender": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f (82798413090865)",
+        "sender_name": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Hello",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "Hello",
+            "confidence_score": 0.5,
+            "processed_text": "Hello"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:51:36.920988+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0A931806D2A049C7698_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T17:51:38.326597+05:30",
+        "message_id": "false_120363426039486670@g.us_ACD415D9E0CAEA0C4376E05F0A73EC24_241274569400567@lid",
+        "sender": "[Cash & Attendance] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Cash & Attendance",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T17:52:14.078749+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB07FB0D89F0D0E521CE7_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Purchase of food for vaccinators \n16*35=560\nReimbursement To prasanth",
+        "ai_extracted": {
+            "shead_name": "unknown",
+            "category": "medicine",
+            "quantity": 560,
+            "unit": "rupees",
+            "amount": 0,
+            "notes": "reimbursement to Prasanth",
+            "confidence_score": 1.0,
+            "processed_text": "purchase of food for vaccinators reimbursement to prasanth"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:52:36.044943+05:30",
+        "message_id": "false_120363405469158412@g.us_3ADB31B526A959E5E247_112300593815672@lid",
+        "sender": "[Payments - Sunfra Farms] Nani Chinnam (112300593815672)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Please pay",
+        "ai_extracted": {
+            "shead_name": null,
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "Please pay",
+            "confidence_score": 1.0,
+            "processed_text": "Please pay"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:53:00.237537+05:30",
+        "message_id": "false_120363405469158412@g.us_3A33AE3E81FF8AACE9CD_112300593815672@lid",
+        "sender": "[Payments - Sunfra Farms] Nani Chinnam (112300593815672)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Please pay",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "pay",
+            "confidence_score": 1.0,
+            "processed_text": "Please pay"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:53:21.141213+05:30",
+        "message_id": "false_120363405469158412@g.us_3AF346AFFE78501D90FF_112300593815672@lid",
+        "sender": "[Payments - Sunfra Farms] Nani Chinnam (112300593815672)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Please pay",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "pay",
+            "confidence_score": 0.8,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:53:47.802836+05:30",
+        "message_id": "false_120363405469158412@g.us_3AAF3340783A2E60A9A7_112300593815672@lid",
+        "sender": "[Payments - Sunfra Farms] Nani Chinnam (112300593815672)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Please pay",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "pay",
+            "confidence_score": 1.0,
+            "processed_text": "Please pay"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:54:33.426730+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0B5CFA8E1606410A27C_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Purchase of nail , Gum For sunnam ,and iron cutting blades",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "raw_material",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0,
+            "notes": "nail, Gum For sunnam, and iron cutting blades",
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:54:36.213975+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0B5623A89060D787F4D_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T17:55:03.663581+05:30",
+        "message_id": "false_120363225998735559@g.us_ACEBF5B252E6C3BC8B2BCF26AAA0EE87_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Eggoz out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "Eggoz out",
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:55:30.711348+05:30",
+        "message_id": "false_120363225998735559@g.us_AC97BA11265CBC324BCB57934649154A_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Labour out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "Labour out",
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:56:11.167105+05:30",
+        "message_id": "false_120363046205890693@g.us_AC806F6216E2F19A24810A0C196FF31E_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] Jay Sri Ram (141927630536871)",
+        "sender_name": "Jay Sri Ram",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "653.20 Trays of production 2nd Shead",
+        "ai_extracted": {
+            "shead_name": "653.20",
+            "category": "egg_collection_2",
+            "quantity": 653.2,
+            "unit": "trays",
+            "amount": null,
+            "notes": "production 2nd Shead",
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:56:17.211509+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB02B2936CED0048C0120_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T17:56:25.471324+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0C61A5EDA9632372382_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T17:56:58.195426+05:30",
+        "message_id": "false_120363212822578807@g.us_AC3A4043BD5BDF304A6EB097948A0D06_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead today production",
+        "ai_extracted": {
+            "shead_name": "2nd",
+            "category": "egg_collection_2",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "today production",
+            "confidence_score": 1.0,
+            "processed_text": "Second Shead today's production"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:57:23.034730+05:30",
+        "message_id": "false_120363421181996594@g.us_3EB08EA1520321DBD280CB_184791135711366@lid",
+        "sender": "[Raw Material Prices & Ordering] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Raw Material Prices & Ordering",
+        "raw_text": "okay",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:57:46.726735+05:30",
+        "message_id": "false_120363225998735559@g.us_AC828353F4DB5EAC9AA50D5C473D1C98_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Sparying",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "Sparying",
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:58:07.781043+05:30",
+        "message_id": "false_120363212822578807@g.us_ACB72DB87A71A3F512D57712296051FB_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "8th Shead today production",
+        "ai_extracted": {
+            "shead_name": "8th Shead",
+            "category": "production",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": null,
+            "confidence_score": 1.0,
+            "processed_text": "production"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:58:29.825684+05:30",
+        "message_id": "false_120363212822578807@g.us_AC6F550445883448284D84622E6B2750_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead today production",
+        "ai_extracted": {
+            "shead_name": "4th Shead",
+            "category": "production",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "today",
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:58:53.745051+05:30",
+        "message_id": "false_120363212822578807@g.us_AC3CCEC05151958061C6432469A0EA54_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "8th Shead today production",
+        "ai_extracted": {
+            "shead_name": "Shead 8",
+            "category": "production",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "today",
+            "confidence_score": 1.0,
+            "processed_text": "Production today"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:59:19.763800+05:30",
+        "message_id": "false_120363212822578807@g.us_AC3D6ABBF71E5B41753A87A066953D29_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead getwaals",
+        "ai_extracted": {
+            "shead_name": "2nd Shead",
+            "category": "egg_collection_2",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": null,
+            "confidence_score": 1.0,
+            "processed_text": "Second Shift"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T17:59:39.845337+05:30",
+        "message_id": "false_120363225998735559@g.us_ACD52E79F6C52DFB99453DECF5757A3D_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Hens vehicle katta",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": null,
+            "unit": "",
+            "amount": null,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:00:02.422279+05:30",
+        "message_id": "false_120363212822578807@g.us_AC70301B95A822601B2879AEA5F202CB_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": null,
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:00:22.917192+05:30",
+        "message_id": "false_120363212822578807@g.us_ACC9C8E892CCEF538230F88B7E7BB86D_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead lock",
+        "ai_extracted": {
+            "shead_name": "2nd Shead",
+            "category": "egg_collection_2",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:00:49.934552+05:30",
+        "message_id": "false_120363212822578807@g.us_AC1C4A3684A47EE621511FAFA6DF4BA6_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 7\n7474\n7398\n7798\n7713\n7821\n7664\n7579\n8005\nWeight average .1.531",
+        "ai_extracted": {
+            "shead_name": "Sed 7",
+            "category": "hen_weight",
+            "quantity": 15.31,
+            "unit": "kg",
+            "amount": null,
+            "notes": null,
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:01:11.564107+05:30",
+        "message_id": "false_120363212822578807@g.us_AC5D65632CCB88C45E4BE88F8360544B_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead1",
+        "ai_extracted": {
+            "shead_name": "Shead1",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": null,
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:01:34.443072+05:30",
+        "message_id": "false_120363212822578807@g.us_AC26BD210AEB3F06D6524700A3499E8B_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead lock",
+        "ai_extracted": {
+            "shead_name": "4th Shead",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": null,
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:01:36.709528+05:30",
+        "message_id": "false_120363426039486670@g.us_AC93966673288BC5FAD86544C31FF3C6_241274569400567@lid",
+        "sender": "[Cash & Attendance] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Cash & Attendance",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T18:02:27.677096+05:30",
+        "message_id": "true_183300681367688@lid_3EB0D28BE10B3ADD45C8DD",
+        "sender": "183300681367688",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "\ud83d\udc14 *Daily Farm Report*\n\ud83d\udcc5 29 Jun 2026\n\n\ud83e\udd5a *Egg Collections*\n  \ud83e\udd5a *Collection*\n    General \u2014 1,520 trays\n    *Total \u2014 1,520 trays*\n  \ud83e\udd5a *Eggs*\n    General \u2014 380 trays\n    *Total \u2014 380 trays*\n\n\ud83c\udf3e *Feed & Raw Materials*\n    Description: Sailo feed\nGrand Total Qty: 2 tn\n--------------------\nLocation: Chenchugudi-NVPalli, Veperi, Andhra Pradesh\nDate: June 29, 2026 \u2014 2 tn\n    Sailo feed \u2014 3 tn\n    Location: Chenchugudi-NVPalli, Veperi, Andhra Pradesh\nDate: Jun 29, 2026 \u2014 1 ton\n\n\ud83d\uded2 *Purchases*\n    SOYA DOC\n    Pending: Payment details for Soya bill.\n    Image shows a truck loaded with corn/feed bags being unloaded. No quantity or price details available in the image.\n    Purchase for feed plant including labour charges\n\n\ud83d\udcb8 *Other Expenses*\n    Spraying\n    License Fee (AP Market Act 1966 Section 7(1) and Rule 48)  \u20b94,000.00\n    Flush out\n    Flush out of Shead 2\n    Paid By: Not specified\nPaid To: Sunfra Farms\nBank: State Bank of India (SBI)\nTransaction Ref: XXXXXX5698\nDate: 29 June 2026 at 03:19 PM\nGrand Total Amt: 3136\nRemarks: Payment Successful  \u20b93,136.00\n    Truck 'Madeena' arriving at location. User caption: 'Soya out'. No specific transaction quantities or financial amounts provided in the image.\n    Spraying\n    Water spraying\n    *Total \u2014 \u20b97,136.00*\n\n\ud83d\udcb5 *Sales*\n    Shead 4, Shead 5, Shead 6, Shead 7 \u2014 4,000 trays\n    General \u2014 \u20b983,425.00\n    *Total Revenue \u2014 \u20b983,425.00*\n\n\ud83d\udcca *Profit & Loss*\n  \ud83d\udcb5 Revenue           \u20b983,425.00\n  \ud83d\udcb8 Other Expenses    \u20b97,136.00\n  \ud83d\udcc9 Total Expenses    \u20b97,136.00\n\n\u2705 *Net Profit   \u20b976,289.00*",
+        "ai_extracted": {
+            "shead_name": "Shead 2",
+            "category": "mortality",
+            "quantity": null,
+            "unit": "",
+            "amount": null,
+            "notes": "Flush out of Shead 2",
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:02:29.878740+05:30",
+        "message_id": "false_120363225998735559@g.us_AC6363E2174E025AD28B96BDD3AE2B2A_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T18:02:30.975243+05:30",
+        "message_id": "false_120363225998735559@g.us_ACF2C3B19F388C16FFEC03405F8C81BC_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T18:02:32.743816+05:30",
+        "message_id": "false_120363225998735559@g.us_AC350CAF842D8CE6F307EAFF43014518_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T18:02:56.857232+05:30",
+        "message_id": "false_120363225998735559@g.us_AC46B587CFE8C0C9968709503C771E60_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Mohan eggs bills",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "Mohan eggs bills",
+            "confidence_score": 0.8,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:02:58.405503+05:30",
+        "message_id": "false_120363225998735559@g.us_ACA0A5215DF71A1D70F49F81CF6AF642_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T18:02:59.112334+05:30",
+        "message_id": "false_120363046205890693@g.us_ACE020C36747D8530C10D607386FDB2B_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] Jay Sri Ram (141927630536871)",
+        "sender_name": "Jay Sri Ram",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T18:03:22.830826+05:30",
+        "message_id": "false_120363046205890693@g.us_ACA6A7FB3F6D48B8A835C1EE6E47676F_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] Jay Sri Ram (141927630536871)",
+        "sender_name": "Jay Sri Ram",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "600.9 Trays of production 7th Shead",
+        "ai_extracted": {
+            "shead_name": "7th Shead",
+            "category": "egg_collection_1",
+            "quantity": 600.9,
+            "unit": "trays",
+            "amount": null,
+            "notes": null,
+            "confidence_score": 1.0,
+            "processed_text": null
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:03:47.621442+05:30",
+        "message_id": "false_120363405469158412@g.us_3ABF26E40A65D3F21B85_112300593815672@lid",
+        "sender": "[Payments - Sunfra Farms] Nani Chinnam (112300593815672)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Please pay",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "Please pay",
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:06:09.292064+05:30",
+        "message_id": "false_120363225998735559@g.us_AC4BFA2DE410B4AAD7DED402F2F6B276_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Out",
+        "ai_extracted": {
+            "shead_name": "Shed 1",
+            "category": "egg_collection_1",
+            "quantity": 50,
+            "unit": "trays",
+            "amount": 250,
+            "notes": "paid to/by for payment",
+            "confidence_score": 0.9,
+            "processed_text": "A man is sitting on a motorcycle with a basket on the back."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:08:20.596711+05:30",
+        "message_id": "false_120363225998735559@g.us_AC605CE7DAA869AE17D9F3208F1F8893_4488677085185@lid",
+        "sender": "[120363225998735559] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "120363225998735559",
+        "raw_text": "Out",
+        "ai_extracted": {
+            "shead_name": "Shead 1, Shead 2",
+            "category": "egg_collection",
+            "quantity": 40,
+            "unit": "trays",
+            "amount": 320.0,
+            "notes": "specific names, details, paid to/by for payments",
+            "confidence_score": 0.75,
+            "processed_text": "English translation"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:09:03.537344+05:30",
+        "message_id": "true_917975209680@c.us_AC6D0BF0C6ABFDC97FB87ABD5A5BFE70",
+        "sender": "917975209680",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T18:09:03.892007+05:30",
+        "message_id": "true_917975209680@c.us_AC5E3328F319D1AF13B416E251E67398",
+        "sender": "917975209680",
+        "sender_name": "",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T18:13:55.023261+05:30",
+        "message_id": "false_120363212822578807@g.us_ACAC53AF2DC1D827A08BFCAE339B63DF_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T18:15:58.276273+05:30",
+        "message_id": "false_120363212822578807@g.us_AC7A6DDD801EF3527CE657DB9688B59C_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 5",
+        "ai_extracted": {
+            "shead_name": "Sed 1",
+            "category": "egg_collection_2",
+            "quantity": 7,
+            "unit": "trays",
+            "amount": 56,
+            "notes": "Bhagat Singh",
+            "confidence_score": 0.95,
+            "processed_text": "5th week"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:17:37.020295+05:30",
+        "message_id": "false_120363212822578807@g.us_ACABFFFBE5723ABC34A8701AECED86EC_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "egg_collection_2",
+            "quantity": 490,
+            "unit": "trays",
+            "amount": 2135,
+            "notes": "paid to/by - 6 eggs",
+            "confidence_score": 0.8,
+            "processed_text": "6 head 700gm @ E1 = 92.50"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:17:55.305950+05:30",
+        "message_id": "false_120363046205890693@g.us_AC4A140ADE1C3E30ABD2D699FE3518A5_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] Jay Sri Ram (141927630536871)",
+        "sender_name": "Jay Sri Ram",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T18:19:32.402349+05:30",
+        "message_id": "false_120363046205890693@g.us_AC8050E70A750229CF9C7EB0A83F6FAA_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] Jay Sri Ram (141927630536871)",
+        "sender_name": "Jay Sri Ram",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "218.1 Trays of production 1st Shead second collection",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "production",
+            "quantity": "218.1",
+            "unit": "trays",
+            "amount": 0,
+            "notes": "",
+            "confidence_score": 0.9,
+            "processed_text": "218.1 Trays of production 1st Shead second collection"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:20:58.247315+05:30",
+        "message_id": "false_120363046205890693@g.us_ACCDADD5AF3B14E9FB7EB744C0FA1FBA_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] Jay Sri Ram (141927630536871)",
+        "sender_name": "Jay Sri Ram",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "211 Trays production 1st Shead second collection",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "egg_collection_1",
+            "quantity": 21,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "2nd Shead second collection",
+            "confidence_score": 0.9,
+            "processed_text": "Trays production 1st shead"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:22:15.337719+05:30",
+        "message_id": "false_120363225998735559@g.us_AC1D3B7261AEE500140F61A37D11C451_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "Shed 3",
+            "category": "hen_weight",
+            "quantity": 1,
+            "unit": "kg",
+            "amount": 650,
+            "notes": "2nd",
+            "confidence_score": 0.8,
+            "processed_text": "English translation"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:24:58.416915+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0E4F65CA2E9812CAA1B_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "egg_collection_1",
+            "quantity": 50,
+            "unit": "trays",
+            "amount": 500,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "50 trays of eggs"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:27:03.478541+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0E577003A5DCE3C5114_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "food expenses",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "egg_collection",
+            "quantity": 69,
+            "unit": "trays",
+            "amount": 150.4,
+            "notes": "paid to",
+            "confidence_score": 0.8,
+            "processed_text": "Shead 3\n150.40\n69 trays @ 2.27 per tray\n150.40 = 69 * 2.27"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:29:06.990612+05:30",
+        "message_id": "false_120363225998735559@g.us_ACCF29EDC6296EF00AC329859770568C_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Culling started",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "mortality",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "culling",
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:31:17.079992+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB067F7D9B1DF165F633D_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "electrical item",
+        "ai_extracted": {
+            "shead_name": "Shead 2",
+            "category": "egg_collection_1",
+            "quantity": 75,
+            "unit": "trays",
+            "amount": 360,
+            "notes": "",
+            "confidence_score": 0.85,
+            "processed_text": "Electrical item"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:32:36.771392+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0586C1CA1DBB671DEAB_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "bike petrol",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "egg_collection_2",
+            "quantity": 50,
+            "unit": "trays",
+            "amount": 2500,
+            "notes": "paid to/by for payments",
+            "confidence_score": 0.9,
+            "processed_text": "This is a farm data extraction"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:33:34.759062+05:30",
+        "message_id": "false_120363225998735559@g.us_ACDFD9FA272488D75EFA174EF86DEAA7_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T18:34:59.073141+05:30",
+        "message_id": "false_120363225998735559@g.us_AC1D00464E60AD90DB4B3BD60AD63B62_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Labour out",
+        "ai_extracted": {
+            "shead_name": "Shed 3",
+            "category": "hen_weight",
+            "quantity": 0,
+            "unit": "kg",
+            "amount": 15,
+            "notes": "Out of focus text is present in the image, but I cannot identify the specific names or details.",
+            "confidence_score": 0.7,
+            "processed_text": "English translation of the text in the image"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:36:20.120812+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB02E4CDA0EB8AB5B4DD6_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "courier Charges",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "feed",
+            "quantity": 10,
+            "unit": "kg",
+            "amount": 150
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:39:18.081224+05:30",
+        "message_id": "false_120363225998735559@g.us_AC406B9C8E3944CA74D4196E38F318CF_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Out",
+        "ai_extracted": {
+            "shead_name": "SHEAD - 3",
+            "category": "hen_weight",
+            "quantity": 4,
+            "unit": "kg",
+            "amount": 100,
+            "notes": "NIL",
+            "confidence_score": 0.9,
+            "processed_text": "Image of a woman standing in front of a building."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:40:46.098222+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0149ADD59416ED08BE5_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "petrol",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "sales",
+            "quantity": 120,
+            "unit": "trays",
+            "amount": 675,
+            "notes": "paid to/by: MICHEL ANTONIO CARTA",
+            "confidence_score": 0.9,
+            "processed_text": "Egg Collection / Sale"
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:44:35.398058+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0862CB86D9FBCCC3263_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "CCTV material Purchase",
+        "ai_extracted": {
+            "shead_name": "Sead 3",
+            "category": "feed/raw_material",
+            "quantity": 25,
+            "unit": "bags",
+            "amount": 700,
+            "notes": "Purchase",
+            "confidence_score": 0.8,
+            "processed_text": "The image contains a spreadsheet with information about a poultry farm. The relevant sections for extraction are: \n\n- Shead 3: This is likely the name of a specific shed or section in the farm.\n\n- Feed/raw_material: This is the category, indicating that the data pertains to feed or raw materials for the birds at this facility. The quantity is 25 bags, and there is no visible price per bag. However, there are calculations written in the image (like '25*60'), which suggest that each bag has a cost of 60 units of currency. Based on these inputs, we can calculate the total amount as follows: \n\n- Total Amount: 700 (25 bags * 60 units/bag = 1500, divided by 1.33 for taxes and other expenses, resulting in a final total of 700)."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:46:16.676705+05:30",
+        "message_id": "false_120363046205890693@g.us_AC6CE01110BB0CC7705A5219A874E6F2_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] Jay Sri Ram (141927630536871)",
+        "sender_name": "Jay Sri Ram",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "424.26 Trays of production 3rd Shead",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "production",
+            "quantity": 424,
+            "unit": "trays",
+            "amount": 1273.05,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "Eggs in the image are on a table and there are no other items or textual information to provide."
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:48:25.488929+05:30",
+        "message_id": "false_120363111757096162@g.us_A5D4E3C9C381C9292C73A5E38F34A450_234952327213239@lid",
+        "sender": "[Feed Plant] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T18:48:32.564179+05:30",
+        "message_id": "false_120363111757096162@g.us_A52FBB53545FE367E141BB610FF8A970_234952327213239@lid",
+        "sender": "[Feed Plant] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-06-29T18:50:32.882255+05:30",
+        "message_id": "false_120363046205890693@g.us_ACAC9C41B87F5259695328C09DC58B86_241274569400567@lid",
+        "sender": "[Egg Gowdown & Sales] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "All sheds productions completed",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "production",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "All sheds",
+            "confidence_score": 0.8,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-06-29T18:51:49.133142+05:30",
+        "message_id": "false_120363404679476946@g.us_3A46BEB7C973CD1E04F0_112300593815672@lid",
+        "sender": "[Vendor Daily Invoices] Nani Chinnam (112300593815672)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Vendor Daily Invoices",
+        "raw_text": "NECC CHITTOOR ZONE 100 Egg Rate for 30.6.2026\nChittoor-713 (same rate)\nChennai-720\n(For the information of trade & industry) \n29.6.26 Cull Bird Price Rs.115/-\nB.Srinivasulu\nZonal Chairman \nNECC Chittoor Zone",
+        "ai_extracted": {
+            "shead_name": "NECC CHITTOOR ZONE 100",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "30.6.2026, Chittoor-713 (same rate), Chennai-720, B.Srinivasulu, Zonal Chairman",
+            "confidence_score": 1.0,
+            "processed_text": "Information regarding egg rates and cull bird price for NECC Chittoor Zone"
+        }
     }
 ]
