@@ -1,16 +1,19 @@
 import os
 import json
 import logging
+import requests
 from datetime import datetime, timezone, timedelta
 IST = timezone(timedelta(hours=5, minutes=30))
 from fastapi import FastAPI, Request, HTTPException
+from pydantic import BaseModel
+from typing import List, Optional
 from contextlib import asynccontextmanager
 
 from db.database import engine, Base, SessionLocal
-from db.models import Whitelist, RawMessage, ProcessedData
+from db.models import Whitelist, RawMessage, ProcessedData, Group, Employee, SystemSetting, CustomAlarm
 from services.ai_processor import process_text, process_image, process_document
 from services.waha_service import download_waha_media, get_waha_chat_name, send_waha_message, send_waha_file
-from services.scheduler import setup_scheduler
+from services.scheduler import setup_scheduler, scheduler, schedule_custom_alarm
 from core.config import settings
 
 logging.basicConfig(level=logging.INFO)
@@ -32,6 +35,9 @@ from fastapi.responses import FileResponse
 app = FastAPI(title="WAHA Farm Automation API", lifespan=lifespan)
 os.makedirs("/app/media/reports", exist_ok=True)
 app.mount("/media", StaticFiles(directory="/app/media"), name="media")
+
+os.makedirs("/app/static", exist_ok=True)
+app.mount("/ui", StaticFiles(directory="/app/static", html=True), name="ui")
 
 @app.get("/messages.json")
 async def get_messages_json():
@@ -205,46 +211,78 @@ async def waha_webhook(request: Request):
     # We can close the raw_messages db session now since it's idle during AI
     db.close()
     
-    # If no media or media processing failed/skipped, fallback to text if available
-    if not ai_result and text:
-        ai_result = process_text(text)
+    # Determine the category from the vision result (if any)
+    vision_cat = "unknown"
+    if ai_result:
+        if isinstance(ai_result, list) and len(ai_result) > 0:
+            vision_cat = ai_result[0].get("category", "unknown")
+        elif isinstance(ai_result, dict):
+            if "records" in ai_result and isinstance(ai_result["records"], list) and len(ai_result["records"]) > 0:
+                vision_cat = ai_result["records"][0].get("category", "unknown")
+            else:
+                vision_cat = ai_result.get("category", "unknown")
+
+    # If no media, or media processing failed/returned unknown category, fallback to text processing if caption is available
+    if (not ai_result or vision_cat == "unknown") and text:
+        text_ai_result = process_text(text)
+        if text_ai_result:
+            text_cat = "unknown"
+            if isinstance(text_ai_result, list) and len(text_ai_result) > 0:
+                text_cat = text_ai_result[0].get("category", "unknown")
+            elif isinstance(text_ai_result, dict):
+                if "records" in text_ai_result and isinstance(text_ai_result["records"], list) and len(text_ai_result["records"]) > 0:
+                    text_cat = text_ai_result["records"][0].get("category", "unknown")
+                else:
+                    text_cat = text_ai_result.get("category", "unknown")
+            
+            # Only use text result if it succeeded in finding a known category
+            if text_cat != "unknown":
+                ai_result = text_ai_result
+                source_type = "text"
 
     # 5. Save Processed Data
     if ai_result:
-        # Resolve to a single record dictionary
-        record = ai_result
-        if isinstance(ai_result, list) and len(ai_result) > 0:
-            record = ai_result[0]
-        elif isinstance(ai_result, dict) and "records" in ai_result and isinstance(ai_result["records"], list) and len(ai_result["records"]) > 0:
-            record = ai_result["records"][0]
-            
-        if isinstance(record, dict) and record.get("category", "unknown") != "unknown":
-            fresh_db = SessionLocal()
-            try:
-                proc_data = ProcessedData(
-                    shead_name=record.get("shead_name") or "",
-                    category=record.get("category") or "unknown",
-                    quantity=record.get("quantity") or 0,
-                    unit=record.get("unit") or "",
-                    amount=record.get("amount") or 0.0,
-                    notes=record.get("notes") or "",
-                    sender=display_sender,
-                    group_name=group_name_str,
-                    source_type=source_type,
-                    confidence_score=record.get("confidence_score") or 0.0,
-                    processed_time=datetime.now(IST).replace(tzinfo=None),
-                    message_id=message_id
-                )
-                fresh_db.add(proc_data)
+        # Resolve to a list of record dictionaries
+        records = []
+        if isinstance(ai_result, list):
+            records = ai_result
+        elif isinstance(ai_result, dict):
+            if "records" in ai_result and isinstance(ai_result["records"], list):
+                records = ai_result["records"]
+            else:
+                records = [ai_result]
+                
+        valid_records_saved = 0
+        fresh_db = SessionLocal()
+        try:
+            for record in records:
+                if isinstance(record, dict) and record.get("category", "unknown") != "unknown":
+                    proc_data = ProcessedData(
+                        shead_name=record.get("shead_name") or "",
+                        category=record.get("category") or "unknown",
+                        quantity=record.get("quantity") or 0,
+                        unit=record.get("unit") or "",
+                        amount=record.get("amount") or 0.0,
+                        notes=record.get("notes") or "",
+                        sender=display_sender,
+                        group_name=group_name_str,
+                        source_type=source_type,
+                        confidence_score=record.get("confidence_score") or 0.0,
+                        processed_time=datetime.now(IST).replace(tzinfo=None),
+                        message_id=message_id
+                    )
+                    fresh_db.add(proc_data)
+                    valid_records_saved += 1
+            if valid_records_saved > 0:
                 fresh_db.commit()
-                logger.info(f"Successfully processed message {message_id}")
-            except Exception as e:
-                fresh_db.rollback()
-                logger.error(f"Failed to save processed data (fresh session): {e}")
-            finally:
-                fresh_db.close()
-        else:
-            logger.info(f"Ignored non-farm message. Category is unknown or invalid record format. Text: {text}")
+                logger.info(f"Successfully processed message {message_id}: saved {valid_records_saved} records.")
+            else:
+                logger.info(f"Ignored non-farm message or no valid categories found. Text: {text}")
+        except Exception as e:
+            fresh_db.rollback()
+            logger.error(f"Failed to save processed data (fresh session): {e}")
+        finally:
+            fresh_db.close()
 
     # 6. Save to local JSON file
     try:
@@ -277,3 +315,237 @@ async def waha_webhook(request: Request):
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
+
+# --- UI API Routes for Groups and Employees ---
+
+class GroupCreate(BaseModel):
+    name: str
+    whatsapp_group_id: str
+
+class EmployeeCreate(BaseModel):
+    name: str
+    phone_number: str
+    group_id: int
+    report_responsibility: str
+
+class ReminderTimeUpdate(BaseModel):
+    time: str
+
+@app.get("/api/settings/reminders")
+def get_reminder_settings():
+    db = SessionLocal()
+    try:
+        setting = db.query(SystemSetting).filter_by(key="targeted_reminder_time").first()
+        return {"time": setting.value if setting else "18:10"}
+    finally:
+        db.close()
+
+@app.post("/api/settings/reminders")
+def update_reminder_settings(settings: ReminderTimeUpdate):
+    db = SessionLocal()
+    try:
+        setting = db.query(SystemSetting).filter_by(key="targeted_reminder_time").first()
+        if not setting:
+            setting = SystemSetting(key="targeted_reminder_time", value=settings.time)
+            db.add(setting)
+        else:
+            setting.value = settings.time
+        db.commit()
+        
+        # Reschedule job in APScheduler
+        try:
+            hour, minute = map(int, settings.time.split(":"))
+            from apscheduler.triggers.cron import CronTrigger
+            scheduler.reschedule_job('targeted_reminder_job', trigger=CronTrigger(hour=hour, minute=minute, timezone="Asia/Kolkata"))
+        except Exception as e:
+            logger.error(f"Failed to reschedule job: {e}")
+            
+        return {"status": "success", "time": settings.time}
+    finally:
+        db.close()
+
+class AlarmCreate(BaseModel):
+    target_type: str
+    target_id: int
+    task_notes: str
+    trigger_time: datetime
+
+@app.post("/api/alarms")
+def create_alarm(alarm: AlarmCreate):
+    db = SessionLocal()
+    try:
+        new_alarm = CustomAlarm(
+            target_type=alarm.target_type,
+            target_id=alarm.target_id,
+            task_notes=alarm.task_notes,
+            trigger_time=alarm.trigger_time,
+            status='pending'
+        )
+        db.add(new_alarm)
+        db.commit()
+        db.refresh(new_alarm)
+        
+        schedule_custom_alarm(new_alarm.id, new_alarm.trigger_time)
+        return {"status": "success", "alarm_id": new_alarm.id}
+    finally:
+        db.close()
+
+@app.get("/api/alarms")
+def get_alarms():
+    db = SessionLocal()
+    try:
+        alarms = db.query(CustomAlarm).order_by(CustomAlarm.created_at.desc()).all()
+        result = []
+        for a in alarms:
+            target_name = "Unknown"
+            if a.target_type == 'employee':
+                emp = db.query(Employee).filter(Employee.id == a.target_id).first()
+                if emp: target_name = emp.name
+            elif a.target_type == 'group':
+                grp = db.query(Group).filter(Group.id == a.target_id).first()
+                if grp: target_name = grp.name
+                
+            result.append({
+                "id": a.id,
+                "target_type": a.target_type,
+                "target_name": target_name,
+                "task_notes": a.task_notes,
+                "trigger_time": a.trigger_time.isoformat(),
+                "status": a.status
+            })
+        return result
+    finally:
+        db.close()
+
+@app.delete("/api/alarms/{alarm_id}")
+def delete_alarm(alarm_id: int):
+    db = SessionLocal()
+    try:
+        alarm = db.query(CustomAlarm).filter(CustomAlarm.id == alarm_id).first()
+        if alarm:
+            # Try to unschedule from apscheduler
+            try:
+                scheduler.remove_job(f"custom_alarm_{alarm_id}")
+            except Exception:
+                pass
+            db.delete(alarm)
+            db.commit()
+        return {"status": "success"}
+    finally:
+        db.close()
+
+@app.post("/api/alarms/{alarm_id}/trigger")
+def trigger_alarm_manually(alarm_id: int):
+    # Try to unschedule the job if it exists since we're manually triggering it now
+    try:
+        scheduler.remove_job(f"custom_alarm_{alarm_id}")
+    except Exception:
+        pass
+    
+    # Execute immediately
+    from services.scheduler import execute_custom_alarm
+    execute_custom_alarm(alarm_id)
+    return {"status": "success"}
+
+@app.get("/api/waha/groups")
+def get_waha_groups():
+    url = f"{settings.WAHA_URL}/api/{settings.WAHA_SESSION}/groups"
+    headers = {"Accept": "application/json"}
+    api_key = os.getenv("WAHA_API_KEY", "123")
+    if api_key: headers["X-Api-Key"] = api_key
+    try:
+        response = requests.get(url, headers=headers, timeout=5)
+        if response.status_code == 200:
+            groups = []
+            data = response.json()
+            if isinstance(data, list):
+                for g in data:
+                    groups.append({"id": g.get("id"), "name": g.get("subject") or g.get("name")})
+            elif isinstance(data, dict):
+                for k, v in data.items():
+                    groups.append({"id": k, "name": v.get("subject") or v.get("name")})
+            return {"status": "success", "groups": groups}
+        return {"status": "error", "message": "Failed to fetch groups from WAHA"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@app.get("/api/groups")
+def get_groups():
+    db = SessionLocal()
+    try:
+        groups = db.query(Group).all()
+        return [{"id": g.id, "name": g.name, "whatsapp_group_id": g.whatsapp_group_id} for g in groups]
+    finally:
+        db.close()
+
+@app.post("/api/groups")
+def create_group(group: GroupCreate):
+    db = SessionLocal()
+    try:
+        new_group = Group(name=group.name, whatsapp_group_id=group.whatsapp_group_id)
+        db.add(new_group)
+        db.commit()
+        db.refresh(new_group)
+        return {"id": new_group.id, "name": new_group.name, "whatsapp_group_id": new_group.whatsapp_group_id}
+    finally:
+        db.close()
+
+@app.delete("/api/groups/{group_id}")
+def delete_group(group_id: int):
+    db = SessionLocal()
+    try:
+        group = db.query(Group).filter(Group.id == group_id).first()
+        if not group:
+            raise HTTPException(status_code=404, detail="Group not found")
+        db.delete(group)
+        db.commit()
+        return {"status": "success"}
+    finally:
+        db.close()
+
+@app.get("/api/employees")
+def get_employees():
+    db = SessionLocal()
+    try:
+        employees = db.query(Employee).all()
+        return [
+            {
+                "id": e.id, 
+                "name": e.name, 
+                "phone_number": e.phone_number, 
+                "group_id": e.group_id, 
+                "report_responsibility": e.report_responsibility
+            } for e in employees
+        ]
+    finally:
+        db.close()
+
+@app.post("/api/employees")
+def create_employee(employee: EmployeeCreate):
+    db = SessionLocal()
+    try:
+        new_emp = Employee(
+            name=employee.name,
+            phone_number=employee.phone_number,
+            group_id=employee.group_id,
+            report_responsibility=employee.report_responsibility
+        )
+        db.add(new_emp)
+        db.commit()
+        db.refresh(new_emp)
+        return {"status": "success", "id": new_emp.id}
+    finally:
+        db.close()
+
+@app.delete("/api/employees/{employee_id}")
+def delete_employee(employee_id: int):
+    db = SessionLocal()
+    try:
+        emp = db.query(Employee).filter(Employee.id == employee_id).first()
+        if not emp:
+            raise HTTPException(status_code=404, detail="Employee not found")
+        db.delete(emp)
+        db.commit()
+        return {"status": "success"}
+    finally:
+        db.close()

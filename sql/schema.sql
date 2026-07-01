@@ -59,3 +59,22 @@ CREATE TABLE IF NOT EXISTS report_recipients (
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 5. Groups Table
+CREATE TABLE IF NOT EXISTS php_groups (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    whatsapp_group_id VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 6. Employees Table
+CREATE TABLE IF NOT EXISTS php_employees (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(50) NOT NULL,
+    group_id INT NOT NULL,
+    report_responsibility VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (group_id) REFERENCES php_groups(id) ON DELETE CASCADE
+);

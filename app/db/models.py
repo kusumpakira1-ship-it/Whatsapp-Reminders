@@ -2,8 +2,23 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, Enum, J
 from sqlalchemy.sql import func
 from db.database import Base
 
+class SystemSetting(Base):
+    __tablename__ = "system_settings"
+    key = Column(String(50), primary_key=True, index=True)
+    value = Column(String(255))
+
+class CustomAlarm(Base):
+    __tablename__ = "custom_alarms"
+    id = Column(Integer, primary_key=True, index=True)
+    target_type = Column(String(20), nullable=False) # 'employee' or 'group'
+    target_id = Column(Integer, nullable=False)
+    task_notes = Column(Text, nullable=False)
+    trigger_time = Column(DateTime, nullable=False)
+    status = Column(String(20), default='pending') # 'pending', 'sent', 'cancelled'
+    created_at = Column(DateTime, default=func.now())
+
 class Whitelist(Base):
-    __tablename__ = "whitelist"
+    __tablename__ = "php_whitelist"
     id = Column(Integer, primary_key=True, index=True)
     phone_number = Column(String(50), unique=True, index=True)
     group_id = Column(String(100), unique=True, index=True)
@@ -11,7 +26,7 @@ class Whitelist(Base):
     created_at = Column(DateTime, default=func.now())
 
 class RawMessage(Base):
-    __tablename__ = "raw_messages"
+    __tablename__ = "php_raw_messages"
     id = Column(Integer, primary_key=True, index=True)
     message_id = Column(String(255), unique=True, index=True, nullable=False)
     sender = Column(String(100), nullable=False)
@@ -24,7 +39,7 @@ class RawMessage(Base):
     created_at = Column(DateTime, default=func.now())
 
 class ProcessedData(Base):
-    __tablename__ = "processed_data"
+    __tablename__ = "php_processed_data"
     id = Column(Integer, primary_key=True, index=True)
     shead_name = Column(String(255))
     category = Column(Enum(
@@ -54,12 +69,28 @@ class ProcessedData(Base):
     source_type = Column(Enum('text', 'image', 'document'), default='text')
     confidence_score = Column(DECIMAL(3, 2))
     processed_time = Column(DateTime, nullable=False)
-    message_id = Column(String(255), ForeignKey("raw_messages.message_id", ondelete="CASCADE"), nullable=False)
+    message_id = Column(String(255), ForeignKey("php_raw_messages.message_id", ondelete="CASCADE"), nullable=False)
     created_at = Column(DateTime, default=func.now())
 
 class ReportRecipient(Base):
-    __tablename__ = "report_recipients"
+    __tablename__ = "php_report_recipients"
     id = Column(Integer, primary_key=True, index=True)
     phone_number = Column(String(50), unique=True, index=True, nullable=False)
     is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=func.now())
+
+class Group(Base):
+    __tablename__ = "php_groups"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    whatsapp_group_id = Column(String(255), unique=True, index=True, nullable=False)
+    created_at = Column(DateTime, default=func.now())
+
+class Employee(Base):
+    __tablename__ = "php_employees"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    phone_number = Column(String(50), nullable=False)
+    group_id = Column(Integer, ForeignKey("php_groups.id", ondelete="CASCADE"), nullable=False)
+    report_responsibility = Column(String(100), nullable=False) # e.g. 'egg_collection', 'feed', 'sales'
     created_at = Column(DateTime, default=func.now())

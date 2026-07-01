@@ -2,7 +2,7 @@ import os
 import requests
 from core.config import settings
 
-def send_waha_message(chat_id: str, text: str) -> bool:
+def send_waha_message(chat_id: str, text: str, session: str = None) -> bool:
     """Send a text message via WAHA."""
     if not chat_id.endswith('@c.us') and not chat_id.endswith('@g.us') and not chat_id.endswith('@lid'):
         chat_id += '@c.us'
@@ -11,7 +11,7 @@ def send_waha_message(chat_id: str, text: str) -> bool:
     payload = {
         "chatId": chat_id,
         "text": text,
-        "session": settings.WAHA_SESSION
+        "session": session if session else settings.WAHA_SESSION
     }
     
     headers = {"Accept": "application/json"}
@@ -28,7 +28,7 @@ def send_waha_message(chat_id: str, text: str) -> bool:
         print(f"Failed to send WAHA message: {e}")
         return False
 
-def send_waha_file(chat_id: str, file_path: str, caption: str = "") -> bool:
+def send_waha_file(chat_id: str, file_path: str, caption: str = "", session: str = None) -> bool:
     """Send a file (PDF/Excel) via WAHA using multiform-data or file URL depending on WAHA config.
     WAHA Core supports sending files by URL or uploading them."""
     
@@ -59,7 +59,7 @@ def send_waha_file(chat_id: str, file_path: str, caption: str = "") -> bool:
                 "url": file_url
             },
             "caption": caption,
-            "session": settings.WAHA_SESSION
+            "session": session if session else settings.WAHA_SESSION
         }
         
         response = requests.post(url, json=payload, headers=headers)
@@ -171,3 +171,39 @@ def get_waha_chat_name(chat_id: str) -> str:
     except Exception as e:
         print(f"Failed to fetch chat name for {chat_id}: {e}")
     return chat_id
+
+def get_session_status(session: str) -> str:
+    """Fetch the status of a WAHA session."""
+    url = f"{settings.WAHA_URL}/api/sessions/{session}"
+    headers = {"Accept": "application/json"}
+    api_key = os.getenv("WAHA_API_KEY", "123")
+    if api_key:
+        headers["X-Api-Key"] = api_key
+    try:
+        response = requests.get(url, headers=headers, timeout=5)
+        if response.status_code == 200:
+            return response.json().get('status', 'UNKNOWN')
+        return "ERROR"
+    except Exception as e:
+        print(f"Failed to fetch session status: {e}")
+        return "ERROR"
+
+def get_session_qr(session: str) -> str:
+    """Download the QR code image for a WAHA session and return the local file path."""
+    url = f"{settings.WAHA_URL}/api/{session}/auth/qr?format=image"
+    headers = {"Accept": "image/png"}
+    api_key = os.getenv("WAHA_API_KEY", "123")
+    if api_key:
+        headers["X-Api-Key"] = api_key
+    try:
+        response = requests.get(url, headers=headers, timeout=10)
+        if response.status_code == 200:
+            os.makedirs("/app/media", exist_ok=True)
+            file_path = f"/app/media/qr_{session}.png"
+            with open(file_path, "wb") as f:
+                f.write(response.content)
+            return file_path
+        return ""
+    except Exception as e:
+        print(f"Failed to download session QR: {e}")
+        return ""

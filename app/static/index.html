@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Automation Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/ui/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">Farm Auto</div>
+            <nav>
+                <a href="#" class="nav-item active" data-target="dashboard">Dashboard</a>
+                <a href="#" class="nav-item" data-target="groups">Groups</a>
+                <a href="#" class="nav-item" data-target="employees">Employees</a>
+                <a href="#" class="nav-item" data-target="alarms">Alarms & Tasks</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header>
+                <h1>Management Dashboard</h1>
+                <div class="user-profile">Admin</div>
+            </header>
+
+            <!-- Dashboard View -->
+            <section id="dashboard" class="view active">
+                <div class="card stat-card">
+                    <h3>Total Groups</h3>
+                    <div class="stat-value" id="stat-groups">0</div>
+                </div>
+                <div class="card stat-card">
+                    <h3>Total Employees</h3>
+                    <div class="stat-value" id="stat-employees">0</div>
+                </div>
+            </section>
+
+            <!-- Groups View -->
+            <section id="groups" class="view">
+                <div class="header-row">
+                    <h2>Groups Management</h2>
+                    <button class="btn btn-primary" onclick="openModal('groupModal')">Add Group</button>
+                </div>
+                <div class="card table-card">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Group Name</th>
+                                <th>WhatsApp Group ID</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="groups-tbody">
+                            <!-- Rows injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Employees View -->
+            <section id="employees" class="view">
+                <div class="header-row">
+                    <h2>Employees Management</h2>
+                    <button class="btn btn-primary" onclick="openModal('employeeModal')">Add Employee</button>
+                </div>
+                <div class="card table-card">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Phone</th>
+                                <th>Group</th>
+                                <th>Report Responsibility</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employees-tbody">
+                            <!-- Rows injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <!-- Alarms View -->
+            <section id="alarms" class="view">
+                <div class="header-row">
+                    <h2>Alarms & Tasks</h2>
+                    <button class="btn btn-primary" onclick="openModal('alarmModal')">Create Alarm</button>
+                </div>
+                <div class="card table-card">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Target</th>
+                                <th>Name</th>
+                                <th>Task / Notes</th>
+                                <th>Trigger Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alarms-tbody">
+                            <!-- Rows injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Group Modal -->
+    <div id="groupModal" class="modal">
+        <div class="modal-content card">
+            <h3>Add New Group</h3>
+            <form id="groupForm" onsubmit="handleGroupSubmit(event)">
+                <div class="form-group">
+                    <label>Select WhatsApp Group</label>
+                    <select id="groupWhatsappId" required>
+                        <option value="">Loading groups from WhatsApp...</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('groupModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Group</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Employee Modal -->
+    <div id="employeeModal" class="modal">
+        <div class="modal-content card">
+            <h3>Add New Employee</h3>
+            <form id="employeeForm" onsubmit="handleEmployeeSubmit(event)">
+                <div class="form-group">
+                    <label>Employee Name</label>
+                    <input type="text" id="empName" required placeholder="e.g., John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="text" id="empPhone" required placeholder="e.g., 919876543210">
+                </div>
+                <div class="form-group">
+                    <label>Assign to Group</label>
+                    <select id="empGroup" required>
+                        <option value="">Select Group...</option>
+                        <!-- Options injected via JS -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Report Responsibility</label>
+                    <select id="empReport" required>
+                        <option value="egg_collection">Egg Collection (A Report)</option>
+                        <option value="feed">Feed (B Report)</option>
+                        <option value="expense">Expenses</option>
+                        <option value="sales">Sales</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('employeeModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Employee</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Alarm Modal -->
+    <div id="alarmModal" class="modal">
+        <div class="modal-content card">
+            <h3>Create Custom Alarm</h3>
+            <form id="alarmForm" onsubmit="handleAlarmSubmit(event)">
+                <div class="form-group">
+                    <label>Target Type</label>
+                    <select id="alarmTargetType" onchange="updateAlarmTargetSelect()" required>
+                        <option value="employee">Employee</option>
+                        <option value="group">Group</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Select Target</label>
+                    <select id="alarmTargetSelect" required>
+                        <!-- Options injected via JS -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Task / Notes</label>
+                    <textarea id="alarmNotes" required placeholder="What should they do?" rows="3" style="width:100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Schedule Mode</label>
+                    <div style="display: flex; gap: 1rem; margin-bottom: 0.5rem;">
+                        <label><input type="radio" name="alarmMode" value="datetime" checked onchange="toggleAlarmMode()"> Specific Date & Time</label>
+                        <label><input type="radio" name="alarmMode" value="timer" onchange="toggleAlarmMode()"> Timer Countdown</label>
+                    </div>
+                </div>
+                
+                <div id="alarmDatetimeSection" class="form-group">
+                    <label>Select Date & Time (IST)</label>
+                    <input type="datetime-local" id="alarmDatetime" step="1" style="width:100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                </div>
+                
+                <div id="alarmTimerSection" class="form-group" style="display:none;">
+                    <label>Trigger After:</label>
+                    <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                        <input type="number" id="alarmDays" min="0" value="0" style="width: 60px; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                        <span style="font-size: 0.9rem; margin-right: 0.5rem;">Days</span>
+                        
+                        <input type="number" id="alarmHours" min="0" max="23" value="0" style="width: 60px; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                        <span style="font-size: 0.9rem; margin-right: 0.5rem;">Hrs</span>
+                        
+                        <input type="number" id="alarmMins" min="0" max="59" value="0" style="width: 60px; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                        <span style="font-size: 0.9rem; margin-right: 0.5rem;">Mins</span>
+                        
+                        <input type="number" id="alarmSecs" min="0" max="59" value="0" style="width: 60px; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                        <span style="font-size: 0.9rem;">Secs</span>
+                    </div>
+                </div>
+
+                <div class="modal-actions" style="margin-top: 1rem;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('alarmModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Alarm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="/ui/app.js"></script>
+</body>
+</html>

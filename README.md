@@ -69,7 +69,7 @@ This is a complete, enterprise-grade, Docker-based WhatsApp automation system ta
   - Generates standard **PDF** reports using ReportLab.
   - Outputs a **WhatsApp summary** message listing collections, dispatches, feed, medicine, sales, and total profit/loss calculations.
 - [scheduler.py](file:///c:/Users/sunfra/Desktop/Whatsapp%20Reminders/app/services/scheduler.py): Runs `APScheduler` background jobs:
-  - **6:00 PM**: Send reminders to supervisors to input their farm data.
+  - **8:00 PM**: Send reminders to supervisors to input their farm data.
   - **11:00 PM**: Compile daily report, generate PDF/Excel files, and send them via WAHA.
   - **Weekly/Monthly**: Triggers scheduled financial summaries.
 - [waha_service.py](file:///c:/Users/sunfra/Desktop/Whatsapp%20Reminders/app/services/waha_service.py): Wraps WAHA endpoints (`/api/sendText`, `/api/sendFile`, `/api/download`) to handle message sending and media downloads.
@@ -128,7 +128,7 @@ Supervisors can send WhatsApp messages in English, Hindi, Telugu, or broken Engl
 ## 💬 WhatsApp Chat Commands
 
 Supervisors and Managers can query or configure the bot directly from their chat:
-- `!manager add`: Registers the current chat or group to receive the scheduled 6 PM reminders and 11 PM reports.
+- `!manager add`: Registers the current chat or group to receive the scheduled 8 PM reminders and 11 PM reports.
 - `!report daily`: Generates the P&L report for today immediately and sends it to the chat along with the PDF and Excel sheets.
 - `!report weekly`: Generates a summary for the past 7 days.
 - `!report monthly`: Generates a summary for the past 30 days.

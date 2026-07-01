@@ -13,6 +13,11 @@ try:
 except ImportError:
     pypdf = None
 
+try:
+    import pytesseract
+except ImportError:
+    pytesseract = None
+
 # Configure Gemini API if configured
 if settings.GEMINI_API_KEY:
     genai.configure(api_key=settings.GEMINI_API_KEY)
@@ -46,7 +51,8 @@ Rules:
 2. Hen weight: category -> hen_weight, quantity -> weight value, unit -> 'kg'.
 3. Feed/Raw materials -> feed/raw_material. Medicine/vaccines -> medicine. Mortality -> mortality. Sales/becha -> sales.
 4. If just greeting or shead number or "out" -> category: unknown.
-5. NO CODE BLOCKS, NO MARKDOWN. ONLY JSON."""
+5. WEIGHT SLIPS / GATE PASS / LOAD SLIPS: Extract RST No, Party Name, Material, Vehicle No, Bags, Gross Weight, Tare Weight, Net Weight, Date, Time each on its own line in 'notes'.
+6. NO CODE BLOCKS, NO MARKDOWN. ONLY JSON."""
 
     return r"""
 You are a specialized poultry farm data extraction AI.
@@ -59,7 +65,7 @@ Use EXACTLY ONE of these category values:
   egg_collection_2 -> EVENING / 2nd round egg collection. Keywords: 2nd collection, second collection, evening collection, shaam collection, batch 2, round 2, second round, evening batch
   egg_collection   -> General egg collection when round is NOT specified. Use only when 1st/2nd is genuinely unclear.
   hen_weight       -> Hen/bird body weight measurement. Keywords: weight, wt, kg weight, bird weight, hen weight, weighing, body weight
-  mortality        -> Hen/bird deaths. Keywords: died, death, mort, dead, gir gayi, fell dead, hens died, chikens died
+  mortality        -> Hen/bird deaths. Keywords: died, death, mort, dead, gir gayi, fell dead, hens died, chickens died
   egg_loaded       -> Eggs dispatched/sent out on trucks. Keywords: loaded, dispatch, sent, truck gaya, load out, bheja
   egg_unloaded     -> Eggs received/returned. Keywords: unloaded, returned, received back, wapas, received
   production       -> Flock stats: live bird count, batch age, total birds in shed
@@ -84,9 +90,10 @@ Use EXACTLY ONE of these category values:
 6. Extract monetary amount as float. SUM all if multiple.
 7. For multi-item messages: put breakdown in 'notes' with grand total at top, each item on its own line using escaped '\n'.
 8. ONLINE PAYMENTS: Extract Paid By, Paid To, Bank, Transaction Ref, Date, Amount, Remarks each on its own line in 'notes'.
-9. confidence_score: 0.0 to 1.0
-10. Single shead name alone, 'out', 'ok', greeting -> category: 'unknown', quantity: 0, amount: 0.0
-11. YOU MUST ONLY RETURN VALID JSON. NO MARKDOWN. NO CODE BLOCKS. NO OTHER TEXT.
+9. WEIGHT SLIPS / GATE PASS / LOAD SLIPS: Extract RST No, Party Name, Material, Vehicle No, Bags, Gross Weight, Tare Weight, Net Weight, Date, Time each on its own line in 'notes'.
+10. confidence_score: 0.0 to 1.0
+11. Single shead name alone, 'out', 'ok', greeting -> category: 'unknown', quantity: 0, amount: 0.0
+12. YOU MUST ONLY RETURN VALID JSON. NO MARKDOWN. NO CODE BLOCKS. NO OTHER TEXT.
 
 === EXPECTED JSON SCHEMA ===
 {
@@ -116,17 +123,19 @@ Use EXACTLY ONE of these category values:
 "Shead 1 sold 100 trays at 520. Shead 2 sold 50 trays at 520." -> {"shead_name":"Shead 1, Shead 2","category":"sales","quantity":150,"unit":"trays","amount":78000.0,"notes":"Grand Total Qty: 150 trays\nGrand Total Amt: 78000.00\n--------------------\nShead 1: 100 trays at 520 (amount: 52000)\nShead 2: 50 trays at 520 (amount: 26000)","confidence_score":0.98,"processed_text":"Shead 1 sold 100 trays at 520. Shead 2 sold 50 trays at 520."}
 """
 
-def _call_ollama(prompt: str, images: list = None, is_vision: bool = False) -> dict:
+def _call_ollama(prompt: str, images: list = None, is_vision: bool = False, format_json: bool = True) -> any:
     url = f"{settings.OLLAMA_URL}/api/generate"
     model = settings.OLLAMA_VISION_MODEL if is_vision else settings.OLLAMA_MODEL
     
     payload = {
         "model": model,
-        "system": get_system_prompt("ollama"),
         "prompt": prompt,
-        "stream": False,
-        "format": "json"  # Ollama 0.1.30+ supports native JSON formatting
+        "stream": False
     }
+    
+    if format_json:
+        payload["system"] = get_system_prompt("ollama")
+        payload["format"] = "json"
     
     if images:
         payload["images"] = images
@@ -137,6 +146,9 @@ def _call_ollama(prompt: str, images: list = None, is_vision: bool = False) -> d
         result = response.json()
         response_text = result.get("response", "")
         
+        if not format_json:
+            return response_text
+            
         # Clean up possible markdown code blocks if Ollama still outputs them
         response_text = re.sub(r'```json\n?', '', response_text)
         response_text = re.sub(r'```\n?', '', response_text)
@@ -159,7 +171,7 @@ def _call_gemini(prompt: str, images: list = None, document_path: str = None) ->
         
     try:
         model = genai.GenerativeModel(
-            model_name="gemini-2.0-flash-lite",
+            model_name="gemini-pro",
             system_instruction=get_system_prompt("gemini"),
             generation_config={"response_mime_type": "application/json"}
         )
@@ -199,11 +211,69 @@ def _call_gemini(prompt: str, images: list = None, document_path: str = None) ->
         print(f"Gemini API Error: {e}")
         return None
 
+def _call_groq(prompt: str, images: list = None, is_vision: bool = False) -> dict:
+    if not settings.GROQ_API_KEY:
+        print("Groq API Key is not configured in environment variables.")
+        return None
+        
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {settings.GROQ_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    
+    # Use vision model if images are provided or is_vision is true
+    model = "llama-3.2-90b-vision-preview" if is_vision or images else "llama-3.3-70b-versatile"
+    
+    messages = [
+        {"role": "system", "content": get_system_prompt("gemini")} # We reuse Gemini's system prompt as it expects JSON natively without Ollama syntax issues
+    ]
+    
+    user_content = []
+    user_content.append({"type": "text", "text": prompt})
+    
+    if images:
+        for img_b64 in images:
+            user_content.append({
+                "type": "image_url",
+                "image_url": {
+                    "url": f"data:image/jpeg;base64,{img_b64}"
+                }
+            })
+            
+    messages.append({"role": "user", "content": user_content})
+    
+    payload = {
+        "model": model,
+        "messages": messages,
+        "response_format": {"type": "json_object"}
+    }
+    
+    try:
+        response = requests.post(url, headers=headers, json=payload, timeout=60)
+        response.raise_for_status()
+        result = response.json()
+        response_text = result["choices"][0]["message"]["content"]
+        
+        # Clean up markdown code blocks if any
+        response_text = re.sub(r'```json\n?', '', response_text)
+        response_text = re.sub(r'```\n?', '', response_text)
+        
+        return json.loads(response_text)
+    except Exception as e:
+        print(f"Groq API Error: {e}")
+        if hasattr(e, 'response') and e.response is not None:
+            print(f"Groq response: {e.response.text}")
+        return None
+
 def _call_ai(prompt: str, images: list = None, is_vision: bool = False, document_path: str = None) -> dict:
     provider = settings.AI_PROVIDER.lower()
     if provider == "gemini":
         print("Using Gemini API for processing...")
         return _call_gemini(prompt, images, document_path)
+    elif provider == "groq":
+        print("Using Groq API for processing...")
+        return _call_groq(prompt, images, is_vision)
     else:
         print("Using Ollama API for processing...")
         return _call_ollama(prompt, images, is_vision)
@@ -220,16 +290,42 @@ def process_text(text: str) -> dict:
 def process_image(image_path: str, caption: str = "") -> dict:
     """Processes images (OCR + Understanding) using configured AI provider."""
     try:
-        with open(image_path, "rb") as image_file:
-            encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
-        
-        prompt = "Extract farm data from this image. If there are calculations written in the image (like quantity * price), perform the math to find the total amount."
-        if caption:
-            prompt += f" The user also provided this caption: {caption}"
+        provider = settings.AI_PROVIDER.lower()
+        if provider == "gemini":
+            with open(image_path, "rb") as image_file:
+                encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
             
-        result = _call_ai(prompt, images=[encoded_string], is_vision=True)
-        if result:
-            return result
+            prompt = "Extract farm data from this image. If there are calculations written in the image (like quantity * price), perform the math to find the total amount."
+            if caption:
+                prompt += f" The user also provided this caption: {caption}"
+                
+            result = _call_gemini(prompt, images=[encoded_string])
+            if result:
+                return result
+        else:
+            # Fallback to local OCR using Tesseract for providers without vision support (Groq/Ollama)
+            print(f"Using Tesseract OCR for {provider} provider...")
+            if pytesseract:
+                try:
+                    img = Image.open(image_path)
+                    ocr_text = pytesseract.image_to_string(img)
+                except Exception as e:
+                    print(f"Tesseract OCR failed: {e}")
+                    ocr_text = ""
+            else:
+                print("pytesseract is not installed or tesseract-ocr system package is missing.")
+                ocr_text = ""
+                
+            if ocr_text.strip():
+                print(f"OCR complete. Extracted text length: {len(ocr_text)}")
+                # Now pass the extracted text transcription to the text model for structured parsing
+                full_text = f"IMAGE OCR TRANSCRIPTION:\n{ocr_text}"
+                if caption:
+                    full_text += f"\n\nUSER CAPTION:\n{caption}"
+                return process_text(full_text)
+            else:
+                print("OCR failed to extract text from image.")
+                
     except Exception as e:
         print(f"AI Image Pre-Processing Error: {e}")
         
