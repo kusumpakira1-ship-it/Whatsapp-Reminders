@@ -1,16 +1,13 @@
--- Drop old tables if they exist from the PHP version
-DROP TABLE IF EXISTS ai_extractions;
-DROP TABLE IF EXISTS manager_reports;
-DROP TABLE IF EXISTS reminders;
-DROP TABLE IF EXISTS profit_loss;
-DROP TABLE IF EXISTS sales;
-DROP TABLE IF EXISTS purchases;
-DROP TABLE IF EXISTS whatsapp_messages;
-DROP TABLE IF EXISTS groups_info;
-DROP TABLE IF EXISTS contacts;
+-- Drop old tables if they exist
+DROP TABLE IF EXISTS sunfra_processed_data;
+DROP TABLE IF EXISTS sunfra_raw_messages;
+DROP TABLE IF EXISTS sunfra_whitelist;
+DROP TABLE IF EXISTS sunfra_report_recipients;
+DROP TABLE IF EXISTS sunfra_employees;
+DROP TABLE IF EXISTS sunfra_groups;
 
 -- 1. Whitelist Table
-CREATE TABLE IF NOT EXISTS whitelist (
+CREATE TABLE IF NOT EXISTS sunfra_whitelist (
     id INT AUTO_INCREMENT PRIMARY KEY,
     phone_number VARCHAR(50) NULL,
     group_id VARCHAR(100) NULL,
@@ -21,7 +18,7 @@ CREATE TABLE IF NOT EXISTS whitelist (
 );
 
 -- 2. Raw Messages Table
-CREATE TABLE IF NOT EXISTS raw_messages (
+CREATE TABLE IF NOT EXISTS sunfra_raw_messages (
     id INT AUTO_INCREMENT PRIMARY KEY,
     message_id VARCHAR(255) UNIQUE NOT NULL,
     sender VARCHAR(100) NOT NULL,
@@ -36,7 +33,7 @@ CREATE TABLE IF NOT EXISTS raw_messages (
 );
 
 -- 3. Processed Data Table
-CREATE TABLE IF NOT EXISTS processed_data (
+CREATE TABLE IF NOT EXISTS sunfra_processed_data (
     id INT AUTO_INCREMENT PRIMARY KEY,
     shead_name VARCHAR(255) NULL,
     category ENUM('egg', 'feed', 'medicine', 'mortality', 'sales', 'purchase', 'expense', 'unknown') DEFAULT 'unknown',
@@ -49,11 +46,11 @@ CREATE TABLE IF NOT EXISTS processed_data (
     processed_time DATETIME NOT NULL,
     message_id VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (message_id) REFERENCES raw_messages(message_id) ON DELETE CASCADE
+    FOREIGN KEY (message_id) REFERENCES sunfra_raw_messages(message_id) ON DELETE CASCADE
 );
 
 -- 4. Report Recipients Table
-CREATE TABLE IF NOT EXISTS report_recipients (
+CREATE TABLE IF NOT EXISTS sunfra_report_recipients (
     id INT AUTO_INCREMENT PRIMARY KEY,
     phone_number VARCHAR(50) NOT NULL UNIQUE,
     is_active BOOLEAN DEFAULT TRUE,
@@ -61,7 +58,7 @@ CREATE TABLE IF NOT EXISTS report_recipients (
 );
 
 -- 5. Groups Table
-CREATE TABLE IF NOT EXISTS php_groups (
+CREATE TABLE IF NOT EXISTS sunfra_groups (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     whatsapp_group_id VARCHAR(255) NOT NULL UNIQUE,
@@ -69,12 +66,12 @@ CREATE TABLE IF NOT EXISTS php_groups (
 );
 
 -- 6. Employees Table
-CREATE TABLE IF NOT EXISTS php_employees (
+CREATE TABLE IF NOT EXISTS sunfra_employees (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     phone_number VARCHAR(50) NOT NULL,
     group_id INT NOT NULL,
     report_responsibility VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (group_id) REFERENCES php_groups(id) ON DELETE CASCADE
+    FOREIGN KEY (group_id) REFERENCES sunfra_groups(id) ON DELETE CASCADE
 );

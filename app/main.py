@@ -9,12 +9,12 @@ from pydantic import BaseModel
 from typing import List, Optional
 from contextlib import asynccontextmanager
 
-from db.database import engine, Base, SessionLocal
-from db.models import Whitelist, RawMessage, ProcessedData, Group, Employee, SystemSetting, CustomAlarm
-from services.ai_processor import process_text, process_image, process_document
-from services.waha_service import download_waha_media, get_waha_chat_name, send_waha_message, send_waha_file
-from services.scheduler import setup_scheduler, scheduler, schedule_custom_alarm
-from core.config import settings
+from database import engine, Base, SessionLocal
+from models import Whitelist, RawMessage, ProcessedData, Group, Employee, SystemSetting, CustomAlarm
+from ai_processor import process_text, process_image, process_document
+from waha_service import download_waha_media, get_waha_chat_name, send_waha_message, send_waha_file
+from scheduler import setup_scheduler, scheduler, schedule_custom_alarm
+from config import settings
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -64,11 +64,6 @@ async def waha_webhook(request: Request):
     message_id = msg.get("id")
     sender = msg.get("from", "")
     
-    # Ignore Status Updates and Channels
-    if sender == "status@broadcast" or sender.endswith("@newsletter"):
-        logger.info(f"Ignoring status/channel message from {sender}")
-        return {"status": "ignored status/channel"}
-
     is_group = '@g.us' in sender
     group_id = sender if is_group else None
     
@@ -117,46 +112,8 @@ async def waha_webhook(request: Request):
     text = msg.get("body") or ""
     timestamp_val = msg.get("timestamp", 0)
     msg_time = datetime.fromtimestamp(timestamp_val, tz=IST).replace(tzinfo=None) if timestamp_val else datetime.now(IST).replace(tzinfo=None)
-    
-    # 2. Handle Commands
-    if text.startswith('!'):
-        command = text.lower().strip()
-        
-        if command.startswith('!report'):
-            parts = command.split()
-            range_type = 'daily'
-            if len(parts) > 1 and parts[1] in ['weekly', 'monthly', 'yearly']:
-                range_type = parts[1]
-                
-            from services.report_generator import generate_custom_report
-            pdf_path, excel_path, summary_text = generate_custom_report(range_type)
-            
-            if summary_text:
-                send_waha_message(sender, summary_text)
-            if pdf_path:
-                send_waha_file(sender, pdf_path, caption=f"PDF Report - {pdf_path.split('/')[-1]}")
-            if excel_path:
-                send_waha_file(sender, excel_path, caption=f"Excel Report - {excel_path.split('/')[-1]}")
-                
-            return {"status": f"report {range_type} manually requested"}
-        elif command == '!manager add':
-            from db.models import ReportRecipient
-            db = SessionLocal()
-            try:
-                # If command is sent in a group, register the group itself. Otherwise, register the individual.
-                recipient_id = msg.get("from") # exact JID (e.g. 1203...@g.us or 9179...@c.us)
-                existing = db.query(ReportRecipient).filter(ReportRecipient.phone_number == recipient_id).first()
-                if not existing:
-                    db.add(ReportRecipient(phone_number=recipient_id, is_active=True))
-                    db.commit()
-                    send_waha_message(recipient_id, "✅ This chat has been registered to receive automated P&L reports and data entry reminders.")
-                else:
-                    send_waha_message(recipient_id, "⚠️ This chat is already registered.")
-            finally:
-                db.close()
-            return {"status": "command handled"}
 
-    # 3. Save Raw Data
+    # 2. Save Raw Data (First, save all messages!)
     db = SessionLocal()
     try:
         existing_msg = db.query(RawMessage).filter(RawMessage.message_id == message_id).first()
@@ -183,6 +140,59 @@ async def waha_webhook(request: Request):
         db.close()
         return {"status": "error saving raw"}
 
+    # 3. Apply Filter/Ignore Rules AFTER raw save
+    # Ignore messages sent by the bot itself
+    if msg.get("fromMe", False):
+        logger.info(f"Ignoring message sent by bot itself from processing: {message_id}")
+        db.close()
+        return {"status": "ignored fromMe"}
+        
+    # Ignore Status Updates and Channels
+    if sender == "status@broadcast" or sender.endswith("@newsletter"):
+        logger.info(f"Ignoring status/channel message from processing: {sender}")
+        db.close()
+        return {"status": "ignored status/channel"}
+
+    # 4. Handle Commands
+    if text.startswith('!'):
+        command = text.lower().strip()
+        
+        if command.startswith('!report'):
+            parts = command.split()
+            range_type = 'daily'
+            if len(parts) > 1 and parts[1] in ['weekly', 'monthly', 'yearly']:
+                range_type = parts[1]
+                
+            from report_generator import generate_custom_report
+            pdf_path, excel_path, summary_text = generate_custom_report(range_type)
+            
+            if summary_text:
+                send_waha_message(sender, summary_text)
+            if pdf_path:
+                send_waha_file(sender, pdf_path, caption=f"PDF Report - {pdf_path.split('/')[-1]}")
+            if excel_path:
+                send_waha_file(sender, excel_path, caption=f"Excel Report - {excel_path.split('/')[-1]}")
+                
+            db.close()
+            return {"status": f"report {range_type} manually requested"}
+        elif command == '!manager add':
+            from models import ReportRecipient
+            recipient_db = SessionLocal()
+            try:
+                # If command is sent in a group, register the group itself. Otherwise, register the individual.
+                recipient_id = msg.get("from") # exact JID (e.g. 1203...@g.us or 9179...@c.us)
+                existing = recipient_db.query(ReportRecipient).filter(ReportRecipient.phone_number == recipient_id).first()
+                if not existing:
+                    recipient_db.add(ReportRecipient(phone_number=recipient_id, is_active=True))
+                    recipient_db.commit()
+                    send_waha_message(recipient_id, "✅ This chat has been registered to receive automated P&L reports and data entry reminders.")
+                else:
+                    send_waha_message(recipient_id, "⚠️ This chat is already registered.")
+            finally:
+                recipient_db.close()
+            db.close()
+            return {"status": "command handled"}
+
     # 4. AI Processing Pipeline
     ai_result = None
     source_type = "text"
@@ -198,10 +208,11 @@ async def waha_webhook(request: Request):
             raw_msg.media_path = media_path
             db.commit()
             
-            if media_path.endswith(('.jpg', '.jpeg', '.png')):
+            media_path_lower = media_path.lower()
+            if media_path_lower.endswith(('.jpg', '.jpeg', '.png')):
                 ai_result = process_image(media_path, caption=text)
                 source_type = "image"
-            elif media_path.endswith('.pdf'):
+            elif media_path_lower.endswith('.pdf'):
                 ai_result = process_document(media_path, caption=text)
                 source_type = "document"
             else:
@@ -255,11 +266,20 @@ async def waha_webhook(request: Request):
         valid_records_saved = 0
         fresh_db = SessionLocal()
         try:
+            allowed_cats = {
+                'egg_collection_1', 'egg_collection_2', 'egg_collection', 
+                'hen_weight', 'mortality', 'egg_loaded', 'egg_unloaded', 
+                'production', 'sales', 'feed', 'raw_material', 'medicine', 
+                'expense', 'purchase', 'egg', 'unknown'
+            }
             for record in records:
-                if isinstance(record, dict) and record.get("category", "unknown") != "unknown":
+                if isinstance(record, dict):
+                    cat = record.get("category") or "unknown"
+                    if cat not in allowed_cats:
+                        cat = 'unknown'
                     proc_data = ProcessedData(
                         shead_name=record.get("shead_name") or "",
-                        category=record.get("category") or "unknown",
+                        category=cat,
                         quantity=record.get("quantity") or 0,
                         unit=record.get("unit") or "",
                         amount=record.get("amount") or 0.0,
@@ -277,7 +297,7 @@ async def waha_webhook(request: Request):
                 fresh_db.commit()
                 logger.info(f"Successfully processed message {message_id}: saved {valid_records_saved} records.")
             else:
-                logger.info(f"Ignored non-farm message or no valid categories found. Text: {text}")
+                logger.info(f"Ignored non-farm message or no valid records found. Text: {text}")
         except Exception as e:
             fresh_db.rollback()
             logger.error(f"Failed to save processed data (fresh session): {e}")
@@ -443,7 +463,7 @@ def trigger_alarm_manually(alarm_id: int):
         pass
     
     # Execute immediately
-    from services.scheduler import execute_custom_alarm
+    from scheduler import execute_custom_alarm
     execute_custom_alarm(alarm_id)
     return {"status": "success"}
 

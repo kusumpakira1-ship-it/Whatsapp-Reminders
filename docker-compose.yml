@@ -29,6 +29,7 @@ services:
       - "8000:8000"
     volumes:
       - ./app:/app
+      - ./messages.json:/app/messages.json
     networks:
       default:
         aliases:
@@ -38,10 +39,8 @@ services:
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
-      - WAHA_URL=${WAHA_URL}
+      - WAHA_URL=http://waha:3000
       - WAHA_SESSION=${WAHA_SESSION}
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - GROQ_API_KEY=${GROQ_API_KEY}
       - AI_PROVIDER=${AI_PROVIDER}
       - OLLAMA_URL=${OLLAMA_URL}
       - OLLAMA_MODEL=${OLLAMA_MODEL}
