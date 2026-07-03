@@ -28241,5 +28241,625 @@
         "group_name": "Feed Plant",
         "raw_text": "",
         "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T11:51:52.056525+05:30",
+        "message_id": "false_120363111757096162@g.us_AC793EAFAE93103F60B71BACA2EE755C_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "feed",
+            "quantity": 151,
+            "unit": "kg",
+            "amount": null,
+            "notes": "",
+            "confidence_score": 0.9,
+            "processed_text": "A moisture meter reading of 15.1% on a sack."
+        }
+    },
+    {
+        "timestamp": "2026-07-03T11:51:59.085014+05:30",
+        "message_id": "false_120363111757096162@g.us_AC57DB410E6B343BB421F135DC23358D_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T11:52:00.883878+05:30",
+        "message_id": "false_120363111757096162@g.us_AC9621E73C735A99CED0E459B376E1D5_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T11:52:02.908200+05:30",
+        "message_id": "false_120363111757096162@g.us_AC75C68106ACE4DD01B29BBD93C689D1_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T11:52:04.477880+05:30",
+        "message_id": "false_120363111757096162@g.us_AC4291FF18A6795E0DAE4BB16E987ED3_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T11:52:08.419252+05:30",
+        "message_id": "false_120363111757096162@g.us_AC70C8F525811B94D42145740F98D707_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T11:52:09.673690+05:30",
+        "message_id": "false_120363111757096162@g.us_ACD2A1B7F54A6A4025A45EDF52787B77_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T11:52:12.002066+05:30",
+        "message_id": "false_120363111757096162@g.us_AC20780671F84BE1BC5793CCC2E43C8A_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T11:52:17.274023+05:30",
+        "message_id": "false_120363111757096162@g.us_ACCE0EE0929E5696F2544E52DFA9112B_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T11:52:20.179939+05:30",
+        "message_id": "false_120363111757096162@g.us_AC7E99DFC290EF06A7136EB25159BFF1_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T11:52:23.386675+05:30",
+        "message_id": "false_120363111757096162@g.us_AC643E9836E732B558E6637B114215E4_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T11:52:25.158284+05:30",
+        "message_id": "false_120363111757096162@g.us_AC89E6C89ABFA3BD8CF619AE3873F527_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T11:52:26.628427+05:30",
+        "message_id": "false_120363111757096162@g.us_ACFA0649A302151983421B4C800DFD78_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T11:52:28.742258+05:30",
+        "message_id": "false_120363111757096162@g.us_AC04FD01FA956B59558E69E9FB323255_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T11:52:30.362360+05:30",
+        "message_id": "false_120363111757096162@g.us_AC0A36F0770220EA082E02C28EEB3CE5_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T11:52:34.534582+05:30",
+        "message_id": "false_120363111757096162@g.us_AC0714A1794B1E54CFC46C18319DAED7_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T11:52:37.055184+05:30",
+        "message_id": "false_120363111757096162@g.us_ACC7D887E3D98FD3ADDFC8D825CF4471_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T11:52:39.458561+05:30",
+        "message_id": "false_120363111757096162@g.us_ACEA9B89BEBC4FCC77A4BD9A0FFF3E6C_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T11:53:49.779768+05:30",
+        "message_id": "false_120363408876484504@g.us_ACC77EEE04DA9DCB67D977A7084BEAEF_37546704822382@lid",
+        "sender": "[SS - NetApp Placements Group] Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97 (37546704822382)",
+        "sender_name": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97",
+        "is_group": true,
+        "group_name": "SS - NetApp Placements Group",
+        "raw_text": "Hello students,\n\nPlease share your availability. Kindly vote accordingly",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T11:54:23.513558+05:30",
+        "message_id": "false_120363407546430183@g.us_ACD97D7FDA46FA2E28F161DE49899141_37546704822382@lid",
+        "sender": "[NetApp Batch 3] Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97 (37546704822382)",
+        "sender_name": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97",
+        "is_group": true,
+        "group_name": "NetApp Batch 3",
+        "raw_text": "Hello students,\n\nPlease share your availability. Kindly vote accordingly",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T11:55:13.546009+05:30",
+        "message_id": "false_120363212822578807@g.us_AC37252A77DBF3D83EE2D14C4FDA8E95_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6\nSpreying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T11:58:51.155233+05:30",
+        "message_id": "false_120363111757096162@g.us_3A916156611B8015CED4_112300593815672@lid",
+        "sender": "[Feed Plant] Nani Chinnam (112300593815672)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "Please unload",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "egg_unloaded",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "Please unload",
+            "confidence_score": 1.0,
+            "processed_text": "Please unload"
+        }
+    },
+    {
+        "timestamp": "2026-07-03T12:02:16.070721+05:30",
+        "message_id": "false_120363212822578807@g.us_AC2CBB6FFD5A74A39570CBA980817C25_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T12:02:58.636294+05:30",
+        "message_id": "false_120363111757096162@g.us_AC30C0DA44C6C9671DFEA5D0B89258B2_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "Ok sir",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T12:07:52.111391+05:30",
+        "message_id": "false_120363111757096162@g.us_ACA3F0FD255C25565EC871BE4032B124_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "Vehical no:AP39UE7849",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T12:12:16.432672+05:30",
+        "message_id": "false_120363212822578807@g.us_AC6764B3AF432A7F5ECCA4BAFC829827_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "8th Shead water spraying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T12:12:41.827560+05:30",
+        "message_id": "false_120363212822578807@g.us_ACBEA440F984C32C92423E6FF5343762_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 5\nStone",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T12:15:00.098159+05:30",
+        "message_id": "false_120363212822578807@g.us_ACACDA092121EE807355A13B5A4520B8_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 5\nSpreying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T12:15:34.428880+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB015C0F94E8AF17E35A7_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Akshay reimbursement \nFor:  farm visit \n(sent Through mail)\ntotal =2530rs",
+        "ai_extracted": {
+            "shead_name": "unknown",
+            "category": "expense",
+            "quantity": null,
+            "unit": null,
+            "amount": 2530,
+            "notes": "farm visit reimbursement total=2530rs",
+            "confidence_score": 1.0,
+            "processed_text": "Akshay reimbursement For: farm visit (sent Through mail) total =2530rs"
+        }
+    },
+    {
+        "timestamp": "2026-07-03T12:20:17.684156+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0D18D8B62CD22BCAA45_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "medicine",
+            "quantity": 17,
+            "unit": "kg",
+            "amount": 1190,
+            "notes": "- Vaccine for 3rd shed (1c killed) & restock\n- 17 x 70 = 1190",
+            "confidence_score": 1.0,
+            "processed_text": "Vaccine for 3rd shed (1c killed) & restock, 17 kg at \u20b970/kg"
+        }
+    },
+    {
+        "timestamp": "2026-07-03T12:20:48.742170+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0FFA5B843C038907BCB_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Sathyamma hotel \nFood expenses total = 12770",
+        "ai_extracted": {
+            "shead_name": "Sathyamma hotel",
+            "category": "expense",
+            "quantity": null,
+            "unit": null,
+            "amount": 12770,
+            "notes": "",
+            "confidence_score": 0.95,
+            "processed_text": "Food expenses total = 12770"
+        }
+    },
+    {
+        "timestamp": "2026-07-03T12:20:49.837713+05:30",
+        "message_id": "false_120363111757096162@g.us_ACA448095547470EAFC9E9CF555EAD8B_241274569400567@lid",
+        "sender": "[Feed Plant] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T12:21:14.972778+05:30",
+        "message_id": "false_120363212822578807@g.us_AC8D6FAA81997F3D428A3921F3FFDEB9_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T12:21:37.437194+05:30",
+        "message_id": "false_120363212822578807@g.us_AC683804B7548BAB5A41F24BE9E0D3C0_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead1",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T12:22:05.051871+05:30",
+        "message_id": "false_120363212822578807@g.us_AC1D64C3F020635BD070E34F975D7995_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T12:27:09.908636+05:30",
+        "message_id": "false_120363212822578807@g.us_ACFA1176A0C78E93150794584EC2AB38_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 7\nSpreying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T12:27:39.920260+05:30",
+        "message_id": "false_120363212822578807@g.us_AC6699D670B4440884E87EA61D7DDA77_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T12:28:17.027822+05:30",
+        "message_id": "false_120363212822578807@g.us_AC0BB9DC4E076D6FA4F4CA3502F93C9C_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T12:29:12.411835+05:30",
+        "message_id": "false_120363212822578807@g.us_AC34F259E338AD10F7C5DD14AB67A096_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "8th Shead \nElectrolyte 1kg g_pro 5L virarid 250gms",
+        "ai_extracted": {
+            "shead_name": "Shead 8",
+            "category": "medicine",
+            "quantity": 1,
+            "unit": "kg",
+            "amount": null,
+            "notes": "Electrolyte, g_pro, virarid",
+            "confidence_score": 0.95,
+            "processed_text": "Electrolyte 1kg g_pro 5L virarid 250gms"
+        }
+    },
+    {
+        "timestamp": "2026-07-03T12:29:15.314818+05:30",
+        "message_id": "false_120363212822578807@g.us_AC7E41242631CF23C743D184AC82808B_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T12:29:16.299828+05:30",
+        "message_id": "false_120363212822578807@g.us_AC32C15BF8B6AD170F145D52F490BC0F_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T12:38:09.986428+05:30",
+        "message_id": "false_120363225998735559@g.us_AC69F242C94A650C6A73F9B2BBD3B8C6_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Rajesh eggs",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "egg_collection_1",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "Rajesh eggs",
+            "confidence_score": 0.8,
+            "processed_text": "Extract data from this message: Rajesh eggs"
+        }
+    },
+    {
+        "timestamp": "2026-07-03T12:38:37.434907+05:30",
+        "message_id": "false_120363225998735559@g.us_AC16FCCA4A547A67230C42836684AFEF_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Naredra out",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T12:39:03.052948+05:30",
+        "message_id": "false_120363225998735559@g.us_AC4FBF5D87ED2C06E6A76AB6FA061260_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Mahindra out",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T12:39:31.958140+05:30",
+        "message_id": "false_120363212822578807@g.us_AC1C30D1A6499B6C6FA6410389CC9CEE_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Water spraying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T12:40:00.296240+05:30",
+        "message_id": "false_120363212822578807@g.us_AC4779DCA4D71F5213B70170A1124F63_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead1",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T12:52:58.936807+05:30",
+        "message_id": "false_120363405469158412@g.us_3AB2A5D4328A65FE782E_112300593815672@lid",
+        "sender": "[Payments - Sunfra Farms] Nani Chinnam (112300593815672)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Please pay",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T12:54:01.310594+05:30",
+        "message_id": "false_120363212822578807@g.us_AC349933FC6B2D60A4D653070E919354_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead virarid 250gms",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T12:54:41.922783+05:30",
+        "message_id": "false_120363212822578807@g.us_ACD460C37C68F79554200D2476CEDE55_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead water spraying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-03T13:03:46.340312+05:30",
+        "message_id": "false_120363212822578807@g.us_ACCAD1F26C6310E55221C3CC93F29DC9_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead \n1stcollection 530 treys",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "egg_collection_1",
+            "quantity": 530,
+            "unit": "trays",
+            "amount": null,
+            "notes": "",
+            "confidence_score": 0.9,
+            "processed_text": "2nd Shead \n1st collection 530 treys"
+        }
+    },
+    {
+        "timestamp": "2026-07-03T13:05:50.268316+05:30",
+        "message_id": "false_120363212822578807@g.us_ACF246E8F8DCF2AA8CDFE50DD2CA65E6_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead \n1st collection 490treys",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "egg_collection_1",
+            "quantity": 490,
+            "unit": "trays",
+            "amount": null,
+            "notes": "",
+            "confidence_score": 0.85,
+            "processed_text": "4th Shead\n1st collection 490 trays"
+        }
+    },
+    {
+        "timestamp": "2026-07-03T13:35:33.489421+05:30",
+        "message_id": "false_120363225998735559@g.us_ACEA4400FFCFDCEBD940B382C086F478_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Image processing failed"
+        }
+    },
+    {
+        "timestamp": "2026-07-03T13:36:05.721647+05:30",
+        "message_id": "false_120363225998735559@g.us_AC97C7EAB09080423970D454DE86A5B2_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "2754",
+        "ai_extracted": null
     }
 ]

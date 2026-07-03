@@ -345,11 +345,47 @@ class GroupCreate(BaseModel):
 class EmployeeCreate(BaseModel):
     name: str
     phone_number: str
-    group_id: int
-    report_responsibility: str
+    group_id: Optional[int] = None
+    whatsapp_group_id: Optional[str] = None
+    report_responsibility: Optional[str] = None
 
 class ReminderTimeUpdate(BaseModel):
     time: str
+
+class ReportTypesUpdate(BaseModel):
+    report_types: List[str]
+
+@app.get("/api/settings/report_types")
+def get_report_types():
+    db = SessionLocal()
+    try:
+        setting = db.query(SystemSetting).filter_by(key="custom_report_types").first()
+        if setting:
+            try:
+                return json.loads(setting.value)
+            except Exception:
+                pass
+        # Default report list
+        default_list = ["Production", "Feed", "Expenses", "Sales", "Profit and Loss"]
+        return default_list
+    finally:
+        db.close()
+
+@app.post("/api/settings/report_types")
+def update_report_types(payload: ReportTypesUpdate):
+    db = SessionLocal()
+    try:
+        setting = db.query(SystemSetting).filter_by(key="custom_report_types").first()
+        value_str = json.dumps(payload.report_types)
+        if not setting:
+            setting = SystemSetting(key="custom_report_types", value=value_str)
+            db.add(setting)
+        else:
+            setting.value = value_str
+        db.commit()
+        return {"status": "success", "report_types": payload.report_types}
+    finally:
+        db.close()
 
 @app.get("/api/settings/reminders")
 def get_reminder_settings():
@@ -386,7 +422,11 @@ def update_reminder_settings(settings: ReminderTimeUpdate):
 
 class AlarmCreate(BaseModel):
     target_type: str
-    target_id: int
+    target_id: Optional[int] = None
+    whatsapp_target_id: Optional[str] = None
+    report_type: Optional[str] = None
+    frequency: Optional[str] = 'once'
+    repeat_interval: Optional[str] = 'none'
     task_notes: str
     trigger_time: datetime
 
@@ -397,6 +437,10 @@ def create_alarm(alarm: AlarmCreate):
         new_alarm = CustomAlarm(
             target_type=alarm.target_type,
             target_id=alarm.target_id,
+            whatsapp_target_id=alarm.whatsapp_target_id,
+            report_type=alarm.report_type,
+            frequency=alarm.frequency,
+            repeat_interval=alarm.repeat_interval,
             task_notes=alarm.task_notes,
             trigger_time=alarm.trigger_time,
             status='pending'
@@ -422,14 +466,22 @@ def get_alarms():
                 emp = db.query(Employee).filter(Employee.id == a.target_id).first()
                 if emp: target_name = emp.name
             elif a.target_type == 'group':
-                grp = db.query(Group).filter(Group.id == a.target_id).first()
-                if grp: target_name = grp.name
+                if a.target_id:
+                    grp = db.query(Group).filter(Group.id == a.target_id).first()
+                    if grp: target_name = grp.name
+                elif a.whatsapp_target_id:
+                    target_name = a.whatsapp_target_id
                 
             result.append({
                 "id": a.id,
                 "target_type": a.target_type,
+                "target_id": a.target_id,
+                "whatsapp_target_id": a.whatsapp_target_id,
                 "target_name": target_name,
                 "task_notes": a.task_notes,
+                "report_type": a.report_type,
+                "frequency": a.frequency,
+                "repeat_interval": a.repeat_interval,
                 "trigger_time": a.trigger_time.isoformat(),
                 "status": a.status
             })
@@ -456,13 +508,11 @@ def delete_alarm(alarm_id: int):
 
 @app.post("/api/alarms/{alarm_id}/trigger")
 def trigger_alarm_manually(alarm_id: int):
-    # Try to unschedule the job if it exists since we're manually triggering it now
     try:
         scheduler.remove_job(f"custom_alarm_{alarm_id}")
     except Exception:
         pass
     
-    # Execute immediately
     from scheduler import execute_custom_alarm
     execute_custom_alarm(alarm_id)
     return {"status": "success"}
@@ -534,6 +584,7 @@ def get_employees():
                 "name": e.name, 
                 "phone_number": e.phone_number, 
                 "group_id": e.group_id, 
+                "whatsapp_group_id": e.whatsapp_group_id,
                 "report_responsibility": e.report_responsibility
             } for e in employees
         ]
@@ -548,6 +599,7 @@ def create_employee(employee: EmployeeCreate):
             name=employee.name,
             phone_number=employee.phone_number,
             group_id=employee.group_id,
+            whatsapp_group_id=employee.whatsapp_group_id,
             report_responsibility=employee.report_responsibility
         )
         db.add(new_emp)

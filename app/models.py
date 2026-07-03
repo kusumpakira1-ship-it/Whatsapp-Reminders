@@ -11,7 +11,11 @@ class CustomAlarm(Base):
     __tablename__ = "sunfra_custom_alarms"
     id = Column(Integer, primary_key=True, index=True)
     target_type = Column(String(20), nullable=False) # 'employee' or 'group'
-    target_id = Column(Integer, nullable=False)
+    target_id = Column(Integer, nullable=True) # Can be null for group target using whatsapp_target_id
+    whatsapp_target_id = Column(String(255), nullable=True)
+    report_type = Column(String(50), nullable=True)
+    frequency = Column(String(20), default='once') # 'once', 'daily', 'weekly', 'monthly', 'yearly', 'timer'
+    repeat_interval = Column(String(20), default='none') # 'none', '5m', '10m', '15m', '30m', '1h'
     task_notes = Column(Text, nullable=False)
     trigger_time = Column(DateTime, nullable=False)
     status = Column(String(20), default='pending') # 'pending', 'sent', 'cancelled'
@@ -91,6 +95,7 @@ class Employee(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255), nullable=False)
     phone_number = Column(String(50), nullable=False)
-    group_id = Column(Integer, ForeignKey("sunfra_groups.id", ondelete="CASCADE"), nullable=False)
-    report_responsibility = Column(String(100), nullable=False) # e.g. 'egg_collection', 'feed', 'sales'
+    group_id = Column(Integer, ForeignKey("sunfra_groups.id", ondelete="CASCADE"), nullable=True)
+    whatsapp_group_id = Column(String(255), nullable=True)
+    report_responsibility = Column(String(100), nullable=True) # e.g. 'egg_collection', 'feed', 'sales'
     created_at = Column(DateTime, default=func.now())

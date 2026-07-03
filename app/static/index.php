@@ -25,7 +25,7 @@ if (file_exists('../database.php')) {
 // 2. Initialize Tables
 try {
     // MySQL syntax (Primary)
-    $pdo->exec("CREATE TABLE IF NOT EXISTS wa_groups (
+    $pdo->exec("CREATE TABLE IF NOT EXISTS sunfra_groups (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         whatsapp_group_id VARCHAR(255) NOT NULL,
@@ -33,49 +33,64 @@ try {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->exec("CREATE TABLE IF NOT EXISTS wa_employees (
+    $pdo->exec("CREATE TABLE IF NOT EXISTS sunfra_employees (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         phone_number VARCHAR(50) NOT NULL,
-        group_id INT,
-        report_responsibility VARCHAR(100),
+        group_id INT NULL,
+        whatsapp_group_id VARCHAR(255) NULL,
+        report_responsibility VARCHAR(100) NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 
-    $pdo->exec("CREATE TABLE IF NOT EXISTS wa_alarms (
+    $pdo->exec("CREATE TABLE IF NOT EXISTS sunfra_custom_alarms (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        target_type VARCHAR(50),
-        target_id INT,
-        task_notes TEXT,
-        trigger_time DATETIME,
-        status VARCHAR(50) DEFAULT 'pending',
+        target_type VARCHAR(20) NOT NULL,
+        target_id INT NULL,
+        whatsapp_target_id VARCHAR(255) NULL,
+        report_type VARCHAR(50) NULL,
+        task_notes TEXT NOT NULL,
+        trigger_time DATETIME NOT NULL,
+        status VARCHAR(20) DEFAULT 'pending',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS sunfra_system_settings (
+        `key` VARCHAR(50) PRIMARY KEY,
+        `value` VARCHAR(255) NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 } catch (PDOException $e) {
     // Fallback to SQLite syntax if MySQL fails
     try {
-        $pdo->exec("CREATE TABLE IF NOT EXISTS wa_groups (
+        $pdo->exec("CREATE TABLE IF NOT EXISTS sunfra_groups (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name VARCHAR(255) NOT NULL,
             whatsapp_group_id VARCHAR(255) NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )");
-        $pdo->exec("CREATE TABLE IF NOT EXISTS wa_employees (
+        $pdo->exec("CREATE TABLE IF NOT EXISTS sunfra_employees (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name VARCHAR(255) NOT NULL,
             phone_number VARCHAR(50) NOT NULL,
-            group_id INTEGER,
-            report_responsibility VARCHAR(100),
+            group_id INTEGER NULL,
+            whatsapp_group_id VARCHAR(255) NULL,
+            report_responsibility VARCHAR(100) NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )");
-        $pdo->exec("CREATE TABLE IF NOT EXISTS wa_alarms (
+        $pdo->exec("CREATE TABLE IF NOT EXISTS sunfra_custom_alarms (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            target_type VARCHAR(50),
-            target_id INTEGER,
-            task_notes TEXT,
-            trigger_time DATETIME,
-            status VARCHAR(50) DEFAULT 'pending',
+            target_type VARCHAR(20) NOT NULL,
+            target_id INTEGER NULL,
+            whatsapp_target_id VARCHAR(255) NULL,
+            report_type VARCHAR(50) NULL,
+            task_notes TEXT NOT NULL,
+            trigger_time DATETIME NOT NULL,
+            status VARCHAR(20) DEFAULT 'pending',
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )");
+        $pdo->exec("CREATE TABLE IF NOT EXISTS sunfra_system_settings (
+            `key` VARCHAR(50) PRIMARY KEY,
+            `value` VARCHAR(255) NULL
         )");
     } catch (PDOException $e2) {
         // Output the error to help debug
@@ -86,9 +101,15 @@ try {
         }
     }
 }
-    // Add columns dynamically for the architecture update
-    try { $pdo->exec("ALTER TABLE wa_employees ADD COLUMN whatsapp_group_id VARCHAR(255)"); } catch (Exception $e) {}
-    try { $pdo->exec("ALTER TABLE wa_alarms ADD COLUMN whatsapp_target_id VARCHAR(255)"); } catch (Exception $e) {}
+
+// Run table schema adjustments dynamically (covers live server migration)
+try { @$pdo->exec("ALTER TABLE sunfra_custom_alarms ADD COLUMN whatsapp_target_id VARCHAR(255) NULL"); } catch (Exception $e) {}
+try { @$pdo->exec("ALTER TABLE sunfra_custom_alarms ADD COLUMN report_type VARCHAR(50) NULL"); } catch (Exception $e) {}
+try { @$pdo->exec("ALTER TABLE sunfra_custom_alarms ADD COLUMN frequency VARCHAR(20) DEFAULT 'once'"); } catch (Exception $e) {}
+try { @$pdo->exec("ALTER TABLE sunfra_custom_alarms ADD COLUMN repeat_interval VARCHAR(20) DEFAULT 'none'"); } catch (Exception $e) {}
+try { @$pdo->exec("ALTER TABLE sunfra_custom_alarms MODIFY COLUMN target_id INT NULL"); } catch (Exception $e) {}
+try { @$pdo->exec("ALTER TABLE sunfra_employees ADD COLUMN whatsapp_group_id VARCHAR(255) NULL"); } catch (Exception $e) {}
+try { @$pdo->exec("ALTER TABLE sunfra_employees MODIFY COLUMN group_id INT NULL"); } catch (Exception $e) {}
 
 // 3. Simple REST API Router
 if (isset($_GET['api'])) {
@@ -98,7 +119,7 @@ if (isset($_GET['api'])) {
 
     try {
         if ($route === 'employees' && $method === 'GET') {
-            $stmt = $pdo->query("SELECT a.*, e.name, e.phone_number FROM wa_alarms a JOIN wa_employees e ON a.target_id = e.id WHERE a.target_type = 'employee' ORDER BY a.trigger_time ASC");
+            $stmt = $pdo->query("SELECT a.*, e.name, e.phone_number FROM sunfra_custom_alarms a JOIN sunfra_employees e ON a.target_id = e.id WHERE a.target_type = 'employee' ORDER BY a.trigger_time ASC");
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             foreach ($rows as &$row) {
                 $phone = $row['phone_number'];
@@ -109,28 +130,28 @@ if (isset($_GET['api'])) {
         elseif ($route === 'employees' && $method === 'POST') {
             $data = json_decode(file_get_contents('php://input'), true);
             // 1. Create or get member
-            $stmt = $pdo->prepare("INSERT INTO wa_employees (name, phone_number, whatsapp_group_id, report_responsibility) VALUES (?, ?, '', '')");
+            $stmt = $pdo->prepare("INSERT INTO sunfra_employees (name, phone_number, whatsapp_group_id, report_responsibility) VALUES (?, ?, '', '')");
             $stmt->execute([$data['name'], $data['phone_number']]);
             $member_id = $pdo->lastInsertId();
             
             // 2. Create reminder for member
-            $stmt2 = $pdo->prepare("INSERT INTO wa_alarms (target_type, target_id, task_notes, trigger_time) VALUES ('employee', ?, ?, ?)");
-            $stmt2->execute([$member_id, $data['task_notes'], $data['trigger_time']]);
+            $stmt2 = $pdo->prepare("INSERT INTO sunfra_custom_alarms (target_type, target_id, task_notes, trigger_time, report_type, frequency, repeat_interval, status) VALUES ('employee', ?, ?, ?, ?, ?, ?, 'pending')");
+            $stmt2->execute([$member_id, $data['task_notes'], $data['trigger_time'], $data['report_type'] ?? null, $data['frequency'] ?? 'once', $data['repeat_interval'] ?? 'none']);
             echo json_encode(['success' => true]);
         }
         elseif (preg_match('/^employees\/(\d+)$/', $route, $matches) && $method === 'PUT') {
             $data = json_decode(file_get_contents('php://input'), true);
-            $stmt = $pdo->prepare("UPDATE wa_employees e JOIN wa_alarms a ON a.target_id = e.id SET e.name = ?, e.phone_number = ?, a.task_notes = ?, a.trigger_time = ? WHERE a.id = ?");
-            $stmt->execute([$data['name'], $data['phone_number'], $data['task_notes'], $data['trigger_time'], $matches[1]]);
+            $stmt = $pdo->prepare("UPDATE sunfra_employees e JOIN sunfra_custom_alarms a ON a.target_id = e.id SET e.name = ?, e.phone_number = ?, a.task_notes = ?, a.trigger_time = ?, a.report_type = ?, a.frequency = ?, a.repeat_interval = ?, a.status = 'pending' WHERE a.id = ?");
+            $stmt->execute([$data['name'], $data['phone_number'], $data['task_notes'], $data['trigger_time'], $data['report_type'] ?? null, $data['frequency'] ?? 'once', $data['repeat_interval'] ?? 'none', $matches[1]]);
             echo json_encode(['success' => true]);
         }
         elseif (preg_match('/^employees\/(\d+)$/', $route, $matches) && $method === 'DELETE') {
-            $pdo->prepare("DELETE FROM wa_alarms WHERE id = ?")->execute([$matches[1]]);
+            $pdo->prepare("DELETE FROM sunfra_custom_alarms WHERE id = ?")->execute([$matches[1]]);
             echo json_encode(['success' => true]);
         }
         
         elseif ($route === 'alarms' && $method === 'GET') {
-            $stmt = $pdo->query("SELECT * FROM wa_alarms WHERE target_type = 'group' ORDER BY trigger_time ASC");
+            $stmt = $pdo->query("SELECT * FROM sunfra_custom_alarms WHERE target_type = 'group' ORDER BY trigger_time ASC");
             $alarms = $stmt->fetchAll(PDO::FETCH_ASSOC);
             // Enrich with target names and whatsapp_id for the live bridge
             $waha_file = __DIR__ . '/waha_groups.json';
@@ -151,7 +172,7 @@ if (isset($_GET['api'])) {
             echo json_encode($alarms);
         }
         elseif ($route === 'bridge/alarms' && $method === 'GET') {
-            $stmt = $pdo->query("SELECT * FROM wa_alarms WHERE status = 'pending' ORDER BY trigger_time ASC");
+            $stmt = $pdo->query("SELECT * FROM sunfra_custom_alarms WHERE status = 'pending' ORDER BY trigger_time ASC");
             $alarms = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             $waha_file = __DIR__ . '/waha_groups.json';
@@ -159,7 +180,7 @@ if (isset($_GET['api'])) {
             
             foreach ($alarms as &$alarm) {
                 if ($alarm['target_type'] === 'employee') {
-                    $stmt2 = $pdo->prepare("SELECT phone_number FROM wa_employees WHERE id = ?");
+                    $stmt2 = $pdo->prepare("SELECT phone_number FROM sunfra_employees WHERE id = ?");
                     $stmt2->execute([$alarm['target_id']]);
                     $phone = $stmt2->fetchColumn();
                     if ($phone) {
@@ -178,8 +199,8 @@ if (isset($_GET['api'])) {
             $target_id = $data['target_type'] === 'employee' ? $data['target_id'] : null;
             $whatsapp_target_id = $data['target_type'] === 'group' ? $data['target_id'] : null;
             
-            $stmt = $pdo->prepare("INSERT INTO wa_alarms (target_type, target_id, whatsapp_target_id, task_notes, trigger_time) VALUES (?, ?, ?, ?, ?)");
-            $stmt->execute([$data['target_type'], $target_id, $whatsapp_target_id, $data['task_notes'], $data['trigger_time']]);
+            $stmt = $pdo->prepare("INSERT INTO sunfra_custom_alarms (target_type, target_id, whatsapp_target_id, task_notes, trigger_time, report_type, frequency, repeat_interval, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
+            $stmt->execute([$data['target_type'], $target_id, $whatsapp_target_id, $data['task_notes'], $data['trigger_time'], $data['report_type'] ?? null, $data['frequency'] ?? 'once', $data['repeat_interval'] ?? 'none']);
             echo json_encode(['success' => true]);
         }
         elseif (preg_match('/^alarms\/(\d+)$/', $route, $matches) && $method === 'PUT') {
@@ -187,20 +208,46 @@ if (isset($_GET['api'])) {
             $target_id = $data['target_type'] === 'employee' ? $data['target_id'] : null;
             $whatsapp_target_id = $data['target_type'] === 'group' ? $data['target_id'] : null;
             
-            $stmt = $pdo->prepare("UPDATE wa_alarms SET target_type = ?, target_id = ?, whatsapp_target_id = ?, task_notes = ?, trigger_time = ? WHERE id = ?");
-            $stmt->execute([$data['target_type'], $target_id, $whatsapp_target_id, $data['task_notes'], $data['trigger_time'], $matches[1]]);
+            $stmt = $pdo->prepare("UPDATE sunfra_custom_alarms SET target_type = ?, target_id = ?, whatsapp_target_id = ?, task_notes = ?, trigger_time = ?, report_type = ?, frequency = ?, repeat_interval = ?, status = 'pending' WHERE id = ?");
+            $stmt->execute([$data['target_type'], $target_id, $whatsapp_target_id, $data['task_notes'], $data['trigger_time'], $data['report_type'] ?? null, $data['frequency'] ?? 'once', $data['repeat_interval'] ?? 'none', $matches[1]]);
             echo json_encode(['success' => true]);
         }
         elseif (preg_match('/^alarms\/(\d+)$/', $route, $matches) && $method === 'DELETE') {
-            $pdo->prepare("DELETE FROM wa_alarms WHERE id = ?")->execute([$matches[1]]);
+            $pdo->prepare("DELETE FROM sunfra_custom_alarms WHERE id = ?")->execute([$matches[1]]);
             echo json_encode(['success' => true]);
         }
         elseif (preg_match('/^alarms\/(\d+)\/trigger$/', $route, $matches) && $method === 'POST') {
-            $pdo->prepare("UPDATE wa_alarms SET status = 'sent' WHERE id = ?")->execute([$matches[1]]);
+            $pdo->prepare("UPDATE sunfra_custom_alarms SET status = 'sent' WHERE id = ?")->execute([$matches[1]]);
             echo json_encode(['success' => true]);
         }
         elseif (preg_match('/^alarms\/(\d+)\/instant$/', $route, $matches) && $method === 'POST') {
-            $pdo->prepare("UPDATE wa_alarms SET trigger_time = CURRENT_TIMESTAMP, status = 'pending' WHERE id = ?")->execute([$matches[1]]);
+            $pdo->prepare("UPDATE sunfra_custom_alarms SET trigger_time = CURRENT_TIMESTAMP, status = 'pending' WHERE id = ?")->execute([$matches[1]]);
+            echo json_encode(['success' => true]);
+        }
+        elseif ($route === 'settings/report_types' && $method === 'GET') {
+            $stmt = $pdo->prepare("SELECT value FROM sunfra_system_settings WHERE `key` = 'custom_report_types'");
+            $stmt->execute();
+            $val = $stmt->fetchColumn();
+            if ($val) {
+                echo $val;
+            } else {
+                echo json_encode(["Production", "Feed", "Expenses", "Sales", "Profit and Loss"]);
+            }
+        }
+        elseif ($route === 'settings/report_types' && $method === 'POST') {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $val_str = json_encode($data['report_types']);
+            
+            // Check if key exists
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM sunfra_system_settings WHERE `key` = 'custom_report_types'");
+            $stmt->execute();
+            if ($stmt->fetchColumn() > 0) {
+                $stmt2 = $pdo->prepare("UPDATE sunfra_system_settings SET value = ? WHERE `key` = 'custom_report_types'");
+                $stmt2->execute([$val_str]);
+            } else {
+                $stmt2 = $pdo->prepare("INSERT INTO sunfra_system_settings (`key`, value) VALUES ('custom_report_types', ?)");
+                $stmt2->execute([$val_str]);
+            }
             echo json_encode(['success' => true]);
         }
         elseif ($route === 'waha/groups' && $method === 'GET') {
@@ -505,11 +552,12 @@ if (isset($_GET['api'])) {
             .card { padding: 1.5rem 1rem; }
             .data-table { display: block; overflow-x: auto; white-space: nowrap; }
             
-            /* Modal responsiveness */
-            .modal-content { width: 95%; padding: 1.5rem; margin: 1rem; }
-            #alarmDatetimeSection > div { flex-wrap: wrap; }
-            #alarmDatetimeSection input[type="date"] { flex: 100%; min-width: 100%; }
-            #alarmTimerSection > div { flex-wrap: wrap; justify-content: center; }
+            /* Modal responsiveness & Auto-zoom prevention */
+            .modal { align-items: flex-start; overflow-y: auto; padding: 2rem 0.5rem; }
+            .modal-content { width: 100%; max-width: 480px; padding: 1.5rem; margin: 0 auto; }
+            #empDatetimeSection > div, #alarmDatetimeSection > div { flex-direction: column; gap: 0.5rem; }
+            #empDatetimeSection input, #alarmDatetimeSection input { width: 100%; flex: none; }
+            .form-group input, .form-group select, .form-group textarea { font-size: 16px !important; }
         }
     </style>
 </head>
@@ -612,15 +660,12 @@ if (isset($_GET['api'])) {
                     <input type="text" id="empPhone" required pattern="[0-9]{10}" maxlength="10" placeholder="e.g., 9876543210" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 </div>
                 <div class="form-group">
-                    <label>Task / Notes</label>
-                    <textarea id="empNotes" required placeholder="What should they do?" rows="3"></textarea>
+                    <label>Assign Report Type</label>
+                    <select id="empReportType" onchange="handleReportTypeDropdownChange('empReportType', 'empNotes')"></select>
                 </div>
                 <div class="form-group">
-                    <label>Schedule Mode</label>
-                    <div class="radio-group" style="display: flex; gap: 1rem; margin-top: 0.5rem;">
-                        <label><input type="radio" name="empAlarmMode" value="datetime" checked onchange="toggleEmpAlarmMode()"> Specific Date & Time</label>
-                        <label><input type="radio" name="empAlarmMode" value="timer" onchange="toggleEmpAlarmMode()"> Timer</label>
-                    </div>
+                    <label>Task / Notes</label>
+                    <textarea id="empNotes" required placeholder="What should they do?" rows="3"></textarea>
                 </div>
                 <div id="empDatetimeSection" class="form-group">
                     <label>Select Date & Time</label>
@@ -629,26 +674,25 @@ if (isset($_GET['api'])) {
                         <input type="time" id="empTime" style="flex: 1;" required>
                     </div>
                 </div>
-                <div id="empTimerSection" class="form-group" style="display:none;">
-                    <label>Set Timer</label>
-                    <div style="display: flex; gap: 1rem;">
-                        <div style="text-align: center;">
-                            <input type="number" id="empDays" min="0" value="0" style="width: 60px; text-align: center;">
-                            <div style="font-size: 12px; color: #666;">Days</div>
-                        </div>
-                        <div style="text-align: center;">
-                            <input type="number" id="empHours" min="0" max="23" value="0" style="width: 60px; text-align: center;">
-                            <div style="font-size: 12px; color: #666;">Hrs</div>
-                        </div>
-                        <div style="text-align: center;">
-                            <input type="number" id="empMins" min="0" max="59" value="0" style="width: 60px; text-align: center;">
-                            <div style="font-size: 12px; color: #666;">Mins</div>
-                        </div>
-                        <div style="text-align: center;">
-                            <input type="number" id="empSecs" min="0" max="59" value="0" style="width: 60px; text-align: center;">
-                            <div style="font-size: 12px; color: #666;">Secs</div>
-                        </div>
-                    </div>
+                <div class="form-group">
+                    <label>Schedule Frequency</label>
+                    <select id="empFrequency" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; background: transparent; color: var(--text-primary);">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
+                </div>
+                <div class="form-group" id="empRepeatSection">
+                    <label>Repeat Reminder (Nagging)</label>
+                    <select id="empRepeatInterval" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; background: transparent; color: var(--text-primary);">
+                        <option value="none">Send Once (No Repeat)</option>
+                        <option value="5m">Repeat every 5 Minutes</option>
+                        <option value="10m">Repeat every 10 Minutes</option>
+                        <option value="15m">Repeat every 15 Minutes</option>
+                        <option value="30m">Repeat every 30 Minutes</option>
+                        <option value="1h">Repeat every 1 Hour</option>
+                    </select>
                 </div>
 
                 <div class="modal-actions">
@@ -669,18 +713,13 @@ if (isset($_GET['api'])) {
                     <select id="alarmTargetSelect" required></select>
                 </div>
                 <div class="form-group">
+                    <label>Assign Report Type</label>
+                    <select id="alarmReportType" onchange="handleReportTypeDropdownChange('alarmReportType', 'alarmNotes')"></select>
+                </div>
+                <div class="form-group">
                     <label>Task / Notes</label>
                     <textarea id="alarmNotes" required placeholder="What should they do?" rows="3"></textarea>
                 </div>
-                
-                <div class="form-group">
-                    <label>Schedule Mode</label>
-                    <div style="display: flex; gap: 1rem; margin-bottom: 0.5rem;">
-                        <label><input type="radio" name="alarmMode" value="datetime" checked onchange="toggleAlarmMode()"> Specific Date & Time</label>
-                        <label><input type="radio" name="alarmMode" value="timer" onchange="toggleAlarmMode()"> Timer</label>
-                    </div>
-                </div>
-                
                 <div id="alarmDatetimeSection" class="form-group">
                     <label>Select Date & Time</label>
                     <div style="display: flex; gap: 0.5rem;">
@@ -688,27 +727,25 @@ if (isset($_GET['api'])) {
                         <input type="time" id="alarmTime" style="flex: 1;" required>
                     </div>
                 </div>
-                
-                <div id="alarmTimerSection" class="form-group" style="display:none;">
-                    <label>Trigger After:</label>
-                    <div style="display: flex; gap: 1rem; align-items: center;">
-                        <div style="display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
-                            <input type="number" id="alarmDays" min="0" value="0" style="width: 60px; text-align: center;">
-                            <span style="font-size:0.85rem; color: var(--text-secondary);">Day</span>
-                        </div>
-                        <div style="display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
-                            <input type="number" id="alarmHours" min="0" max="23" value="0" style="width: 60px; text-align: center;">
-                            <span style="font-size:0.85rem; color: var(--text-secondary);">Hour</span>
-                        </div>
-                        <div style="display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
-                            <input type="number" id="alarmMins" min="0" max="59" value="0" style="width: 60px; text-align: center;">
-                            <span style="font-size:0.85rem; color: var(--text-secondary);">Min</span>
-                        </div>
-                        <div style="display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
-                            <input type="number" id="alarmSecs" min="0" max="59" value="0" style="width: 60px; text-align: center;">
-                            <span style="font-size:0.85rem; color: var(--text-secondary);">Sec</span>
-                        </div>
-                    </div>
+                <div class="form-group">
+                    <label>Schedule Frequency</label>
+                    <select id="alarmFrequency" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; background: transparent; color: var(--text-primary);">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
+                </div>
+                <div class="form-group" id="alarmRepeatSection">
+                    <label>Repeat Reminder (Nagging)</label>
+                    <select id="alarmRepeatInterval" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; background: transparent; color: var(--text-primary);">
+                        <option value="none">Send Once (No Repeat)</option>
+                        <option value="5m">Repeat every 5 Minutes</option>
+                        <option value="10m">Repeat every 10 Minutes</option>
+                        <option value="15m">Repeat every 15 Minutes</option>
+                        <option value="30m">Repeat every 30 Minutes</option>
+                        <option value="1h">Repeat every 1 Hour</option>
+                    </select>
                 </div>
 
                 <div class="modal-actions">
@@ -740,6 +777,66 @@ if (isset($_GET['api'])) {
         let hidden_groups = [];
         let employees = [];
         let alarms = [];
+        let report_types = [];
+
+        async function loadReportTypesDropdowns() {
+            try {
+                const res = await fetch(API_URL + 'settings/report_types');
+                report_types = await res.json();
+            } catch (err) {
+                report_types = ["Production", "Feed", "Expenses", "Sales", "Profit and Loss"];
+            }
+            
+            const fillDropdown = (id) => {
+                const select = document.getElementById(id);
+                if (select) {
+                    select.innerHTML = '<option value="">None (Custom Notes Only)</option>';
+                    report_types.forEach(r => {
+                        select.innerHTML += `<option value="${r}">${r}</option>`;
+                    });
+                    select.innerHTML += '<option value="__add_new__" style="color: var(--primary-color); font-weight: bold;">[ + Add Custom Report Type ]</option>';
+                }
+            };
+            fillDropdown('empReportType');
+            fillDropdown('alarmReportType');
+        }
+
+        async function handleReportTypeDropdownChange(dropdownId, textareaId) {
+            const select = document.getElementById(dropdownId);
+            const textarea = document.getElementById(textareaId);
+            const val = select.value;
+            
+            if (val === '__add_new__') {
+                const newName = prompt("Enter new report name (e.g. Chicks Vaccination):");
+                if (newName && newName.trim()) {
+                    const cleanName = newName.trim();
+                    try {
+                        const res = await fetch(API_URL + 'settings/report_types');
+                        let list = await res.json();
+                        if (!list.includes(cleanName)) {
+                            list.push(cleanName);
+                            await fetch(API_URL + 'settings/report_types', {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify({report_types: list})
+                            });
+                            await loadReportTypesDropdowns();
+                            select.value = cleanName;
+                            textarea.value = `Please submit the ${cleanName} report`;
+                        }
+                    } catch (err) {
+                        alert("Failed to add custom report type: " + err);
+                        select.value = '';
+                    }
+                } else {
+                    select.value = '';
+                }
+            } else if (val) {
+                textarea.value = `Please submit the ${val} report`;
+            } else {
+                textarea.value = '';
+            }
+        }
 
         // Navigation
         document.querySelectorAll('.nav-item').forEach(item => {
@@ -868,14 +965,14 @@ if (isset($_GET['api'])) {
         }
 
         function toggleAlarmMode() {
-            const mode = document.querySelector('input[name="alarmMode"]:checked').value;
-            document.getElementById('alarmDatetimeSection').style.display = mode === 'datetime' ? 'block' : 'none';
-            document.getElementById('alarmTimerSection').style.display = mode === 'timer' ? 'block' : 'none';
+            const freq = document.getElementById('alarmFrequency').value;
+            document.getElementById('alarmDatetimeSection').style.display = freq !== 'timer' ? 'block' : 'none';
+            document.getElementById('alarmTimerSection').style.display = freq === 'timer' ? 'block' : 'none';
         }
         function toggleEmpAlarmMode() {
-            const mode = document.querySelector('input[name="empAlarmMode"]:checked').value;
-            document.getElementById('empDatetimeSection').style.display = mode === 'datetime' ? 'block' : 'none';
-            document.getElementById('empTimerSection').style.display = mode === 'timer' ? 'block' : 'none';
+            const freq = document.getElementById('empFrequency').value;
+            document.getElementById('empDatetimeSection').style.display = freq !== 'timer' ? 'block' : 'none';
+            document.getElementById('empTimerSection').style.display = freq === 'timer' ? 'block' : 'none';
         }
         function editEmployee(id) {
             const e = employees.find(x => x.id == id);
@@ -884,9 +981,13 @@ if (isset($_GET['api'])) {
             document.getElementById('employeeModalTitle').innerText = 'Edit Member Reminder';
             document.getElementById('empName').value = e.name;
             document.getElementById('empPhone').value = e.phone_number;
+            document.getElementById('empReportType').value = e.report_type || '';
             document.getElementById('empNotes').value = e.task_notes;
             
-            document.querySelector('input[name="empAlarmMode"][value="datetime"]').checked = true;
+            // Set repeat interval
+            document.getElementById('empRepeatInterval').value = e.repeat_interval || 'none';
+            
+            document.getElementById('empFrequency').value = e.frequency || 'once';
             toggleEmpAlarmMode();
             
             const dt = parseLocalStatusTime(e.trigger_time);
@@ -899,9 +1000,9 @@ if (isset($_GET['api'])) {
 
         async function handleEmployeeSubmit(e) {
             e.preventDefault();
-            const mode = document.querySelector('input[name="empAlarmMode"]:checked').value;
+            const freq = document.getElementById('empFrequency').value;
             let triggerTime;
-            if (mode === 'datetime') {
+            if (freq !== 'timer') {
                 const d = document.getElementById('empDate').value;
                 const t = document.getElementById('empTime').value;
                 if (!d || !t) return alert("Please select a date and time");
@@ -927,7 +1028,10 @@ if (isset($_GET['api'])) {
                     name: document.getElementById('empName').value,
                     phone_number: document.getElementById('empPhone').value,
                     task_notes: document.getElementById('empNotes').value,
-                    trigger_time: triggerTime
+                    trigger_time: triggerTime,
+                    report_type: document.getElementById('empReportType').value || null,
+                    repeat_interval: document.getElementById('empRepeatInterval').value || 'none',
+                    frequency: freq
                 })
             });
             closeModal('employeeModal'); 
@@ -938,9 +1042,9 @@ if (isset($_GET['api'])) {
         }
         async function handleAlarmSubmit(e) {
             e.preventDefault();
-            const mode = document.querySelector('input[name="alarmMode"]:checked').value;
+            const freq = document.getElementById('alarmFrequency').value;
             let triggerTime;
-            if (mode === 'datetime') {
+            if (freq !== 'timer') {
                 const d = document.getElementById('alarmDate').value;
                 const t = document.getElementById('alarmTime').value;
                 if (!d || !t) return alert("Please select a date and time");
@@ -966,9 +1070,11 @@ if (isset($_GET['api'])) {
                     target_type: 'group',
                     target_id: document.getElementById('alarmTargetSelect').value,
                     task_notes: document.getElementById('alarmNotes').value,
-                    trigger_time: triggerTime
+                    trigger_time: triggerTime,
+                    report_type: document.getElementById('alarmReportType').value || null,
+                    repeat_interval: document.getElementById('alarmRepeatInterval').value || 'none',
+                    frequency: freq
                 })
-                
             });
             closeModal('alarmModal'); 
             document.getElementById('alarmForm').reset();
@@ -984,9 +1090,13 @@ if (isset($_GET['api'])) {
             document.getElementById('alarmModalTitle').innerText = 'Edit Reminder';
             updateAlarmTargetSelect();
             document.getElementById('alarmTargetSelect').value = a.target_id;
+            document.getElementById('alarmReportType').value = a.report_type || '';
             document.getElementById('alarmNotes').value = a.task_notes;
             
-            document.querySelector('input[name="alarmMode"][value="datetime"]').checked = true;
+            // Set repeat interval
+            document.getElementById('alarmRepeatInterval').value = a.repeat_interval || 'none';
+            
+            document.getElementById('alarmFrequency').value = a.frequency || 'once';
             toggleAlarmMode();
             const dt = parseLocalStatusTime(a.trigger_time);
             const format = n => String(n).padStart(2, '0');
@@ -1056,6 +1166,7 @@ if (isset($_GET['api'])) {
 
         window.onload = async () => {
             await fetchWahaGroups();
+            await loadReportTypesDropdowns();
             await fetchEmployees();
             await fetchAlarms();
         };
