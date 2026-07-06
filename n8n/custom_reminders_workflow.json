@@ -1,0 +1,154 @@
+{
+  "name": "Custom Reminders and Nagging Scheduler",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "id": "1",
+      "name": "Schedule Trigger (Every 5 Mins)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [0, 240]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT a.*, COALESCE(a.whatsapp_target_id, CONCAT(IF(LENGTH(e.phone_number) = 10, '91', ''), e.phone_number, '@c.us')) AS target_whatsapp_id, COALESCE(e.name, 'Member') AS target_name FROM sunfra_custom_alarms a LEFT JOIN sunfra_employees e ON a.target_type = 'employee' AND a.target_id = e.id WHERE a.status = 'pending' AND a.trigger_time <= CONVERT_TZ(NOW(), '+00:00', '+05:30');"
+      },
+      "id": "2",
+      "name": "Fetch Triggered Alarms",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.1,
+      "position": [200, 240],
+      "credentials": {
+        "mySql": {
+          "id": "Hostinger MySQL",
+          "field": "credentialId"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "3",
+      "name": "Loop Alarms",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [400, 240]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://waha:3000/api/sendText",
+        "sendHeaders": true,
+        "headersUi": {
+          "parameter": [
+            {
+              "name": "X-Api-Key",
+              "value": "123"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"chatId\": \"{{ $json.target_whatsapp_id }}\", \"text\": \"⏰ *Sunfra Farm Reminder*\\n\\nReport: {{ $json.report_type || 'None' }}\\nNotes: {{ $json.task_notes }}\", \"session\": \"default\"}",
+        "options": {
+          "includeInput": true
+        }
+      },
+      "id": "4",
+      "name": "Send WhatsApp via WAHA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [620, 240]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=UPDATE sunfra_custom_alarms SET status = 'sent' WHERE id = {{ $('Loop Alarms').first().json.id }};"
+      },
+      "id": "5",
+      "name": "Update Alarm Status",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.1,
+      "position": [840, 240],
+      "credentials": {
+        "mySql": {
+          "id": "Hostinger MySQL",
+          "field": "credentialId"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger (Every 5 Mins)": {
+      "main": [
+        [
+          {
+            "node": "Fetch Triggered Alarms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Triggered Alarms": {
+      "main": [
+        [
+          {
+            "node": "Loop Alarms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Alarms": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp via WAHA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp via WAHA": {
+      "main": [
+        [
+          {
+            "node": "Update Alarm Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Alarm Status": {
+      "main": [
+        [
+          {
+            "node": "Loop Alarms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

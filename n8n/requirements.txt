@@ -1,0 +1,1 @@
+# No custom Python requirements — n8n is a Node.js application run via Docker image

@@ -1,0 +1,52 @@
+📊 Daily Farm Summary – 27/06/2026
+
+1. Production
+
+Shed| Birds| Eggs Produced| Expected Production (%)| Actual Production (%)| Avg. Egg Selling Price (₹/Egg)| Production Value (₹)
+Shed 1| 15,000| 15,000| 95.0%| 100.0%| ₹5.20| ₹78,000.00
+Shed 2| 12,000| 10,500| 95.0%| 87.5%| ₹5.20| ₹54,600.00
+Shed 3| 13,000| 11,400| 95.0%| 87.7%| ₹5.20| ₹59,280.00
+Total| 40,000| 36,900| 95.0%| 92.2%| ₹5.20| ₹191,880.00
+
+---
+
+2. Feed Consumption
+
+Shed| Feed Consumed (MT)| Feed per Bird (g/Bird/Day)| Feed Cost/Ton (₹)| Total Feed Cost (₹)
+Shed 1| 1.500| 100.0| ₹35,000.00| ₹52,500.00
+Shed 2| 1.200| 100.0| ₹35,000.00| ₹42,000.00
+Shed 3| 1.300| 100.0| ₹35,000.00| ₹45,500.00
+Total| 4.000| 100.0| ₹35,000.00| ₹140,000.00
+
+---
+
+3. Shed-Related Expenditure
+
+Shed| No. of Labourers Used| No. of Medicines Used| Final Cost (₹)| Daily Payender
+Shed 1| 2| 1| ₹1,500.00| Ramesh Kumar
+Shed 2| 2| 0| ₹1,000.00| Ramesh Kumar
+Shed 3| 3| 0| ₹1,500.00| Ramesh Kumar
+Total Shed-Related Expenditure| 7| 1| ₹4,000.00| Ramesh Kumar
+
+---
+
+4. Common Fuel and Common Expenditures
+
+Particular| Quantity| Amount (₹)
+Fuel| 20.0 L| ₹2,000.00
+Electricity| 120.0 Units| ₹1,200.00
+Repairs & Maintenance| | ₹3,000.00
+Other Common Expenses| | ₹50,500.00
+Total Common Expenditure| | ₹56,700.00
+
+---
+
+5. Daily P&L Summary
+
+Particular| Amount (₹)
+Total Production Value| ₹191,880.00
+Total Feed Cost| ₹140,000.00
+Total Shed-Related Expenditure| ₹4,000.00
+Total Common Expenditure| ₹56,700.00
+Total Expenses| ₹200,700.00
+Net Profit / Loss| ₹-8,820.00

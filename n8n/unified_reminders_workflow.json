@@ -1,0 +1,398 @@
+{
+  "name": "Unified Reminders Scheduler",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "id": "node_1",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM sunfra_unified_reminders WHERE status = 'pending' AND trigger_time <= CONVERT_TZ(NOW(), '+00:00', '+05:30');"
+      },
+      "id": "node_2",
+      "name": "Fetch Triggered Alarms",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.1,
+      "position": [
+        220,
+        300
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "Hostinger MySQL",
+          "field": "credentialId"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT sender, group_name, category, notes, processed_time AS timestamp FROM sunfra_processed_data WHERE DATE(processed_time) = DATE(CONVERT_TZ(NOW(), '+00:00', '+05:30')) UNION SELECT sender, group_name, 'raw' AS category, raw_text AS notes, timestamp FROM sunfra_raw_messages WHERE DATE(timestamp) = DATE(CONVERT_TZ(NOW(), '+00:00', '+05:30'));"
+      },
+      "id": "node_3",
+      "name": "Fetch Today's Submissions",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.1,
+      "position": [
+        440,
+        300
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "Hostinger MySQL",
+          "field": "credentialId"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT whatsapp_group_id, name FROM sunfra_groups;"
+      },
+      "id": "node_4",
+      "name": "Fetch Group JID Map",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.1,
+      "position": [
+        660,
+        300
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "Hostinger MySQL",
+          "field": "credentialId"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Collect all upstream data and pass it forward as a single merged payload\nconst alarms = $('Fetch Triggered Alarms').all().map(i => i.json);\nconst submissions = $('Fetch Today\\'s Submissions').all().map(i => i.json);\nconst groups = $('Fetch Group JID Map').all().map(i => i.json);\n\nreturn alarms.map(alarm => ({\n  ...alarm,\n  _submissions: submissions,\n  _groups: groups\n}));\n"
+      },
+      "id": "node_5",
+      "name": "Merge Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "node_6",
+      "name": "Loop Alarms",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1100,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const IST_offset = 5.5 * 60 * 60 * 1000;\nconst now = new Date(new Date().getTime() + IST_offset);\n\nlet reminder = { ...$json };\nconst submissions = reminder._submissions || [];\nconst groups = reminder._groups || [];\nconst phoneStr = String(reminder.person_phone || '').trim();\nlet triggerTime = new Date(new Date(reminder.trigger_time).getTime() + IST_offset);\n\nlet assignedReports = reminder.report_types\n  ? reminder.report_types.split(',').map(s => s.trim()).filter(Boolean)\n  : [];\nlet missing_list = [];\n\nlet groupName = null;\nif (reminder.whatsapp_group_id) {\n    let gMatch = groups.find(g => g.whatsapp_group_id === reminder.whatsapp_group_id);\n    if (gMatch) groupName = gMatch.name;\n}\n\nfor (let report of assignedReports) {\n    let submitted = false;\n    let r_lower = report.toLowerCase();\n    let categories = [];\n    if (r_lower.includes(\"production\")) {\n        categories = ['production', 'egg_collection', 'egg_collection_1', 'egg_collection_2', 'egg'];\n    } else if (r_lower.includes(\"feed\")) {\n        categories = ['feed'];\n    } else if (r_lower.includes(\"expense\")) {\n        categories = ['expense', 'purchase'];\n    } else if (r_lower.includes(\"sale\")) {\n        categories = ['sales'];\n    } else if (r_lower.includes(\"profit\") || r_lower.includes(\"p&l\") || r_lower.includes(\"p and l\")) {\n        categories = ['sales', 'expense', 'purchase'];\n    }\n\n    for (let sub of submissions) {\n        let matchSender = sub.sender && sub.sender.includes(phoneStr);\n        let matchGroup = groupName && sub.group_name === groupName;\n        if (matchSender || matchGroup) {\n            if (categories.length > 0) {\n                if (categories.includes(sub.category)) { submitted = true; break; }\n            } else {\n                let notes_lower = (sub.notes || '').toLowerCase();\n                if (notes_lower.includes(r_lower)) { submitted = true; break; }\n            }\n        }\n    }\n    if (!submitted) missing_list.push(report);\n}\n\nlet reports_missing = missing_list.length > 0;\nlet nextTime = new Date(triggerTime.getTime());\nlet newStatus = 'pending';\n\nif (reports_missing) {\n    if (reminder.repeat_interval && reminder.repeat_interval !== 'none') {\n        let minutes = 0;\n        if (reminder.repeat_interval === '5m') minutes = 5;\n        else if (reminder.repeat_interval === '10m') minutes = 10;\n        else if (reminder.repeat_interval === '15m') minutes = 15;\n        else if (reminder.repeat_interval === '30m') minutes = 30;\n        else if (reminder.repeat_interval === '1h') minutes = 60;\n\n        if (minutes > 0) {\n            let hour = now.getUTCHours();\n            if (hour >= 6 && hour < 23) {\n                nextTime = new Date(now.getTime() + minutes * 60 * 1000);\n            } else {\n                nextTime = getNextOccurrence(triggerTime, reminder.frequency);\n            }\n        }\n    } else {\n        nextTime = getNextOccurrence(triggerTime, reminder.frequency);\n    }\n} else {\n    nextTime = getNextOccurrence(triggerTime, reminder.frequency);\n}\n\nlet nextUTC = new Date(nextTime.getTime() - IST_offset);\nreminder.next_trigger_time = nextUTC.toISOString().slice(0, 19).replace('T', ' ');\nreminder.new_status = newStatus;\nreminder.reports_missing = reports_missing;\nreminder.missing_list = missing_list;\nreminder.missing_reports = missing_list.join(', ');\nreminder.target_whatsapp_id = phoneStr.length === 10 ? `91${phoneStr}@c.us` : `${phoneStr}@c.us`;\nreminder.private_message = `⏰ *Sunfra Farm Reminder*\\n\\nDear *${reminder.person_name}*, please submit the following report(s) today:\\n*${reminder.missing_reports}*\\n\\nNotes: ${reminder.task_notes}`;\nreminder.group_message = `⏰ *Sunfra Farm Reminder*\\n\\n@${reminder.person_name}, please submit the following report(s) today:\\n*${reminder.missing_reports}*\\n\\nNotes: ${reminder.task_notes}`;\n\nreturn reminder;\n\nfunction getNextOccurrence(baseTime, frequency) {\n    let next = new Date(baseTime.getTime());\n    let now2 = new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000);\n    do {\n        if (frequency === 'weekly') next.setDate(next.getDate() + 7);\n        else if (frequency === 'monthly') next.setMonth(next.getMonth() + 1);\n        else if (frequency === 'yearly') next.setFullYear(next.getFullYear() + 1);\n        else next.setDate(next.getDate() + 1);\n    } while (next <= now2);\n    return next;\n}\n"
+      },
+      "id": "node_7",
+      "name": "Check Submissions",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.reports_missing }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "node_8",
+      "name": "Is Missing?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1540,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://waha:3000/api/sendText",
+        "sendHeaders": true,
+        "headersUi": {
+          "parameter": [
+            {
+              "name": "X-Api-Key",
+              "value": "123"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"chatId\": \"{{ $json.target_whatsapp_id }}\",\n  \"text\": \"{{ $json.private_message }}\",\n  \"session\": \"default\"\n}",
+        "options": {
+          "includeInput": true
+        }
+      },
+      "id": "node_9",
+      "name": "Send Private WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1760,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.whatsapp_group_id }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "node_10",
+      "name": "Is Group Assigned?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1980,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://waha:3000/api/sendText",
+        "sendHeaders": true,
+        "headersUi": {
+          "parameter": [
+            {
+              "name": "X-Api-Key",
+              "value": "123"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"chatId\": \"{{ $json.whatsapp_group_id }}\",\n  \"text\": \"{{ $json.group_message }}\",\n  \"session\": \"default\"\n}",
+        "options": {
+          "includeInput": true
+        }
+      },
+      "id": "node_11",
+      "name": "Send Group WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2200,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE sunfra_unified_reminders SET trigger_time = '{{ $(\'Check Submissions\').first().json.next_trigger_time }}', status = '{{ $(\'Check Submissions\').first().json.new_status }}' WHERE id = {{ $(\'Check Submissions\').first().json.id }};"
+      },
+      "id": "node_12",
+      "name": "Update Alarm Status",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.1,
+      "position": [
+        2420,
+        300
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "Hostinger MySQL",
+          "field": "credentialId"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Triggered Alarms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Triggered Alarms": {
+      "main": [
+        [
+          {
+            "node": "Fetch Today's Submissions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Today's Submissions": {
+      "main": [
+        [
+          {
+            "node": "Fetch Group JID Map",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Group JID Map": {
+      "main": [
+        [
+          {
+            "node": "Merge Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Data": {
+      "main": [
+        [
+          {
+            "node": "Loop Alarms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Alarms": {
+      "main": [
+        [
+          {
+            "node": "Check Submissions",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Check Submissions": {
+      "main": [
+        [
+          {
+            "node": "Is Missing?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Missing?": {
+      "main": [
+        [
+          {
+            "node": "Send Private WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Alarm Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Private WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Is Group Assigned?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Group Assigned?": {
+      "main": [
+        [
+          {
+            "node": "Send Group WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Alarm Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Group WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Update Alarm Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Alarm Status": {
+      "main": [
+        [
+          {
+            "node": "Loop Alarms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

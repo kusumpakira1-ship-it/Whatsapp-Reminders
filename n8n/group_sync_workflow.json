@@ -1,0 +1,128 @@
+{
+  "name": "Sync WhatsApp Groups to PHP Server",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "c0e66d48-356c-485a-8b63-1250b7efc6b3",
+      "name": "Schedule Trigger (Every 1 Hour)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        100,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://waha:3000/api/default/groups",
+        "sendHeaders": true,
+        "headersUi": {
+          "parameter": [
+            {
+              "name": "X-Api-Key",
+              "value": "123"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e67cbdb1-689e-4e4f-b64e-cf7903828976",
+      "name": "Fetch Groups from WAHA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        320,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "let groups = [];\nconst wahaData = $input.all();\n\nfor (const item of wahaData) {\n  const data = item.json;\n  if (data && typeof data === 'object') {\n    if (!Array.isArray(data)) {\n      for (const key in data) {\n        if (data.hasOwnProperty(key)) {\n          const g = data[key];\n          groups.push({\n            id: g.id || key,\n            name: g.subject || g.name || \"Unnamed Group\"\n          });\n        }\n      }\n    } else {\n      for (const g of data) {\n        groups.push({\n          id: g.id,\n          name: g.subject || g.name || \"Unnamed Group\"\n        });\n      }\n    }\n  }\n}\n\nreturn { json: { status: \"success\", groups: groups } };"
+      },
+      "id": "da14c4da-44ba-491f-a7be-e53b2169542a",
+      "name": "Format Array for PHP",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        540,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sunfragroup.com/kusum/Whatsapp_Rem/index.php?api=waha/groups/sync",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "={{ $json.status }}"
+            },
+            {
+              "name": "groups",
+              "value": "={{ $json.groups }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4ab67cda-8b63-448f-be63-1250b7efc6b3",
+      "name": "Upload to Live PHP Server",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        760,
+        240
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger (Every 1 Hour)": {
+      "main": [
+        [
+          {
+            "node": "Fetch Groups from WAHA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Groups from WAHA": {
+      "main": [
+        [
+          {
+            "node": "Format Array for PHP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Array for PHP": {
+      "main": [
+        [
+          {
+            "node": "Upload to Live PHP Server",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -1,6 +1,8 @@
-version: '3.8'
-
 services:
+
+  # ─────────────────────────────────────────────
+  # WAHA — WhatsApp HTTP API
+  # ─────────────────────────────────────────────
   waha:
     image: devlikeapro/waha
     container_name: waha
@@ -15,20 +17,23 @@ services:
       - WAHA_WEBHOOK_EVENTS=message,message.any
       - WHATSAPP_HOOK_URL=http://fastapi-backend.com:8000/webhook
       - WHATSAPP_HOOK_EVENTS=message,message.any
-      - WAHA_SESSIONS=default,backup
+      - WAHA_SESSIONS=default
     volumes:
       - ./waha_data:/app/.waha
 
-  fastapi_app:
+  # ─────────────────────────────────────────────
+  # BACKEND — FastAPI Python Application
+  # ─────────────────────────────────────────────
+  backend:
     build:
-      context: ./app
+      context: ./backend
       dockerfile: Dockerfile
     container_name: fastapi_backend
     restart: always
     ports:
       - "8000:8000"
     volumes:
-      - ./app:/app
+      - ./backend:/app
       - ./messages.json:/app/messages.json
     networks:
       default:
@@ -41,15 +46,35 @@ services:
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
+      - MANAGER_PHONE=${MANAGER_PHONE}
       - WAHA_URL=http://waha:3000
       - WAHA_SESSION=${WAHA_SESSION}
       - AI_PROVIDER=${AI_PROVIDER}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
       - OLLAMA_URL=${OLLAMA_URL}
       - OLLAMA_MODEL=${OLLAMA_MODEL}
       - OLLAMA_VISION_MODEL=${OLLAMA_VISION_MODEL}
+      - USE_N8N=${USE_N8N}
     depends_on:
       - waha
 
+  # ─────────────────────────────────────────────
+  # FRONTEND — nginx serving HTML/CSS/JS
+  # ─────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+  # ─────────────────────────────────────────────
+  # PHPMYADMIN — Database Management UI
+  # ─────────────────────────────────────────────
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin
@@ -61,3 +86,19 @@ services:
       - PMA_USER=${DB_USER}
       - PMA_PASSWORD=${DB_PASS}
       - PMA_AUTH_TYPE=config
+
+  # ─────────────────────────────────────────────
+  # N8N — Workflow Automation
+  # ─────────────────────────────────────────────
+  n8n:
+    build:
+      context: ./n8n
+      dockerfile: Dockerfile
+    container_name: n8n
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_SECURE_COOKIE=false
+    volumes:
+      - ./n8n_data:/home/node/.n8n
