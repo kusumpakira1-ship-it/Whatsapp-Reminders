@@ -436,6 +436,14 @@ def poll_and_execute_unified_reminders():
     
     db = SessionLocal()
     try:
+        # Auto-reset sent recurring reminders back to pending once their next trigger time is reached
+        db.query(UnifiedReminder).filter(
+            UnifiedReminder.status == 'sent',
+            UnifiedReminder.frequency != 'once',
+            UnifiedReminder.trigger_time <= now_ist
+        ).update({"status": "pending"})
+        db.commit()
+
         pending = db.query(UnifiedReminder).filter(
             UnifiedReminder.status == 'pending',
             UnifiedReminder.trigger_time <= now_ist
@@ -524,9 +532,9 @@ def poll_and_execute_unified_reminders():
                 r.status = 'sent'
             else:
                 r.trigger_time = get_next_occurrence(r.trigger_time, freq)
-                r.status = 'pending'
+                r.status = 'sent'  # Set status to sent so it displays as green (complete for today) in UI
             db.commit()
-            logger.info(f"Reminder for {r.person_name} updated to next occurrence: {r.trigger_time}")
+            logger.info(f"Reminder for {r.person_name} updated to next occurrence: {r.trigger_time} (status: sent)")
             
     except Exception as e:
         logger.error(f"Error in poll_and_execute_unified_reminders: {e}")

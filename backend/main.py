@@ -4,7 +4,7 @@ import logging
 import requests
 from datetime import datetime, timezone, timedelta
 IST = timezone(timedelta(hours=5, minutes=30))
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 from typing import List, Optional
 from contextlib import asynccontextmanager
@@ -53,8 +53,159 @@ async def get_messages_json():
         return FileResponse("messages.json")
     return {"status": "No messages.json found"}
 
+def process_message_background(
+    message_id: str,
+    display_sender: str,
+    group_name_str: Optional[str],
+    has_media: bool,
+    text: str,
+    msg_time: datetime,
+    payload: dict,
+    msg: dict,
+    sender_phone: str,
+    sender: str,
+    is_group: bool,
+    sender_name: str
+):
+    db = SessionLocal()
+    try:
+        raw_msg = db.query(RawMessage).filter(RawMessage.message_id == message_id).first()
+        if not raw_msg:
+            logger.error(f"Raw message {message_id} not found in background task.")
+            db.close()
+            return
+            
+        ai_result = None
+        source_type = "text"
+        
+        if has_media:
+            # Download media
+            media_info = msg.get("media") or {}
+            media_url_direct = media_info.get("url")
+            media_mime = media_info.get("mimetype")
+            media_filename = media_info.get("filename")
+            media_path = download_waha_media(message_id, media_url=media_url_direct, mimetype=media_mime, filename=media_filename)
+            if media_path:
+                raw_msg.media_path = media_path
+                db.commit()
+                
+                media_path_lower = media_path.lower()
+                if media_path_lower.endswith(('.jpg', '.jpeg', '.png')):
+                    ai_result = process_image(media_path, caption=text)
+                    source_type = "image"
+                elif media_path_lower.endswith('.pdf'):
+                    ai_result = process_document(media_path, caption=text)
+                    source_type = "document"
+                else:
+                    logger.info(f"Unsupported media type for AI: {media_path}")
+        
+        # Determine the category from the vision result (if any)
+        vision_cat = "unknown"
+        if ai_result:
+            if isinstance(ai_result, list) and len(ai_result) > 0:
+                vision_cat = ai_result[0].get("category", "unknown")
+            elif isinstance(ai_result, dict):
+                if "records" in ai_result and isinstance(ai_result["records"], list) and len(ai_result["records"]) > 0:
+                    vision_cat = ai_result["records"][0].get("category", "unknown")
+                else:
+                    vision_cat = ai_result.get("category", "unknown")
+
+        # Fallback to text processing
+        if (not ai_result or vision_cat == "unknown") and text:
+            text_ai_result = process_text(text)
+            if text_ai_result:
+                text_cat = "unknown"
+                if isinstance(text_ai_result, list) and len(text_ai_result) > 0:
+                    text_cat = text_ai_result[0].get("category", "unknown")
+                elif isinstance(text_ai_result, dict):
+                    if "records" in text_ai_result and isinstance(text_ai_result["records"], list) and len(text_ai_result["records"]) > 0:
+                        text_cat = text_ai_result["records"][0].get("category", "unknown")
+                    else:
+                        text_cat = text_ai_result.get("category", "unknown")
+                
+                if text_cat != "unknown":
+                    ai_result = text_ai_result
+                    source_type = "text"
+
+        # Save Processed Data
+        if ai_result:
+            records = []
+            if isinstance(ai_result, list):
+                records = ai_result
+            elif isinstance(ai_result, dict):
+                if "records" in ai_result and isinstance(ai_result["records"], list):
+                    records = ai_result["records"]
+                else:
+                    records = [ai_result]
+                    
+            valid_records_saved = 0
+            allowed_cats = {
+                'egg_collection_1', 'egg_collection_2', 'egg_collection', 
+                'hen_weight', 'mortality', 'egg_loaded', 'egg_unloaded', 
+                'production', 'sales', 'feed', 'raw_material', 'medicine', 
+                'expense', 'purchase', 'egg', 'unknown'
+            }
+            for record in records:
+                if isinstance(record, dict):
+                    cat = record.get("category") or "unknown"
+                    if cat not in allowed_cats:
+                        cat = 'unknown'
+                    proc_data = ProcessedData(
+                        shead_name=record.get("shead_name") or "",
+                        category=cat,
+                        quantity=record.get("quantity") or 0,
+                        unit=record.get("unit") or "",
+                        amount=record.get("amount") or 0.0,
+                        notes=record.get("notes") or "",
+                        sender=display_sender,
+                        group_name=group_name_str,
+                        source_type=source_type,
+                        confidence_score=record.get("confidence_score") or 0.0,
+                        processed_time=datetime.now(IST).replace(tzinfo=None),
+                        message_id=message_id
+                    )
+                    db.add(proc_data)
+                    valid_records_saved += 1
+            if valid_records_saved > 0:
+                db.commit()
+                logger.info(f"Successfully processed message {message_id}: saved {valid_records_saved} records in background.")
+            else:
+                logger.info(f"Ignored non-farm message or no valid records found. Text: {text}")
+                
+        # Save to local JSON file
+        try:
+            messages = []
+            if os.path.exists('messages.json'):
+                with open('messages.json', 'r', encoding='utf-8') as f:
+                    try:
+                        messages = json.load(f)
+                    except:
+                        pass
+                
+            messages.append({
+                "timestamp": datetime.now(IST).isoformat(),
+                "message_id": message_id,
+                "sender": display_sender,
+                "sender_name": sender_name,
+                "is_group": is_group,
+                "group_name": group_name_str,
+                "raw_text": text,
+                "ai_extracted": ai_result
+            })
+            
+            with open('messages.json', 'w', encoding='utf-8') as f:
+                json.dump(messages, f, indent=4)
+        except Exception as json_err:
+            logger.error(f"Failed to save to json in background: {json_err}")
+            
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error in process_message_background: {e}")
+    finally:
+        db.close()
+
 @app.post("/webhook")
-async def waha_webhook(request: Request):
+async def waha_webhook(request: Request, background_tasks: BackgroundTasks):
     try:
         payload = await request.json()
     except Exception:
@@ -87,20 +238,17 @@ async def waha_webhook(request: Request):
     sender_name = sender_name.strip()
     
     if is_group:
-        # Try to extract group name if available in typical WAHA payload locations
         group_name_str = msg.get("groupName") or msg.get("_data", {}).get("groupName") or msg.get("chat", {}).get("name")
         if not group_name_str:
-            # Fallback to API call
             group_name_str = get_waha_chat_name(sender)
             if group_name_str == sender:
-                group_name_str = group_id # Use ID if still fails
+                group_name_str = group_id
         
         display_sender = f"[{group_name_str}] {sender_name} ({sender_phone})" if sender_name else f"[{group_name_str}] {sender_phone}"
     else:
         group_name_str = None
         display_sender = f"{sender_name} ({sender_phone})" if sender_name else sender_phone
 
-    # 1. Extract Data
     has_media = msg.get("hasMedia", False)
     media_info = msg.get("media") or {}
     mime_type = media_info.get("mimetype", "")
@@ -121,7 +269,7 @@ async def waha_webhook(request: Request):
     timestamp_val = msg.get("timestamp", 0)
     msg_time = datetime.fromtimestamp(timestamp_val, tz=IST).replace(tzinfo=None) if timestamp_val else datetime.now(IST).replace(tzinfo=None)
 
-    # 2. Save Raw Data (First, save all messages!)
+    # 1. Save Raw Data synchronously (takes < 5ms)
     db = SessionLocal()
     try:
         existing_msg = db.query(RawMessage).filter(RawMessage.message_id == message_id).first()
@@ -141,7 +289,6 @@ async def waha_webhook(request: Request):
         )
         db.add(raw_msg)
 
-        # Also store in whatsapp_messages table
         whatsapp_msg = WhatsAppMessage(
             message_id=message_id,
             group_id=sender if is_group else "",
@@ -152,30 +299,25 @@ async def waha_webhook(request: Request):
         db.add(whatsapp_msg)
 
         db.commit()
-        db.refresh(raw_msg)
     except Exception as e:
         db.rollback()
         logger.error(f"Failed to save raw message: {e}")
         db.close()
         return {"status": "error saving raw"}
+    finally:
+        db.close()
 
-    # 3. Apply Filter/Ignore Rules AFTER raw save
-    # Ignore messages sent by the bot itself
+    # 2. Apply commands or ignore rules synchronously (fast)
     if msg.get("fromMe", False):
         logger.info(f"Ignoring message sent by bot itself from processing: {message_id}")
-        db.close()
         return {"status": "ignored fromMe"}
         
-    # Ignore Status Updates and Channels
     if sender == "status@broadcast" or sender.endswith("@newsletter"):
         logger.info(f"Ignoring status/channel message from processing: {sender}")
-        db.close()
         return {"status": "ignored status/channel"}
 
-    # 4. Handle Commands
     if text.startswith('!'):
         command = text.lower().strip()
-        
         if command.startswith('!report'):
             parts = command.split()
             range_type = 'daily'
@@ -192,14 +334,13 @@ async def waha_webhook(request: Request):
             if excel_path:
                 send_waha_file(sender, excel_path, caption=f"Excel Report - {excel_path.split('/')[-1]}")
                 
-            db.close()
             return {"status": f"report {range_type} manually requested"}
+            
         elif command == '!manager add':
             from models import ReportRecipient
             recipient_db = SessionLocal()
             try:
-                # If command is sent in a group, register the group itself. Otherwise, register the individual.
-                recipient_id = msg.get("from") # exact JID (e.g. 1203...@g.us or 9179...@c.us)
+                recipient_id = msg.get("from")
                 existing = recipient_db.query(ReportRecipient).filter(ReportRecipient.phone_number == recipient_id).first()
                 if not existing:
                     recipient_db.add(ReportRecipient(phone_number=recipient_id, is_active=True))
@@ -209,145 +350,24 @@ async def waha_webhook(request: Request):
                     send_waha_message(recipient_id, "⚠️ This chat is already registered.")
             finally:
                 recipient_db.close()
-            db.close()
             return {"status": "command handled"}
 
-    # 4. AI Processing Pipeline
-    ai_result = None
-    source_type = "text"
-    
-    if has_media:
-        # Download media
-        media_info = msg.get("media") or {}
-        media_url_direct = media_info.get("url")
-        media_mime = media_info.get("mimetype")
-        media_filename = media_info.get("filename")
-        media_path = download_waha_media(message_id, media_url=media_url_direct, mimetype=media_mime, filename=media_filename)
-        if media_path:
-            raw_msg.media_path = media_path
-            db.commit()
-            
-            media_path_lower = media_path.lower()
-            if media_path_lower.endswith(('.jpg', '.jpeg', '.png')):
-                ai_result = process_image(media_path, caption=text)
-                source_type = "image"
-            elif media_path_lower.endswith('.pdf'):
-                ai_result = process_document(media_path, caption=text)
-                source_type = "document"
-            else:
-                # Unsupported media type
-                logger.info(f"Unsupported media type for AI: {media_path}")
-    
-    # We can close the raw_messages db session now since it's idle during AI
-    db.close()
-    
-    # Determine the category from the vision result (if any)
-    vision_cat = "unknown"
-    if ai_result:
-        if isinstance(ai_result, list) and len(ai_result) > 0:
-            vision_cat = ai_result[0].get("category", "unknown")
-        elif isinstance(ai_result, dict):
-            if "records" in ai_result and isinstance(ai_result["records"], list) and len(ai_result["records"]) > 0:
-                vision_cat = ai_result["records"][0].get("category", "unknown")
-            else:
-                vision_cat = ai_result.get("category", "unknown")
-
-    # If no media, or media processing failed/returned unknown category, fallback to text processing if caption is available
-    if (not ai_result or vision_cat == "unknown") and text:
-        text_ai_result = process_text(text)
-        if text_ai_result:
-            text_cat = "unknown"
-            if isinstance(text_ai_result, list) and len(text_ai_result) > 0:
-                text_cat = text_ai_result[0].get("category", "unknown")
-            elif isinstance(text_ai_result, dict):
-                if "records" in text_ai_result and isinstance(text_ai_result["records"], list) and len(text_ai_result["records"]) > 0:
-                    text_cat = text_ai_result["records"][0].get("category", "unknown")
-                else:
-                    text_cat = text_ai_result.get("category", "unknown")
-            
-            # Only use text result if it succeeded in finding a known category
-            if text_cat != "unknown":
-                ai_result = text_ai_result
-                source_type = "text"
-
-    # 5. Save Processed Data
-    if ai_result:
-        # Resolve to a list of record dictionaries
-        records = []
-        if isinstance(ai_result, list):
-            records = ai_result
-        elif isinstance(ai_result, dict):
-            if "records" in ai_result and isinstance(ai_result["records"], list):
-                records = ai_result["records"]
-            else:
-                records = [ai_result]
-                
-        valid_records_saved = 0
-        fresh_db = SessionLocal()
-        try:
-            allowed_cats = {
-                'egg_collection_1', 'egg_collection_2', 'egg_collection', 
-                'hen_weight', 'mortality', 'egg_loaded', 'egg_unloaded', 
-                'production', 'sales', 'feed', 'raw_material', 'medicine', 
-                'expense', 'purchase', 'egg', 'unknown'
-            }
-            for record in records:
-                if isinstance(record, dict):
-                    cat = record.get("category") or "unknown"
-                    if cat not in allowed_cats:
-                        cat = 'unknown'
-                    proc_data = ProcessedData(
-                        shead_name=record.get("shead_name") or "",
-                        category=cat,
-                        quantity=record.get("quantity") or 0,
-                        unit=record.get("unit") or "",
-                        amount=record.get("amount") or 0.0,
-                        notes=record.get("notes") or "",
-                        sender=display_sender,
-                        group_name=group_name_str,
-                        source_type=source_type,
-                        confidence_score=record.get("confidence_score") or 0.0,
-                        processed_time=datetime.now(IST).replace(tzinfo=None),
-                        message_id=message_id
-                    )
-                    fresh_db.add(proc_data)
-                    valid_records_saved += 1
-            if valid_records_saved > 0:
-                fresh_db.commit()
-                logger.info(f"Successfully processed message {message_id}: saved {valid_records_saved} records.")
-            else:
-                logger.info(f"Ignored non-farm message or no valid records found. Text: {text}")
-        except Exception as e:
-            fresh_db.rollback()
-            logger.error(f"Failed to save processed data (fresh session): {e}")
-        finally:
-            fresh_db.close()
-
-    # 6. Save to local JSON file
-    try:
-        messages = []
-        if os.path.exists('messages.json'):
-            with open('messages.json', 'r', encoding='utf-8') as f:
-                try:
-                    messages = json.load(f)
-                except:
-                    pass
-            
-        messages.append({
-            "timestamp": datetime.now(IST).isoformat(),
-            "message_id": message_id,
-            "sender": display_sender,
-            "sender_name": sender_name,
-            "is_group": is_group,
-            "group_name": group_name_str,
-            "raw_text": text,
-            "ai_extracted": ai_result
-        })
-        
-        with open('messages.json', 'w', encoding='utf-8') as f:
-            json.dump(messages, f, indent=4)
-    except Exception as e:
-        logger.error(f"Failed to save to json: {e}")
+    # 3. Offload heavy processing to background task (returns 200 OK instantly to WAHA)
+    background_tasks.add_task(
+        process_message_background,
+        message_id,
+        display_sender,
+        group_name_str,
+        has_media,
+        text,
+        msg_time,
+        payload,
+        msg,
+        sender_phone,
+        sender,
+        is_group,
+        sender_name
+    )
 
     return {"status": "success"}
 

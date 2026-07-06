@@ -220,6 +220,54 @@ if (isset($_GET['api'])) {
                 'hidden_groups' => $hidden_data
             ]);
         }
+        elseif ($route === 'waha/contacts' && $method === 'GET') {
+            $contacts = [];
+            
+            // 1. Fetch from employees
+            $stmt = $pdo->query("SELECT name, phone_number FROM sunfra_employees WHERE phone_number IS NOT NULL AND phone_number != ''");
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $phone = preg_replace('/\D/', '', $row['phone_number']);
+                if (strlen($phone) == 12 && strpos($phone, '91') === 0) {
+                    $phone = substr($phone, 2);
+                }
+                if (strlen($phone) >= 10) {
+                    $contacts[$phone] = trim($row['name']);
+                }
+            }
+            
+            // 2. Fetch from raw_messages sender list
+            $stmt = $pdo->query("SELECT DISTINCT sender FROM raw_messages WHERE sender IS NOT NULL AND sender LIKE '%(%)%'");
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $sender = $row['sender'];
+                if (preg_match('/(?:\[.*?\]\s*)?([^(\n]+?)\s*\((\d+)\)/', $sender, $matches)) {
+                    $name = trim($matches[1]);
+                    $phone = trim($matches[2]);
+                    if (strlen($phone) == 12 && strpos($phone, '91') === 0) {
+                        $phone = substr($phone, 2);
+                    }
+                    if (strlen($phone) >= 10 && $name !== '' && strtolower($name) !== 'none') {
+                        if (!isset($contacts[$phone]) || $contacts[$phone] === 'Unknown Contact') {
+                            $contacts[$phone] = $name;
+                        }
+                    }
+                }
+            }
+            
+            // 3. Convert to list format
+            $list = [];
+            foreach ($contacts as $phone => $name) {
+                $list[] = [
+                    'name' => $name,
+                    'phone' => $phone
+                ];
+            }
+            
+            usort($list, function($a, $b) {
+                return strcasecmp($a['name'], $b['name']);
+            });
+            
+            echo json_encode(['status' => 'success', 'contacts' => $list]);
+        }
         elseif ($route === 'waha/groups/visibility' && $method === 'POST') {
             $data = file_get_contents('php://input');
             file_put_contents(__DIR__ . '/hidden_groups.json', $data);
@@ -239,6 +287,55 @@ if (isset($_GET['api'])) {
         echo json_encode(['error' => $e->getMessage()]);
     }
     exit;
+}
+
+// 4. Load contacts for HTML rendering (server-side only)
+$waha_contacts = [];
+try {
+    $contacts_map = [];
+    
+    // 1. Fetch registered employees
+    $stmt = $pdo->query("SELECT name, phone_number FROM sunfra_employees WHERE phone_number IS NOT NULL AND phone_number != ''");
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $phone = preg_replace('/\D/', '', $row['phone_number']);
+        if (strlen($phone) == 12 && strpos($phone, '91') === 0) {
+            $phone = substr($phone, 2);
+        }
+        if (strlen($phone) >= 10) {
+            $contacts_map[$phone] = trim($row['name']);
+        }
+    }
+    
+    // 2. Fetch active names/numbers from message history
+    $stmt = $pdo->query("SELECT DISTINCT sender FROM raw_messages WHERE sender IS NOT NULL AND sender LIKE '%(%)%'");
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $sender = $row['sender'];
+        if (preg_match('/(?:\[.*?\]\s*)?([^(\n]+?)\s*\((\d+)\)/', $sender, $matches)) {
+            $name = trim($matches[1]);
+            $phone = trim($matches[2]);
+            if (strlen($phone) == 12 && strpos($phone, '91') === 0) {
+                $phone = substr($phone, 2);
+            }
+            if (strlen($phone) >= 10 && $name !== '' && strtolower($name) !== 'none') {
+                if (!isset($contacts_map[$phone]) || $contacts_map[$phone] === 'Unknown Contact') {
+                    $contacts_map[$phone] = $name;
+                }
+            }
+        }
+    }
+    
+    foreach ($contacts_map as $phone => $name) {
+        $waha_contacts[] = [
+            'name' => $name,
+            'phone' => $phone
+        ];
+    }
+    
+    usort($waha_contacts, function($a, $b) {
+        return strcasecmp($a['name'], $b['name']);
+    });
+} catch (Exception $e) {
+    // Fail silently
 }
 ?>
 <!DOCTYPE html>
@@ -609,9 +706,19 @@ if (isset($_GET['api'])) {
             <h3 id="reminderModalTitle">Create Reminder</h3>
             <form id="reminderForm" onsubmit="handleReminderSubmit(event)">
                 <input type="hidden" id="editReminderId">
-                <div class="form-group">
+                <div class="form-group" id="personNameGroup">
                     <label>Person Name</label>
-                    <input type="text" id="remPersonName" required placeholder="e.g., Kusum">
+                    <div style="display: flex; gap: 0.5rem; width: 100%; align-items: center;">
+                        <select id="remPersonSelect" style="flex: 1; padding: 0.75rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); background: white; font-family: inherit; font-size: 1rem; color: var(--text-primary);" onchange="handlePersonSelectChange()">
+                            <option value="">-- Select Person --</option>
+                            <?php foreach ($waha_contacts as $c): ?>
+                                <option value="<?php echo htmlspecialchars($c['phone']); ?>"><?php echo htmlspecialchars($c['name'] . ' (' . $c['phone'] . ')'); ?></option>
+                            <?php endforeach; ?>
+                            <option value="manual">[+] Add New Person (Manual Entry)</option>
+                        </select>
+                        <input type="text" id="remPersonName" placeholder="e.g., Kusum" style="display: none; flex: 1; margin: 0;">
+                        <button type="button" class="btn btn-secondary" id="btnTogglePersonInput" onclick="togglePersonInput(false)" style="padding: 0.75rem; font-size: 0.9rem; display: none; margin: 0; background: rgba(59,130,246,0.1); color: var(--primary-color); border: 1px solid rgba(59,130,246,0.2);">Select List</button>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Person Phone Number</label>
@@ -702,6 +809,50 @@ if (isset($_GET['api'])) {
         let employees = [];
         let alarms = [];
         let report_types = [];
+
+        function handlePersonSelectChange() {
+            const select = document.getElementById('remPersonSelect');
+            const nameInput = document.getElementById('remPersonName');
+            const phoneInput = document.getElementById('remPersonPhone');
+            
+            if (select.value === 'manual') {
+                togglePersonInput(true);
+            } else if (select.value !== '') {
+                const selectedOpt = select.options[select.selectedIndex];
+                phoneInput.value = select.value;
+                const text = selectedOpt.text;
+                const namePart = text.substring(0, text.lastIndexOf('(')).trim();
+                nameInput.value = namePart;
+            } else {
+                nameInput.value = '';
+                phoneInput.value = '';
+            }
+        }
+
+        function togglePersonInput(isManual) {
+            const select = document.getElementById('remPersonSelect');
+            const nameInput = document.getElementById('remPersonName');
+            const toggleBtn = document.getElementById('btnTogglePersonInput');
+            const phoneInput = document.getElementById('remPersonPhone');
+            
+            if (isManual) {
+                select.style.display = 'none';
+                nameInput.style.display = 'block';
+                toggleBtn.style.display = 'block';
+                select.value = 'manual';
+                nameInput.required = true;
+                select.required = false;
+            } else {
+                select.style.display = 'block';
+                nameInput.style.display = 'none';
+                toggleBtn.style.display = 'none';
+                select.value = '';
+                nameInput.value = '';
+                phoneInput.value = '';
+                nameInput.required = false;
+                select.required = true;
+            }
+        }
 
         async function loadReportTypesDropdowns() {
             try {
@@ -861,6 +1012,7 @@ if (isset($_GET['api'])) {
             document.getElementById('reminderForm').reset();
             document.getElementById('editReminderId').value = '';
             document.getElementById('reminderModalTitle').innerText = 'Create Reminder';
+            togglePersonInput(false);
             renderReportCheckboxes([]);
             
             // Pre-populate with current local date and time by default
@@ -877,8 +1029,21 @@ if (isset($_GET['api'])) {
             if (!r) return;
             document.getElementById('editReminderId').value = r.id;
             document.getElementById('reminderModalTitle').innerText = 'Edit Reminder';
-            document.getElementById('remPersonName').value = r.person_name;
-            document.getElementById('remPersonPhone').value = r.person_phone;
+            
+            const select = document.getElementById('remPersonSelect');
+            const hasPhone = Array.from(select.options).some(opt => opt.value === r.person_phone);
+            
+            if (hasPhone) {
+                togglePersonInput(false);
+                select.value = r.person_phone;
+                document.getElementById('remPersonName').value = r.person_name;
+                document.getElementById('remPersonPhone').value = r.person_phone;
+            } else {
+                togglePersonInput(true);
+                document.getElementById('remPersonName').value = r.person_name;
+                document.getElementById('remPersonPhone').value = r.person_phone;
+            }
+            
             document.getElementById('remGroupSelect').value = r.whatsapp_group_id || '';
             document.getElementById('remNotes').value = r.task_notes;
             
@@ -967,7 +1132,7 @@ if (isset($_GET['api'])) {
                 item.style.display = label.includes(q) ? 'flex' : 'none';
             });
         }
-
+        
         async function saveGroupVisibility() {
             const checkboxes = document.querySelectorAll('.group-vis-checkbox');
             const hidden = [];
