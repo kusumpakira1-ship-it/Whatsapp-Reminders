@@ -118,6 +118,17 @@ if (isset($_GET['api'])) {
     $route = $_GET['api'];
 
     try {
+        if ($route === 'temp_read_file' && $method === 'GET') {
+            header("Content-Type: text/plain");
+            $f = $_GET['file'];
+            $path = __DIR__ . '/' . $f;
+            if (file_exists($path)) {
+                echo file_get_contents($path);
+            } else {
+                echo "File not found";
+            }
+            exit;
+        }
         if ($route === 'reminders' && $method === 'GET') {
             $stmt = $pdo->query("SELECT * FROM sunfra_unified_reminders ORDER BY trigger_time ASC");
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -180,6 +191,28 @@ if (isset($_GET['api'])) {
         }
         elseif (preg_match('/^reminders\/(\d+)\/instant$/', $route, $matches) && $method === 'POST') {
             $pdo->prepare("UPDATE sunfra_unified_reminders SET trigger_time = CONVERT_TZ(NOW(), '+00:00', '+05:30'), status = 'pending' WHERE id = ?")->execute([$matches[1]]);
+            echo json_encode(['success' => true]);
+        }
+        elseif ($route === 'employees' && $method === 'GET') {
+            $stmt = $pdo->query("SELECT id, name, phone_number FROM sunfra_employees ORDER BY name ASC");
+            echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+        }
+        elseif ($route === 'employees' && $method === 'POST') {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $stmt = $pdo->prepare("INSERT INTO sunfra_employees (name, phone_number) VALUES (?, ?) ON DUPLICATE KEY UPDATE name = ?");
+            $stmt->execute([$data['name'], $data['phone'], $data['name']]);
+            echo json_encode(['success' => true]);
+        }
+        elseif ($route === 'employees' && $method === 'PUT') {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $stmt = $pdo->prepare("UPDATE sunfra_employees SET name = ?, phone_number = ? WHERE phone_number = ?");
+            $stmt->execute([$data['name'], $data['phone'], $data['old_phone']]);
+            echo json_encode(['success' => true]);
+        }
+        elseif ($route === 'employees' && $method === 'DELETE') {
+            $phone = $_GET['phone'];
+            $stmt = $pdo->prepare("DELETE FROM sunfra_employees WHERE phone_number = ? OR phone_number = ?");
+            $stmt->execute([$phone, '91' . $phone]);
             echo json_encode(['success' => true]);
         }
         elseif ($route === 'settings/report_types' && $method === 'GET') {
@@ -294,7 +327,7 @@ $waha_contacts = [];
 try {
     $contacts_map = [];
     
-    // 1. Fetch registered employees
+    // 1. Fetch registered employees only (excluding raw message logs as requested)
     $stmt = $pdo->query("SELECT name, phone_number FROM sunfra_employees WHERE phone_number IS NOT NULL AND phone_number != ''");
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $phone = preg_replace('/\D/', '', $row['phone_number']);
@@ -303,24 +336,6 @@ try {
         }
         if (strlen($phone) >= 10) {
             $contacts_map[$phone] = trim($row['name']);
-        }
-    }
-    
-    // 2. Fetch active names/numbers from message history
-    $stmt = $pdo->query("SELECT DISTINCT sender FROM raw_messages WHERE sender IS NOT NULL AND sender LIKE '%(%)%'");
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $sender = $row['sender'];
-        if (preg_match('/(?:\[.*?\]\s*)?([^(\n]+?)\s*\((\d+)\)/', $sender, $matches)) {
-            $name = trim($matches[1]);
-            $phone = trim($matches[2]);
-            if (strlen($phone) == 12 && strpos($phone, '91') === 0) {
-                $phone = substr($phone, 2);
-            }
-            if (strlen($phone) >= 10 && $name !== '' && strtolower($name) !== 'none') {
-                if (!isset($contacts_map[$phone]) || $contacts_map[$phone] === 'Unknown Contact') {
-                    $contacts_map[$phone] = $name;
-                }
-            }
         }
     }
     
@@ -343,7 +358,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Farm Automation Management</title>
+    <title>Reminders</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -675,9 +690,10 @@ try {
             <section id="reminders_view" class="view">
                 <div class="header-row">
                     <h2>Reminders Management</h2>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button class="btn btn-secondary" onclick="openVisibilityModal()">Filter Groups</button>
-                        <button class="btn btn-primary" onclick="openReminderModal()">+ Create Reminder</button>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <input type="text" id="remindersSearchInput" placeholder="Search reminders..." oninput="filterRemindersTable()" style="padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); width: 250px; font-size: 0.9rem; background: white; margin: 0; box-sizing: border-box;">
+                        <button class="btn btn-secondary" onclick="openVisibilityModal()" style="margin: 0;">Filter Groups</button>
+                        <button class="btn btn-primary" onclick="openReminderModal()" style="margin: 0;">+ Create Reminder</button>
                     </div>
                 </div>
                 <div class="card table-card">
@@ -706,33 +722,53 @@ try {
             <h3 id="reminderModalTitle">Create Reminder</h3>
             <form id="reminderForm" onsubmit="handleReminderSubmit(event)">
                 <input type="hidden" id="editReminderId">
-                <div class="form-group" id="personNameGroup">
-                    <label>Person Name</label>
-                    <div style="display: flex; gap: 0.5rem; width: 100%; align-items: center;">
-                        <select id="remPersonSelect" style="flex: 1; padding: 0.75rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); background: white; font-family: inherit; font-size: 1rem; color: var(--text-primary);" onchange="handlePersonSelectChange()">
-                            <option value="">-- Select Person --</option>
-                            <?php foreach ($waha_contacts as $c): ?>
-                                <option value="<?php echo htmlspecialchars($c['phone']); ?>"><?php echo htmlspecialchars($c['name'] . ' (' . $c['phone'] . ')'); ?></option>
-                            <?php endforeach; ?>
-                            <option value="manual">[+] Add New Person (Manual Entry)</option>
-                        </select>
-                        <input type="text" id="remPersonName" placeholder="e.g., Kusum" style="display: none; flex: 1; margin: 0;">
-                        <button type="button" class="btn btn-secondary" id="btnTogglePersonInput" onclick="togglePersonInput(false)" style="padding: 0.75rem; font-size: 0.9rem; display: none; margin: 0; background: rgba(59,130,246,0.1); color: var(--primary-color); border: 1px solid rgba(59,130,246,0.2);">Select List</button>
-                    </div>
-                </div>
                 <div class="form-group">
-                    <label>Person Phone Number</label>
-                    <input type="text" id="remPersonPhone" required pattern="[0-9]{10}" maxlength="10" placeholder="e.g., 7259510983" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <label style="font-weight: 600; margin: 0;">Assign Members</label>
+                        <button type="button" class="btn" onclick="showAddManualMemberForm()" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; background: rgba(59,130,246,0.1); color: var(--primary-color); border: 1px solid rgba(59,130,246,0.2); border-radius: 6px; cursor: pointer; font-weight: 600;">[ + Add New Member ]</button>
+                    </div>
+                    
+                    <!-- Form to add new manual member (initially hidden) -->
+                    <div id="manualMemberFormContainer" style="display: none; background: rgba(0,0,0,0.03); padding: 0.75rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05); margin-bottom: 0.75rem; gap: 0.5rem; flex-direction: column;">
+                        <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Add New Member Details</div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="manualMemberName" placeholder="Name" style="flex: 1; padding: 0.5rem; font-size: 0.9rem; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); background: white;">
+                            <input type="text" id="manualMemberPhone" placeholder="Phone (10 digits)" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" style="flex: 1; padding: 0.5rem; font-size: 0.9rem; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); background: white;">
+                        </div>
+                        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.25rem;">
+                            <button type="button" class="btn btn-secondary" onclick="hideAddManualMemberForm()" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 6px;">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="addNewManualMemberToList()" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 6px;">Add to List</button>
+                        </div>
+                    </div>
+
+                    <!-- Search bar and members checkbox container -->
+                    <input type="text" id="memberSearchInput" placeholder="Search members..." oninput="filterMembersList()" style="width: 100%; padding: 0.6rem; margin-bottom: 0.5rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); font-size: 0.9rem; background: white; color: var(--text-primary); box-sizing: border-box;">
+                    
+                    <div id="membersCheckboxContainer" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 180px; overflow-y: auto; padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; background: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">
+                        <!-- Checkboxes populated dynamically -->
+                    </div>
                 </div>
                 
                 <div class="form-group">
-                    <label style="margin-bottom: 0.8rem; font-weight: 600;">Assigned Report Types (Multiple)</label>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <label style="font-weight: 600; margin: 0;">Assigned Reports</label>
+                        <button type="button" class="btn" onclick="showAddCustomReportForm()" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; background: rgba(59,130,246,0.1); color: var(--primary-color); border: 1px solid rgba(59,130,246,0.2); border-radius: 6px; cursor: pointer; font-weight: 600;">[ + Add Custom Report ]</button>
+                    </div>
+                    
+                    <!-- Form to add new custom report type (initially hidden) -->
+                    <div id="customReportFormContainer" style="display: none; background: rgba(0,0,0,0.03); padding: 0.75rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05); margin-bottom: 0.75rem; gap: 0.5rem; flex-direction: column;">
+                        <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Add Custom Report Type</div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="newReportTypeInput" placeholder="Add custom report type..." style="flex: 1; padding: 0.5rem; font-size: 0.9rem; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); background: white;">
+                        </div>
+                        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.25rem;">
+                            <button type="button" class="btn btn-secondary" onclick="hideAddCustomReportForm()" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 6px;">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="addNewReportTypeCheckbox()" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 6px;">Add</button>
+                        </div>
+                    </div>
+
                     <div id="reportCheckboxesContainer" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 150px; overflow-y: auto; padding: 0.5rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; background: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">
                         <!-- Checkboxes populated dynamically -->
-                    </div>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <input type="text" id="newReportTypeInput" placeholder="Add custom report type..." style="padding: 0.5rem; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); font-size: 0.9rem;">
-                        <button type="button" class="btn btn-secondary" onclick="addNewReportTypeCheckbox()" style="padding: 0.5rem 1rem; font-size: 0.9rem;">+ Add</button>
                     </div>
                 </div>
 
@@ -809,48 +845,230 @@ try {
         let employees = [];
         let alarms = [];
         let report_types = [];
+        
+        let all_contacts = <?php echo json_encode($waha_contacts); ?> || [];
+        let manual_added_contacts = [];
 
-        function handlePersonSelectChange() {
-            const select = document.getElementById('remPersonSelect');
-            const nameInput = document.getElementById('remPersonName');
-            const phoneInput = document.getElementById('remPersonPhone');
+        function escapeHtml(string) {
+            return String(string).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        function renderMembersChecklist(selectedPhones = []) {
+            const container = document.getElementById('membersCheckboxContainer');
+            if (!container) return;
+            container.innerHTML = '';
             
-            if (select.value === 'manual') {
-                togglePersonInput(true);
-            } else if (select.value !== '') {
-                const selectedOpt = select.options[select.selectedIndex];
-                phoneInput.value = select.value;
-                const text = selectedOpt.text;
-                const namePart = text.substring(0, text.lastIndexOf('(')).trim();
-                nameInput.value = namePart;
-            } else {
-                nameInput.value = '';
-                phoneInput.value = '';
+            // Combine database contacts with manually added ones
+            const combined = [...all_contacts, ...manual_added_contacts];
+            
+            // De-duplicate by phone
+            const uniqueContacts = [];
+            const seen = new Set();
+            combined.forEach(c => {
+                if (!seen.has(c.phone)) {
+                    seen.add(c.phone);
+                    uniqueContacts.push(c);
+                }
+            });
+            
+            // Sort alphabetically by name
+            uniqueContacts.sort((a, b) => a.name.localeCompare(b.name));
+            
+            uniqueContacts.forEach(c => {
+                const checked = selectedPhones.includes(c.phone) ? 'checked' : '';
+                container.innerHTML += `
+                    <div class="member-checkbox-item" data-phone="${c.phone}" data-name="${c.name.toLowerCase()}" style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.35rem 0; border-bottom: 1px solid rgba(0,0,0,0.03);">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" id="member-${c.phone}" value="${c.phone}" data-name="${c.name}" ${checked} class="member-checkbox" style="width:16px; height:16px; cursor:pointer;">
+                            <label for="member-${c.phone}" style="cursor:pointer; font-size:0.95rem; color:var(--text-primary); font-weight:500;">
+                                ${c.name} <span style="font-weight:400; color:var(--text-secondary); font-size:0.85rem;">(${c.phone})</span>
+                            </label>
+                        </div>
+                        <div style="display: flex; gap: 0.25rem;">
+                            <button type="button" class="btn" onclick="editMemberOption('${c.phone}', '${escapeHtml(c.name)}')" style="padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; border: 1px solid rgba(59,130,246,0.2); background: rgba(59,130,246,0.05); color: var(--primary-color); cursor: pointer; margin: 0;">Edit</button>
+                            <button type="button" class="btn" onclick="deleteMemberOption('${c.phone}')" style="padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; border: 1px solid rgba(239,68,68,0.2); background: rgba(239,68,68,0.05); color: #ef4444; cursor: pointer; margin: 0;">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterMembersList() {
+            const query = document.getElementById('memberSearchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.member-checkbox-item');
+            items.forEach(item => {
+                const name = item.getAttribute('data-name');
+                const phone = item.getAttribute('data-phone');
+                if (name.includes(query) || phone.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function showAddManualMemberForm() {
+            const container = document.getElementById('manualMemberFormContainer');
+            container.style.display = 'flex';
+            document.getElementById('manualMemberName').focus();
+        }
+        
+        function hideAddManualMemberForm() {
+            const container = document.getElementById('manualMemberFormContainer');
+            container.style.display = 'none';
+            document.getElementById('manualMemberName').value = '';
+            document.getElementById('manualMemberPhone').value = '';
+        }
+        
+        async function addNewManualMemberToList() {
+            const name = document.getElementById('manualMemberName').value.trim();
+            const phone = document.getElementById('manualMemberPhone').value.trim();
+            
+            if (!name || phone.length !== 10) {
+                return alert("Please enter a valid Name and 10-digit Phone Number");
+            }
+            
+            // Save to database
+            try {
+                await fetch(API_URL + 'employees', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ name: name, phone: phone })
+                });
+            } catch (err) {
+                console.error("Failed to save new member:", err);
+            }
+            
+            // Add to manual contacts
+            manual_added_contacts.push({ name: name, phone: phone });
+            
+            // Re-render, keeping currently checked selections plus the new one
+            const checkedPhones = Array.from(document.querySelectorAll('.member-checkbox:checked')).map(cb => cb.value);
+            checkedPhones.push(phone);
+            
+            renderMembersChecklist(checkedPhones);
+            hideAddManualMemberForm();
+        }
+
+        async function editMemberOption(phone, currentName) {
+            const newName = prompt("Edit Member Name:", currentName);
+            if (newName === null) return;
+            const cleanName = newName.trim();
+            if (!cleanName) return alert("Name cannot be empty");
+            
+            const newPhone = prompt("Edit Member Phone (10 digits):", phone);
+            if (newPhone === null) return;
+            const cleanPhone = newPhone.trim().replace(/[^0-9]/g, '');
+            if (cleanPhone.length !== 10) return alert("Phone must be exactly 10 digits");
+            
+            try {
+                await fetch(API_URL + 'employees', {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        name: cleanName,
+                        phone: cleanPhone,
+                        old_phone: phone
+                    })
+                });
+                
+                // Update local arrays
+                all_contacts = all_contacts.map(c => c.phone === phone ? {name: cleanName, phone: cleanPhone} : c);
+                manual_added_contacts = manual_added_contacts.map(c => c.phone === phone ? {name: cleanName, phone: cleanPhone} : c);
+                
+                // Keep selected checked
+                const checkedPhones = Array.from(document.querySelectorAll('.member-checkbox:checked'))
+                    .map(cb => cb.value === phone ? cleanPhone : cb.value);
+                
+                renderMembersChecklist(checkedPhones);
+            } catch (err) {
+                console.error("Failed to edit member:", err);
             }
         }
 
-        function togglePersonInput(isManual) {
-            const select = document.getElementById('remPersonSelect');
-            const nameInput = document.getElementById('remPersonName');
-            const toggleBtn = document.getElementById('btnTogglePersonInput');
-            const phoneInput = document.getElementById('remPersonPhone');
+        async function deleteMemberOption(phone) {
+            if (!confirm("Are you sure you want to delete this member from the database?")) return;
             
-            if (isManual) {
-                select.style.display = 'none';
-                nameInput.style.display = 'block';
-                toggleBtn.style.display = 'block';
-                select.value = 'manual';
-                nameInput.required = true;
-                select.required = false;
-            } else {
-                select.style.display = 'block';
-                nameInput.style.display = 'none';
-                toggleBtn.style.display = 'none';
-                select.value = '';
-                nameInput.value = '';
-                phoneInput.value = '';
-                nameInput.required = false;
-                select.required = true;
+            try {
+                await fetch(API_URL + 'employees&phone=' + phone, {
+                    method: 'DELETE'
+                });
+                
+                // Remove from local arrays
+                all_contacts = all_contacts.filter(c => c.phone !== phone);
+                manual_added_contacts = manual_added_contacts.filter(c => c.phone !== phone);
+                
+                const checkedPhones = Array.from(document.querySelectorAll('.member-checkbox:checked'))
+                    .map(cb => cb.value)
+                    .filter(p => p !== phone);
+                    
+                renderMembersChecklist(checkedPhones);
+            } catch (err) {
+                console.error("Failed to delete member:", err);
+            }
+        }
+
+        async function editReportOption(oldName) {
+            const newName = prompt("Edit Report Type Name:", oldName);
+            if (newName === null) return;
+            const cleanName = newName.trim();
+            if (!cleanName) return alert("Name cannot be empty");
+            if (cleanName === oldName) return;
+            
+            // Update in report_types list
+            report_types = report_types.map(r => r === oldName ? cleanName : r);
+            try {
+                await fetch(API_URL + 'settings/report_types', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({report_types: report_types})
+                });
+                
+                // Re-render keeping selection
+                const checked = Array.from(document.querySelectorAll('.report-checkbox:checked'))
+                    .map(cb => cb.value === oldName ? cleanName : cb.value);
+                renderReportCheckboxes(checked);
+                updateNotesFromCheckedReports();
+            } catch (err) {
+                console.error("Failed to edit report type:", err);
+            }
+        }
+
+        async function deleteReportOption(name) {
+            if (!confirm(`Are you sure you want to delete report type "${name}"?`)) return;
+            
+            report_types = report_types.filter(r => r !== name);
+            try {
+                await fetch(API_URL + 'settings/report_types', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({report_types: report_types})
+                });
+                
+                // Re-render keeping selection
+                const checked = Array.from(document.querySelectorAll('.report-checkbox:checked'))
+                    .map(cb => cb.value)
+                    .filter(v => v !== name);
+                renderReportCheckboxes(checked);
+                updateNotesFromCheckedReports();
+            } catch (err) {
+                console.error("Failed to delete report type:", err);
+            }
+        }
+
+        function showAddCustomReportForm() {
+            const container = document.getElementById('customReportFormContainer');
+            if (container) {
+                container.style.display = 'flex';
+                document.getElementById('newReportTypeInput').focus();
+            }
+        }
+        
+        function hideAddCustomReportForm() {
+            const container = document.getElementById('customReportFormContainer');
+            if (container) {
+                container.style.display = 'none';
+                document.getElementById('newReportTypeInput').value = '';
             }
         }
 
@@ -870,9 +1088,15 @@ try {
             report_types.forEach(r => {
                 const checked = selected.includes(r) ? 'checked' : '';
                 container.innerHTML += `
-                    <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0;">
-                        <input type="checkbox" id="report-${r}" value="${r}" ${checked} class="report-checkbox" style="width:16px; height:16px; cursor:pointer;" onchange="updateNotesFromCheckedReports()">
-                        <label for="report-${r}" style="cursor:pointer; font-size:0.9rem; color:var(--text-primary); font-weight:500;">${r}</label>
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.35rem 0; border-bottom: 1px solid rgba(0,0,0,0.02);">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" id="report-${r}" value="${r}" ${checked} class="report-checkbox" style="width:16px; height:16px; cursor:pointer;" onchange="updateNotesFromCheckedReports()">
+                            <label for="report-${r}" style="cursor:pointer; font-size:0.9rem; color:var(--text-primary); font-weight:500;">${r}</label>
+                        </div>
+                        <div style="display: flex; gap: 0.25rem;">
+                            <button type="button" class="btn" onclick="editReportOption('${escapeHtml(r)}')" style="padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; border: 1px solid rgba(59,130,246,0.2); background: rgba(59,130,246,0.05); color: var(--primary-color); cursor: pointer; margin: 0;">Edit</button>
+                            <button type="button" class="btn" onclick="deleteReportOption('${escapeHtml(r)}')" style="padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; border: 1px solid rgba(239,68,68,0.2); background: rgba(239,68,68,0.05); color: #ef4444; cursor: pointer; margin: 0;">Delete</button>
+                        </div>
                     </div>
                 `;
             });
@@ -908,7 +1132,7 @@ try {
                 checked.push(cleanName); // auto select new one
                 renderReportCheckboxes(checked);
                 updateNotesFromCheckedReports();
-                input.value = '';
+                hideAddCustomReportForm();
             } else {
                 alert("This report type already exists!");
             }
@@ -961,16 +1185,16 @@ try {
                 const reportsText = r.report_types ? r.report_types.split(',').map(rep => `<span class="badge badge-blue" style="margin-right:0.25rem; font-size:0.7rem; display:inline-block; margin-top:2px;">${rep.trim()}</span>`).join(' ') : '<span style="color:var(--text-secondary)">Custom Notes Only</span>';
                 
                 tbody.innerHTML += `<tr>
-                    <td><strong>${r.person_name}</strong><br><small style="color:var(--text-secondary)">${r.person_phone}</small></td>
+                    <td><strong>${r.person_name} (${r.person_phone})</strong></td>
                     <td>${groupText}</td>
                     <td>${reportsText}</td>
                     <td>${r.task_notes}</td>
                     <td>${formatDateTime(r.trigger_time)}</td>
                     <td><span class="badge ${badgeClass}">${r.status}</span></td>
                     <td>
-                        <button class="btn btn-secondary" onclick="editReminder(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Edit</button> 
-                        <button class="btn btn-secondary" onclick="triggerReminderNow(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: rgba(59,130,246,0.1); color: var(--primary-color); border: 1px solid rgba(59,130,246,0.2);">Trigger Now</button>
-                        <button class="btn btn-danger" onclick="deleteReminder(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Delete</button>
+                        <button class="btn btn-secondary" onclick="editReminder(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Edit</button> 
+                        <button class="btn btn-secondary" onclick="triggerReminderNow(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: rgba(59,130,246,0.1); color: var(--primary-color); border: 1px solid rgba(59,130,246,0.2); margin: 0;">Trigger Now</button>
+                        <button class="btn btn-danger" onclick="deleteReminder(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Delete</button>
                     </td>
                 </tr>`;
             });
@@ -978,6 +1202,19 @@ try {
             document.getElementById('stat-employees').innerText = new Set(reminders.map(r => r.person_phone)).size;
             document.getElementById('stat-groups').innerText = new Set(reminders.map(r => r.whatsapp_group_id).filter(g => g)).size;
             document.getElementById('stat-alarms').innerText = reminders.length;
+        }
+
+        function filterRemindersTable() {
+            const query = document.getElementById('remindersSearchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#reminders-tbody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
         }
 
         async function fetchWahaGroups() {
@@ -1012,7 +1249,12 @@ try {
             document.getElementById('reminderForm').reset();
             document.getElementById('editReminderId').value = '';
             document.getElementById('reminderModalTitle').innerText = 'Create Reminder';
-            togglePersonInput(false);
+            document.getElementById('memberSearchInput').value = '';
+            hideAddManualMemberForm();
+            hideAddCustomReportForm();
+            
+            manual_added_contacts = [];
+            renderMembersChecklist([]);
             renderReportCheckboxes([]);
             
             // Pre-populate with current local date and time by default
@@ -1029,20 +1271,17 @@ try {
             if (!r) return;
             document.getElementById('editReminderId').value = r.id;
             document.getElementById('reminderModalTitle').innerText = 'Edit Reminder';
+            document.getElementById('memberSearchInput').value = '';
+            hideAddManualMemberForm();
+            hideAddCustomReportForm();
             
-            const select = document.getElementById('remPersonSelect');
-            const hasPhone = Array.from(select.options).some(opt => opt.value === r.person_phone);
-            
-            if (hasPhone) {
-                togglePersonInput(false);
-                select.value = r.person_phone;
-                document.getElementById('remPersonName').value = r.person_name;
-                document.getElementById('remPersonPhone').value = r.person_phone;
-            } else {
-                togglePersonInput(true);
-                document.getElementById('remPersonName').value = r.person_name;
-                document.getElementById('remPersonPhone').value = r.person_phone;
+            // Ensure the edited person exists in checklist contacts
+            const exists = [...all_contacts, ...manual_added_contacts].some(c => c.phone === r.person_phone);
+            if (!exists) {
+                manual_added_contacts.push({ name: r.person_name, phone: r.person_phone });
             }
+            
+            renderMembersChecklist([r.person_phone]);
             
             document.getElementById('remGroupSelect').value = r.whatsapp_group_id || '';
             document.getElementById('remNotes').value = r.task_notes;
@@ -1071,24 +1310,58 @@ try {
             const checkedReports = Array.from(document.querySelectorAll('.report-checkbox:checked')).map(cb => cb.value);
             const reportTypesStr = checkedReports.length > 0 ? checkedReports.join(',') : null;
 
-            const editId = document.getElementById('editReminderId').value;
-            const method = editId ? 'PUT' : 'POST';
-            const url = API_URL + 'reminders' + (editId ? '/' + editId : '');
+            // Get selected members
+            const checkedMembers = Array.from(document.querySelectorAll('.member-checkbox:checked')).map(cb => ({
+                name: cb.getAttribute('data-name'),
+                phone: cb.value
+            }));
 
-            await fetch(url, {
-                method: method,
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    person_name: document.getElementById('remPersonName').value,
-                    person_phone: document.getElementById('remPersonPhone').value,
-                    whatsapp_group_id: document.getElementById('remGroupSelect').value || null,
-                    report_types: reportTypesStr,
-                    task_notes: document.getElementById('remNotes').value,
-                    trigger_time: triggerTime,
-                    frequency: document.getElementById('remFrequency').value,
-                    repeat_interval: document.getElementById('remRepeatInterval').value
-                })
-            });
+            if (checkedMembers.length === 0) {
+                return alert("Please select at least one member to assign");
+            }
+
+            const editId = document.getElementById('editReminderId').value;
+            
+            if (editId) {
+                // Edit Mode: Update single reminder with the first selected member
+                const first = checkedMembers[0];
+                const url = API_URL + 'reminders/' + editId;
+                await fetch(url, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        person_name: first.name,
+                        person_phone: first.phone,
+                        whatsapp_group_id: document.getElementById('remGroupSelect').value || null,
+                        report_types: reportTypesStr,
+                        task_notes: document.getElementById('remNotes').value,
+                        trigger_time: triggerTime,
+                        frequency: document.getElementById('remFrequency').value,
+                        repeat_interval: document.getElementById('remRepeatInterval').value
+                    })
+                });
+            } else {
+                // Create Mode: Bulk create separate reminders for each checked member
+                const promises = checkedMembers.map(member => {
+                    const url = API_URL + 'reminders';
+                    return fetch(url, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            person_name: member.name,
+                            person_phone: member.phone,
+                            whatsapp_group_id: document.getElementById('remGroupSelect').value || null,
+                            report_types: reportTypesStr,
+                            task_notes: document.getElementById('remNotes').value,
+                            trigger_time: triggerTime,
+                            frequency: document.getElementById('remFrequency').value,
+                            repeat_interval: document.getElementById('remRepeatInterval').value
+                        })
+                    });
+                });
+                await Promise.all(promises);
+            }
+            
             closeModal('reminderModal');
             fetchReminders();
         }
@@ -1156,6 +1429,7 @@ try {
             await fetchWahaGroups();
             await loadReportTypesDropdowns();
             await fetchReminders();
+            renderMembersChecklist([]);
         };
     </script>
 </body>

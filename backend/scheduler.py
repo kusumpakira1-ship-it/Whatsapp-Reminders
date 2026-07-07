@@ -501,14 +501,27 @@ def poll_and_execute_unified_reminders():
                 if not submitted:
                     missing_reports.append(report)
                     
-            if missing_reports:
+            should_send = False
+            private_msg = ""
+            group_msg = ""
+            
+            if not assigned_reports:
+                # General message reminder
+                should_send = True
+                private_msg = f"⏰ *Sunfra Farm Reminder*\n\nName: *{r.person_name}*\nMessage: *{r.task_notes}*"
+                group_msg = f"⏰ *Sunfra Farm Reminder*\n\n@{r.person_name}\nMessage: *{r.task_notes}*"
+            elif missing_reports:
+                # Reports reminder
+                should_send = True
                 missing_str = ", ".join(missing_reports)
-                private_msg = f"⏰ *Sunfra Farm Reminder*\n\nDear *{r.person_name}*, please submit the following report(s) today:\n*{missing_str}*\n\nNotes: {r.task_notes}"
+                private_msg = f"⏰ *Sunfra Farm Reminder*\n\nName: *{r.person_name}*\nPending Reports: *{missing_str}*"
+                group_msg = f"⏰ *Sunfra Farm Reminder*\n\n@{r.person_name}\nPending Reports: *{missing_str}*"
+                
+            if should_send:
                 logger.info(f"Sending private reminder to {r.person_name} ({target_jid})")
                 send_waha_message(target_jid, private_msg)
                 
                 if r.whatsapp_group_id:
-                    group_msg = f"⏰ *Sunfra Farm Reminder*\n\n@{r.person_name}, please submit the following report(s) today:\n*{missing_str}*\n\nNotes: {r.task_notes}"
                     logger.info(f"Sending group reminder for {r.person_name} to group {r.whatsapp_group_id}")
                     send_waha_message(r.whatsapp_group_id, group_msg)
                     
@@ -659,35 +672,35 @@ def setup_scheduler():
     global scheduler
     
     # Schedule Health Monitor every 5 minutes
-    scheduler.add_job(health_monitor_job, CronTrigger(minute="*/5", timezone="Asia/Kolkata"))
+    scheduler.add_job(health_monitor_job, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300)
     
     # Schedule media/report cleanup daily at 12:05 AM IST
-    scheduler.add_job(cleanup_old_files_job, CronTrigger(hour=0, minute=5, timezone="Asia/Kolkata"))
+    scheduler.add_job(cleanup_old_files_job, CronTrigger(hour=0, minute=5, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
     # Schedule 6:00 PM data entry reminders everyday
-    scheduler.add_job(scheduled_reminder_job, CronTrigger(hour=18, minute=0, timezone="Asia/Kolkata"))
+    scheduler.add_job(scheduled_reminder_job, CronTrigger(hour=18, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
     # Schedule daily report at 11:00 PM IST everyday
-    scheduler.add_job(scheduled_report_job, CronTrigger(hour=23, minute=0, timezone="Asia/Kolkata"))
+    scheduler.add_job(scheduled_report_job, CronTrigger(hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
     # Schedule weekly report at 11:00 PM IST on Sunday
-    scheduler.add_job(scheduled_weekly_report_job, CronTrigger(day_of_week='sun', hour=23, minute=0, timezone="Asia/Kolkata"))
+    scheduler.add_job(scheduled_weekly_report_job, CronTrigger(day_of_week='sun', hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
     # Schedule monthly report at 11:00 PM IST on the 1st day of every month
-    scheduler.add_job(scheduled_monthly_report_job, CronTrigger(day='1', hour=23, minute=0, timezone="Asia/Kolkata"))
+    scheduler.add_job(scheduled_monthly_report_job, CronTrigger(day='1', hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
     import os
     if os.getenv("USE_N8N", "false").lower() == "true":
         logger.info("USE_N8N is enabled. Live Alarms, Group Sync, and Unified Reminders are delegated to n8n.")
     else:
         # Schedule live alarms polling every 1 minute
-        scheduler.add_job(poll_live_alarms, CronTrigger(minute="*", timezone="Asia/Kolkata"))
+        scheduler.add_job(poll_live_alarms, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=300)
         
         # Schedule group syncing to live PHP server every 5 minutes
-        scheduler.add_job(sync_groups_to_live, CronTrigger(minute="*/5", timezone="Asia/Kolkata"))
+        scheduler.add_job(sync_groups_to_live, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300)
         
         # Schedule database polling for unified reminders every 1 minute
-        scheduler.add_job(poll_and_execute_unified_reminders, CronTrigger(minute="*", timezone="Asia/Kolkata"))
+        scheduler.add_job(poll_and_execute_unified_reminders, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=300)
         
     scheduler.start()
     logger.info("APScheduler started.")
