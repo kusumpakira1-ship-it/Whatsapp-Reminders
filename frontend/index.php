@@ -130,7 +130,7 @@ if (isset($_GET['api'])) {
             exit;
         }
         if ($route === 'reminders' && $method === 'GET') {
-            $stmt = $pdo->query("SELECT * FROM sunfra_unified_reminders ORDER BY trigger_time ASC");
+            $stmt = $pdo->query("SELECT * FROM sunfra_unified_reminders ORDER BY trigger_time DESC");
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             $waha_file = __DIR__ . '/waha_groups.json';
@@ -269,7 +269,7 @@ if (isset($_GET['api'])) {
             }
             
             // 2. Fetch from raw_messages sender list
-            $stmt = $pdo->query("SELECT DISTINCT sender FROM raw_messages WHERE sender IS NOT NULL AND sender LIKE '%(%)%'");
+            $stmt = $pdo->query("SELECT DISTINCT sender FROM sunfra_raw_messages WHERE sender IS NOT NULL AND sender LIKE '%(%)%'");
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $sender = $row['sender'];
                 if (preg_match('/(?:\[.*?\]\s*)?([^(\n]+?)\s*\((\d+)\)/', $sender, $matches)) {
@@ -504,7 +504,12 @@ try {
         .stat-value { font-size: 3rem; font-weight: 700; color: var(--primary-color); }
 
         /* Tables */
-        .table-card { padding: 0; overflow: hidden; }
+        .table-card {
+            padding: 0;
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 70vh;
+        }
         .data-table { width: 100%; border-collapse: collapse; }
         .data-table th, .data-table td { padding: 1.2rem 1.5rem; text-align: left; border-bottom: 1px solid var(--card-border); }
         
@@ -1184,8 +1189,15 @@ try {
                 const groupText = r.whatsapp_group_id ? `<strong style="color:var(--primary-color)">${r.group_name}</strong>` : `<span style="color:var(--text-secondary)">No Group / Private Only</span>`;
                 const reportsText = r.report_types ? r.report_types.split(',').map(rep => `<span class="badge badge-blue" style="margin-right:0.25rem; font-size:0.7rem; display:inline-block; margin-top:2px;">${rep.trim()}</span>`).join(' ') : '<span style="color:var(--text-secondary)">Custom Notes Only</span>';
                 
+                const names = (r.person_name || '').split(',').map(n => n.trim());
+                const phones = (r.person_phone || '').split(',').map(p => p.trim());
+                const formattedAssignees = names.map((name, idx) => {
+                    const phone = phones[idx] || '';
+                    return `${name} (${phone})`;
+                }).join(', ');
+
                 tbody.innerHTML += `<tr>
-                    <td><strong>${r.person_name} (${r.person_phone})</strong></td>
+                    <td><strong>${formattedAssignees}</strong></td>
                     <td>${groupText}</td>
                     <td>${reportsText}</td>
                     <td>${r.task_notes}</td>
@@ -1275,13 +1287,21 @@ try {
             hideAddManualMemberForm();
             hideAddCustomReportForm();
             
-            // Ensure the edited person exists in checklist contacts
-            const exists = [...all_contacts, ...manual_added_contacts].some(c => c.phone === r.person_phone);
-            if (!exists) {
-                manual_added_contacts.push({ name: r.person_name, phone: r.person_phone });
-            }
+            // Ensure all edited persons exist in checklist contacts and are checked
+            const phones = (r.person_phone || '').split(',').map(p => p.trim());
+            const names = (r.person_name || '').split(',').map(n => n.trim());
             
-            renderMembersChecklist([r.person_phone]);
+            phones.forEach((phone, idx) => {
+                const name = names[idx] || phone;
+                if (phone) {
+                    const exists = [...all_contacts, ...manual_added_contacts].some(c => c.phone === phone);
+                    if (!exists) {
+                        manual_added_contacts.push({ name: name, phone: phone });
+                    }
+                }
+            });
+            
+            renderMembersChecklist(phones);
             
             document.getElementById('remGroupSelect').value = r.whatsapp_group_id || '';
             document.getElementById('remNotes').value = r.task_notes;
@@ -1320,18 +1340,20 @@ try {
                 return alert("Please select at least one member to assign");
             }
 
+            const names = checkedMembers.map(m => m.name).join(', ');
+            const phones = checkedMembers.map(m => m.phone).join(', ');
+
             const editId = document.getElementById('editReminderId').value;
             
             if (editId) {
-                // Edit Mode: Update single reminder with the first selected member
-                const first = checkedMembers[0];
+                // Edit Mode: Update reminder
                 const url = API_URL + 'reminders/' + editId;
                 await fetch(url, {
                     method: 'PUT',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
-                        person_name: first.name,
-                        person_phone: first.phone,
+                        person_name: names,
+                        person_phone: phones,
                         whatsapp_group_id: document.getElementById('remGroupSelect').value || null,
                         report_types: reportTypesStr,
                         task_notes: document.getElementById('remNotes').value,
@@ -1341,25 +1363,22 @@ try {
                     })
                 });
             } else {
-                // Create Mode: Bulk create separate reminders for each checked member
-                const promises = checkedMembers.map(member => {
-                    const url = API_URL + 'reminders';
-                    return fetch(url, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            person_name: member.name,
-                            person_phone: member.phone,
-                            whatsapp_group_id: document.getElementById('remGroupSelect').value || null,
-                            report_types: reportTypesStr,
-                            task_notes: document.getElementById('remNotes').value,
-                            trigger_time: triggerTime,
-                            frequency: document.getElementById('remFrequency').value,
-                            repeat_interval: document.getElementById('remRepeatInterval').value
-                        })
-                    });
+                // Create Mode: Create a single reminder with all checked members
+                const url = API_URL + 'reminders';
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        person_name: names,
+                        person_phone: phones,
+                        whatsapp_group_id: document.getElementById('remGroupSelect').value || null,
+                        report_types: reportTypesStr,
+                        task_notes: document.getElementById('remNotes').value,
+                        trigger_time: triggerTime,
+                        frequency: document.getElementById('remFrequency').value,
+                        repeat_interval: document.getElementById('remRepeatInterval').value
+                    })
                 });
-                await Promise.all(promises);
             }
             
             closeModal('reminderModal');

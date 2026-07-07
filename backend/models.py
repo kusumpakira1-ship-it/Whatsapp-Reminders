@@ -30,7 +30,7 @@ class Whitelist(Base):
     created_at = Column(DateTime, default=func.now())
 
 class RawMessage(Base):
-    __tablename__ = "raw_messages"
+    __tablename__ = "sunfra_raw_messages"
     id = Column(Integer, primary_key=True, index=True)
     message_id = Column(String(255), unique=True, index=True, nullable=False)
     sender = Column(String(100), nullable=False)
@@ -43,7 +43,7 @@ class RawMessage(Base):
     created_at = Column(DateTime, default=func.now())
 
 class WhatsAppMessage(Base):
-    __tablename__ = "whatsapp_messages"
+    __tablename__ = "sunfra_whatsapp_messages"
     id = Column(Integer, primary_key=True, index=True)
     message_id = Column(String(255), unique=True, index=True, nullable=False)
     group_id = Column(String(255), index=True, nullable=False)
@@ -52,7 +52,7 @@ class WhatsAppMessage(Base):
     timestamp = Column(DateTime, nullable=False)
 
 class ProcessedData(Base):
-    __tablename__ = "processed_data"
+    __tablename__ = "sunfra_processed_data"
     id = Column(Integer, primary_key=True, index=True)
     shead_name = Column(String(255))
     category = Column(Enum(
@@ -82,11 +82,11 @@ class ProcessedData(Base):
     source_type = Column(Enum('text', 'image', 'document'), default='text')
     confidence_score = Column(DECIMAL(3, 2))
     processed_time = Column(DateTime, nullable=False)
-    message_id = Column(String(255), ForeignKey("raw_messages.message_id", ondelete="CASCADE"), nullable=False)
+    message_id = Column(String(255), ForeignKey("sunfra_raw_messages.message_id", ondelete="CASCADE"), nullable=False)
     created_at = Column(DateTime, default=func.now())
 
 class ReportRecipient(Base):
-    __tablename__ = "report_recipients"
+    __tablename__ = "sunfra_report_recipients"
     id = Column(Integer, primary_key=True, index=True)
     phone_number = Column(String(50), unique=True, index=True, nullable=False)
     is_active = Column(Boolean, default=True)

@@ -2,7 +2,7 @@ import os
 import requests
 from config import settings
 
-def send_waha_message(chat_id: str, text: str, session: str = None) -> bool:
+def send_waha_message(chat_id: str, text: str, session: str = None, mentions: list = None) -> bool:
     """Send a text message via WAHA."""
     if not chat_id.endswith('@c.us') and not chat_id.endswith('@g.us') and not chat_id.endswith('@lid'):
         chat_id += '@c.us'
@@ -13,6 +13,8 @@ def send_waha_message(chat_id: str, text: str, session: str = None) -> bool:
         "text": text,
         "session": session if session else settings.WAHA_SESSION
     }
+    if mentions:
+        payload["mentions"] = mentions
     
     headers = {"Accept": "application/json"}
     api_key = os.getenv("WAHA_API_KEY", "123")

@@ -460,70 +460,92 @@ def poll_and_execute_unified_reminders():
         group_names_by_id = {g.whatsapp_group_id: g.name for g in groups}
         
         for r in pending:
-            phone_str = str(r.person_phone).strip()
-            target_jid = phone_str
-            if len(target_jid) == 10 and target_jid.isdigit():
-                target_jid = "91" + target_jid
-            if not target_jid.endswith('@c.us') and not target_jid.endswith('@g.us') and not target_jid.endswith('@lid'):
-                target_jid += '@c.us'
+            phones = [p.strip() for p in str(r.person_phone or '').split(',') if p.strip()]
+            names = [n.strip() for n in str(r.person_name or '').split(',') if n.strip()]
+            
+            # Map of phone -> name
+            assignees = {}
+            for idx, phone in enumerate(phones):
+                name = names[idx] if idx < len(names) else phone
+                assignees[phone] = name
                 
             assigned_reports = [s.strip().lower() for s in str(r.report_types or '').split(',') if s.strip()]
-            missing_reports = []
             
-            for report in assigned_reports:
-                submitted = False
-                categories = []
-                if "production" in report:
-                    categories = ['production', 'egg_collection', 'egg_collection_1', 'egg_collection_2', 'egg']
-                elif "feed" in report:
-                    categories = ['feed']
-                elif "expense" in report or "expenditure" in report:
-                    categories = ['expense', 'purchase']
-                elif "sale" in report:
-                    categories = ['sales']
-                elif "profit" in report or "p&l" in report or "p and l" in report:
-                    categories = ['sales', 'expense', 'purchase']
-                    
-                for sub in submissions:
-                    match_sender = phone_str in str(sub.sender)
-                    group_name = group_names_by_id.get(r.whatsapp_group_id)
-                    match_group = r.whatsapp_group_id and group_name and sub.group_name and str(sub.group_name).lower() == group_name.lower()
-                    
-                    if match_sender or match_group:
-                        if categories:
-                            if sub.category in categories:
-                                submitted = True
-                                break
-                        else:
-                            if report in str(sub.notes).lower():
-                                submitted = True
-                                break
-                if not submitted:
-                    missing_reports.append(report)
-                    
-            should_send = False
-            private_msg = ""
-            group_msg = ""
+            pending_assignees = []
             
-            if not assigned_reports:
-                # General message reminder
-                should_send = True
-                private_msg = f"⏰ *Sunfra Farm Reminder*\n\nName: *{r.person_name}*\nMessage: *{r.task_notes}*"
-                group_msg = f"⏰ *Sunfra Farm Reminder*\n\n@{r.person_name}\nMessage: *{r.task_notes}*"
-            elif missing_reports:
-                # Reports reminder
-                should_send = True
-                missing_str = ", ".join(missing_reports)
-                private_msg = f"⏰ *Sunfra Farm Reminder*\n\nName: *{r.person_name}*\nPending Reports: *{missing_str}*"
-                group_msg = f"⏰ *Sunfra Farm Reminder*\n\n@{r.person_name}\nPending Reports: *{missing_str}*"
+            # Check submissions for each assignee individually
+            for phone, name in assignees.items():
+                target_jid = phone
+                if len(target_jid) == 10 and target_jid.isdigit():
+                    target_jid = "91" + target_jid
+                if not target_jid.endswith('@c.us') and not target_jid.endswith('@g.us') and not target_jid.endswith('@lid'):
+                    target_jid += '@c.us'
                 
-            if should_send:
-                logger.info(f"Sending private reminder to {r.person_name} ({target_jid})")
-                send_waha_message(target_jid, private_msg)
+                missing_reports = []
+                for report in assigned_reports:
+                    submitted = False
+                    categories = []
+                    if "production" in report:
+                        categories = ['production', 'egg_collection', 'egg_collection_1', 'egg_collection_2', 'egg']
+                    elif "feed" in report:
+                        categories = ['feed']
+                    elif "expense" in report or "expenditure" in report:
+                        categories = ['expense', 'purchase']
+                    elif "sale" in report:
+                        categories = ['sales']
+                    elif "profit" in report or "p&l" in report or "p and l" in report:
+                        categories = ['sales', 'expense', 'purchase']
+                        
+                    for sub in submissions:
+                        match_sender = phone in str(sub.sender)
+                        group_name = group_names_by_id.get(r.whatsapp_group_id)
+                        match_group = r.whatsapp_group_id and group_name and sub.group_name and str(sub.group_name).lower() == group_name.lower()
+                        
+                        if match_sender or match_group:
+                            if categories:
+                                if sub.category in categories:
+                                    submitted = True
+                                    break
+                            else:
+                                if report in str(sub.notes).lower():
+                                    submitted = True
+                                    break
+                    if not submitted:
+                        missing_reports.append(report)
                 
+                if not assigned_reports or missing_reports:
+                    pending_assignees.append({
+                        "name": name,
+                        "phone": phone,
+                        "jid": target_jid,
+                        "missing_reports": missing_reports
+                    })
+                    
+            if pending_assignees:
+                # 1. Send private reminder to each pending assignee
+                for p in pending_assignees:
+                    if not assigned_reports:
+                        private_msg = f"⏰ *Sunfra Farm Reminder*\n\nName: *{p['name']}*\nMessage: *{r.task_notes}*"
+                    else:
+                        missing_str = ", ".join(p['missing_reports'])
+                        private_msg = f"⏰ *Sunfra Farm Reminder*\n\nName: *{p['name']}*\nPending Reports: *{missing_str}*"
+                    
+                    logger.info(f"Sending private reminder to {p['name']} ({p['jid']})")
+                    send_waha_message(p['jid'], private_msg)
+                
+                # 2. Send single group reminder mentioning all pending assignees
                 if r.whatsapp_group_id:
-                    logger.info(f"Sending group reminder for {r.person_name} to group {r.whatsapp_group_id}")
-                    send_waha_message(r.whatsapp_group_id, group_msg)
+                    tags = " ".join([f"@{p['name']}" for p in pending_assignees])
+                    jids = [p['jid'] for p in pending_assignees]
+                    
+                    if not assigned_reports:
+                        group_msg = f"⏰ *Sunfra Farm Reminder*\n\n{tags}\nMessage: *{r.task_notes}*"
+                    else:
+                        all_missing = sorted(list(set([rep for p in pending_assignees for rep in p['missing_reports']])))
+                        group_msg = f"⏰ *Sunfra Farm Reminder*\n\n{tags}\nPending Reports: *{', '.join(all_missing)}*"
+                        
+                    logger.info(f"Sending combined group reminder to {r.whatsapp_group_id} for {', '.join([p['name'] for p in pending_assignees])}")
+                    send_waha_message(r.whatsapp_group_id, group_msg, mentions=jids)
                     
                 repeat = str(r.repeat_interval).lower()
                 if repeat != 'none' and repeat != '':
