@@ -57,5 +57,63 @@
             "confidence_score": 0.0,
             "processed_text": "400 trays of production 1st shead Frist collection"
         }
+    },
+    {
+        "timestamp": "2026-07-07T13:35:27.605633+05:30",
+        "message_id": "false_120363225998735559@g.us_AC9BE4FB73E48775F1759E9730B858FB_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Eggoz out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Eggoz out"
+        }
+    },
+    {
+        "timestamp": "2026-07-07T13:39:10.240241+05:30",
+        "message_id": "false_120363225998735559@g.us_ACB6B9A4FF3E7A6C079E685A7142066B_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-07T13:39:11.156909+05:30",
+        "message_id": "false_120363225998735559@g.us_AC1C8A903C2C412200EC77FC1173B62B_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Velmalaretti vehicle in",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Velmalaretti vehicle in"
+        }
+    },
+    {
+        "timestamp": "2026-07-07T13:39:13.528061+05:30",
+        "message_id": "false_120363225998735559@g.us_ACCEE52FC73E7708115D3E1DD3A25A02_4488677085185@lid",
+        "sender": "[Gate Manager] Mahe (4488677085185)",
+        "sender_name": "Mahe",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
     }
 ]
