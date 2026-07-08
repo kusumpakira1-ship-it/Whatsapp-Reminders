@@ -2181,5 +2181,103 @@
             "confidence_score": 1.0,
             "processed_text": "Prasanth is going to bring lunch"
         }
+    },
+    {
+        "timestamp": "2026-07-08T12:53:07.966621+05:30",
+        "message_id": "false_120363212822578807@g.us_AC65E7741966F41662993F8A61443645_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "8th Shead stall grid stone powder",
+        "ai_extracted": {
+            "shead_name": "8th Shead",
+            "category": "raw_material",
+            "quantity": 1,
+            "unit": "bag",
+            "amount": 0.5,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "Eighteenth Shead stall grid stone powder"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T12:54:37.072363+05:30",
+        "message_id": "false_251646697324674@lid_ACCA4C336784BA04E2724FDF0CA4EF57",
+        "sender": "Niroop (251646697324674)",
+        "sender_name": "Niroop",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Yes",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T12:56:16.172725+05:30",
+        "message_id": "false_120363212822578807@g.us_AC469FCDF73F1F2566CBD306755DDAC6_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 7\nSpreying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T12:57:31.457053+05:30",
+        "message_id": "false_251646697324674@lid_ACCAC5921F28F3E72036DA6BFA16E070",
+        "sender": "Niroop (251646697324674)",
+        "sender_name": "Niroop",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Many",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T12:59:19.192224+05:30",
+        "message_id": "false_120363405469158412@g.us_3A88296024A88A1FE7A5_112300593815672@lid",
+        "sender": "[Payments - Sunfra Farms] Nani Chinnam (112300593815672)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Please pay",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T13:00:36.522231+05:30",
+        "message_id": "false_251646697324674@lid_AC02259FA159974EDBF28D992632D2C6",
+        "sender": "Niroop (251646697324674)",
+        "sender_name": "Niroop",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Thank you \ud83d\ude0b",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T13:01:07.227056+05:30",
+        "message_id": "false_120363212822578807@g.us_AC8953A2E8854378FA8ADEA8074570B1_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 7\nStone",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T13:04:37.244899+05:30",
+        "message_id": "false_120363405469158412@g.us_AC6CB0DA781339787A6A281AD47685C8_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Food expenses",
+        "ai_extracted": {
+            "shead_name": "Mahalakshmi",
+            "category": "expense",
+            "quantity": 1365,
+            "unit": "rupees",
+            "amount": 1365,
+            "notes": "Food expenses tiffen and lunch",
+            "confidence_score": 0.9,
+            "processed_text": "Mahalakshmi has paid food expenses of \u20b91,365"
+        }
     }
 ]
