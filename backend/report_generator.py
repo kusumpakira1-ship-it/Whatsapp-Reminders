@@ -24,7 +24,12 @@ def get_date_range(range_type: str):
     now_ist = datetime.now(IST)
     today = now_ist.date()
     
-    if range_type == 'weekly':
+    if range_type == 'daily' or range_type == 'today':
+        return today, today
+    elif range_type == 'yesterday':
+        yesterday = today - timedelta(days=1)
+        return yesterday, yesterday
+    elif range_type == 'weekly':
         return today - timedelta(days=7), today
     elif range_type == 'monthly':
         return today - timedelta(days=30), today

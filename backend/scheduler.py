@@ -63,6 +63,11 @@ async def scheduled_monthly_report_job():
     pdf_path, excel_path, summary_text = generate_custom_report('monthly')
     await _send_reports_to_all(pdf_path, excel_path, summary_text)
 
+async def scheduled_yearly_report_job():
+    logger.info("Starting scheduled yearly report generation...")
+    pdf_path, excel_path, summary_text = generate_custom_report('yearly')
+    await _send_reports_to_all(pdf_path, excel_path, summary_text)
+
 def check_missing_reports_for_today() -> dict:
     from datetime import datetime, timezone, timedelta
     IST = timezone(timedelta(hours=5, minutes=30))
@@ -756,9 +761,6 @@ def setup_scheduler():
     # Schedule media/report cleanup daily at 12:05 AM IST
     scheduler.add_job(cleanup_old_files_job, CronTrigger(hour=0, minute=5, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
-    # Schedule 6:00 PM data entry reminders everyday
-    scheduler.add_job(scheduled_reminder_job, CronTrigger(hour=18, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
-    
     # Schedule daily report at 10:00 PM IST everyday
     scheduler.add_job(scheduled_report_job, CronTrigger(hour=22, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
@@ -768,10 +770,16 @@ def setup_scheduler():
     # Schedule monthly report at 11:00 PM IST on the 1st day of every month
     scheduler.add_job(scheduled_monthly_report_job, CronTrigger(day='1', hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
+    # Schedule yearly report at 11:30 PM IST on 31st December every year
+    scheduler.add_job(scheduled_yearly_report_job, CronTrigger(month='12', day='31', hour=23, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    
     import os
     if os.getenv("USE_N8N", "false").lower() == "true":
-        logger.info("USE_N8N is enabled. Live Alarms, Group Sync, and Unified Reminders are delegated to n8n.")
+        logger.info("USE_N8N is enabled. Live Alarms, Group Sync, Daily 6 PM Reminders, and Unified Reminders are delegated to n8n.")
     else:
+        # Schedule 6:00 PM data entry reminders everyday
+        scheduler.add_job(scheduled_reminder_job, CronTrigger(hour=18, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+
         # Schedule live alarms polling every 1 minute
         scheduler.add_job(poll_live_alarms, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=300)
         

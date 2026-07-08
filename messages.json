@@ -2279,5 +2279,754 @@
             "confidence_score": 0.9,
             "processed_text": "Mahalakshmi has paid food expenses of \u20b91,365"
         }
+    },
+    {
+        "timestamp": "2026-07-08T13:21:12.914018+05:30",
+        "message_id": "false_120363225998735559@g.us_AC400B798FDA580364F8ADB290FE028E_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "3rd shed",
+        "ai_extracted": {
+            "shead_name": "1st day, 3rd day",
+            "category": "egg_collection_2",
+            "quantity": 0.2,
+            "unit": "ml",
+            "amount": null,
+            "notes": "",
+            "confidence_score": 0.95,
+            "processed_text": "3rd shed"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T13:21:31.669995+05:30",
+        "message_id": "false_120363428008153650@g.us_AC5090E2BC450E1F99C1B45CBFD4337A_207627359363311@lid",
+        "sender": "[AIoT Alliance] Poorna (207627359363311)",
+        "sender_name": "Poorna",
+        "is_group": true,
+        "group_name": "AIoT Alliance",
+        "raw_text": "Hii",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T13:21:44.727732+05:30",
+        "message_id": "false_120363428008153650@g.us_ACF5E33D5E716E7EA1CB862DA8947A11_207627359363311@lid",
+        "sender": "[AIoT Alliance] Poorna (207627359363311)",
+        "sender_name": "Poorna",
+        "is_group": true,
+        "group_name": "AIoT Alliance",
+        "raw_text": "Lunch",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T13:21:45.778608+05:30",
+        "message_id": "false_120363212822578807@g.us_ACCDCD05CCA2AC5C62868E693B1A0F31_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T13:30:31.397549+05:30",
+        "message_id": "false_120363405639932471@g.us_AC71C70085E3270B384161D6BFE1A939_184791135711366@lid",
+        "sender": "[Eggs Loading Details] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Eggs Loading Details",
+        "raw_text": "S1 600\nS5 1000\nS6 1000\nS7 1000",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T13:30:46.982930+05:30",
+        "message_id": "false_120363428008153650@g.us_AC03E9DD45860FB340E44FB88307FA5D_207627359363311@lid",
+        "sender": "[AIoT Alliance] Poorna (207627359363311)",
+        "sender_name": "Poorna",
+        "is_group": true,
+        "group_name": "AIoT Alliance",
+        "raw_text": "Cm let's go for lunch",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T13:35:10.009982+05:30",
+        "message_id": "false_120363428008153650@g.us_AC237171B4D84CF494C1269C5BF30064_176531796189398@lid",
+        "sender": "[AIoT Alliance] Yaswanth (176531796189398)",
+        "sender_name": "Yaswanth",
+        "is_group": true,
+        "group_name": "AIoT Alliance",
+        "raw_text": "Ok",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T13:38:02.440948+05:30",
+        "message_id": "false_120363225998735559@g.us_AC856687216C5442495C52ABFFA688CC_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "In",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "",
+            "confidence_score": 0.95,
+            "processed_text": "In"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T14:06:21.256357+05:30",
+        "message_id": "false_120363225998735559@g.us_ACA63C13A1D1154FA234044AB3BFEA7E_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Vaccinaters out",
+        "ai_extracted": {
+            "shead_name": "Vaccinaters",
+            "category": "medicine",
+            "quantity": 1,
+            "unit": "person",
+            "amount": 0.0,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "Vaccinaters out"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T14:09:22.387728+05:30",
+        "message_id": "false_120363225998735559@g.us_AC3057C70D90CBD3B042751238D199D1_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Vaccine labour's",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "medicine",
+            "quantity": 1,
+            "unit": "",
+            "amount": 0,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "Medicine for labour"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T14:11:26.924711+05:30",
+        "message_id": "false_120363212822578807@g.us_AC7C5D93C47DDFBC15F7DCD12613008B_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 7\nFlushout",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T14:11:30.136552+05:30",
+        "message_id": "false_120363426039486670@g.us_AC1394492266856F77A8B396F56AA027_241274569400567@lid",
+        "sender": "[Cash & Attendance] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Cash & Attendance",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T14:14:18.262803+05:30",
+        "message_id": "false_120363426039486670@g.us_AC92CA32D0D654F3BCE95DB5DDCF5162_241274569400567@lid",
+        "sender": "[Cash & Attendance] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Cash & Attendance",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "unknown",
+            "category": "egg_collection_1",
+            "quantity": 200,
+            "unit": "trays",
+            "amount": 381349,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "SBI Bank Deposited"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T14:18:25.711134+05:30",
+        "message_id": "false_120363212822578807@g.us_AC48B019E009FE59639A7B29DE317414_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6\nFeed raking",
+        "ai_extracted": {
+            "shead_name": "Ssed 6",
+            "category": "feed/raw_material",
+            "quantity": 1,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "Sed 6 feed raking"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T14:21:27.714899+05:30",
+        "message_id": "false_120363405469158412@g.us_3A6DB788C4597919E869_112300593815672@lid",
+        "sender": "[Payments - Sunfra Farms] Nani Chinnam (112300593815672)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Account no: 30117002163\nIFSC:SBIN0064253\nP J S Raju\nSBI , Ravipadu Branch",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T14:22:00.231195+05:30",
+        "message_id": "false_120363405469158412@g.us_3AE9FDAEDB6D88A7B71A_112300593815672@lid",
+        "sender": "[Payments - Sunfra Farms] Nani Chinnam (112300593815672)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Total Amount Rs = 114000\nAdvance Recived Rs=80000\nBalance Amount Rs= 34000\n\nRemarks: balance payment for panel board.",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "sales",
+            "quantity": 34000,
+            "unit": "Rs",
+            "amount": 34000,
+            "notes": "balance payment for panel board.",
+            "confidence_score": 1.0,
+            "processed_text": "Balance amount Rs = 34000"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T14:22:12.920248+05:30",
+        "message_id": "false_120363212822578807@g.us_AC7DA4B705DDF4742FF776EE52751E28_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T14:22:19.932827+05:30",
+        "message_id": "false_120363212822578807@g.us_ACB04AE2428AB6609873A0097833F73C_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "8th Shead feed raking",
+        "ai_extracted": {
+            "shead_name": "8th Shead",
+            "category": "feed",
+            "quantity": 1,
+            "unit": "",
+            "amount": null,
+            "notes": "",
+            "confidence_score": 0.95,
+            "processed_text": "8th Shead feed raking"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T14:22:41.757850+05:30",
+        "message_id": "false_120363212822578807@g.us_AC34AB128ECBB002B264C21F6972C2E2_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T14:22:42.757650+05:30",
+        "message_id": "false_120363212822578807@g.us_AC96FB9D648775FB2E10A8862F0C6F2F_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead feed raking",
+        "ai_extracted": {
+            "shead_name": "4th Shead",
+            "category": "feed",
+            "quantity": 1,
+            "unit": "",
+            "amount": 0,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "4th Shead feed raking"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T14:23:21.224533+05:30",
+        "message_id": "false_120363212822578807@g.us_AC55EBAF9352ED264CE67621ED320540_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6 \nFlushout",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T14:26:33.519207+05:30",
+        "message_id": "false_120363212822578807@g.us_AC3662BA2D0EA4D8EE8F40D5FC6668BB_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6 \nSpreying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T14:32:27.678879+05:30",
+        "message_id": "false_120363212822578807@g.us_ACF87DBAA20918CDBBC08ECA966863CD_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T14:33:26.681382+05:30",
+        "message_id": "false_120363212822578807@g.us_ACE3B4302D600DCDDBCFCFEEDA467E1D_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead flush out",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T14:34:15.657322+05:30",
+        "message_id": "false_120363212822578807@g.us_AC4E9C00B467BB1486D8A937F0F4F477_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 7\nFeed raking",
+        "ai_extracted": {
+            "shead_name": "Ssed 7",
+            "category": "feed/raw_material",
+            "quantity": 1,
+            "unit": "",
+            "amount": null,
+            "notes": "Feed raking",
+            "confidence_score": 0.95,
+            "processed_text": "Sed 7 Feed raking"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T14:46:28.442098+05:30",
+        "message_id": "false_120363046205890693@g.us_ACA69867B0A9E2EB350BBF125FC30EE0_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] \ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a (141927630536871)",
+        "sender_name": "\ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "500 Trays of production 1st Shead first collection",
+        "ai_extracted": {
+            "shead_name": "1st",
+            "category": "egg_collection_1",
+            "quantity": 500,
+            "unit": "trays",
+            "amount": 27.5,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "500 trays of production first collection"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T14:47:07.678787+05:30",
+        "message_id": "false_120363407546430183@g.us_3EB036562A6A6D7DDA343F_37546704822382@lid",
+        "sender": "[NetApp Batch 3] Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97 (37546704822382)",
+        "sender_name": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97",
+        "is_group": true,
+        "group_name": "NetApp Batch 3",
+        "raw_text": "*Kindly confirm your attendance personally at the earliest**, as we need to submit the final list of attendees to prepare your entry ID cards* for access to the NetApp office.\n\n*Please share your confirmation as soon as possible. Your presence is very important, and we look forward to celebrating this special milestone with you!*\ud83c\udf93",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T14:47:20.113254+05:30",
+        "message_id": "false_120363408876484504@g.us_3EB0AEC8F2493F9F30F372_37546704822382@lid",
+        "sender": "[SS - NetApp Placements Group] Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97 (37546704822382)",
+        "sender_name": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97",
+        "is_group": true,
+        "group_name": "SS - NetApp Placements Group",
+        "raw_text": "*Kindly confirm your attendance personally at the earliest**, as we need to submit the final list of attendees to prepare your entry ID cards* for access to the NetApp office.\n\n*Please share your confirmation as soon as possible. Your presence is very important, and we look forward to celebrating this special milestone with you!*\ud83c\udf93",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T14:47:35.699284+05:30",
+        "message_id": "false_120363212822578807@g.us_AC58DBB8C49FA2E1A949C3C760322C81_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead flush out",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T14:47:51.323615+05:30",
+        "message_id": "false_120363212822578807@g.us_ACE33F36058AE8C0CBFADED41A93CA91_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 7\nSpreying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T14:52:18.476378+05:30",
+        "message_id": "false_120363212822578807@g.us_AC2BFA101B6345226B31C4ED82FC8F90_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead1 water spraying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T14:57:16.844801+05:30",
+        "message_id": "false_120363212822578807@g.us_ACDF9AD274C9B89393F008D601DAA8AD_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 5\nFlushout",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T15:01:42.371394+05:30",
+        "message_id": "false_37546704822382@lid_AC6909792DB58227918980806F9688CB",
+        "sender": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97 (37546704822382)",
+        "sender_name": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Max 2 hours",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T15:02:23.749272+05:30",
+        "message_id": "false_37546704822382@lid_AC58A09572C967AFBC5F8F7E28FD032C",
+        "sender": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97 (37546704822382)",
+        "sender_name": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Your parents are available?",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T15:02:50.445857+05:30",
+        "message_id": "false_37546704822382@lid_AC6A8184BC75BDDD14E517C5ECC57860",
+        "sender": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97 (37546704822382)",
+        "sender_name": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "May i know who is coming along with you?",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T15:03:14.149224+05:30",
+        "message_id": "false_37546704822382@lid_AC0E260C25CE356E4F3C59476FB995B8",
+        "sender": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97 (37546704822382)",
+        "sender_name": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "May i know the names?",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T15:04:05.997324+05:30",
+        "message_id": "false_37546704822382@lid_ACAF26E2FCDF077C030E96187B74B75D",
+        "sender": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97 (37546704822382)",
+        "sender_name": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Okay thank you",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T15:17:53.458521+05:30",
+        "message_id": "false_120363212822578807@g.us_ACB8D8042CB2012AB90DB87A9407E68D_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead water spraying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T15:17:56.227422+05:30",
+        "message_id": "false_120363212822578807@g.us_ACB6ED7D84EE7789941F90FBF28AF538_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "8th Shead flush out",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T15:19:43.011554+05:30",
+        "message_id": "false_120363212822578807@g.us_AC55249AAB183ECA0A99923BE06CBF3B_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3 water spraying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T15:23:36.140961+05:30",
+        "message_id": "false_120363212822578807@g.us_AC661D8D68D31D9507D3FD63FEC44A5B_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "8th Shead water spraying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T15:29:40.327949+05:30",
+        "message_id": "false_120363363661508926@g.us_AC1C453B04707859478DE3211D001A95_241274569400567@lid",
+        "sender": "[Procurement & requirement] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Procurement & requirement",
+        "raw_text": "3kg required mam",
+        "ai_extracted": {
+            "shead_name": "Vesper",
+            "category": "medicine",
+            "quantity": 50,
+            "unit": "gms",
+            "amount": 150,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "K-Cox Forte"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T15:32:29.764617+05:30",
+        "message_id": "false_120363363661508926@g.us_ACA90F1BDAB1A0D73D0D6985D2FC0036_241274569400567@lid",
+        "sender": "[Procurement & requirement] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Procurement & requirement",
+        "raw_text": "20l required",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "medicine",
+            "quantity": 1,
+            "unit": "ml",
+            "amount": 20000,
+            "notes": "20l required",
+            "confidence_score": 1.0,
+            "processed_text": "Medicine: Immulator, 1000 ml"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T15:36:29.140467+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB04BD64E33B637BB63A5_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "balance payment To pannel board",
+        "ai_extracted": {
+            "shead_name": "unknown",
+            "category": "sales",
+            "quantity": 34000,
+            "unit": "Rs.",
+            "amount": 34000,
+            "notes": "balance payment to panel board",
+            "confidence_score": 1.0,
+            "processed_text": "balance payment to panel board"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T15:39:18.213026+05:30",
+        "message_id": "false_120363212822578807@g.us_AC01F51FCA434884101ED6B2FAEAE03A_241274569400567@lid",
+        "sender": "[Farm Supervisors] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4,6,7 sheds Immulator 3l Dispatched",
+        "ai_extracted": {
+            "shead_name": "unknown",
+            "category": "medicine",
+            "quantity": 1,
+            "unit": "l",
+            "amount": 0.0,
+            "notes": "4,6,7 sheds Immulator 3l Dispatched",
+            "confidence_score": 1.0,
+            "processed_text": "4,6,7 sheds Immulator 3l Dispatched"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T15:40:01.235694+05:30",
+        "message_id": "false_120363212822578807@g.us_ACC36E5EA63C4307A4FD7C3DF77E958E_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T15:40:01.832216+05:30",
+        "message_id": "false_120363212822578807@g.us_AC2EA231112C2F03C22F1A6F090BCFA9_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 7.\nImmulatir 3l",
+        "ai_extracted": {
+            "shead_name": "Sed 7",
+            "category": "medicine",
+            "quantity": 3,
+            "unit": "l",
+            "amount": null,
+            "notes": "Imlumatir 3l",
+            "confidence_score": 1.0,
+            "processed_text": "Medicine: Imlumatir, Quantity: 3 liters"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T15:42:11.358565+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0F13D0E67BEBC1478A8_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "food expenses",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "expense",
+            "quantity": 10,
+            "unit": "kgs",
+            "amount": 500,
+            "notes": "",
+            "confidence_score": 0.9,
+            "processed_text": "Food expenses"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T15:42:48.668431+05:30",
+        "message_id": "false_120363212822578807@g.us_ACA332AAC8DCE660793A01648B3E8669_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead Immulator 3lt",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T15:45:59.847956+05:30",
+        "message_id": "false_120363225998735559@g.us_ACD777999E8CDCCD45F3C15584934EC0_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Pratapreddy eggs vehical",
+        "ai_extracted": {
+            "shead_name": "Pratapreddy",
+            "category": "egg_collection_1",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "Pratapreddy eggs vehical",
+            "confidence_score": 1.0,
+            "processed_text": "Pratapreddy eggs vehical"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T15:46:30.914699+05:30",
+        "message_id": "false_120363225998735559@g.us_ACCE4509785F3337E7D4DF6725E32D02_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T15:49:40.346831+05:30",
+        "message_id": "false_120363046205890693@g.us_ACB97B238A32BDCE5B1C55554799AE39_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] \ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a (141927630536871)",
+        "sender_name": "\ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "500 Trays of production 2nd Shead first collection",
+        "ai_extracted": {
+            "shead_name": "1st, 2nd",
+            "category": "egg_collection_2",
+            "quantity": 500,
+            "unit": "trays",
+            "amount": 37.5,
+            "notes": "",
+            "confidence_score": 0.9,
+            "processed_text": "500 trays of production, 2nd Shead first collection"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T15:52:15.983125+05:30",
+        "message_id": "false_120363046205890693@g.us_ACD9598137F876984E0D5C7F3FB0B3F0_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] \ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a (141927630536871)",
+        "sender_name": "\ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "200 Trays of production 4th Shead first collection",
+        "ai_extracted": {
+            "shead_name": "4th Shead",
+            "category": "egg_collection_1",
+            "quantity": 200,
+            "unit": "trays",
+            "amount": null,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "200 trays of production, first collection"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T15:53:06.810779+05:30",
+        "message_id": "false_120363212822578807@g.us_ACEF0348C9D317716F9EC3E3242C377C_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead1",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-08T15:53:21.742359+05:30",
+        "message_id": "false_120363212822578807@g.us_ACBBB8F3B3B1599D391E353D0B6566D5_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (281265026629807)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6\nImmulatir 3l",
+        "ai_extracted": {
+            "shead_name": "Sed 6",
+            "category": "medicine",
+            "quantity": 3,
+            "unit": "l",
+            "amount": null,
+            "notes": "Immulatir 3l",
+            "confidence_score": 1.0,
+            "processed_text": "Medicine: Immulatir, Quantity: 3 liters"
+        }
+    },
+    {
+        "timestamp": "2026-07-08T15:53:52.017166+05:30",
+        "message_id": "false_120363212822578807@g.us_AC9ED527BF4CB6985E5927C259DB5BF8_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (277235877556429)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
     }
 ]
