@@ -223,6 +223,15 @@ async def waha_webhook(request: Request, background_tasks: BackgroundTasks):
     message_id = msg.get("id")
     sender = msg.get("from", "")
     
+    # Early ignore checks before opening database connections
+    if msg.get("fromMe", False):
+        logger.info(f"Ignoring message sent by bot itself from processing: {message_id}")
+        return {"status": "ignored fromMe"}
+        
+    if sender == "status@broadcast" or sender.endswith("@newsletter"):
+        logger.info(f"Ignoring status/channel message from processing: {sender}")
+        return {"status": "ignored status/channel"}
+
     is_group = '@g.us' in sender
     group_id = sender if is_group else None
     
@@ -306,15 +315,6 @@ async def waha_webhook(request: Request, background_tasks: BackgroundTasks):
         return {"status": "error saving raw"}
     finally:
         db.close()
-
-    # 2. Apply commands or ignore rules synchronously (fast)
-    if msg.get("fromMe", False):
-        logger.info(f"Ignoring message sent by bot itself from processing: {message_id}")
-        return {"status": "ignored fromMe"}
-        
-    if sender == "status@broadcast" or sender.endswith("@newsletter"):
-        logger.info(f"Ignoring status/channel message from processing: {sender}")
-        return {"status": "ignored status/channel"}
 
     if text.startswith('!'):
         command = text.lower().strip()

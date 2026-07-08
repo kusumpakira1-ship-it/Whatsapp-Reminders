@@ -190,7 +190,7 @@ if (isset($_GET['api'])) {
             echo json_encode(['success' => true]);
         }
         elseif (preg_match('/^reminders\/(\d+)\/instant$/', $route, $matches) && $method === 'POST') {
-            $pdo->prepare("UPDATE sunfra_unified_reminders SET trigger_time = CONVERT_TZ(NOW(), '+00:00', '+05:30'), status = 'pending' WHERE id = ?")->execute([$matches[1]]);
+            $pdo->prepare("UPDATE sunfra_unified_reminders SET trigger_time = NOW(), status = 'pending' WHERE id = ?")->execute([$matches[1]]);
             echo json_encode(['success' => true]);
         }
         elseif ($route === 'employees' && $method === 'GET') {

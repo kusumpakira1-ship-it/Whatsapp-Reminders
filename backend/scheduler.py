@@ -47,8 +47,6 @@ async def _send_reports_to_all(pdf_path, excel_path, summary_text):
             send_waha_message(phone, summary_text)
         if pdf_path:
             send_waha_file(phone, pdf_path, caption=f"PDF Report - {pdf_path.split('/')[-1]}")
-        if excel_path:
-            send_waha_file(phone, excel_path, caption=f"Excel Report - {excel_path.split('/')[-1]}")
 
 async def scheduled_report_job():
     logger.info("Starting scheduled 11 PM daily report generation...")
@@ -427,6 +425,43 @@ def get_next_occurrence(base_time, frequency):
             next_time += timedelta(days=1)
     return next_time
 
+def format_report_list(reports):
+    if not reports:
+        return ""
+    cleaned = []
+    for r in reports:
+        rl = r.lower()
+        if "production" in rl:
+            cleaned.append("production")
+        elif "feed" in rl:
+            cleaned.append("feed")
+        elif "expense" in rl or "expenditure" in rl:
+            cleaned.append("expense")
+        elif "sale" in rl:
+            cleaned.append("sales")
+        elif "profit" in rl or "p&l" in rl or "p and l" in rl:
+            cleaned.append("Profit & Loss")
+        else:
+            cleaned.append(r)
+            
+    if len(cleaned) == 1:
+        return cleaned[0]
+    elif len(cleaned) == 2:
+        return f"{cleaned[0]} & {cleaned[1]}"
+    else:
+        return ", ".join(cleaned[:-1]) + f" & {cleaned[-1]}"
+
+def format_name_list(names):
+    if not names:
+        return ""
+    bold_names = [f"*{n}*" for n in names]
+    if len(bold_names) == 1:
+        return bold_names[0]
+    elif len(bold_names) == 2:
+        return f"{bold_names[0]} & {bold_names[1]}"
+    else:
+        return ", ".join(bold_names[:-1]) + f" & {bold_names[-1]}"
+
 def poll_and_execute_unified_reminders():
     logger.info("Polling database for pending unified reminders...")
     from datetime import datetime, timezone, timedelta
@@ -475,9 +510,16 @@ def poll_and_execute_unified_reminders():
             
             # Check submissions for each assignee individually
             for phone, name in assignees.items():
-                target_jid = phone
-                if len(target_jid) == 10 and target_jid.isdigit():
-                    target_jid = "91" + target_jid
+                # Clean phone number by keeping only digits
+                clean_phone = "".join(c for c in phone if c.isdigit())
+                if clean_phone.startswith("0"):
+                    clean_phone = clean_phone[1:]
+                
+                if len(clean_phone) == 10:
+                    target_jid = "91" + clean_phone
+                else:
+                    target_jid = clean_phone
+                    
                 if not target_jid.endswith('@c.us') and not target_jid.endswith('@g.us') and not target_jid.endswith('@lid'):
                     target_jid += '@c.us'
                 
@@ -525,24 +567,39 @@ def poll_and_execute_unified_reminders():
                 # 1. Send private reminder to each pending assignee
                 for p in pending_assignees:
                     if not assigned_reports:
-                        private_msg = f"⏰ *Sunfra Farm Reminder*\n\nName: *{p['name']}*\nMessage: *{r.task_notes}*"
+                        private_body = r.task_notes
                     else:
-                        missing_str = ", ".join(p['missing_reports'])
-                        private_msg = f"⏰ *Sunfra Farm Reminder*\n\nName: *{p['name']}*\nPending Reports: *{missing_str}*"
+                        missing_str = format_report_list(p['missing_reports'])
+                        private_body = f"Please submit today's *{missing_str}* Report so the daily records and reports can be completed accurately."
+                    
+                    private_msg = (
+                        "⏰Sunfra Farms Reminder\n\n"
+                        f"Hi *{p['name']}*,\n\n"
+                        f"{private_body}\n\n"
+                        "Thank you! 🌱"
+                    )
                     
                     logger.info(f"Sending private reminder to {p['name']} ({p['jid']})")
                     send_waha_message(p['jid'], private_msg)
                 
                 # 2. Send single group reminder mentioning all pending assignees
                 if r.whatsapp_group_id:
-                    tags = " ".join([f"@{p['name']}" for p in pending_assignees])
+                    name_tags = format_name_list([p['name'] for p in pending_assignees])
                     jids = [p['jid'] for p in pending_assignees]
                     
                     if not assigned_reports:
-                        group_msg = f"⏰ *Sunfra Farm Reminder*\n\n{tags}\nMessage: *{r.task_notes}*"
+                        group_body = r.task_notes
                     else:
                         all_missing = sorted(list(set([rep for p in pending_assignees for rep in p['missing_reports']])))
-                        group_msg = f"⏰ *Sunfra Farm Reminder*\n\n{tags}\nPending Reports: *{', '.join(all_missing)}*"
+                        missing_str = format_report_list(all_missing)
+                        group_body = f"Please submit today's *{missing_str}* Report so the daily records and reports can be completed accurately."
+                        
+                    group_msg = (
+                        "⏰Sunfra Farms Reminder\n\n"
+                        f"Hi {name_tags},\n\n"
+                        f"{group_body}\n\n"
+                        "Thank you! 🌱"
+                    )
                         
                     logger.info(f"Sending combined group reminder to {r.whatsapp_group_id} for {', '.join([p['name'] for p in pending_assignees])}")
                     send_waha_message(r.whatsapp_group_id, group_msg, mentions=jids)
@@ -702,8 +759,8 @@ def setup_scheduler():
     # Schedule 6:00 PM data entry reminders everyday
     scheduler.add_job(scheduled_reminder_job, CronTrigger(hour=18, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
-    # Schedule daily report at 11:00 PM IST everyday
-    scheduler.add_job(scheduled_report_job, CronTrigger(hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    # Schedule daily report at 10:00 PM IST everyday
+    scheduler.add_job(scheduled_report_job, CronTrigger(hour=22, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
     # Schedule weekly report at 11:00 PM IST on Sunday
     scheduler.add_job(scheduled_weekly_report_job, CronTrigger(day_of_week='sun', hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)

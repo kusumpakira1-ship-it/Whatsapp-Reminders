@@ -145,19 +145,25 @@ def _build_whatsapp_summary(df: pd.DataFrame, range_type: str, start_date, end_d
             unit = str(row['unit']).lower()
             eggs_produced += qty * 30 if 'tray' in unit else qty
 
-        actual_pct = (eggs_produced / birds * 100) if birds > 0 else 0.0
-        rate = rates_by_shed.get(shed, default_egg_rate)
-        prod_val = eggs_produced * rate
+        if eggs_produced > 0:
+            actual_pct = (eggs_produced / birds * 100) if birds > 0 else 0.0
+            rate = rates_by_shed.get(shed, default_egg_rate)
+            prod_val = eggs_produced * rate
 
-        total_birds += birds
-        total_eggs += eggs_produced
-        total_prod_value += prod_val
+            total_birds += birds
+            total_eggs += eggs_produced
+            total_prod_value += prod_val
 
-        prod_lines.append(f"{shed}| {birds:,}| {eggs_produced:,.0f}| {expected_prod_pct}%| {actual_pct:.1f}%| ₹{rate:.2f}| ₹{prod_val:,.2f}")
+            prod_lines.append(f"{shed}| {birds:,}| {eggs_produced:,.0f}| {expected_prod_pct}%| {actual_pct:.1f}%| ₹{rate:.2f}| ₹{prod_val:,.2f}")
+        else:
+            prod_lines.append(f"{shed}| -| -| -| -| -| -")
 
-    avg_total_rate = (total_prod_value / total_eggs) if total_eggs > 0 else default_egg_rate
-    total_actual_pct = (total_eggs / total_birds * 100) if total_birds > 0 else 0.0
-    prod_lines.append(f"Total| {total_birds:,}| {total_eggs:,.0f}| {expected_prod_pct}%| {total_actual_pct:.1f}%| ₹{avg_total_rate:.2f}| ₹{total_prod_value:,.2f}")
+    if total_eggs > 0:
+        avg_total_rate = (total_prod_value / total_eggs) if total_eggs > 0 else default_egg_rate
+        total_actual_pct = (total_eggs / total_birds * 100) if total_birds > 0 else 0.0
+        prod_lines.append(f"Total| {total_birds:,}| {total_eggs:,.0f}| {expected_prod_pct}%| {total_actual_pct:.1f}%| ₹{avg_total_rate:.2f}| ₹{total_prod_value:,.2f}")
+    else:
+        prod_lines.append(f"Total| -| -| -| -| -| -")
 
     # ── 2. FEED CONSUMPTION ──
     # Columns: Shed| Feed Consumed (MT)| Feed per Bird (g/Bird/Day)| Feed Cost/Ton (₹)| Total Feed Cost (₹)
@@ -194,17 +200,23 @@ def _build_whatsapp_summary(df: pd.DataFrame, range_type: str, start_date, end_d
                 feed_mt += qty * 0.05 if qty < 500 else qty / 1000.0
             db_feed_cost += amt
 
-        feed_g_bird = (feed_mt * 1000000.0 / birds) if birds > 0 else 0.0
-        feed_cost_ton = default_feed_cost_ton
-        cost = db_feed_cost if db_feed_cost > 0 else (feed_mt * feed_cost_ton)
+        if feed_mt > 0:
+            feed_g_bird = (feed_mt * 1000000.0 / birds) if birds > 0 else 0.0
+            feed_cost_ton = default_feed_cost_ton
+            cost = db_feed_cost if db_feed_cost > 0 else (feed_mt * feed_cost_ton)
 
-        total_feed_mt += feed_mt
-        total_feed_cost += cost
+            total_feed_mt += feed_mt
+            total_feed_cost += cost
 
-        feed_lines.append(f"{shed}| {feed_mt:.3f}| {feed_g_bird:.1f}| ₹{feed_cost_ton:,.2f}| ₹{cost:,.2f}")
+            feed_lines.append(f"{shed}| {feed_mt:.3f}| {feed_g_bird:.1f}| ₹{feed_cost_ton:,.2f}| ₹{cost:,.2f}")
+        else:
+            feed_lines.append(f"{shed}| -| -| -| -")
 
-    avg_feed_g_bird = (total_feed_mt * 1000000.0 / total_birds) if total_birds > 0 else 0.0
-    feed_lines.append(f"Total| {total_feed_mt:.3f}| {avg_feed_g_bird:.1f}| ₹{default_feed_cost_ton:,.2f}| ₹{total_feed_cost:,.2f}")
+    if total_feed_mt > 0:
+        avg_feed_g_bird = (total_feed_mt * 1000000.0 / total_birds) if total_birds > 0 else 0.0
+        feed_lines.append(f"Total| {total_feed_mt:.3f}| {avg_feed_g_bird:.1f}| -| ₹{total_feed_cost:,.2f}")
+    else:
+        feed_lines.append(f"Total| -| -| -| -")
 
     # ── 3. SHED-RELATED EXPENDITURE ──
     # Columns: Shed| No. of Labourers Used| No. of Medicines Used| Final Cost (₹)| Daily Payender
@@ -218,7 +230,7 @@ def _build_whatsapp_summary(df: pd.DataFrame, range_type: str, start_date, end_d
         labourers = 0
         med_used = 0
         cost = 0.0
-        payender = "Ramesh Kumar"
+        payender = "-"
 
         for _, row in shed_exp_df.iterrows():
             qty = float(row['quantity']) if row['quantity'] else 0
@@ -239,13 +251,18 @@ def _build_whatsapp_summary(df: pd.DataFrame, range_type: str, start_date, end_d
                         payender = extracted
                         break
 
-        total_labourers += labourers
-        total_med_used += med_used
-        total_shed_exp += cost
+        if cost > 0 or labourers > 0 or med_used > 0:
+            total_labourers += labourers
+            total_med_used += med_used
+            total_shed_exp += cost
+            shed_exp_lines.append(f"{shed}| {labourers}| {med_used}| ₹{cost:,.2f}| {payender}")
+        else:
+            shed_exp_lines.append(f"{shed}| -| -| -| -")
 
-        shed_exp_lines.append(f"{shed}| {labourers}| {med_used}| ₹{cost:,.2f}| {payender}")
-
-    shed_exp_lines.append(f"Total Shed-Related Expenditure| {total_labourers}| {total_med_used}| ₹{total_shed_exp:,.2f}| Ramesh Kumar")
+    if total_shed_exp > 0 or total_labourers > 0 or total_med_used > 0:
+        shed_exp_lines.append(f"Total Shed-Related Expenditure| {total_labourers}| {total_med_used}| ₹{total_shed_exp:,.2f}| -")
+    else:
+        shed_exp_lines.append(f"Total Shed-Related Expenditure| -| -| -| -")
 
     # ── 4. COMMON EXPENDITURES ──
     # Particular| Quantity| Amount (₹)
@@ -277,23 +294,23 @@ def _build_whatsapp_summary(df: pd.DataFrame, range_type: str, start_date, end_d
     total_common_exp = fuel_amt + elec_amt + repair_amt + other_amt
 
     common_lines = []
-    common_lines.append(f"Fuel| {fuel_qty:.1f} L| ₹{fuel_amt:,.2f}")
-    common_lines.append(f"Electricity| {elec_qty:.1f} Units| ₹{elec_amt:,.2f}")
-    common_lines.append(f"Repairs & Maintenance| | ₹{repair_amt:,.2f}")
-    common_lines.append(f"Other Common Expenses| | ₹{other_amt:,.2f}")
-    common_lines.append(f"Total Common Expenditure| | ₹{total_common_exp:,.2f}")
+    common_lines.append(f"Fuel| {f'{fuel_qty:.1f} L' if fuel_qty > 0 else '-'}| {f'₹{fuel_amt:,.2f}' if fuel_amt > 0 else '-'}")
+    common_lines.append(f"Electricity| {f'{elec_qty:.1f} Units' if elec_qty > 0 else '-'}| {f'₹{elec_amt:,.2f}' if elec_amt > 0 else '-'}")
+    common_lines.append(f"Repairs & Maintenance| -| {f'₹{repair_amt:,.2f}' if repair_amt > 0 else '-'}")
+    common_lines.append(f"Other Common Expenses| -| {f'₹{other_amt:,.2f}' if other_amt > 0 else '-'}")
+    common_lines.append(f"Total Common Expenditure| -| {f'₹{total_common_exp:,.2f}' if total_common_exp > 0 else '-'}")
 
     # ── 5. DAILY P&L SUMMARY ──
     total_expenses = total_feed_cost + total_shed_exp + total_common_exp
     net_profit = total_prod_value - total_expenses
 
     pl_lines = []
-    pl_lines.append(f"Total Production Value| ₹{total_prod_value:,.2f}")
-    pl_lines.append(f"Total Feed Cost| ₹{total_feed_cost:,.2f}")
-    pl_lines.append(f"Total Shed-Related Expenditure| ₹{total_shed_exp:,.2f}")
-    pl_lines.append(f"Total Common Expenditure| ₹{total_common_exp:,.2f}")
-    pl_lines.append(f"Total Expenses| ₹{total_expenses:,.2f}")
-    pl_lines.append(f"Net Profit / Loss| ₹{net_profit:,.2f}")
+    pl_lines.append(f"Total Production Value| {f'₹{total_prod_value:,.2f}' if total_prod_value > 0 else '-'}")
+    pl_lines.append(f"Total Feed Cost| {f'₹{total_feed_cost:,.2f}' if total_feed_cost > 0 else '-'}")
+    pl_lines.append(f"Total Shed-Related Expenditure| {f'₹{total_shed_exp:,.2f}' if total_shed_exp > 0 else '-'}")
+    pl_lines.append(f"Total Common Expenditure| {f'₹{total_common_exp:,.2f}' if total_common_exp > 0 else '-'}")
+    pl_lines.append(f"Total Expenses| {f'₹{total_expenses:,.2f}' if total_expenses > 0 else '-'}")
+    pl_lines.append(f"Net Profit / Loss| {f'₹{net_profit:,.2f}' if (total_prod_value > 0 or total_expenses > 0) else '-'}")
 
     # Compile the final markdown text
     lines = []
@@ -566,29 +583,129 @@ def _generate_pdf(pdf_path: str, df: pd.DataFrame, range_type: str, start_date, 
 
     # ── P&L SUMMARY ──
     story.append(Paragraph("📊 Profit & Loss", h2))
-    total_revenue = float(df[df['category'].isin(REVENUE_CATS)]['amount'].sum())
-    feed_amt  = float(df[df['category'].isin(['feed', 'raw_material'])]['amount'].sum())
-    med_amt   = float(df[df['category'] == 'medicine']['amount'].sum())
-    purch_amt = float(df[df['category'] == 'purchase']['amount'].sum())
-    exp_amt   = float(df[df['category'] == 'expense']['amount'].sum())
-    total_expense = feed_amt + med_amt + purch_amt + exp_amt
-    net = total_revenue - total_expense
+    
+    # Calculate values matching the whatsapp text report exactly
+    df_copy = df.copy()
+    df_copy['shead_name'] = df_copy['shead_name'].astype(str).str.replace('Shead', 'Shed').str.strip()
+
+    birds_map = {"Shed 1": 15000, "Shed 2": 12000, "Shed 3": 13000}
+    expected_prod_pct = 95.0
+    default_egg_rate = 5.20
+    default_feed_cost_ton = 35000.0
+
+    raw_sheds = df_copy['shead_name'].dropna().unique()
+    sheds = ["Shed 1", "Shed 2", "Shed 3"]
+    for s in raw_sheds:
+        s_str = str(s).strip()
+        if s_str and s_str not in sheds and s_str.lower() not in ('nan', 'none', 'unknown', 'common'):
+            sheds.append(s_str)
+    sheds = [s for s in sheds if s and s.lower() not in ('nan', 'none', 'unknown', 'common')]
+
+    # Calculate production value
+    total_birds = 0
+    total_eggs = 0
+    total_prod_value = 0.0
+    sales_df = df_copy[df_copy['category'] == 'sales']
+    rates_by_shed = {}
+    for _, row in sales_df.iterrows():
+        s = row['shead_name']
+        qty = float(row['quantity']) if row['quantity'] else 0
+        amt = float(row['amount']) if row['amount'] else 0.0
+        if qty > 0 and amt > 0:
+            unit = str(row['unit']).lower()
+            eggs = qty * 30 if 'tray' in unit else qty
+            rates_by_shed[s] = amt / eggs
+
+    for shed in sheds:
+        shed_prod = df_copy[(df_copy['shead_name'] == shed) & (df_copy['category'] == 'production')]
+        birds = birds_map.get(shed, 10000)
+        for _, row in shed_prod.iterrows():
+            qty = float(row['quantity']) if row['quantity'] else 0
+            if qty > 1000:
+                birds = int(qty)
+                break
+        egg_cats = ['egg_collection_1', 'egg_collection_2', 'egg_collection', 'egg']
+        shed_eggs_df = df_copy[(df_copy['shead_name'] == shed) & (df_copy['category'].isin(egg_cats))]
+        eggs_produced = 0
+        for _, row in shed_eggs_df.iterrows():
+            qty = float(row['quantity']) if row['quantity'] else 0
+            unit = str(row['unit']).lower()
+            eggs_produced += qty * 30 if 'tray' in unit else qty
+        if eggs_produced > 0:
+            rate = rates_by_shed.get(shed, default_egg_rate)
+            prod_val = eggs_produced * rate
+            total_birds += birds
+            total_eggs += eggs_produced
+            total_prod_value += prod_val
+
+    # Calculate feed cost
+    total_feed_mt = 0.0
+    total_feed_cost = 0.0
+    for shed in sheds:
+        shed_feed_df = df_copy[(df_copy['shead_name'] == shed) & (df_copy['category'].isin(['feed', 'raw_material']))]
+        feed_mt = 0.0
+        db_feed_cost = 0.0
+        for _, row in shed_feed_df.iterrows():
+            qty = float(row['quantity']) if row['quantity'] else 0
+            unit = str(row['unit']).lower()
+            amt = float(row['amount']) if row['amount'] else 0.0
+            if 'kg' in unit:
+                feed_mt += qty / 1000.0
+            elif 'bag' in unit:
+                feed_mt += qty * 0.05
+            elif 'mt' in unit or 'ton' in unit:
+                feed_mt += qty
+            else:
+                feed_mt += qty * 0.05 if qty < 500 else qty / 1000.0
+            db_feed_cost += amt
+        if feed_mt > 0:
+            cost = db_feed_cost if db_feed_cost > 0 else (feed_mt * default_feed_cost_ton)
+            total_feed_mt += feed_mt
+            total_feed_cost += cost
+
+    # Calculate shed expenditure
+    total_shed_exp = 0.0
+    for shed in sheds:
+        shed_exp_df = df_copy[(df_copy['shead_name'] == shed) & (df_copy['category'].isin(['expense', 'medicine', 'purchase']))]
+        cost = 0.0
+        for _, row in shed_exp_df.iterrows():
+            amt = float(row['amount']) if row['amount'] else 0.0
+            cost += amt
+        total_shed_exp += cost
+
+    # Calculate common expenditure
+    fuel_amt = 0.0
+    elec_amt = 0.0
+    repair_amt = 0.0
+    other_amt = 0.0
+    common_df = df_copy[df_copy['shead_name'].isin(['', 'nan', 'unknown', 'Common', 'None', None])]
+    for _, row in common_df.iterrows():
+        cat = row['category']
+        notes = str(row['notes'] or '').lower()
+        amt = float(row['amount']) if row['amount'] else 0.0
+        if 'fuel' in notes or 'diesel' in notes or 'petrol' in notes:
+            fuel_amt += amt
+        elif 'electricity' in notes or 'current' in notes or 'power' in notes or 'eb bill' in notes:
+            elec_amt += amt
+        elif 'repair' in notes or 'maintenance' in notes or 'servicing' in notes or 'mechanic' in notes:
+            repair_amt += amt
+        elif cat in ['expense', 'purchase']:
+            other_amt += amt
+    total_common_exp = fuel_amt + elec_amt + repair_amt + other_amt
+
+    total_expenses = total_feed_cost + total_shed_exp + total_common_exp
+    net_profit = total_prod_value - total_expenses
 
     pl_rows = [
-        ['💵 Revenue (Sales)',       f"₹{total_revenue:,.2f}"],
+        ['Total Production Value',          f"₹{total_prod_value:,.2f}" if total_prod_value > 0 else '—'],
+        ['Total Feed Cost',                 f"₹{total_feed_cost:,.2f}" if total_feed_cost > 0 else '—'],
+        ['Total Shed-Related Expenditure',  f"₹{total_shed_exp:,.2f}" if total_shed_exp > 0 else '—'],
+        ['Total Common Expenditure',        f"₹{total_common_exp:,.2f}" if total_common_exp > 0 else '—'],
+        ['Total Expenses',                  f"₹{total_expenses:,.2f}" if total_expenses > 0 else '—'],
+        ['Net Profit / Loss',               f"₹{net_profit:,.2f}" if (total_prod_value > 0 or total_expenses > 0) else '—']
     ]
-    if feed_amt > 0:
-        pl_rows.append(['🌾 Feed & Raw Materials', f"₹{feed_amt:,.2f}"])
-    if med_amt > 0:
-        pl_rows.append(['💊 Medicine',             f"₹{med_amt:,.2f}"])
-    if purch_amt > 0:
-        pl_rows.append(['🛒 Purchases',            f"₹{purch_amt:,.2f}"])
-    if exp_amt > 0:
-        pl_rows.append(['💸 Other Expenses',       f"₹{exp_amt:,.2f}"])
-    pl_rows.append(['📉 Total Expenses',            f"₹{total_expense:,.2f}"])
-    pl_rows.append(['✅ NET PROFIT / LOSS',         f"₹{net:,.2f}"])
 
-    pl_table = Table([['Category', 'Amount']] + pl_rows, colWidths=[3*inch, 2*inch])
+    pl_table = Table([['Particular', 'Amount']] + pl_rows, colWidths=[3.2*inch, 2.3*inch])
     pl_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1b4332')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
@@ -597,7 +714,7 @@ def _generate_pdf(pdf_path: str, df: pd.DataFrame, range_type: str, start_date, 
         ('GRID', (0, 0), (-1, -1), 0.3, colors.grey),
         ('ROWBACKGROUNDS', (0, 1), (-1, -2), [colors.white, colors.HexColor('#f0fff4')]),
         ('BACKGROUND', (0, -1), (-1, -1),
-         colors.HexColor('#d8f3dc') if net >= 0 else colors.HexColor('#ffe0e0')),
+         colors.HexColor('#d8f3dc') if net_profit >= 0 else colors.HexColor('#ffe0e0')),
         ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
         ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
     ]))
