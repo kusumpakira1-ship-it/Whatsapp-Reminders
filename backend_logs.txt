@@ -1,0 +1,966 @@
+/usr/local/lib/python3.11/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.7.0) or chardet (7.4.3)/charset_normalizer (3.4.9) doesn't match a supported version!
+  warnings.warn(
+/usr/local/lib/python3.11/site-packages/pypdf/_crypt_providers/_cryptography.py:32: CryptographyDeprecationWarning: ARC4 has been moved to cryptography.hazmat.decrepit.ciphers.algorithms.ARC4 and will be removed from cryptography.hazmat.primitives.ciphers.algorithms in 48.0.0.
+  from cryptography.hazmat.primitives.ciphers.algorithms import AES, ARC4
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:scheduler:USE_N8N is enabled. Live Alarms, Group Sync, Daily 6 PM Reminders, and Unified Reminders are delegated to n8n.
+INFO:apscheduler.scheduler:Added job "health_monitor_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "cleanup_old_files_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "scheduled_report_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "scheduled_weekly_report_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "scheduled_monthly_report_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "scheduled_yearly_report_job" to job store "default"
+INFO:apscheduler.scheduler:Scheduler started
+INFO:scheduler:APScheduler started.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:apscheduler.executors.default:Running job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 16:25:00 IST)" (scheduled at 2026-07-08 16:20:00+05:30)
+INFO:scheduler:Running WAHA Health Monitor...
+INFO:apscheduler.executors.default:Job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 16:25:00 IST)" executed successfully
+INFO:main:Ignoring message sent by bot itself from processing: true_917259510983@c.us_3EB0DCF5451ED47E2841AC
+INFO:     172.19.0.4:59796 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB02354E32121C2132A7C
+INFO:     172.19.0.4:59796 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB012E01366B31D648B78
+INFO:     172.19.0.4:59796 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_917259510983@c.us_3EB0AB97CA7878850F1C00
+INFO:     172.19.0.4:59796 - "POST /webhook HTTP/1.1" 200 OK
+INFO:     172.19.0.4:59796 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB009A15E99508C2A4284
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB03C99DFF44C6A60CEBD
+INFO:     172.19.0.4:59796 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB043292040AA130314B8
+INFO:     172.19.0.4:59796 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_917259510983@c.us_3EB048BAF92AC448D14439
+INFO:     172.19.0.4:59800 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB02F472745F3CFBE48BF
+INFO:     172.19.0.4:59800 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:[REPORT-CHECK] text='shead1' detected_range=None sender=120363212822578807@g.us
+INFO:     172.19.0.4:57514 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363212822578807@g.us_AC1D510527F526E66ACB6DE74A9C3860_92282304913416@lid already exists. Skipping duplicate event.
+INFO:main:Unsupported media type for AI: /app/media/false_120363212822578807@g.us_AC1D510527F526E66ACB6DE74A9C3860_92282304913416@lid.bin
+Using Ollama API for processing...
+INFO:     172.19.0.4:57522 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:[REPORT-CHECK] text='prasanth out for chavatagunta to bring medicine' detected_range=None sender=120363225998735559@g.us
+INFO:     172.19.0.4:48642 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363225998735559@g.us_ACB9D2540DA7CB74751ED133C1FB1CD6_241274569400567@lid already exists. Skipping duplicate event.
+INFO:     172.19.0.4:48656 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Successfully processed message false_120363225998735559@g.us_ACB9D2540DA7CB74751ED133C1FB1CD6_241274569400567@lid: saved 1 records in background.
+INFO:apscheduler.executors.default:Running job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 16:30:00 IST)" (scheduled at 2026-07-08 16:25:00+05:30)
+INFO:scheduler:Running WAHA Health Monitor...
+INFO:apscheduler.executors.default:Job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 16:30:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Running job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 16:35:00 IST)" (scheduled at 2026-07-08 16:30:00+05:30)
+INFO:scheduler:Running WAHA Health Monitor...
+INFO:apscheduler.executors.default:Job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 16:35:00 IST)" executed successfully
+INFO:main:Ignoring status/channel message from processing: 120363195311989567@newsletter
+Using Ollama Vision model: qwen2.5vl:3b
+INFO:     172.19.0.4:58532 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring status/channel message from processing: 120363195311989567@newsletter
+INFO:     172.19.0.4:58544 - "POST /webhook HTTP/1.1" 200 OK
+INFO:     172.19.0.4:40704 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:[REPORT-CHECK] text='shead3 water spraying' detected_range=None sender=120363212822578807@g.us
+INFO:main:Unsupported media type for AI: /app/media/false_120363212822578807@g.us_AC28E1611728833C2320B8184186129A_92282304913416@lid.bin
+INFO:main:Message false_120363212822578807@g.us_AC28E1611728833C2320B8184186129A_92282304913416@lid already exists. Skipping duplicate event.
+Using Ollama API for processing...
+INFO:     172.19.0.4:40720 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_917259510983@c.us_3EB09CF26FA895745FE02E
+INFO:     172.19.0.4:42242 - "POST /webhook HTTP/1.1" 200 OK
+INFO:     172.19.0.4:42242 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB097EE3B24F416303E7E
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB099C72B926B24D6E05E
+INFO:     172.19.0.4:42242 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB0FE3A0134EDB1DF2591
+INFO:     172.19.0.4:42242 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_917259510983@c.us_3EB017CF2E75B77F87CB8C
+INFO:     172.19.0.4:42252 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB096FAEB8839923BB9C9
+INFO:     172.19.0.4:42252 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_917259510983@c.us_3EB0BF9B6D20E65F80E1F7
+INFO:     172.19.0.4:42252 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB06EF52FC231CDF9700F
+INFO:     172.19.0.4:42252 - "POST /webhook HTTP/1.1" 200 OK
+INFO:     172.19.0.4:42252 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB0535E18EC83E4D7A208
+INFO:apscheduler.executors.default:Running job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 16:40:00 IST)" (scheduled at 2026-07-08 16:35:00+05:30)
+INFO:scheduler:Running WAHA Health Monitor...
+INFO:apscheduler.executors.default:Job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 16:40:00 IST)" executed successfully
+INFO:main:Ignoring message sent by bot itself from processing: true_917259510983@c.us_3EB0ABBDDBC08D1B0911D4
+INFO:     172.19.0.4:60136 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB08EB09B1D5C18A4662E
+INFO:     172.19.0.4:60136 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB0449A35D87936E343D8
+INFO:     172.19.0.4:60136 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB0BEE4B78D704D0E4769
+INFO:     172.19.0.4:60136 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_917259510983@c.us_3EB0325132B644EF49EB4A
+INFO:     172.19.0.4:60142 - "POST /webhook HTTP/1.1" 200 OK
+INFO:     172.19.0.4:60142 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB003765688C441020795
+INFO:     172.19.0.4:60142 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB042943214906EAC36A2
+INFO:main:Ignoring message sent by bot itself from processing: true_917259510983@c.us_3EB046CD5D211603660A9A
+INFO:     172.19.0.4:60136 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB028B5063FE745285E67
+INFO:     172.19.0.4:60136 - "POST /webhook HTTP/1.1" 200 OK
+INFO:apscheduler.executors.default:Running job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 16:45:00 IST)" (scheduled at 2026-07-08 16:40:00+05:30)
+INFO:scheduler:Running WAHA Health Monitor...
+INFO:apscheduler.executors.default:Job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 16:45:00 IST)" executed successfully
+INFO:main:Ignoring message sent by bot itself from processing: true_917259510983@c.us_3EB002053AF63B3C036553
+INFO:     172.19.0.4:57452 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB0816DE5BFF62A8E463F
+INFO:     172.19.0.4:57452 - "POST /webhook HTTP/1.1" 200 OK
+INFO:     172.19.0.4:57452 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB01BCC6806C5EE057C57
+INFO:main:Ignoring message sent by bot itself from processing: true_917259510983@c.us_3EB0799A5E25E50CFBB9E0
+INFO:     172.19.0.4:57452 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB04F827230028CBFDD2F
+INFO:     172.19.0.4:57452 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB0A8CD7B1CD4E47366E2
+INFO:     172.19.0.4:57452 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB063419833BB190D96E6
+INFO:     172.19.0.4:57452 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_917259510983@c.us_3EB0AD8117189D96547A03
+INFO:     172.19.0.4:57464 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB025C8FA86FCCB72588A
+INFO:     172.19.0.4:57464 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:[REPORT-CHECK] text='eggoz vehical' detected_range=None sender=120363225998735559@g.us
+INFO:     172.19.0.4:57464 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363225998735559@g.us_AC1936FED3A5FAA660D783D86EDCC587_241274569400567@lid already exists. Skipping duplicate event.
+INFO:     172.19.0.4:57452 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Successfully processed message false_120363225998735559@g.us_AC1936FED3A5FAA660D783D86EDCC587_241274569400567@lid: saved 1 records in background.
+INFO:main:[REPORT-CHECK] text='shead3' detected_range=None sender=120363212822578807@g.us
+Using Ollama Vision model: qwen2.5vl:3b
+Using Ollama API for processing...
+INFO:     172.19.0.4:58580 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363212822578807@g.us_ACDE8158DAC312ECF37F062A44CCC768_92282304913416@lid already exists. Skipping duplicate event.
+INFO:     172.19.0.4:58592 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:[REPORT-CHECK] text='' detected_range=None sender=120363225998735559@g.us
+INFO:     172.19.0.4:58580 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Unsupported media type for AI: /app/media/false_120363212822578807@g.us_ACDE8158DAC312ECF37F062A44CCC768_92282304913416@lid.bin
+INFO:main:Message false_120363225998735559@g.us_AC1307025A4890E499022CD282CF7D70_241274569400567@lid already exists. Skipping duplicate event.
+Using Ollama API for processing...
+INFO:     172.19.0.4:58598 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Unsupported media type for AI: /app/media/false_120363225998735559@g.us_AC1307025A4890E499022CD282CF7D70_241274569400567@lid.bin
+INFO:apscheduler.executors.default:Running job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 16:50:00 IST)" (scheduled at 2026-07-08 16:45:00+05:30)
+INFO:scheduler:Running WAHA Health Monitor...
+INFO:apscheduler.executors.default:Job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 16:50:00 IST)" executed successfully
+INFO:main:Ignoring message sent by bot itself from processing: true_917259510983@c.us_3EB0173BA05526CE3BE2E3
+INFO:     172.19.0.4:50906 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:[REPORT-CHECK] text='1-3
+2-3
+3-3
+4-3
+5-0
+6-3
+7-3
+8-3
+chick-0
+grower-2
+totall 23 tons feed grinded' detected_range=None sender=120363111757096162@g.us
+INFO:     172.19.0.4:50906 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363111757096162@g.us_AC79902299F2B0BF3EF4056DA904FBAB_241274569400567@lid already exists. Skipping duplicate event.
+Using Ollama API for processing...
+INFO:     172.19.0.4:50910 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB0275B194D781BDD716B
+INFO:     172.19.0.4:50912 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB0F9CBEE4293EA90DFC2
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB071C2E68CD254A8A008
+INFO:     172.19.0.4:50914 - "POST /webhook HTTP/1.1" 200 OK
+INFO:     172.19.0.4:50930 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB07E00E046CDADFDC94E
+INFO:     172.19.0.4:50930 - "POST /webhook HTTP/1.1" 200 OK
+INFO:     172.19.0.4:50914 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_917259510983@c.us_3EB00DA2A88823EC72BD80
+INFO:main:Ignoring message sent by bot itself from processing: true_917259510983@c.us_3EB0274667D4B13B6520B2
+INFO:     172.19.0.4:50914 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB00AF1A0434FE55F0991
+INFO:     172.19.0.4:50914 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB03A1749658D9AA76730
+INFO:     172.19.0.4:50914 - "POST /webhook HTTP/1.1" 200 OK
+INFO:apscheduler.executors.default:Running job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 16:55:00 IST)" (scheduled at 2026-07-08 16:50:00+05:30)
+INFO:scheduler:Running WAHA Health Monitor...
+INFO:apscheduler.executors.default:Job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 16:55:00 IST)" executed successfully
+ERROR:main:Error in process_message_background: (pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query')
+[SQL: INSERT INTO sunfra_processed_data (shead_name, category, quantity, unit, amount, notes, sender, group_name, source_type, confidence_score, processed_time, message_id, created_at) VALUES (%(shead_name)s, %(category)s, %(quantity)s, %(unit)s, %(amount)s, %(notes)s, %(sender)s, %(group_name)s, %(source_type)s, %(confidence_score)s, %(processed_time)s, %(message_id)s, now()) RETURNING sunfra_processed_data.id, sunfra_processed_data.created_at]
+[parameters: {'shead_name': 'Shead 1, Shead 2, Shead 3', 'category': 'feed', 'quantity': 23, 'unit': 'tons', 'amount': 0.0, 'notes': 'Chick-0\nGrower-2\nTotall 23 tons feed grinded', 'sender': '[Feed Plant] NABIYABHANU (241274569400567)', 'group_name': 'Feed Plant', 'source_type': 'text', 'confidence_score': 1.0, 'processed_time': datetime.datetime(2026, 7, 8, 16, 50, 45, 461721), 'message_id': 'false_120363111757096162@g.us_AC79902299F2B0BF3EF4056DA904FBAB_241274569400567@lid'}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+INFO:main:Ignoring message sent by bot itself from processing: true_917259510983@c.us_3EB01C4E1DDDC0B05E9B7D
+INFO:     172.19.0.4:38274 - "POST /webhook HTTP/1.1" 200 OK
+INFO:     172.19.0.4:38274 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB0CE8F959B7F6A1222E2
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB0E2584E1B0CE3463962
+INFO:     172.19.0.4:38274 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_917259510983@c.us_3EB0991349644BB18B282C
+INFO:     172.19.0.4:38274 - "POST /webhook HTTP/1.1" 200 OK
+INFO:     172.19.0.4:38274 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB0B2442935411C1C737A
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB01D556AB8502A183951
+INFO:     172.19.0.4:38274 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_917259510983@c.us_3EB0D7E0C8A1DB9BBE3150
+INFO:     172.19.0.4:38274 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB05FF6668F760B8B41B9
+INFO:     172.19.0.4:38274 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363427726701686@g.us_3EB0EFC29785E1BD9C2584
+INFO:     172.19.0.4:38274 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:[REPORT-CHECK] text='as discussed, please transfer 55000/- to term loan account 
+@56556230058144' detected_range=None sender=120363405469158412@g.us
+INFO:     172.19.0.4:60154 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363405469158412@g.us_3AEBF4D932F3A6897B72_112300593815672@lid already exists. Skipping duplicate event.
+INFO:     172.19.0.4:60156 - "POST /webhook HTTP/1.1" 200 OK
+ERROR:main:Error in process_message_background: (pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query')
+[SQL: INSERT INTO sunfra_processed_data (shead_name, category, quantity, unit, amount, notes, sender, group_name, source_type, confidence_score, processed_time, message_id, created_at) VALUES (%(shead_name)s, %(category)s, %(quantity)s, %(unit)s, %(amount)s, %(notes)s, %(sender)s, %(group_name)s, %(source_type)s, %(confidence_score)s, %(processed_time)s, %(message_id)s, now()) RETURNING sunfra_processed_data.id, sunfra_processed_data.created_at]
+[parameters: {'shead_name': '', 'category': 'sales', 'quantity': 55000, 'unit': 'INR', 'amount': 55000, 'notes': 'Transfer to Term loan account @56556230058144', 'sender': '[Payments - Sunfra Farms] Nani Chinnam (112300593815672)', 'group_name': 'Payments - Sunfra Farms', 'source_type': 'text', 'confidence_score': 1.0, 'processed_time': datetime.datetime(2026, 7, 8, 16, 54, 5, 499703), 'message_id': 'false_120363405469158412@g.us_3AEBF4D932F3A6897B72_112300593815672@lid'}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+INFO:main:[REPORT-CHECK] text='shead1' detected_range=None sender=120363212822578807@g.us
+Using Ollama API for processing...
+INFO:     172.19.0.4:48340 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363212822578807@g.us_AC307D684169517916CF0C94749267E1_92282304913416@lid already exists. Skipping duplicate event.
+INFO:     172.19.0.4:48354 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Unsupported media type for AI: /app/media/false_120363212822578807@g.us_AC307D684169517916CF0C94749267E1_92282304913416@lid.bin
+INFO:main:[REPORT-CHECK] text='sed 6 
+spreying' detected_range=None sender=120363212822578807@g.us
+Using Ollama API for processing...
+INFO:     172.19.0.4:48354 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363212822578807@g.us_ACCE8E93C2870F697A5C4F890A72B204_281265026629807@lid already exists. Skipping duplicate event.
+INFO:     172.19.0.4:48340 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Unsupported media type for AI: /app/media/false_120363212822578807@g.us_ACCE8E93C2870F697A5C4F890A72B204_281265026629807@lid.bin
+INFO:apscheduler.executors.default:Running job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:00:00 IST)" (scheduled at 2026-07-08 16:55:00+05:30)
+INFO:scheduler:Running WAHA Health Monitor...
+INFO:apscheduler.executors.default:Job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:00:00 IST)" executed successfully
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [1]
+Using Ollama API for processing...
+/usr/local/lib/python3.11/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.7.0) or chardet (7.4.3)/charset_normalizer (3.4.9) doesn't match a supported version!
+  warnings.warn(
+/usr/local/lib/python3.11/site-packages/pypdf/_crypt_providers/_cryptography.py:32: CryptographyDeprecationWarning: ARC4 has been moved to cryptography.hazmat.decrepit.ciphers.algorithms.ARC4 and will be removed from cryptography.hazmat.primitives.ciphers.algorithms in 48.0.0.
+  from cryptography.hazmat.primitives.ciphers.algorithms import AES, ARC4
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:scheduler:USE_N8N is enabled. Live Alarms, Group Sync, Daily 6 PM Reminders, and Unified Reminders are delegated to n8n.
+INFO:apscheduler.scheduler:Added job "health_monitor_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "cleanup_old_files_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "scheduled_report_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "scheduled_weekly_report_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "scheduled_monthly_report_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "scheduled_yearly_report_job" to job store "default"
+INFO:apscheduler.scheduler:Scheduler started
+INFO:scheduler:APScheduler started.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:main:Ignoring status/channel message from processing: 120363297233107559@newsletter
+INFO:     172.19.0.4:35830 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring status/channel message from processing: 120363297233107559@newsletter
+INFO:     172.19.0.4:35844 - "POST /webhook HTTP/1.1" 200 OK
+INFO:apscheduler.executors.default:Running job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:05:00 IST)" (scheduled at 2026-07-08 17:00:00+05:30)
+INFO:scheduler:Running WAHA Health Monitor...
+INFO:apscheduler.executors.default:Job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:05:00 IST)" executed successfully
+INFO:main:[REPORT-CHECK] text='597.13 trays of production 6th shead' detected_range=None sender=120363046205890693@g.us
+INFO:     172.19.0.4:40544 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363046205890693@g.us_AC6ACA25E0727F2BA09986B790E401DB_141927630536871@lid already exists. Skipping duplicate event.
+INFO:     172.19.0.4:40552 - "POST /webhook HTTP/1.1" 200 OK
+INFO:apscheduler.executors.default:Running job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:10:00 IST)" (scheduled at 2026-07-08 17:05:00+05:30)
+INFO:scheduler:Running WAHA Health Monitor...
+INFO:main:Successfully processed message false_120363046205890693@g.us_AC6ACA25E0727F2BA09986B790E401DB_141927630536871@lid: saved 1 records in background.
+INFO:apscheduler.executors.default:Job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:10:00 IST)" executed successfully
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [1]
+Using Ollama Vision model: qwen2.5vl:3b
+/usr/local/lib/python3.11/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.7.0) or chardet (7.4.3)/charset_normalizer (3.4.9) doesn't match a supported version!
+  warnings.warn(
+/usr/local/lib/python3.11/site-packages/pypdf/_crypt_providers/_cryptography.py:32: CryptographyDeprecationWarning: ARC4 has been moved to cryptography.hazmat.decrepit.ciphers.algorithms.ARC4 and will be removed from cryptography.hazmat.primitives.ciphers.algorithms in 48.0.0.
+  from cryptography.hazmat.primitives.ciphers.algorithms import AES, ARC4
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:scheduler:USE_N8N is enabled. Live Alarms, Group Sync, Daily 6 PM Reminders, and Unified Reminders are delegated to n8n.
+INFO:apscheduler.scheduler:Added job "health_monitor_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "cleanup_old_files_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "scheduled_report_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "scheduled_weekly_report_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "scheduled_monthly_report_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "scheduled_yearly_report_job" to job store "default"
+INFO:apscheduler.scheduler:Scheduler started
+INFO:scheduler:APScheduler started.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     172.19.0.4:56806 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:[REPORT-CHECK] text='mestri and coolies' detected_range=None sender=120363225998735559@g.us
+INFO:main:Message false_120363225998735559@g.us_AC2B49E0B771BA4714E401EED5A4785F_241274569400567@lid already exists. Skipping duplicate event.
+INFO:     172.19.0.4:56810 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Successfully processed message false_120363225998735559@g.us_AC2B49E0B771BA4714E401EED5A4785F_241274569400567@lid: saved 1 records in background.
+INFO:main:Ignoring message sent by bot itself from processing: true_120363428008153650@g.us_3EB036CD1B754186740D3E
+Using Ollama Vision model: qwen2.5vl:3b
+Using Ollama API for processing...
+INFO:     172.19.0.4:49422 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363428008153650@g.us_3EB0B70AA3FF3748D76B37
+INFO:     172.19.0.4:49422 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363428008153650@g.us_3EB03B90B919802B466E16
+INFO:     172.19.0.4:49422 - "POST /webhook HTTP/1.1" 200 OK
+INFO:apscheduler.executors.default:Running job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:15:00 IST)" (scheduled at 2026-07-08 17:10:00+05:30)
+INFO:scheduler:Running WAHA Health Monitor...
+INFO:apscheduler.executors.default:Job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:15:00 IST)" executed successfully
+INFO:main:[REPORT-CHECK] text='remainder 
+tea break' detected_range=None sender=120363428008153650@g.us
+INFO:     172.19.0.4:56904 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363428008153650@g.us_AC9A8700D847B1FD76F727BC67EB2388_206686828683301@lid already exists. Skipping duplicate event.
+INFO:     172.19.0.4:56914 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363428008153650@g.us_AC2F7D440BF14F09D0D8CC0B5E350AA4_183300681367688@lid
+Using Ollama API for processing...
+INFO:     172.19.0.4:36108 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:[REPORT-CHECK] text='shead3' detected_range=None sender=120363212822578807@g.us
+INFO:     172.19.0.4:36108 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363212822578807@g.us_AC78EA2C7104275CCB1A8529D95E6D3E_92282304913416@lid already exists. Skipping duplicate event.
+Using Ollama Vision model: qwen2.5vl:3b
+INFO:     172.19.0.4:36112 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:[REPORT-CHECK] text='why u will not cm 2dat' detected_range=None sender=120363428008153650@g.us
+Failed to fetch group name from groups API: HTTPConnectionPool(host='waha', port=3000): Read timed out. (read timeout=5)
+Failed to fetch chat name for 120363428008153650@g.us: HTTPConnectionPool(host='waha', port=3000): Read timed out. (read timeout=5)
+INFO:     172.19.0.4:47952 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363428008153650@g.us_AC7610B642B26AD0CC7F414640F8B47C_207627359363311@lid already exists. Skipping duplicate event.
+Failed to fetch group name from groups API: HTTPConnectionPool(host='waha', port=3000): Read timed out. (read timeout=5)
+Failed to fetch chat name for 120363428008153650@g.us: HTTPConnectionPool(host='waha', port=3000): Read timed out. (read timeout=5)
+INFO:     172.19.0.4:47968 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363428008153650@g.us_AC9A329D81A50EAE658945BBFC7C69F1_183300681367688@lid
+INFO:     172.19.0.4:36226 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363428008153650@g.us_ACCD845FBE5A80AF98A50DE1420AB8E0_183300681367688@lid
+INFO:     172.19.0.4:36228 - "POST /webhook HTTP/1.1" 200 OK
+/usr/local/lib/python3.11/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.7.0) or chardet (7.4.3)/charset_normalizer (3.4.9) doesn't match a supported version!
+  warnings.warn(
+/usr/local/lib/python3.11/site-packages/pypdf/_crypt_providers/_cryptography.py:32: CryptographyDeprecationWarning: ARC4 has been moved to cryptography.hazmat.decrepit.ciphers.algorithms.ARC4 and will be removed from cryptography.hazmat.primitives.ciphers.algorithms in 48.0.0.
+  from cryptography.hazmat.primitives.ciphers.algorithms import AES, ARC4
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:scheduler:USE_N8N is enabled. Daily 6 PM Reminders are delegated to n8n.
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Added job "health_monitor_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "cleanup_old_files_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "scheduled_report_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "scheduled_weekly_report_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "scheduled_monthly_report_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "scheduled_yearly_report_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "poll_live_alarms" to job store "default"
+INFO:apscheduler.scheduler:Added job "sync_groups_to_live" to job store "default"
+INFO:apscheduler.scheduler:Added job "poll_and_execute_unified_reminders" to job store "default"
+INFO:apscheduler.scheduler:Scheduler started
+INFO:scheduler:APScheduler started.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:main:[REPORT-CHECK] text='' detected_range=None sender=120363410577961394@g.us
+INFO:     172.19.0.4:52668 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363410577961394@g.us_3A085B928BA678F4CC32_263118454309024@lid already exists. Skipping duplicate event.
+INFO:     172.19.0.4:52682 - "POST /webhook HTTP/1.1" 200 OK
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:24:00 IST)" (scheduled at 2026-07-08 17:24:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:24:00 IST)" (scheduled at 2026-07-08 17:24:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:25:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:25:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Running job "sync_groups_to_live (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:30:00 IST)" (scheduled at 2026-07-08 17:25:00+05:30)
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:26:00 IST)" (scheduled at 2026-07-08 17:25:00+05:30)
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:26:00 IST)" (scheduled at 2026-07-08 17:25:00+05:30)
+INFO:scheduler:Syncing local WAHA groups to live server...
+INFO:apscheduler.executors.default:Running job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:30:00 IST)" (scheduled at 2026-07-08 17:25:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:scheduler:Running WAHA Health Monitor...
+INFO:apscheduler.executors.default:Job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:30:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:26:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:26:00 IST)" executed successfully
+INFO:scheduler:Successfully synced 81 groups to live server.
+INFO:apscheduler.executors.default:Job "sync_groups_to_live (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:30:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:27:00 IST)" (scheduled at 2026-07-08 17:26:00+05:30)
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:27:00 IST)" (scheduled at 2026-07-08 17:26:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:27:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:27:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:28:00 IST)" (scheduled at 2026-07-08 17:27:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:28:00 IST)" (scheduled at 2026-07-08 17:27:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:28:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:28:00 IST)" executed successfully
+INFO:main:[REPORT-CHECK] text='shead3' detected_range=None sender=120363212822578807@g.us
+INFO:     172.19.0.4:39892 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363212822578807@g.us_ACB10799E06337D69570E5988D3C9D40_92282304913416@lid already exists. Skipping duplicate event.
+INFO:     172.19.0.4:39906 - "POST /webhook HTTP/1.1" 200 OK
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:29:00 IST)" (scheduled at 2026-07-08 17:28:00+05:30)
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:29:00 IST)" (scheduled at 2026-07-08 17:28:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:scheduler:Polling database for pending unified reminders...
+WARNING:apscheduler.scheduler:Execution of job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:29:00 IST)" skipped: maximum number of running instances reached (1)
+WARNING:apscheduler.scheduler:Execution of job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:29:00 IST)" skipped: maximum number of running instances reached (1)
+WARNING:apscheduler.scheduler:Execution of job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:30:00 IST)" skipped: maximum number of running instances reached (1)
+WARNING:apscheduler.scheduler:Execution of job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:30:00 IST)" skipped: maximum number of running instances reached (1)
+INFO:apscheduler.executors.default:Running job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:35:00 IST)" (scheduled at 2026-07-08 17:30:00+05:30)
+INFO:scheduler:Running WAHA Health Monitor...
+INFO:apscheduler.executors.default:Running job "sync_groups_to_live (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:35:00 IST)" (scheduled at 2026-07-08 17:30:00+05:30)
+INFO:scheduler:Syncing local WAHA groups to live server...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:31:00 IST)" executed successfully
+INFO:main:Successfully processed message false_120363212822578807@g.us_ACB10799E06337D69570E5988D3C9D40_92282304913416@lid: saved 1 records in background.
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:31:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:35:00 IST)" executed successfully
+INFO:scheduler:Successfully synced 81 groups to live server.
+INFO:apscheduler.executors.default:Job "sync_groups_to_live (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:35:00 IST)" executed successfully
+INFO:main:[REPORT-CHECK] text='shead1' detected_range=None sender=120363212822578807@g.us
+Using Ollama Vision model: qwen2.5vl:3b
+INFO:     172.19.0.4:47728 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363212822578807@g.us_AC642E592965A77584D8F5A799E73B45_92282304913416@lid already exists. Skipping duplicate event.
+INFO:     172.19.0.4:47734 - "POST /webhook HTTP/1.1" 200 OK
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:32:00 IST)" (scheduled at 2026-07-08 17:31:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:32:00 IST)" (scheduled at 2026-07-08 17:31:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:32:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:32:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:33:00 IST)" (scheduled at 2026-07-08 17:32:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:33:00 IST)" (scheduled at 2026-07-08 17:32:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:33:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:33:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:34:00 IST)" (scheduled at 2026-07-08 17:33:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:34:00 IST)" (scheduled at 2026-07-08 17:33:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:34:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:34:00 IST)" executed successfully
+INFO:main:Successfully processed message false_120363212822578807@g.us_AC642E592965A77584D8F5A799E73B45_92282304913416@lid: saved 1 records in background.
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:35:00 IST)" (scheduled at 2026-07-08 17:34:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:35:00 IST)" (scheduled at 2026-07-08 17:34:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:35:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:35:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Running job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:40:00 IST)" (scheduled at 2026-07-08 17:35:00+05:30)
+INFO:apscheduler.executors.default:Running job "sync_groups_to_live (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:40:00 IST)" (scheduled at 2026-07-08 17:35:00+05:30)
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:36:00 IST)" (scheduled at 2026-07-08 17:35:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:36:00 IST)" (scheduled at 2026-07-08 17:35:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:scheduler:Syncing local WAHA groups to live server...
+INFO:scheduler:Running WAHA Health Monitor...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:36:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:40:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:36:00 IST)" executed successfully
+INFO:scheduler:Successfully synced 81 groups to live server.
+INFO:apscheduler.executors.default:Job "sync_groups_to_live (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:40:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:37:00 IST)" (scheduled at 2026-07-08 17:36:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:37:00 IST)" (scheduled at 2026-07-08 17:36:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:37:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:37:00 IST)" executed successfully
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [1]
+Using Ollama Vision model: qwen2.5vl:3b
+/usr/local/lib/python3.11/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.7.0) or chardet (7.4.3)/charset_normalizer (3.4.9) doesn't match a supported version!
+  warnings.warn(
+/usr/local/lib/python3.11/site-packages/pypdf/_crypt_providers/_cryptography.py:32: CryptographyDeprecationWarning: ARC4 has been moved to cryptography.hazmat.decrepit.ciphers.algorithms.ARC4 and will be removed from cryptography.hazmat.primitives.ciphers.algorithms in 48.0.0.
+  from cryptography.hazmat.primitives.ciphers.algorithms import AES, ARC4
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:scheduler:USE_N8N is enabled. Daily 6 PM Reminders are delegated to n8n.
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO:apscheduler.scheduler:Added job "health_monitor_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "cleanup_old_files_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "scheduled_report_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "scheduled_weekly_report_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "scheduled_monthly_report_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "scheduled_yearly_report_job" to job store "default"
+INFO:apscheduler.scheduler:Added job "poll_live_alarms" to job store "default"
+INFO:apscheduler.scheduler:Added job "sync_groups_to_live" to job store "default"
+INFO:apscheduler.scheduler:Added job "poll_and_execute_unified_reminders" to job store "default"
+INFO:apscheduler.scheduler:Scheduler started
+INFO:scheduler:APScheduler started.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:37:00 IST)" (scheduled at 2026-07-08 17:37:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:37:00 IST)" (scheduled at 2026-07-08 17:37:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:38:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:38:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:39:00 IST)" (scheduled at 2026-07-08 17:38:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:39:00 IST)" (scheduled at 2026-07-08 17:38:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:39:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:39:00 IST)" executed successfully
+INFO:main:Ignoring status/channel message from processing: status@broadcast
+INFO:     172.19.0.4:53816 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring status/channel message from processing: status@broadcast
+INFO:     172.19.0.4:53826 - "POST /webhook HTTP/1.1" 200 OK
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:40:00 IST)" (scheduled at 2026-07-08 17:39:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:40:00 IST)" (scheduled at 2026-07-08 17:39:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:40:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:40:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:41:00 IST)" (scheduled at 2026-07-08 17:40:00+05:30)
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:41:00 IST)" (scheduled at 2026-07-08 17:40:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Running job "sync_groups_to_live (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:45:00 IST)" (scheduled at 2026-07-08 17:40:00+05:30)
+INFO:apscheduler.executors.default:Running job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:45:00 IST)" (scheduled at 2026-07-08 17:40:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:scheduler:Syncing local WAHA groups to live server...
+INFO:scheduler:Running WAHA Health Monitor...
+INFO:apscheduler.executors.default:Job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:45:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:41:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:41:00 IST)" executed successfully
+INFO:scheduler:Successfully synced 81 groups to live server.
+INFO:apscheduler.executors.default:Job "sync_groups_to_live (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:45:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:42:00 IST)" (scheduled at 2026-07-08 17:41:00+05:30)
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:42:00 IST)" (scheduled at 2026-07-08 17:41:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:42:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:42:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:43:00 IST)" (scheduled at 2026-07-08 17:42:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:43:00 IST)" (scheduled at 2026-07-08 17:42:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:43:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:43:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:44:00 IST)" (scheduled at 2026-07-08 17:43:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:44:00 IST)" (scheduled at 2026-07-08 17:43:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:44:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:44:00 IST)" executed successfully
+INFO:main:Ignoring message sent by bot itself from processing: true_120363428008153650@g.us_3EB031141102554C43383B
+INFO:     172.19.0.4:59982 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363428008153650@g.us_3EB0B963401FBB392A015B
+INFO:     172.19.0.4:59982 - "POST /webhook HTTP/1.1" 200 OK
+INFO:     172.19.0.4:59982 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring message sent by bot itself from processing: true_120363428008153650@g.us_3EB0DE99C4419139C3001B
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:45:00 IST)" (scheduled at 2026-07-08 17:44:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:45:00 IST)" (scheduled at 2026-07-08 17:44:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:45:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:45:00 IST)" executed successfully
+INFO:main:[REPORT-CHECK] text='sed 5' detected_range=None sender=120363212822578807@g.us
+INFO:     172.19.0.4:58788 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363212822578807@g.us_AC031505255F3215FDBA2DD25019CA5A_281265026629807@lid already exists. Skipping duplicate event.
+Using Ollama Vision model: qwen2.5vl:3b
+INFO:     172.19.0.4:58800 - "POST /webhook HTTP/1.1" 200 OK
+INFO:apscheduler.executors.default:Running job "sync_groups_to_live (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:50:00 IST)" (scheduled at 2026-07-08 17:45:00+05:30)
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:46:00 IST)" (scheduled at 2026-07-08 17:45:00+05:30)
+INFO:apscheduler.executors.default:Running job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:50:00 IST)" (scheduled at 2026-07-08 17:45:00+05:30)
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:46:00 IST)" (scheduled at 2026-07-08 17:45:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:scheduler:Polling live server for pending alarms...
+INFO:scheduler:Running WAHA Health Monitor...
+INFO:scheduler:Syncing local WAHA groups to live server...
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:46:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:46:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:50:00 IST)" executed successfully
+INFO:scheduler:Successfully synced 81 groups to live server.
+INFO:apscheduler.executors.default:Job "sync_groups_to_live (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:50:00 IST)" executed successfully
+INFO:main:[REPORT-CHECK] text='sed 6' detected_range=None sender=120363212822578807@g.us
+Failed to fetch group name from groups API: HTTPConnectionPool(host='waha', port=3000): Read timed out. (read timeout=5)
+Failed to fetch chat name for 120363212822578807@g.us: HTTPConnectionPool(host='waha', port=3000): Read timed out. (read timeout=5)
+INFO:     172.19.0.4:52820 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363212822578807@g.us_ACACB35585ABE511C77F1061280F2F73_281265026629807@lid already exists. Skipping duplicate event.
+Failed to fetch group name from groups API: HTTPConnectionPool(host='waha', port=3000): Read timed out. (read timeout=5)
+Failed to fetch chat name for 120363212822578807@g.us: HTTPConnectionPool(host='waha', port=3000): Read timed out. (read timeout=5)
+INFO:     172.19.0.4:52834 - "POST /webhook HTTP/1.1" 200 OK
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:46:00 IST)" (scheduled at 2026-07-08 17:47:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:48:00 IST)" (scheduled at 2026-07-08 17:47:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:main:Successfully processed message false_120363212822578807@g.us_AC031505255F3215FDBA2DD25019CA5A_281265026629807@lid: saved 1 records in background.
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:48:00 IST)" executed successfully
+INFO:scheduler:Reminder for Kusum, Yeswanth updated to next occurrence: 2026-07-09 17:47:00 (status: sent)
+INFO:scheduler:Sending private reminder to Kusum (917975209680@c.us)
+INFO:scheduler:Sending private reminder to Yeswanth (919346763549@c.us)
+INFO:scheduler:Sending combined group reminder to 120363427726701686@g.us for Yeswanth, Kusum
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:48:00 IST)" executed successfully
+INFO:main:[REPORT-CHECK] text='sed 7' detected_range=None sender=120363212822578807@g.us
+WAHA sendText failed: 500 - {"statusCode":500,"timestamp":"2026-07-08T12:17:14.904Z","exception":{"message":"Connection Closed","data":null,"isBoom":true,"isServer":false,"output":{},"name":"Error","stack":"Error: Connection Closed\n    at sendRawMessage (file:///app/node_modules/@adiwajshing/baileys/lib/Socket/socket.js:60:19)\n    at sendNode (file:///app/node_modules/@adiwajshing/baileys/lib/Socket/socket.js:79:16)\n    at file:///app/node_modules/@adiwajshing/baileys/lib/Socket/socket.js:132:13\n    at new Promise (<anonymous>)\n    at promiseTimeout (file:///app/node_modules/@adiwajshing/baileys/lib/Utils/generics.js:114:16)\n    at query (file:///app/node_modules/@adiwajshing/baileys/lib/Socket/socket.js:130:30)\n    at Object.executeUSyncQuery (file:///app/node_modules/@adiwajshing/baileys/lib/Socket/socket.js:219:30)\n    at getUSyncDevices (file:///app/node_modules/@adiwajshing/baileys/lib/Socket/messages-send.js:199:35)\n    at async file:///app/node_modules/@adiwajshing/baileys/lib/Utils/batched.js:7:28\n    at async file:///app/node_modules/@adiwajshing/baileys/lib/Socket/messages-send.js:637:48\n    at async file:///app/node_modules/@adiwajshing/baileys/lib/Utils/auth-utils.js:250:40"},"request":{"path":"/api/sendText","method":"POST","body":{"chatId":"917975209680@c.us","text":"⏰Sunfra Farms Reminder\n\nHi Kusum,\n\nPlease submit today's sales, profit and loss & expenses Report so the daily records and reports can be completed accurately.\n\nThank you! 🌱","session":"default"},"query":{}},"version":{"version":"2026.6.2","engine":"NOWEB","tier":"CORE","browser":null,"platform":"linux/x64","worker":{"id":null}}}
+Using Ollama Vision model: qwen2.5vl:3b
+WAHA sendText failed: 500 - {"statusCode":500,"timestamp":"2026-07-08T12:17:15.491Z","exception":{"message":"Connection Closed","data":null,"isBoom":true,"isServer":false,"output":{},"name":"Error","stack":"Error: Connection Closed\n    at sendRawMessage (file:///app/node_modules/@adiwajshing/baileys/lib/Socket/socket.js:60:19)\n    at sendNode (file:///app/node_modules/@adiwajshing/baileys/lib/Socket/socket.js:79:16)\n    at file:///app/node_modules/@adiwajshing/baileys/lib/Socket/socket.js:132:13\n    at new Promise (<anonymous>)\n    at promiseTimeout (file:///app/node_modules/@adiwajshing/baileys/lib/Utils/generics.js:114:16)\n    at query (file:///app/node_modules/@adiwajshing/baileys/lib/Socket/socket.js:130:30)\n    at Object.executeUSyncQuery (file:///app/node_modules/@adiwajshing/baileys/lib/Socket/socket.js:219:30)\n    at getUSyncDevices (file:///app/node_modules/@adiwajshing/baileys/lib/Socket/messages-send.js:199:35)\n    at async file:///app/node_modules/@adiwajshing/baileys/lib/Utils/batched.js:7:28\n    at async file:///app/node_modules/@adiwajshing/baileys/lib/Socket/messages-send.js:637:48\n    at async file:///app/node_modules/@adiwajshing/baileys/lib/Utils/auth-utils.js:250:40"},"request":{"path":"/api/sendText","method":"POST","body":{"chatId":"919346763549@c.us","text":"⏰Sunfra Farms Reminder\n\nHi Yeswanth,\n\nPlease submit today's sales, profit and loss & expenses Report so the daily records and reports can be completed accurately.\n\nThank you! 🌱","session":"default"},"query":{}},"version":{"version":"2026.6.2","engine":"NOWEB","tier":"CORE","browser":null,"platform":"linux/x64","worker":{"id":null}}}
+WAHA sendText failed: 500 - {"statusCode":500,"timestamp":"2026-07-08T12:17:15.515Z","exception":{"message":"Connection Closed","data":null,"isBoom":true,"isServer":false,"output":{},"name":"Error","stack":"Error: Connection Closed\n    at sendRawMessage (file:///app/node_modules/@adiwajshing/baileys/lib/Socket/socket.js:60:19)\n    at sendNode (file:///app/node_modules/@adiwajshing/baileys/lib/Socket/socket.js:79:16)\n    at file:///app/node_modules/@adiwajshing/baileys/lib/Socket/socket.js:132:13\n    at new Promise (<anonymous>)\n    at promiseTimeout (file:///app/node_modules/@adiwajshing/baileys/lib/Utils/generics.js:114:16)\n    at query (file:///app/node_modules/@adiwajshing/baileys/lib/Socket/socket.js:130:30)\n    at groupQuery (file:///app/node_modules/@adiwajshing/baileys/lib/Socket/groups.js:10:54)\n    at groupMetadata (file:///app/node_modules/@adiwajshing/baileys/lib/Socket/groups.js:20:30)\n    at file:///app/node_modules/@adiwajshing/baileys/lib/Socket/messages-send.js:515:47\n    at async Promise.all (index 0)\n    at async file:///app/node_modules/@adiwajshing/baileys/lib/Socket/messages-send.js:508:51\n    at async file:///app/node_modules/@adiwajshing/baileys/lib/Utils/auth-utils.js:250:40"},"request":{"path":"/api/sendText","method":"POST","body":{"chatId":"120363427726701686@g.us","text":"⏰Sunfra Farms Reminder\n\nHi *Yeswanth* & *Kusum*,\n\nPlease submit today's sales, profit and loss & expenses Report so the daily records and reports can be completed accurately.\n\nThank you! 🌱","session":"default","mentions":["917975209680@c.us","919346763549@c.us"]},"query":{}},"version":{"version":"2026.6.2","engine":"NOWEB","tier":"CORE","browser":null,"platform":"linux/x64","worker":{"id":null}}}
+INFO:     172.19.0.4:53786 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363212822578807@g.us_AC0469015B17FDD0405D16EE28E637D2_281265026629807@lid already exists. Skipping duplicate event.
+INFO:     172.19.0.4:53794 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:[REPORT-CHECK] text='prasanth bike petrol' detected_range=None sender=120363405469158412@g.us
+Using Ollama Vision model: qwen2.5vl:3b
+INFO:     172.19.0.4:35614 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363405469158412@g.us_AC474ECF41CC50BF3D8D4EAEAE67A860_184791135711366@lid already exists. Skipping duplicate event.
+INFO:     172.19.0.4:35618 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:[REPORT-CHECK] text='sed 8' detected_range=None sender=120363212822578807@g.us
+Using Ollama API for processing...
+INFO:     172.19.0.4:35630 - "POST /webhook HTTP/1.1" 200 OK
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:49:00 IST)" (scheduled at 2026-07-08 17:48:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:49:00 IST)" (scheduled at 2026-07-08 17:48:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:49:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:49:00 IST)" executed successfully
+INFO:main:Message false_120363212822578807@g.us_ACCD4954173AC9FF4461A62C63E37025_281265026629807@lid already exists. Skipping duplicate event.
+INFO:     172.19.0.4:35634 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:[REPORT-CHECK] text='' detected_range=None sender=120363405469158412@g.us
+Using Ollama Vision model: qwen2.5vl:3b
+INFO:     172.19.0.4:45668 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363405469158412@g.us_AC6CAD670782FE00D7B81BB1DD8D50A2_184791135711366@lid already exists. Skipping duplicate event.
+INFO:     172.19.0.4:45672 - "POST /webhook HTTP/1.1" 200 OK
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:50:00 IST)" (scheduled at 2026-07-08 17:49:00+05:30)
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:50:00 IST)" (scheduled at 2026-07-08 17:49:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:50:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:50:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:51:00 IST)" (scheduled at 2026-07-08 17:50:00+05:30)
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:51:00 IST)" (scheduled at 2026-07-08 17:50:00+05:30)
+INFO:apscheduler.executors.default:Running job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:55:00 IST)" (scheduled at 2026-07-08 17:50:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "sync_groups_to_live (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:55:00 IST)" (scheduled at 2026-07-08 17:50:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:scheduler:Running WAHA Health Monitor...
+INFO:scheduler:Syncing local WAHA groups to live server...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:51:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:51:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:55:00 IST)" executed successfully
+INFO:main:Successfully processed message false_120363212822578807@g.us_ACACB35585ABE511C77F1061280F2F73_281265026629807@lid: saved 1 records in background.
+INFO:scheduler:Successfully synced 81 groups to live server.
+INFO:apscheduler.executors.default:Job "sync_groups_to_live (trigger: cron[minute='*/5'], next run at: 2026-07-08 17:55:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:52:00 IST)" (scheduled at 2026-07-08 17:51:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:52:00 IST)" (scheduled at 2026-07-08 17:51:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:52:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:52:00 IST)" executed successfully
+INFO:main:[REPORT-CHECK] text='eggoz labour's' detected_range=None sender=120363225998735559@g.us
+Using Ollama Vision model: qwen2.5vl:3b
+Failed to fetch group name from groups API: HTTPConnectionPool(host='waha', port=3000): Read timed out. (read timeout=5)
+Failed to fetch chat name for 120363225998735559@g.us: HTTPConnectionPool(host='waha', port=3000): Read timed out. (read timeout=5)
+Ollama API Connection Error: HTTPConnectionPool(host='host.docker.internal', port=11434): Read timed out. (read timeout=300)
+Using Ollama API for processing...
+INFO:     172.19.0.4:60184 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363225998735559@g.us_ACA3C872E9FBD441126F54F10CC2C907_241274569400567@lid already exists. Skipping duplicate event.
+Failed to fetch group name from groups API: HTTPConnectionPool(host='waha', port=3000): Read timed out. (read timeout=5)
+INFO:     172.19.0.4:46986 - "POST /webhook HTTP/1.1" 200 OK
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:52:00 IST)" (scheduled at 2026-07-08 17:52:00+05:30)
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:53:00 IST)" (scheduled at 2026-07-08 17:52:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:53:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:53:00 IST)" executed successfully
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1127, in _rollback_impl
+    self.engine.dialect.do_rollback(self.connection)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 698, in do_rollback
+    dbapi_connection.rollback()
+  File "/usr/local/lib/python3.11/site-packages/pymysql/connections.py", line 488, in rollback
+    self._read_ok_packet()
+  File "/usr/local/lib/python3.11/site-packages/pymysql/connections.py", line 448, in _read_ok_packet
+    pkt = self._read_packet()
+          ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/pymysql/connections.py", line 739, in _read_packet
+    packet_header = self._read_bytes(4)
+                    ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/pymysql/connections.py", line 795, in _read_bytes
+    raise err.OperationalError(
+pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/protocols/http/httptools_impl.py", line 399, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/applications.py", line 123, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 75, in app
+    await response(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/responses.py", line 162, in __call__
+    await self.background()
+  File "/usr/local/lib/python3.11/site-packages/starlette/background.py", line 45, in __call__
+    await task()
+  File "/usr/local/lib/python3.11/site-packages/starlette/background.py", line 30, in __call__
+    await run_in_threadpool(self.func, *self.args, **self.kwargs)
+  File "/usr/local/lib/python3.11/site-packages/starlette/concurrency.py", line 42, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/anyio/to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/anyio/_backends/_asyncio.py", line 2596, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/anyio/_backends/_asyncio.py", line 1029, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/main.py", line 205, in process_message_background
+    db.close()
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2507, in close
+    self._close_impl(invalidate=False)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2576, in _close_impl
+    transaction.close(invalidate)
+  File "<string>", line 2, in close
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 1408, in close
+    transaction.close()
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 2586, in close
+    self._do_close()
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 2724, in _do_close
+    self._close_impl()
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 2710, in _close_impl
+    self._connection_rollback_impl()
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 2702, in _connection_rollback_impl
+    self.connection._rollback_impl()
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1129, in _rollback_impl
+    self._handle_dbapi_exception(e, None, None, None, None)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 2353, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1127, in _rollback_impl
+    self.engine.dialect.do_rollback(self.connection)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 698, in do_rollback
+    dbapi_connection.rollback()
+  File "/usr/local/lib/python3.11/site-packages/pymysql/connections.py", line 488, in rollback
+    self._read_ok_packet()
+  File "/usr/local/lib/python3.11/site-packages/pymysql/connections.py", line 448, in _read_ok_packet
+    pkt = self._read_packet()
+          ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/pymysql/connections.py", line 739, in _read_packet
+    packet_header = self._read_bytes(4)
+                    ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/pymysql/connections.py", line 795, in _read_bytes
+    raise err.OperationalError(
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query')
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:54:00 IST)" (scheduled at 2026-07-08 17:53:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:54:00 IST)" (scheduled at 2026-07-08 17:53:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:54:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:54:00 IST)" executed successfully
+INFO:main:Successfully processed message false_120363405469158412@g.us_AC6CAD670782FE00D7B81BB1DD8D50A2_184791135711366@lid: saved 1 records in background.
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:55:00 IST)" (scheduled at 2026-07-08 17:54:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:55:00 IST)" (scheduled at 2026-07-08 17:54:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:55:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:55:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:56:00 IST)" (scheduled at 2026-07-08 17:55:00+05:30)
+INFO:apscheduler.executors.default:Running job "sync_groups_to_live (trigger: cron[minute='*/5'], next run at: 2026-07-08 18:00:00 IST)" (scheduled at 2026-07-08 17:55:00+05:30)
+INFO:scheduler:Syncing local WAHA groups to live server...
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:56:00 IST)" (scheduled at 2026-07-08 17:55:00+05:30)
+INFO:apscheduler.executors.default:Running job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 18:00:00 IST)" (scheduled at 2026-07-08 17:55:00+05:30)
+INFO:scheduler:Running WAHA Health Monitor...
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 18:00:00 IST)" executed successfully
+ERROR:scheduler:Error syncing groups: HTTPConnectionPool(host='waha', port=3000): Read timed out. (read timeout=10)
+INFO:apscheduler.executors.default:Job "sync_groups_to_live (trigger: cron[minute='*/5'], next run at: 2026-07-08 18:00:00 IST)" executed successfully
+ERROR:scheduler:Error polling live server: HTTPSConnectionPool(host='sunfragroup.com', port=443): Max retries exceeded with url: /kusum/Whatsapp_Rem/index.php?api=bridge/alarms (Caused by NameResolutionError("HTTPSConnection(host='sunfragroup.com', port=443): Failed to resolve 'sunfragroup.com' ([Errno -3] Temporary failure in name resolution)"))
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:56:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:57:00 IST)" (scheduled at 2026-07-08 17:56:00+05:30)
+WARNING:apscheduler.scheduler:Execution of job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:56:00 IST)" skipped: maximum number of running instances reached (1)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:main:Successfully processed message false_120363212822578807@g.us_AC0469015B17FDD0405D16EE28E637D2_281265026629807@lid: saved 1 records in background.
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:57:00 IST)" executed successfully
+ERROR:scheduler:Error polling live server: HTTPSConnectionPool(host='sunfragroup.com', port=443): Max retries exceeded with url: /kusum/Whatsapp_Rem/index.php?api=bridge/alarms (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1016)')))
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:57:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:58:00 IST)" (scheduled at 2026-07-08 17:57:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:58:00 IST)" (scheduled at 2026-07-08 17:57:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:58:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:58:00 IST)" executed successfully
+INFO:main:Successfully processed message false_120363212822578807@g.us_ACCD4954173AC9FF4461A62C63E37025_281265026629807@lid: saved 1 records in background.
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:59:00 IST)" (scheduled at 2026-07-08 17:58:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:59:00 IST)" (scheduled at 2026-07-08 17:58:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 17:59:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:59:00 IST)" executed successfully
+INFO:main:Successfully processed message false_120363225998735559@g.us_ACA3C872E9FBD441126F54F10CC2C907_241274569400567@lid: saved 1 records in background.
+INFO:main:[REPORT-CHECK] text='payment for sree venkateshwara vet 
+sharkoferral 20*424.50=4850' detected_range=None sender=120363405469158412@g.us
+Using Ollama Vision model: qwen2.5vl:3b
+Ollama API Connection Error: HTTPConnectionPool(host='host.docker.internal', port=11434): Read timed out. (read timeout=300)
+Using Ollama API for processing...
+Ollama API Connection Error: HTTPConnectionPool(host='host.docker.internal', port=11434): Read timed out. (read timeout=300)
+Failed to fetch session status: HTTPConnectionPool(host='waha', port=3000): Read timed out. (read timeout=5)
+Ollama API Connection Error: HTTPConnectionPool(host='host.docker.internal', port=11434): Read timed out. (read timeout=300)
+Using Ollama API for processing...
+INFO:     172.19.0.4:39330 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363405469158412@g.us_3EB0DB0658939C3C657DA5_184791135711366@lid already exists. Skipping duplicate event.
+INFO:     172.19.0.4:39344 - "POST /webhook HTTP/1.1" 200 OK
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 17:59:00 IST)" (scheduled at 2026-07-08 17:59:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 18:00:00 IST)" (scheduled at 2026-07-08 17:59:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 18:00:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 18:00:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 18:01:00 IST)" (scheduled at 2026-07-08 18:00:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 18:01:00 IST)" (scheduled at 2026-07-08 18:00:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Running job "sync_groups_to_live (trigger: cron[minute='*/5'], next run at: 2026-07-08 18:00:00 IST)" (scheduled at 2026-07-08 18:00:00+05:30)
+INFO:scheduler:Syncing local WAHA groups to live server...
+INFO:apscheduler.executors.default:Running job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 18:05:00 IST)" (scheduled at 2026-07-08 18:00:00+05:30)
+INFO:scheduler:Running WAHA Health Monitor...
+ERROR:scheduler:Error polling live server: HTTPSConnectionPool(host='sunfragroup.com', port=443): Max retries exceeded with url: /kusum/Whatsapp_Rem/index.php?api=bridge/alarms (Caused by NameResolutionError("HTTPSConnection(host='sunfragroup.com', port=443): Failed to resolve 'sunfragroup.com' ([Errno -3] Temporary failure in name resolution)"))
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 18:01:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 18:01:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 18:05:00 IST)" executed successfully
+ERROR:scheduler:Error syncing groups: HTTPConnectionPool(host='waha', port=3000): Read timed out. (read timeout=10)
+INFO:apscheduler.executors.default:Job "sync_groups_to_live (trigger: cron[minute='*/5'], next run at: 2026-07-08 18:05:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 18:02:00 IST)" (scheduled at 2026-07-08 18:01:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 18:02:00 IST)" (scheduled at 2026-07-08 18:01:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 18:02:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 18:02:00 IST)" executed successfully
+INFO:main:Successfully processed message false_120363405469158412@g.us_3EB0DB0658939C3C657DA5_184791135711366@lid: saved 1 records in background.
+INFO:main:[REPORT-CHECK] text='eggoz labour's' detected_range=None sender=120363225998735559@g.us
+Using Ollama Vision model: qwen2.5vl:3b
+Failed to fetch session status: HTTPConnectionPool(host='waha', port=3000): Read timed out. (read timeout=5)
+INFO:     172.19.0.4:37818 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363225998735559@g.us_AC54F2A91D6EEED12A79CA4F97C382C9_241274569400567@lid already exists. Skipping duplicate event.
+INFO:     172.19.0.4:37826 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:[REPORT-CHECK] text='payment for sun pharma 
+ma 5 lasota  20* 252=5040
+dalguban lasota 22*663=14586
+                 total =19626' detected_range=None sender=120363405469158412@g.us
+Using Ollama Vision model: qwen2.5vl:3b
+INFO:     172.19.0.4:37826 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363405469158412@g.us_3EB06E4996A2BCA6622893_184791135711366@lid already exists. Skipping duplicate event.
+INFO:     172.19.0.4:37818 - "POST /webhook HTTP/1.1" 200 OK
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 18:02:00 IST)" (scheduled at 2026-07-08 18:02:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 18:03:00 IST)" (scheduled at 2026-07-08 18:02:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 18:03:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 18:03:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 18:04:00 IST)" (scheduled at 2026-07-08 18:03:00+05:30)
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 18:04:00 IST)" (scheduled at 2026-07-08 18:03:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 18:04:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 18:04:00 IST)" executed successfully
+INFO:main:[REPORT-CHECK] text='61.3 trays of production 5th shead' detected_range=None sender=120363046205890693@g.us
+Using Ollama API for processing...
+Failed to fetch group name from groups API: HTTPConnectionPool(host='waha', port=3000): Read timed out. (read timeout=5)
+INFO:     172.19.0.4:57484 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363046205890693@g.us_AC3EFC2D8BE9374672ABEF8A13F4B220_141927630536871@lid already exists. Skipping duplicate event.
+INFO:     172.19.0.4:57500 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:[REPORT-CHECK] text='571.4 trays of production 7th shead' detected_range=None sender=120363046205890693@g.us
+INFO:     172.19.0.4:52120 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363046205890693@g.us_AC4CC4BFC10CC9E4E5BCEC74523B263E_141927630536871@lid already exists. Skipping duplicate event.
+Using Ollama Vision model: qwen2.5vl:3b
+INFO:     172.19.0.4:52124 - "POST /webhook HTTP/1.1" 200 OK
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 18:05:00 IST)" (scheduled at 2026-07-08 18:04:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 18:05:00 IST)" (scheduled at 2026-07-08 18:04:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 18:05:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 18:05:00 IST)" executed successfully
+Using Ollama Vision model: qwen2.5vl:3b
+INFO:     172.19.0.4:59612 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring status/channel message from processing: 120363159616882091@newsletter
+INFO:     172.19.0.4:59624 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Ignoring status/channel message from processing: 120363159616882091@newsletter
+INFO:main:[REPORT-CHECK] text='out' detected_range=None sender=120363225998735559@g.us
+INFO:     172.19.0.4:59624 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Message false_120363225998735559@g.us_ACA4FEED07063933C5703DBD137896E7_241274569400567@lid already exists. Skipping duplicate event.
+Using Ollama API for processing...
+INFO:     172.19.0.4:59612 - "POST /webhook HTTP/1.1" 200 OK
+INFO:main:Processing command sent by bot itself: Today report
+INFO:main:[REPORT-CHECK] text='today report' detected_range=daily sender=183300681367688@lid
+Using Ollama Vision model: qwen2.5vl:3b
+INFO:     172.19.0.4:41974 - "POST /webhook HTTP/1.1" 200 OK
+INFO:apscheduler.executors.default:Running job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 18:06:00 IST)" (scheduled at 2026-07-08 18:05:00+05:30)
+INFO:scheduler:Polling database for pending unified reminders...
+INFO:apscheduler.executors.default:Running job "sync_groups_to_live (trigger: cron[minute='*/5'], next run at: 2026-07-08 18:10:00 IST)" (scheduled at 2026-07-08 18:05:00+05:30)
+INFO:scheduler:Syncing local WAHA groups to live server...
+INFO:apscheduler.executors.default:Running job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 18:06:00 IST)" (scheduled at 2026-07-08 18:05:00+05:30)
+INFO:scheduler:Polling live server for pending alarms...
+INFO:apscheduler.executors.default:Running job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 18:10:00 IST)" (scheduled at 2026-07-08 18:05:00+05:30)
+INFO:scheduler:Running WAHA Health Monitor...
+INFO:apscheduler.executors.default:Job "poll_and_execute_unified_reminders (trigger: cron[minute='*'], next run at: 2026-07-08 18:06:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "poll_live_alarms (trigger: cron[minute='*'], next run at: 2026-07-08 18:06:00 IST)" executed successfully
+INFO:apscheduler.executors.default:Job "health_monitor_job (trigger: cron[minute='*/5'], next run at: 2026-07-08 18:10:00 IST)" executed successfully
+INFO:main:Successfully processed message false_120363405469158412@g.us_3EB06E4996A2BCA6622893_184791135711366@lid: saved 1 records in background.
+INFO:scheduler:Successfully synced 81 groups to live server.
+INFO:apscheduler.executors.default:Job "sync_groups_to_live (trigger: cron[minute='*/5'], next run at: 2026-07-08 18:10:00 IST)" executed successfully
+INFO:main:[REPORT-CHECK] text='eggoz out' detected_range=None sender=120363225998735559@g.us
+Failed to fetch group name from groups API: HTTPConnectionPool(host='waha', port=3000): Read timed out. (read timeout=5)
+Failed to fetch chat name for 120363225998735559@g.us: HTTPConnectionPool(host='waha', port=3000): Read timed out. (read timeout=5)
+INFO:     172.19.0.4:41258 - "POST /webhook HTTP/1.1" 200 OK

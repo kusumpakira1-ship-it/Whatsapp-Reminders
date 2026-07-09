@@ -222,9 +222,12 @@ async def waha_webhook(request: Request, background_tasks: BackgroundTasks):
 
     message_id = msg.get("id")
     sender = msg.get("from", "")
+    text = msg.get("body") or ""
+    
+    logger.info(f"Incoming message from {sender} (fromMe={msg.get('fromMe')}). Body: '{text}'")
     
     # Early ignore checks before opening database connections
-    if msg.get("fromMe", False):
+    if msg.get("fromMe", False) and not text.startswith('!'):
         logger.info(f"Ignoring message sent by bot itself from processing: {message_id}")
         return {"status": "ignored fromMe"}
         
@@ -274,7 +277,6 @@ async def waha_webhook(request: Request, background_tasks: BackgroundTasks):
     else:
         message_type = "text"
         
-    text = msg.get("body") or ""
     timestamp_val = msg.get("timestamp", 0)
     msg_time = datetime.fromtimestamp(timestamp_val, tz=IST).replace(tzinfo=None) if timestamp_val else datetime.now(IST).replace(tzinfo=None)
 
@@ -316,51 +318,29 @@ async def waha_webhook(request: Request, background_tasks: BackgroundTasks):
     finally:
         db.close()
 
-    # Detect on-demand report keywords (natural language + !report command)
-    def _detect_report_range(text_lower: str):
-        """Return range_type string if message is a report request, else None."""
-        import re as _re
-        t = text_lower.strip()
-        # !report [range]
-        if t.startswith('!report'):
-            parts = t.split()
-            return parts[1] if len(parts) > 1 else 'daily'
-        # Natural keywords
-        if t in ('today report', 'report today', 'daily report', 'send report', 'report'):
-            return 'daily'
-        if t in ('yesterday report', 'report yesterday'):
-            return 'yesterday'
-        if t in ('weekly report', 'report weekly', 'week report'):
-            return 'weekly'
-        if t in ('monthly report', 'report monthly', 'month report'):
-            return 'monthly'
-        if t in ('yearly report', 'report yearly', 'year report', 'annual report'):
-            return 'yearly'
-        # Custom date: "report DD-MM-YYYY" or "report DD/MM/YYYY"
-        m = _re.match(r'^report\s+(\d{2}[\-/]\d{2}[\-/]\d{4})$', t)
-        if m:
-            return m.group(1).replace('/', '-')
-        return None
-
-    detected_range = _detect_report_range(text.lower())
-    logger.info(f"[REPORT-CHECK] text='{text.lower().strip()}' detected_range={detected_range} sender={sender}")
-    if detected_range is not None:
-        reply_to = sender
-        def _send_report_reply(reply_to, detected_range):
+    def handle_report_command(range_type_arg: str, sender_arg: str):
+        try:
             from report_generator import generate_custom_report
-            pdf_path, excel_path, summary_text = generate_custom_report(detected_range)
+            pdf_path, summary_text = generate_custom_report(range_type_arg)
             if summary_text:
-                send_waha_message(reply_to, summary_text)
+                send_waha_message(sender_arg, summary_text)
             if pdf_path:
-                send_waha_file(reply_to, pdf_path, caption=f"📄 {detected_range.capitalize()} Report")
-            logger.info(f"[REPORT-CHECK] Sent {detected_range} report to {reply_to}")
-        background_tasks.add_task(_send_report_reply, reply_to, detected_range)
-        return {"status": f"report {detected_range} queued for delivery"}
+                send_waha_file(sender_arg, pdf_path, caption=f"PDF Report - {pdf_path.split('/')[-1]}")
+        except Exception as e:
+            logger.error(f"Error handling report command: {e}")
 
-    if text.startswith('!') and not detected_range:
-            
+    if text.startswith('!'):
         command = text.lower().strip()
-        if command == '!manager add':
+        if command.startswith('!report'):
+            parts = command.split()
+            range_type = 'daily'
+            if len(parts) > 1:
+                range_type = parts[1]
+                
+            background_tasks.add_task(handle_report_command, range_type, sender)
+            return {"status": f"report {range_type} manually requested (background)"}
+            
+        elif command == '!manager add':
             from models import ReportRecipient
             recipient_db = SessionLocal()
             try:
@@ -417,50 +397,6 @@ class ReminderTimeUpdate(BaseModel):
 
 class ReportTypesUpdate(BaseModel):
     report_types: List[str]
-
-class SendReportRequest(BaseModel):
-    range_type: str = "daily"  # daily, yesterday, weekly, monthly, yearly, or DD-MM-YYYY
-
-@app.post("/api/send-report")
-async def send_report_now(req: SendReportRequest, background_tasks: BackgroundTasks):
-    """Trigger an on-demand report — returns immediately, delivery happens in background."""
-    import re
-    allowed = {"daily", "today", "yesterday", "weekly", "monthly", "yearly"}
-    range_type = req.range_type.strip()
-    if range_type not in allowed and not re.match(r'^\d{2}[-/]\d{2}[-/]\d{4}$', range_type):
-        raise HTTPException(status_code=400, detail=f"Invalid range_type '{range_type}'. Use: daily, yesterday, weekly, monthly, yearly, or DD-MM-YYYY")
-
-    def _generate_and_send(range_type):
-        from report_generator import generate_custom_report
-        from models import ReportRecipient
-        try:
-            pdf_path, excel_path, summary_text = generate_custom_report(range_type)
-            if not summary_text and not pdf_path:
-                logger.warning(f"[SEND-REPORT] No data for range: {range_type}")
-                return
-            phones = []
-            rdb = SessionLocal()
-            try:
-                recipients = rdb.query(ReportRecipient).filter(ReportRecipient.is_active == True).all()
-                phones = [r.phone_number for r in recipients]
-            finally:
-                rdb.close()
-            manager_phone = settings.MANAGER_PHONE
-            if manager_phone:
-                mjid = manager_phone if manager_phone.endswith('@c.us') or manager_phone.endswith('@g.us') else manager_phone + '@c.us'
-                if mjid not in phones:
-                    phones.append(mjid)
-            for phone in phones:
-                if summary_text:
-                    send_waha_message(phone, summary_text)
-                if pdf_path:
-                    send_waha_file(phone, pdf_path, caption=f"📄 {range_type.capitalize()} Report")
-                logger.info(f"[SEND-REPORT] Delivered {range_type} report to {phone}")
-        except Exception as e:
-            logger.error(f"[SEND-REPORT] Error: {e}")
-
-    background_tasks.add_task(_generate_and_send, range_type)
-    return {"status": "accepted", "range_type": range_type, "message": "Report is being generated and sent in the background."}
 
 @app.get("/api/settings/report_types")
 def get_report_types():
