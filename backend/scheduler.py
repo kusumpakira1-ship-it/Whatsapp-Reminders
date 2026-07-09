@@ -186,7 +186,7 @@ async def health_monitor_job():
             logger.warning(f"Primary WAHA Session '{primary_session}' is {status}! Fetching QR...")
             qr_path = get_session_qr(primary_session)
             
-            admin_phone = "917259510983@c.us"
+            admin_phone = f"{settings.MANAGER_PHONE}@c.us"
             alert_msg = f"🚨 *URGENT ALERT*\nYour Primary Farm Auto Bot (Session: {primary_session}) is currently logged out (Status: {status}).\n\nPlease scan the QR code below from your primary phone to reconnect!"
             
             # Send message using the 'backup' session
@@ -199,7 +199,7 @@ async def health_monitor_job():
         # If it recovers, reset the alert state
         if alert_state["is_alerted"] and status == "WORKING":
             logger.info(f"Primary WAHA Session '{primary_session}' is back online!")
-            admin_phone = "917259510983@c.us"
+            admin_phone = f"{settings.MANAGER_PHONE}@c.us"
             recovery_msg = f"✅ *RECOVERY ALERT*\nYour Primary Farm Auto Bot is back online and working perfectly!"
             send_waha_message(admin_phone, recovery_msg, session="backup")
             alert_state["is_alerted"] = False
