@@ -54,6 +54,7 @@
         440,
         300
       ],
+      "executeOnce": true,
       "credentials": {
         "mySql": {
           "id": "Hostinger MySQL",
@@ -74,6 +75,7 @@
         660,
         300
       ],
+      "executeOnce": true,
       "credentials": {
         "mySql": {
           "id": "Hostinger MySQL",
@@ -224,7 +226,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE sunfra_unified_reminders SET trigger_time = '{{ $(\'Check Submissions\').first().json.next_trigger_time }}', status = '{{ $(\'Check Submissions\').first().json.new_status }}' WHERE id = {{ $(\'Check Submissions\').first().json.id }};"
+        "query": "UPDATE sunfra_unified_reminders SET trigger_time = '{{ $('Check Submissions').first().json.next_trigger_time }}', status = '{{ $('Check Submissions').first().json.new_status }}' WHERE id = {{ $('Check Submissions').first().json.id }};"
       },
       "id": "node_12",
       "name": "Update Alarm Status",
