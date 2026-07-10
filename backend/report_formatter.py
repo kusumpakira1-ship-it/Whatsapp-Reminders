@@ -14,7 +14,34 @@ FIXED_SHEDS = [
 
 def _calculate_tables(df, birds_map, default_egg_rate, default_feed_cost_ton):
     if not df.empty:
-        df['shead_name'] = df['shead_name'].astype(str).str.replace('Shead', 'Shed').str.strip()
+        import re
+        expanded_rows = []
+        for _, row in df.iterrows():
+            name = str(row['shead_name']).strip()
+            
+            # 1. Expand multiple sheds separated by commas or 'and'
+            if (',' in name or ' and ' in name.lower()) and re.search(r'\d', name):
+                numbers = re.findall(r'\d+', name)
+                if len(numbers) > 1:
+                    num_sheds = len(numbers)
+                    for n in numbers:
+                        new_row = row.copy()
+                        new_row['shead_name'] = f"Shed {n}"
+                        if new_row['quantity']: new_row['quantity'] = float(new_row['quantity']) / num_sheds
+                        if new_row['amount']: new_row['amount'] = float(new_row['amount']) / num_sheds
+                        expanded_rows.append(new_row)
+                    continue
+            
+            # 2. Extract digits for single sheds
+            numbers = re.findall(r'\d+', name)
+            if numbers:
+                row['shead_name'] = f"Shed {numbers[0]}"
+            elif name.lower() in ['nan', 'unknown', 'none', 'null', '']:
+                row['shead_name'] = ''
+                
+            expanded_rows.append(row)
+            
+        df = pd.DataFrame(expanded_rows)
     
     sales_df = df[df['category'] == 'sales'] if not df.empty else pd.DataFrame()
     rates_by_shed = {}
@@ -131,6 +158,24 @@ def _calculate_tables(df, birds_map, default_egg_rate, default_feed_cost_ton):
         else:
             feed_rows.append([shed, "-", "-", "-", "-"])
 
+    common_feed_df = df[(df['shead_name'] == '') & (df['category'].isin(['feed', 'raw_material']))] if not df.empty else pd.DataFrame()
+    c_feed_mt = 0.0
+    c_feed_cost = 0.0
+    for _, row in common_feed_df.iterrows():
+        qty = float(row['quantity']) if row['quantity'] else 0
+        unit = str(row['unit']).lower()
+        amt = float(row['amount']) if row['amount'] else 0.0
+        if 'kg' in unit: c_feed_mt += qty / 1000.0
+        elif 'bag' in unit: c_feed_mt += qty * 0.05
+        elif 'mt' in unit or 'ton' in unit: c_feed_mt += qty
+        else: c_feed_mt += qty * 0.05 if qty < 500 else qty / 1000.0
+        c_feed_cost += amt if amt > 0 else (c_feed_mt * default_feed_cost_ton)
+
+    if c_feed_mt > 0:
+        total_feed_mt += c_feed_mt
+        total_feed_cost += c_feed_cost
+        feed_rows.append(["Common/Bulk", f"{c_feed_mt:.3f}", "-", "-", f"Rs. {c_feed_cost:,.2f}"])
+
     if total_feed_mt > 0:
         avg_feed_g_bird = (total_feed_mt * 1000000.0 / total_birds) if total_birds > 0 else 0.0
         feed_rows.append(["**Total**", f"{total_feed_mt:.3f}", f"{avg_feed_g_bird:.1f}", "-", f"Rs. {total_feed_cost:,.2f}"])
@@ -192,7 +237,7 @@ def _calculate_tables(df, birds_map, default_egg_rate, default_feed_cost_ton):
             elec_amt += amt; elec_qty += qty
         elif 'repair' in notes or 'maintenance' in notes or 'servicing' in notes or 'mechanic' in notes:
             repair_amt += amt
-        elif cat in ['expense', 'purchase']:
+        elif cat in ['expense', 'purchase', 'medicine']:
             other_amt += amt
 
     total_common_exp = fuel_amt + elec_amt + repair_amt + other_amt
