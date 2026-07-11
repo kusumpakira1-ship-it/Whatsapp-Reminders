@@ -1411,5 +1411,24 @@
         "group_name": "Gate Manager",
         "raw_text": "",
         "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T10:42:49.299089+05:30",
+        "message_id": "false_120363225998735559@g.us_A5C5A6227F4B8DE933121901FA3E8E2A_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Im",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "",
+            "confidence_score": 0.95,
+            "processed_text": "Ashok Leyland van parked on the road."
+        }
     }
 ]
