@@ -5,7 +5,7 @@ from database import Base
 class SystemSetting(Base):
     __tablename__ = "sunfra_system_settings"
     key = Column(String(50), primary_key=True, index=True)
-    value = Column(String(255))
+    value = Column(Text)
 
 class CustomAlarm(Base):
     __tablename__ = "sunfra_custom_alarms"
@@ -122,4 +122,12 @@ class UnifiedReminder(Base):
     frequency = Column(String(20), default='daily')
     repeat_interval = Column(String(20), default='none')
     created_at = Column(DateTime, default=func.now())
+
+class WAHAEvent(Base):
+    __tablename__ = "sunfra_waha_events"
+    id = Column(Integer, primary_key=True, index=True)
+    event_type = Column(String(50), nullable=False) # e.g. 'disconnected', 'reconnected', 'stopped_restart', 'working'
+    status = Column(String(50), nullable=False)
+    details = Column(Text, nullable=True)
+    timestamp = Column(DateTime, nullable=False, default=func.now())
 

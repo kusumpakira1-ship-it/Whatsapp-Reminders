@@ -1430,5 +1430,2931 @@
             "confidence_score": 0.95,
             "processed_text": "Ashok Leyland van parked on the road."
         }
+    },
+    {
+        "timestamp": "2026-07-11T10:54:43.771686+05:30",
+        "message_id": "false_120363225998735559@g.us_A585A6C68D1F60A5428E75B48F20F91F_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Out",
+        "ai_extracted": {
+            "shead_name": "Out",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "Out"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T10:57:12.460000+05:30",
+        "message_id": "false_120363212822578807@g.us_AC5007B58CE7AA20B02A4B82E849D783_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead water spraying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T11:10:50.631538+05:30",
+        "message_id": "false_120363212822578807@g.us_AC17010849F68349E3AF40A864EF7A7A_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead1",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "mortality",
+            "quantity": 1,
+            "unit": "hen",
+            "amount": 0,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "A dead hen was found in Shead 1."
+        }
+    },
+    {
+        "timestamp": "2026-07-11T11:13:43.192912+05:30",
+        "message_id": "false_120363212822578807@g.us_AC6F222386DA5FC9A5178A55811CE88E_92282304913416@lid",
+        "sender": "[120363212822578807] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "120363212822578807",
+        "raw_text": "Shead3",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "mortality",
+            "quantity": 2,
+            "unit": "hens",
+            "amount": 0,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "2 dead hens"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T11:14:03.548268+05:30",
+        "message_id": "false_120363046205890693@g.us_ACB636BDCF932AFA1EB96C1F84DEE53D_241274569400567@lid",
+        "sender": "[Egg Gowdown & Sales] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "Subramanyam eggs loading",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "egg_collection",
+            "quantity": 100,
+            "unit": "trays",
+            "amount": null,
+            "notes": "Subramanyam eggs loading",
+            "confidence_score": 1.0,
+            "processed_text": "Subramanyam eggs collection"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T11:18:56.096520+05:30",
+        "message_id": "false_120363212822578807@g.us_AC6357ED976637BBB2F959495368A3DC_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead water spraying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T11:21:39.121351+05:30",
+        "message_id": "false_37546704822382@lid_ACDA5C9EF4AAC399217DCB4CCA7301F9",
+        "sender": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97 (37546704822382)",
+        "sender_name": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Also one update from client side you can come along with father or mother not both they said",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T11:21:43.226812+05:30",
+        "message_id": "false_120363212822578807@g.us_AC132BE36E48586683F1DC987A8C24C6_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead mortality 5",
+        "ai_extracted": {
+            "shead_name": "4th Shead",
+            "category": "mortality",
+            "quantity": 5,
+            "unit": "",
+            "amount": 0,
+            "notes": "4th Shead mortality 5",
+            "confidence_score": 1.0,
+            "processed_text": "4th Shead mortality 5"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T11:24:24.442493+05:30",
+        "message_id": "false_120363212822578807@g.us_ACB1FACE137BB48C97E252F0C2D4566B_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead mortality 2",
+        "ai_extracted": {
+            "shead_name": "2nd",
+            "category": "mortality",
+            "quantity": 2,
+            "unit": "",
+            "amount": null,
+            "notes": "2nd Shead mortality 2",
+            "confidence_score": 1.0,
+            "processed_text": "2nd Shead mortality 2"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T11:32:04.075183+05:30",
+        "message_id": "false_120363407511560539@g.us_ACC59116F08B4FFD1DE82009519D2179_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "Shead1",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "",
+            "confidence_score": 0.95,
+            "processed_text": "A close-up of a bird's mouth, possibly a chicken or duck."
+        }
+    },
+    {
+        "timestamp": "2026-07-11T11:34:37.879039+05:30",
+        "message_id": "false_120363407511560539@g.us_AC9406B85E786A798CEED269512A8F88_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "Shead1",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "",
+            "confidence_score": 0.95,
+            "processed_text": "Unknown category, no quantity or price mentioned."
+        }
+    },
+    {
+        "timestamp": "2026-07-11T11:35:56.169037+05:30",
+        "message_id": "false_120363407511560539@g.us_ACAFEA1538920ED37197CD9B7848A72E_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "Shead1",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Shead1"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T11:36:20.671190+05:30",
+        "message_id": "false_120363407511560539@g.us_ACB86E4BE583B076A68CD8C767BD2AC3_241274569400567@lid",
+        "sender": "[120363407511560539] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "120363407511560539",
+        "raw_text": "Shead3",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Shead3"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T11:37:22.810483+05:30",
+        "message_id": "false_120363407511560539@g.us_ACA247858E0615CDFCD93E70287CD0AC_241274569400567@lid",
+        "sender": "[120363407511560539] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "120363407511560539",
+        "raw_text": "Shead3",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Shead3"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T11:37:35.749726+05:30",
+        "message_id": "false_120363407511560539@g.us_AC12B37D7798706A3649AE62A0D725CD_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "Shead2",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Shead2"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T11:40:14.679743+05:30",
+        "message_id": "false_120363410577961394@g.us_AC4BD32218A01C0F1E3A1861B9BE4DF7_37546704822382@lid",
+        "sender": "[SS - NetApp - Graduation Day] Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97 (37546704822382)",
+        "sender_name": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97",
+        "is_group": true,
+        "group_name": "SS - NetApp - Graduation Day",
+        "raw_text": "Dear Students,\nWe have scheduled the Google Meet at 12:30 PM.\n*Kindly join the meeting 5 minutes early.*\nNetApp Graduation Day - Briefing Session\nSaturday, July 11 \u00b7 12:30 \u2013 1:00pm\nTime zone: Asia/Kolkata\nGoogle Meet joining info\nVideo call link: https://meet.google.com/ffk-pjhd-beq\nOr dial: \u202a(US) +1 707-867-1714\u202c PIN: \u202a244 244 841\u202c#\nMore phone numbers: https://tel.meet/ffk-pjhd-beq?pin=4387834631294",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T11:45:34.083203+05:30",
+        "message_id": "false_120363407511560539@g.us_ACA8C57E30625215D2D8266B250EBA90_241274569400567@lid",
+        "sender": "[120363407511560539] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "120363407511560539",
+        "raw_text": "Shead 4",
+        "ai_extracted": {
+            "shead_name": "Shead 4",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-07-11T11:47:26.652204+05:30",
+        "message_id": "false_120363407511560539@g.us_AC418A907D68B17A6F78C1745C7A8552_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "Shead 4",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Shead 4"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T11:47:34.467367+05:30",
+        "message_id": "false_120363407511560539@g.us_AC50BFC1DF99A9F2BBD565BCF6914343_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "Shead6",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Shead6"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T11:47:40.342243+05:30",
+        "message_id": "false_120363407511560539@g.us_AC693A11A06D03507B43B2AE093B6889_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "Shead6",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Shead6"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T11:48:00.127870+05:30",
+        "message_id": "false_120363407511560539@g.us_AC12F8D6C2663A97BADDFA97429219B2_241274569400567@lid",
+        "sender": "[120363407511560539] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "120363407511560539",
+        "raw_text": "Shead 8",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Shead 8"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T11:48:12.517657+05:30",
+        "message_id": "false_120363407511560539@g.us_AC2641B08BD20426F097F3E1C8C706E8_241274569400567@lid",
+        "sender": "[120363407511560539] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "120363407511560539",
+        "raw_text": "Shead7",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Shead7"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T11:48:19.304592+05:30",
+        "message_id": "false_120363407511560539@g.us_AC826B6492289B547D77E2B10BB404FE_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "Shead6",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Shead6"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T11:48:32.459058+05:30",
+        "message_id": "false_120363407511560539@g.us_AC61F479CF361FE78510CBC6CCE50229_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "Shead7",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Shead7"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T11:48:37.941681+05:30",
+        "message_id": "false_120363407511560539@g.us_AC759A76F11775CB78C7DA7A23C52CC9_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "Shead7",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Shead7"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T11:48:53.364237+05:30",
+        "message_id": "false_120363225998735559@g.us_A59D23DD356A117D47AF6B3D9E5837C6_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T11:51:47.623396+05:30",
+        "message_id": "false_120363225998735559@g.us_A5D615EF6410802DB965009AA59A88D2_234952327213239@lid",
+        "sender": "[120363225998735559] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "120363225998735559",
+        "raw_text": "In",
+        "ai_extracted": {
+            "shead_name": "PMK",
+            "category": "feed/raw_material",
+            "quantity": 1,
+            "unit": "bag",
+            "amount": 2000,
+            "notes": "Bharat Petroleum, TN-30 BB-1011",
+            "confidence_score": 0.95,
+            "processed_text": "In the image, there is a truck with the license plate 'TN-30 BB-1011'. The sticker on the front of the truck reads 'Bharat Petroleum', indicating that it is carrying feed or raw materials."
+        }
+    },
+    {
+        "timestamp": "2026-07-11T11:52:09.681747+05:30",
+        "message_id": "false_120363225998735559@g.us_A548CAF29787D9CCB15B7A372B6FEBD0_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Ddgs",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T12:00:12.876215+05:30",
+        "message_id": "false_120363225998735559@g.us_A5E83CEF81DD1ADB2F1042DDDEB24019_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T12:03:15.440706+05:30",
+        "message_id": "false_120363225998735559@g.us_A562A6B8C7E54AB860E0CF4B3DD9A556_234952327213239@lid",
+        "sender": "[120363225998735559] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "120363225998735559",
+        "raw_text": "In",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-07-11T12:07:10.834035+05:30",
+        "message_id": "false_120363212822578807@g.us_AC802544FEF1FB9BC73FE57FEF09A36A_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead1 water spraying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T12:14:44.018217+05:30",
+        "message_id": "false_120363405639932471@g.us_3EB033AA36CEDA0B91191B_184791135711366@lid",
+        "sender": "[Eggs Loading Details] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Eggs Loading Details",
+        "raw_text": "Ramchandra naidu \nS8 1500",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T12:20:27.486609+05:30",
+        "message_id": "false_120363212822578807@g.us_AC32BC0E22400FD8D9B065D173D424D2_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead1",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T12:25:18.892453+05:30",
+        "message_id": "false_120363410577961394@g.us_3EB01DBBCE71329B5AC001_122123133706362@lid",
+        "sender": "[SS - NetApp - Graduation Day] Sanket Gaikwad (122123133706362)",
+        "sender_name": "Sanket Gaikwad",
+        "is_group": true,
+        "group_name": "SS - NetApp - Graduation Day",
+        "raw_text": "Students please join",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T12:30:25.512880+05:30",
+        "message_id": "false_120363225998735559@g.us_A5F5881EFC9CC91DB4FDE544E8169E36_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "feed/raw_material",
+            "quantity": 50,
+            "unit": "bags",
+            "amount": 2000,
+            "notes": "",
+            "confidence_score": 0.9,
+            "processed_text": "50 bags of feed"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T12:30:34.548528+05:30",
+        "message_id": "false_120363406786751662@g.us_AC98479AA45EA55B40714B751E872018_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Will join again",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T12:32:04.084094+05:30",
+        "message_id": "false_120363410577961394@g.us_3EB0074C04BEB1AA65544F_122123133706362@lid",
+        "sender": "[SS - NetApp - Graduation Day] Sanket Gaikwad (122123133706362)",
+        "sender_name": "Sanket Gaikwad",
+        "is_group": true,
+        "group_name": "SS - NetApp - Graduation Day",
+        "raw_text": "We will wait for 2 more minutes and then start",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T12:39:12.988170+05:30",
+        "message_id": "false_120363225998735559@g.us_A5B5380679D0CCDB0936EBA7BD6D8C2E_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Out",
+        "ai_extracted": {
+            "shead_name": "unknown",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0,
+            "notes": "Out",
+            "confidence_score": 1.0,
+            "processed_text": "Out"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T12:39:31.097872+05:30",
+        "message_id": "false_120363405639932471@g.us_3EB0FBEDB2DD3CC500EC2F_184791135711366@lid",
+        "sender": "[Eggs Loading Details] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Eggs Loading Details",
+        "raw_text": "Raghupathi naidu \nS8 1500",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T12:42:45.658005+05:30",
+        "message_id": "false_120363225998735559@g.us_A5162B3EC0A4A24F54932243AF54979B_234952327213239@lid",
+        "sender": "[120363225998735559] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "120363225998735559",
+        "raw_text": "In",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "",
+            "confidence_score": 0.95,
+            "processed_text": "In"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T12:43:12.823492+05:30",
+        "message_id": "false_120363405639932471@g.us_3EB0057777973F8B115EE7_184791135711366@lid",
+        "sender": "[Eggs Loading Details] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Eggs Loading Details",
+        "raw_text": "Ramchandra naidu \nS8 1800",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T12:45:05.374673+05:30",
+        "message_id": "false_120363212822578807@g.us_AC60AF14731E3C9844EACADC53CCDEA2_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3 water spraying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T12:50:22.275506+05:30",
+        "message_id": "false_120363225998735559@g.us_ACB39A271710A176BA2BDCCC1551A820_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Rajesh in",
+        "ai_extracted": {
+            "shead_name": "Rajesh",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "Rajesh is talking on the phone."
+        }
+    },
+    {
+        "timestamp": "2026-07-11T12:51:07.533698+05:30",
+        "message_id": "false_120363212822578807@g.us_AC3B0ACABCC7D1904A7392278C03286A_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T12:53:25.451196+05:30",
+        "message_id": "false_120363212822578807@g.us_ACE3BA90D6EE976D8D5BDBB89C6BAA26_241274569400567@lid",
+        "sender": "[Farm Supervisors] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd shed water spray",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T12:57:23.822626+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0BF18D0EAF5A575F1E1_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Food Expenses For  yesterday  Night ( culling labors )\n35*70=2450",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T12:57:39.330956+05:30",
+        "message_id": "false_120363410577961394@g.us_3EB0FC9E9044680CE2E1FE_37546704822382@lid",
+        "sender": "[SS - NetApp - Graduation Day] Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97 (37546704822382)",
+        "sender_name": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97",
+        "is_group": true,
+        "group_name": "SS - NetApp - Graduation Day",
+        "raw_text": "*Dear Students,*\n\nPlease report *on 13th July, Monday at 8:00 AM sharp* at *either of the following pickup locations*:\n\n*\ud83d\udccd Location 1: Seventh Sense Talent Solutions (Centre)*\n1st & 2nd Floor, 4, 23rd A Main Rd, Marenahalli, 2nd Phase, J. P. Nagar, Bengaluru, Karnataka \u2013 560078\nGoogle Maps: https://share.google/6tE0qggxAaRtk6VtL\n\n*\ud83d\udccd Location 2: BET College*\n12/5, C Cross Rd, Bismillahnagar, S.G. Palya, Bengaluru, Karnataka \u2013 560029\nGoogle Maps: https://share.google/8ngx3vedB7dKNLbDO\n\n\ud83d\ude8c *Destination: NetApp Office*\n40/C, ITPL Main Rd, Hoodi, KEB Colony, Mahadevapura, Bengaluru, Karnataka \u2013 560048\nGoogle Maps: https://share.google/Ad1v3DvWVW1rWeqEm\n\n\u23f0 *Please be on time.* The bus will depart *promptly at 8:00 AM*, and late arrivals may miss the transportation.\n\nThank you, and we look forward to seeing you on Monday!",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:00:48.980895+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0E933C6783DD6ACB8CF_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Food Expenses \nVaccinators (4) Vaccine labours ( 8 )\nMestri and coolies (15 ) DDGS vehical ( \n27*35=   945",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:00:58.778224+05:30",
+        "message_id": "false_120363212822578807@g.us_ACA4289CCEF273BF827E2D29B133DCC9_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:00:59.082966+05:30",
+        "message_id": "false_120363212822578807@g.us_AC200128D1BB7AC17153E9FBEA85058E_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead water spraying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:01:19.950360+05:30",
+        "message_id": "false_120363212822578807@g.us_AC3A33620FE06B050F93834F40A94D9C_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead stone",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:01:21.181902+05:30",
+        "message_id": "false_120363212822578807@g.us_ACC5016AB4C836D474248E41ACA01AC8_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:01:31.399039+05:30",
+        "message_id": "false_120363410577961394@g.us_3EB04CDD617A4D5F91391E_37546704822382@lid",
+        "sender": "[SS - NetApp - Graduation Day] Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97 (37546704822382)",
+        "sender_name": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97",
+        "is_group": true,
+        "group_name": "SS - NetApp - Graduation Day",
+        "raw_text": "*Dear Students,*\n\nPlease report *on 13th July (Monday) at 8:00 AM sharp* at your designated pickup location:\n\n*\ud83d\udccd Location 1: Seventh Sense Talent Solutions (Centre)*\n1st & 2nd Floor, 4, 23rd A Main Rd, Marenahalli, 2nd Phase, J. P. Nagar, Bengaluru, Karnataka \u2013 560078\nGoogle Maps: https://share.google/6tE0qggxAaRtk6VtL\n\n*\ud83d\udccd Location 2: BET College*\n12/5, C Cross Rd, Bismillahnagar, S.G. Palya, Bengaluru, Karnataka \u2013 560029\nGoogle Maps: https://share.google/8ngx3vedB7dKNLbDO\n\n\ud83d\ude8c *Destination: NetApp Office*\n40/C, ITPL Main Rd, Hoodi, KEB Colony, Mahadevapura, Bengaluru, Karnataka \u2013 560048\nGoogle Maps: https://share.google/Ad1v3DvWVW1rWeqEm\n\n\u26a0\ufe0f *Important Note:* Only *BET College students* should report to the *BET College* pickup point. Students from all other colleges *must report only to the Seventh Sense Talent Solutions (Centre)*. Students will not be allowed to board the bus from the BET College pickup point unless they are from BET College.\n\n\u23f0 *Please be on time.* The bus will depart *promptly at 8:00 AM*, and late arrivals may miss the transportation.\n\nThank you, and we look forward to seeing you on Monday!",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:01:47.610726+05:30",
+        "message_id": "false_120363428417403024@g.us_3AB8B8F94C35D02CBA51_220765681147957@lid",
+        "sender": "[Sunfra Hyperscale] Purna K (220765681147957)",
+        "sender_name": "Purna K",
+        "is_group": true,
+        "group_name": "Sunfra Hyperscale",
+        "raw_text": "Xxxxxxxx",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:01:54.576224+05:30",
+        "message_id": "false_120363428417403024@g.us_3A3E290E2869AD086347_220765681147957@lid",
+        "sender": "[Sunfra Hyperscale] Purna K (220765681147957)",
+        "sender_name": "Purna K",
+        "is_group": true,
+        "group_name": "Sunfra Hyperscale",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:02:30.305527+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB07EC824A05CC7DBA2D7_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Food Expenses ( lunch )\nVaccinators (4) vaccine labors (8)\nMestri and coolies(10) \n22*70 =1540",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:04:06.617494+05:30",
+        "message_id": "false_120363428417403024@g.us_3A0A5BC3B2BB1C358FF4_220765681147957@lid",
+        "sender": "[Sunfra Hyperscale] Purna K (220765681147957)",
+        "sender_name": "Purna K",
+        "is_group": true,
+        "group_name": "Sunfra Hyperscale",
+        "raw_text": "Village : jaggadhara\nVedurukuppam Mandal \n6.5 original 3.5 Dk",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:04:15.380600+05:30",
+        "message_id": "false_120363405469158412@g.us_3A993F249F79D755D90B_112300593815672@lid",
+        "sender": "[Payments - Sunfra Farms] Nani Chinnam (112300593815672)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Okay",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:04:27.134802+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB004F8DE288130AF7AD8_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "shall i pay",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:07:09.264328+05:30",
+        "message_id": "false_120363428008153650@g.us_ACB9325A37A14186829F0FEE0D02E4A8_176531796189398@lid",
+        "sender": "[AIoT Alliance] Yaswanth (176531796189398)",
+        "sender_name": "Yaswanth",
+        "is_group": true,
+        "group_name": "AIoT Alliance",
+        "raw_text": "Yes",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:09:06.482184+05:30",
+        "message_id": "false_120363428008153650@g.us_ACF5C6E80984A58793616A5B820F64BC_206686828683301@lid",
+        "sender": "[AIoT Alliance] Akshay I H (206686828683301)",
+        "sender_name": "Akshay I H",
+        "is_group": true,
+        "group_name": "AIoT Alliance",
+        "raw_text": "Yes",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:11:32.443785+05:30",
+        "message_id": "false_120363428008153650@g.us_ACE37DC2D171D2D36DF66344C963DB6C_206686828683301@lid",
+        "sender": "[120363428008153650] Akshay I H (206686828683301)",
+        "sender_name": "Akshay I H",
+        "is_group": true,
+        "group_name": "120363428008153650",
+        "raw_text": "I didn't brought box",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:11:32.862447+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0DE4F45B31CBA5B170A_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "food expenses for culling",
+        "ai_extracted": {
+            "shead_name": "unknown",
+            "category": "expense",
+            "quantity": 2450,
+            "unit": "rupees",
+            "amount": 2450,
+            "notes": "food expenses for culling",
+            "confidence_score": 1.0,
+            "processed_text": "Food expenses for culling"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T13:13:02.396582+05:30",
+        "message_id": "false_120363410577961394@g.us_ACF42A17D9040EAFF0FD45567C231758_96138849988650@lid",
+        "sender": "[120363410577961394] Huzaifa uzair (96138849988650)",
+        "sender_name": "Huzaifa uzair",
+        "is_group": true,
+        "group_name": "120363410577961394",
+        "raw_text": "Bro we didnt get mail",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:13:08.429506+05:30",
+        "message_id": "false_120363410577961394@g.us_ACA5C7708BF0ABDAF2B3BF848E3FB4C2_255855899480261@lid",
+        "sender": "[SS - NetApp - Graduation Day] .. (255855899480261)",
+        "sender_name": "..",
+        "is_group": true,
+        "group_name": "SS - NetApp - Graduation Day",
+        "raw_text": "Same here",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:13:12.893458+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB09135F09FADC7EF761D_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "( tiffen ) food expenses",
+        "ai_extracted": {
+            "shead_name": "unknown",
+            "category": "expense",
+            "quantity": 1,
+            "unit": "tiffens",
+            "amount": 945.0,
+            "notes": "( tiffen ) food expenses",
+            "confidence_score": 1.0,
+            "processed_text": "Expense for food"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T13:14:36.542075+05:30",
+        "message_id": "false_120363410577961394@g.us_AC3F573BBBCAC811C6420CEF6CE72015_7366271594728@lid",
+        "sender": "[SS - NetApp - Graduation Day] Shuheb (7366271594728)",
+        "sender_name": "Shuheb",
+        "is_group": true,
+        "group_name": "SS - NetApp - Graduation Day",
+        "raw_text": "Mee too",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:14:36.585628+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB05240C5DB86F9456762_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "(Lunch ) food expenses",
+        "ai_extracted": {
+            "shead_name": "Unknown",
+            "category": "expense",
+            "quantity": 1,
+            "unit": "",
+            "amount": 1540.0,
+            "notes": "(Lunch) food expenses",
+            "confidence_score": 1.0,
+            "processed_text": "Expense for lunch"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T13:26:37.667510+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB06C26A4F81756A2D2C3_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "purchase of sand paper",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:29:21.687491+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB08EF86099293F0AF99B_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "unknown",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "130 is s. paper@- 10/1",
+            "confidence_score": 1.0,
+            "processed_text": "130 is s. paper@- 10/1"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T13:32:36.404254+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB087150B5259F56A3CAD_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "prasanth bike petrol",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:35:23.590324+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0C64E77DDA735CC6F20_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "prasanth bike petrol",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:35:34.951362+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB07B1FA6B4CA06655C9E_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "Unknown",
+            "category": "feed/raw_material",
+            "quantity": 0,
+            "unit": "",
+            "amount": 60.0,
+            "notes": "Fuel Preset : Rs 60\nSale : Rs 118.07\nVolume : 0.50 Ltrs",
+            "confidence_score": 1.0,
+            "processed_text": "IndianOil Bill No: Jul-860457-ORGNL Trns ID: 00000000000688771 Atnd ID: Physical Receipt Vehi No: Not Entered Mob No: Not Entered Date : 12/07/2026 FP. Noz] No: 2 Fuel Preset : Rs 60 Sale : Rs 118.07 Volume : 0.50 Ltrs"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T13:35:35.617469+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0785197319E17FB1212_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "sand paper purchase",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:37:30.836021+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0C52FB7A1D2D3E75AAC_184791135711366@lid",
+        "sender": "[120363405469158412] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "120363405469158412",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "Mahalakshmi",
+            "category": "unknown",
+            "quantity": 60,
+            "unit": "rs",
+            "amount": 60,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "Mahalakshmi has paid \u20b960 to R K Filling Station."
+        }
+    },
+    {
+        "timestamp": "2026-07-11T13:39:00.089503+05:30",
+        "message_id": "false_120363405469158412@g.us_AC989268386FDF53A4A4F8C1D28A1330_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Sand paper purchase",
+        "ai_extracted": {
+            "shead_name": "unknown",
+            "category": "purchase",
+            "quantity": 100,
+            "unit": "Rs",
+            "amount": 100,
+            "notes": "Sand paper purchase",
+            "confidence_score": 1.0,
+            "processed_text": "Debit of Rs 100 for Sand paper purchase"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T13:39:15.943539+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB01D4E453C91B78D8275_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "unknown",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "130 is s. paper@- 10/1",
+            "confidence_score": 0.95,
+            "processed_text": "130 is s. paper@- 10/1"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T13:43:16.507756+05:30",
+        "message_id": "false_120363406786751662@g.us_3A819CC68B0CD12D0763_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Yeah",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:43:21.445107+05:30",
+        "message_id": "false_120363406786751662@g.us_3A58C65348E371EAACD7_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Still no mail",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:44:55.849919+05:30",
+        "message_id": "false_120363225998735559@g.us_AC120663719010401058721A627E8C47_241274569400567@lid",
+        "sender": "[120363225998735559] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "120363225998735559",
+        "raw_text": "600 briks unloaded \nOut",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "egg_collection_1",
+            "quantity": 600,
+            "unit": "briks",
+            "amount": 2400.0,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "600 briks unloaded"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T13:45:02.801461+05:30",
+        "message_id": "false_120363406786751662@g.us_3A1A9EEE07A1AD7E890E_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "N took mail id",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:45:18.901804+05:30",
+        "message_id": "false_120363406786751662@g.us_3A3C9330D89955630F00_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Oh okay",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T13:46:00.391642+05:30",
+        "message_id": "false_120363225998735559@g.us_AC931E410B2225C89452AE5B65BA8582_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Image processing failed"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T13:46:46.086733+05:30",
+        "message_id": "false_120363225998735559@g.us_ACAE12F3DF5B660796A4CF264FFFC7BF_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Image processing failed"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T13:46:53.304835+05:30",
+        "message_id": "false_120363225998735559@g.us_ACBDB155B2F39DA376D1E1C5A547D0C4_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Rajesh out",
+        "ai_extracted": {
+            "shead_name": "Rajesh",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "Rajesh out",
+            "confidence_score": 1.0,
+            "processed_text": "Rajesh is outside."
+        }
+    },
+    {
+        "timestamp": "2026-07-11T13:49:06.365757+05:30",
+        "message_id": "false_120363225998735559@g.us_ACCDDE2F604D994AA64FDE599D6E54FF_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "1000 trays of eggs out  Subramanyam",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "egg_collection",
+            "quantity": 1000,
+            "unit": "trays",
+            "amount": null,
+            "notes": "Subramanyam",
+            "confidence_score": 1.0,
+            "processed_text": "1000 trays of eggs out Subramanyam"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T14:04:17.433167+05:30",
+        "message_id": "false_120363225998735559@g.us_ACE33491EBAD2FBD2950BCB733020E23_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "In",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "",
+            "confidence_score": 0.95,
+            "processed_text": "In"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T14:14:34.029182+05:30",
+        "message_id": "false_120363406786751662@g.us_3A88B8D65C12E135CE8F_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Haa",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:14:41.091358+05:30",
+        "message_id": "false_120363406786751662@g.us_3A6092D6A493EF7CDDCF_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Thinking",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:14:42.954455+05:30",
+        "message_id": "false_120363406786751662@g.us_3A90B317283AC4673B75_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "U",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:14:59.963074+05:30",
+        "message_id": "false_120363406786751662@g.us_3AF681514830EF8E8788_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Normal jeans n some top",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:15:19.134637+05:30",
+        "message_id": "false_120363406786751662@g.us_3ADFC79E1592F6B227EF_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Yeah",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:15:48.645339+05:30",
+        "message_id": "false_120363406786751662@g.us_3A3505CD170A50914805_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Yeah",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:16:04.484235+05:30",
+        "message_id": "false_120363406786751662@g.us_3A2C242994836A7A2B1C_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Almost 50% Muslim only",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:16:20.061450+05:30",
+        "message_id": "false_120363406786751662@g.us_3ADADE85688880E401A6_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "\ud83e\udd2d",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:16:38.236932+05:30",
+        "message_id": "false_120363406786751662@g.us_3AC4F2530D699BFBD50F_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Even she will wear normal jeans n some top",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:16:51.840149+05:30",
+        "message_id": "false_120363406786751662@g.us_3A2CB5FAA88322EBAD52_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "No formals",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:18:41.012820+05:30",
+        "message_id": "false_120363406786751662@g.us_3A625CC2A087C92BA741_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "I\u2019m only taking decision of her",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:19:09.880406+05:30",
+        "message_id": "false_120363212822578807@g.us_AC5A1B3A30CE19BD732210E9DB3B82F0_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:20:07.203982+05:30",
+        "message_id": "false_120363212822578807@g.us_AC77567BB35E7A18472D6F532A66B567_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:21:00.998321+05:30",
+        "message_id": "false_120363406786751662@g.us_ACB0CD0835632D287ACE0DE3EC29AE54_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "I'll wear and formals",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:21:21.982528+05:30",
+        "message_id": "false_120363406786751662@g.us_AC7493A65C0E78D317893E7833442FCC_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Bcz every time we'll wear top and jeans na",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:21:22.785128+05:30",
+        "message_id": "false_120363406786751662@g.us_3ABC3AB5542E4D9E782A_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Wt is this",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:21:42.024694+05:30",
+        "message_id": "false_120363406786751662@g.us_3ADCA863873FF2FDAAA6_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "V decided no formals",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:21:43.989722+05:30",
+        "message_id": "false_120363406786751662@g.us_ACC100B2434B8E26780FE57E73A17C0E_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "So but this time should be different",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:21:56.582247+05:30",
+        "message_id": "false_120363406786751662@g.us_3ADFF74C0A8C09F4AC3B_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "So don\u2019t ware formals",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:21:59.634960+05:30",
+        "message_id": "false_120363406786751662@g.us_AC7324FAD85716CD3463B323C4AB91D2_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Don't want wear formals and come",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:22:09.925174+05:30",
+        "message_id": "false_120363406786751662@g.us_3AFDED7A8C80BAD43A3C_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Haa",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:22:28.858152+05:30",
+        "message_id": "false_120363212822578807@g.us_AC92F2AE054286DF27DD1D545B90F7E0_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3 water spraying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:22:32.214612+05:30",
+        "message_id": "false_120363406786751662@g.us_AC3C12B8E622E7E43EABF39CEEB18BD2_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Every time you'll wear jeans and top ryt it's common",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:23:10.878746+05:30",
+        "message_id": "false_120363406786751662@g.us_ACD7A4B7AB8D88974BB6F5F6B0D9C9D9_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Monday we are going to corporate office so wear formals only",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:23:19.131169+05:30",
+        "message_id": "false_120363406786751662@g.us_ACBB3F09C1CC0DF8CB8DBFDD9FEF35AE_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Don't want top and jeans",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:23:38.229451+05:30",
+        "message_id": "false_120363225998735559@g.us_A58F6327BD99AFDBD71C872F9447CF94_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "In",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:24:20.618890+05:30",
+        "message_id": "false_120363225998735559@g.us_A5C4C0CF8EA99AD8DA0F385B3C24D47C_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:24:36.902709+05:30",
+        "message_id": "false_120363406786751662@g.us_AC88F4D90EDCAAF6AB1C10D69CF2F497_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "When it comes to muslim if they wear normal or grand dresses they'll not remove their burkha so it doesn't make much difference",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:25:47.822525+05:30",
+        "message_id": "false_120363406786751662@g.us_3A63135C5B835E724428_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "U wear",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:26:00.645393+05:30",
+        "message_id": "false_120363406786751662@g.us_3AC7E5EE80738D8C4F13_163028955840576@lid",
+        "sender": "[120363406786751662] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "120363406786751662",
+        "raw_text": "I\u2019m not going to wear",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:26:01.824972+05:30",
+        "message_id": "false_120363406786751662@g.us_AC5A622D2DDBA681803033C436C81354_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Ok",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:26:09.076493+05:30",
+        "message_id": "false_120363406786751662@g.us_AC9B1869E47B11E9E39BD22CBF96244E_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Thn you both will wear jeans and top",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:26:12.342971+05:30",
+        "message_id": "false_120363225998735559@g.us_A5BF6C28FA5F8BDE1FAAA700464E7116_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Pratap Reddy",
+        "ai_extracted": {
+            "shead_name": "Pratap Reddy",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-07-11T14:26:12.720854+05:30",
+        "message_id": "false_120363406786751662@g.us_AC12F7A7198D65167410967543D0AE03_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "?",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:26:40.304022+05:30",
+        "message_id": "false_120363406786751662@g.us_3AE3463354458CB7E1A0_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Haa",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:26:47.545404+05:30",
+        "message_id": "false_120363406786751662@g.us_AC28F5318D31EB1155E97860138CE3E8_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Ok",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:26:54.919370+05:30",
+        "message_id": "false_120363406786751662@g.us_AC0E38F9329F7A44E261288FB2FC20B9_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "@183300681367688 you?",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:27:13.362394+05:30",
+        "message_id": "false_120363406786751662@g.us_3A7C497031738E421B69_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "U said formals ryt",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:27:18.396237+05:30",
+        "message_id": "false_120363406786751662@g.us_ACBB27EC6EE2A2C081F69D28BA5E9661_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Yes",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:27:19.177684+05:30",
+        "message_id": "false_120363406786751662@g.us_3A3DE5F77FD40ABCCFBF_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Kp is thinking",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:27:27.733571+05:30",
+        "message_id": "false_120363406786751662@g.us_ACF50B4E070A9AAFD0AAC521A4C9D209_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Let her think",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:27:38.730038+05:30",
+        "message_id": "false_120363406786751662@g.us_3A30F50CE6FC9A12B96C_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "With which Monika I should go",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:27:52.149459+05:30",
+        "message_id": "false_120363406786751662@g.us_3AD2AEB5BCCBA46AB92A_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Yeah",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:27:59.137189+05:30",
+        "message_id": "false_120363406786751662@g.us_AC10BFD0CE12DD6D9C39C902152F0F4B_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "What",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:28:38.469621+05:30",
+        "message_id": "false_120363406786751662@g.us_3AF32696E3D84FCD2C6C_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Yeah",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:28:48.635107+05:30",
+        "message_id": "false_120363406786751662@g.us_3A31E87EC779678BB2A7_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "I agree with u kp",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:29:02.223931+05:30",
+        "message_id": "false_120363428417403024@g.us_ACCF9C6A08A14EEC9574E07194A8B2A2_2169075933244@lid",
+        "sender": "[Sunfra Hyperscale] Prathiba (2169075933244)",
+        "sender_name": "Prathiba",
+        "is_group": true,
+        "group_name": "Sunfra Hyperscale",
+        "raw_text": "Land video?",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:29:15.400188+05:30",
+        "message_id": "false_120363406786751662@g.us_AC8851FB6944D062E789AD2D907C1664_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Ok thn you both are fixed to wear jeans with top",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:29:30.856208+05:30",
+        "message_id": "false_120363406786751662@g.us_ACD3FB149935EE54461339ED12595BDE_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Ok ok",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:29:56.773361+05:30",
+        "message_id": "false_120363406786751662@g.us_ACBFAA29CDF41546F3C76F8F9350C98A_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:30:18.283803+05:30",
+        "message_id": "false_120363406786751662@g.us_3A14E0CC5C5D5179E818_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Even u wear normal jeans n top",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:30:24.134706+05:30",
+        "message_id": "false_120363406786751662@g.us_ACF5F3EB726C0C041BB08E8415AA21AD_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Noo",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:30:30.819646+05:30",
+        "message_id": "false_120363406786751662@g.us_AC24A8B3A69D989EA5E32A8B274928D6_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "I'll wear formals only",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:30:34.731283+05:30",
+        "message_id": "false_120363406786751662@g.us_3AF5EE59189BD73A6AF6_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "No one can convince u",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:30:42.897139+05:30",
+        "message_id": "false_120363406786751662@g.us_ACEFE2F083F5ACFC040810D1103F5C83_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "U both wear jeans and top and I'll wear formals",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:30:49.202962+05:30",
+        "message_id": "false_120363406786751662@g.us_3A3E1ACE5E609AFFD1EA_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Okay",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:31:19.171650+05:30",
+        "message_id": "false_120363406786751662@g.us_3A6AF24CA8C966AB43F1_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "U\u2019ll cm to seven sense only ryt",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:31:26.019637+05:30",
+        "message_id": "false_120363406786751662@g.us_AC91640A4FEDB3C1AFB51E0714EE7E6F_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Yeah",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:31:45.178044+05:30",
+        "message_id": "false_120363406786751662@g.us_AC1DD440BC606C50552C319A415988E4_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "I've to leave early",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:31:53.091388+05:30",
+        "message_id": "false_120363406786751662@g.us_AC057F8DF2D395A43778D0FD5B410948_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "And come",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:32:54.687385+05:30",
+        "message_id": "false_120363406786751662@g.us_3A2DDFCAD71687D24EFC_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Haa\u2026 6 o\u2019clock",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:34:52.557020+05:30",
+        "message_id": "false_120363428417403024@g.us_3AC1914EEA96D166F214_220765681147957@lid",
+        "sender": "[Sunfra Hyperscale] Purna K (220765681147957)",
+        "sender_name": "Purna K",
+        "is_group": true,
+        "group_name": "Sunfra Hyperscale",
+        "raw_text": "Xxxxxxxxx",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:35:01.088722+05:30",
+        "message_id": "false_120363406786751662@g.us_AC8B0B0F16536B6DA52C3F08B979D1A9_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Heyyy why please and all",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:35:07.025311+05:30",
+        "message_id": "false_120363406786751662@g.us_AC388F1F46132A6B3047B290A8A42D87_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "It's ok no worries",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:35:40.422418+05:30",
+        "message_id": "false_120363428417403024@g.us_3A14AB103227E61EB4DB_220765681147957@lid",
+        "sender": "[Sunfra Hyperscale] Purna K (220765681147957)",
+        "sender_name": "Purna K",
+        "is_group": true,
+        "group_name": "Sunfra Hyperscale",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:37:40.760771+05:30",
+        "message_id": "false_120363406786751662@g.us_AC4ABA21F5D4804AB8987E3DF7E65112_165352415690859@lid",
+        "sender": "[120363406786751662] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "120363406786751662",
+        "raw_text": "Yeah",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:39:19.634616+05:30",
+        "message_id": "false_120363225998735559@g.us_A592DBF0B94CF86B1D95599494B76CCC_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "egg_collection",
+            "quantity": 1800,
+            "unit": "trays",
+            "amount": 54000,
+            "notes": "RST No: 9167, Party Name: WJ, Material: Weight, Vehicle No: 47.10, Bags: 1800, Gross Weight: 1800kg, Tare Weight: 0kg, Net Weight: 1800kg, Date: 2023-11-07, Time: 9:00",
+            "confidence_score": 0.9,
+            "processed_text": "RST No: 9167, Party Name: WJ, Material: Weight, Vehicle No: 47.10, Bags: 1800, Gross Weight: 1800kg, Tare Weight: 0kg, Net Weight: 1800kg, Date: 2023-11-07, Time: 9:00"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T14:39:23.175284+05:30",
+        "message_id": "false_120363406786751662@g.us_AC4E129E733923B0CA6A7A498090BE20_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "For your company VG is there na thn y",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:39:34.623581+05:30",
+        "message_id": "false_120363225998735559@g.us_A543C9803BD32F0B960E7E2E9F490BFC_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Image processing failed"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T14:39:39.473152+05:30",
+        "message_id": "false_120363225998735559@g.us_A5306B7E5B4AC46427E86AA127D278A1_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Image processing failed"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T14:40:17.715892+05:30",
+        "message_id": "false_120363406786751662@g.us_3A20555F6057D2075A36_163028955840576@lid",
+        "sender": "[120363406786751662] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "120363406786751662",
+        "raw_text": "\ud83d\ude44",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:40:24.270545+05:30",
+        "message_id": "false_120363406786751662@g.us_AC977C304AF3F289E5FD00519F580442_165352415690859@lid",
+        "sender": "[120363406786751662] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "120363406786751662",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:40:40.913348+05:30",
+        "message_id": "false_120363428417403024@g.us_3A5B3C73119A6D25B337_220765681147957@lid",
+        "sender": "[120363428417403024] Purna K (220765681147957)",
+        "sender_name": "Purna K",
+        "is_group": true,
+        "group_name": "120363428417403024",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:40:48.591405+05:30",
+        "message_id": "false_120363406786751662@g.us_AC9A9488C725A19F3D5C606278D59E3E_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:40:49.224613+05:30",
+        "message_id": "false_120363406786751662@g.us_ACE72EA633DDF3F2F87283EBAC2B5B38_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Only phone and adhar",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:40:56.676536+05:30",
+        "message_id": "false_120363406786751662@g.us_3A14B42E91039621D2DD_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Wt abt bag",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:40:59.817605+05:30",
+        "message_id": "false_120363406786751662@g.us_ACB9226BCCFBFC825531C3738E8FF213_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "No bag",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:42:54.497280+05:30",
+        "message_id": "false_120363428417403024@g.us_3AEE52E4E412302D6C4E_220765681147957@lid",
+        "sender": "[120363428417403024] Purna K (220765681147957)",
+        "sender_name": "Purna K",
+        "is_group": true,
+        "group_name": "120363428417403024",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:43:11.151149+05:30",
+        "message_id": "false_120363428417403024@g.us_3AA04C7F15FAEFD343BB_220765681147957@lid",
+        "sender": "[120363428417403024] Purna K (220765681147957)",
+        "sender_name": "Purna K",
+        "is_group": true,
+        "group_name": "120363428417403024",
+        "raw_text": "Xxxxxx",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:43:17.766192+05:30",
+        "message_id": "false_120363406786751662@g.us_AC2996CA2C1C9C3517D8DC6EC55E0756_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Yes",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:43:19.034586+05:30",
+        "message_id": "false_120363406786751662@g.us_AC73EF399A1FC843A0BCD733B75158D6_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "They asked us to bring adhar ryt so small one is enough ryt",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:43:21.355346+05:30",
+        "message_id": "false_120363428417403024@g.us_3A89F2FFBFADB3DA5330_220765681147957@lid",
+        "sender": "[Sunfra Hyperscale] Purna K (220765681147957)",
+        "sender_name": "Purna K",
+        "is_group": true,
+        "group_name": "Sunfra Hyperscale",
+        "raw_text": "Village name : sathambakam\n4.10 original 2Acra Dk\nOriginal land Acra 23 Lacs \nDk seperate cost",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:43:23.119928+05:30",
+        "message_id": "false_120363406786751662@g.us_ACD07076E1196EF378E7D731872ADD1A_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Thn thing is yesterday only I took new one",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:43:23.637857+05:30",
+        "message_id": "false_120363428417403024@g.us_3A3ABF5098C5D74ECD30_220765681147957@lid",
+        "sender": "[Sunfra Hyperscale] Purna K (220765681147957)",
+        "sender_name": "Purna K",
+        "is_group": true,
+        "group_name": "Sunfra Hyperscale",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:43:30.511623+05:30",
+        "message_id": "false_120363406786751662@g.us_ACB8A2F974D015F13395C8AE97C300D3_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "If I don't wear means how it will be",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:43:56.604462+05:30",
+        "message_id": "false_120363406786751662@g.us_ACA998BC6AFE1DE710CF623F272CB9E6_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:43:59.287315+05:30",
+        "message_id": "false_120363428417403024@g.us_3A567078F5AD6176BDD3_220765681147957@lid",
+        "sender": "[Sunfra Hyperscale] Purna K (220765681147957)",
+        "sender_name": "Purna K",
+        "is_group": true,
+        "group_name": "Sunfra Hyperscale",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:43:59.945681+05:30",
+        "message_id": "false_120363406786751662@g.us_ACE8C055139741B7538F10F07C00A9C5_165352415690859@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika Achar (165352415690859)",
+        "sender_name": "Monika Achar",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "It's ok I don't have any problem",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:44:05.656476+05:30",
+        "message_id": "false_120363406786751662@g.us_3A15515C7E06FF09BA48",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] 120363406786751662@g.us",
+        "sender_name": "",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "V have problem",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:44:08.353110+05:30",
+        "message_id": "false_120363428417403024@g.us_3A6B1CE27B099A77F671_220765681147957@lid",
+        "sender": "[Sunfra Hyperscale] Purna K (220765681147957)",
+        "sender_name": "Purna K",
+        "is_group": true,
+        "group_name": "Sunfra Hyperscale",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:44:08.539984+05:30",
+        "message_id": "false_120363428417403024@g.us_3A567078F5AD6176BDD3",
+        "sender": "[Sunfra Hyperscale] 120363428417403024@g.us",
+        "sender_name": "",
+        "is_group": true,
+        "group_name": "Sunfra Hyperscale",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:44:21.612826+05:30",
+        "message_id": "false_120363212822578807@g.us_AC9E85B9E6EE781A619400494E86C835",
+        "sender": "[120363212822578807] 120363212822578807@g.us",
+        "sender_name": "",
+        "is_group": true,
+        "group_name": "120363212822578807",
+        "raw_text": "Shead3",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:44:22.555305+05:30",
+        "message_id": "false_120363406786751662@g.us_ACE8C055139741B7538F10F07C00A9C5",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] 120363406786751662@g.us",
+        "sender_name": "",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "It's ok I don't have any problem",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:44:23.763365+05:30",
+        "message_id": "false_120363406786751662@g.us_AC101E8BDAA9B37F12452930DF33F412",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] 120363406786751662@g.us",
+        "sender_name": "",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Thn you guys also wear and come",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:44:26.178165+05:30",
+        "message_id": "false_120363406786751662@g.us_3A1A02D872E65B6520E9_163028955840576@lid",
+        "sender": "[M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d] Monika (163028955840576)",
+        "sender_name": "Monika",
+        "is_group": true,
+        "group_name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d",
+        "raw_text": "Okay",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:44:32.796322+05:30",
+        "message_id": "false_120363225998735559@g.us_A5957D1523BB4058CE2D4A45A791D759_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Out",
+        "ai_extracted": {
+            "shead_name": "Unknown",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "Out",
+            "confidence_score": 1.0,
+            "processed_text": "Out"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T14:45:25.241063+05:30",
+        "message_id": "false_120363212822578807@g.us_AC11BF8784023D462C5DE984DAD18737_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead feed raking",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:45:25.812998+05:30",
+        "message_id": "false_120363212822578807@g.us_AC2C80FB67DF8D77D5AF32320FEA2B2D_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:45:30.510425+05:30",
+        "message_id": "false_120363225998735559@g.us_AC68894898DB851A6A1DEFAF2733C2BE_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:48:56.282866+05:30",
+        "message_id": "false_120363225998735559@g.us_ACF75FB08A81EA80D8BC51B1B9AECEEE_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (241274569400567)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Grower shed \nVvnd 1st vaccine",
+        "ai_extracted": {
+            "shead_name": "Grower shed",
+            "category": "mortality",
+            "quantity": 2,
+            "unit": "",
+            "amount": 0.5,
+            "notes": "Vvnd 1st vaccine",
+            "confidence_score": 1.0,
+            "processed_text": "Vvnd 1st vaccine"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T14:49:00.004126+05:30",
+        "message_id": "false_120363410577961394@g.us_ACFCDEF5A9CD37B35F6CE1FED945317B_96138849988650@lid",
+        "sender": "[SS - NetApp - Graduation Day] Huzaifa uzair (96138849988650)",
+        "sender_name": "Huzaifa uzair",
+        "is_group": true,
+        "group_name": "SS - NetApp - Graduation Day",
+        "raw_text": "Sure",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:49:12.809870+05:30",
+        "message_id": "false_120363410577961394@g.us_3EB0698C8E6D93C9FAF048_37546704822382@lid",
+        "sender": "[SS - NetApp - Graduation Day] Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97 (37546704822382)",
+        "sender_name": "Mr\u00d7Adiii\ud83e\udef6\ud83c\udffb\ud83d\udc97",
+        "is_group": true,
+        "group_name": "SS - NetApp - Graduation Day",
+        "raw_text": "Hello Students, We will be calling you shortly to confirm your attendance for the Graduation Day. Kindly answer the call and provide your confirmation",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:51:45.474436+05:30",
+        "message_id": "false_120363212822578807@g.us_AC9E85B9E6EE781A619400494E86C835_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:54:08.625619+05:30",
+        "message_id": "false_120363212822578807@g.us_AC7BCE67973396830E46D138EA279E91_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead1 water spraying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T14:57:06.401793+05:30",
+        "message_id": "false_120363404679476946@g.us_3EB0410910FF622D1A35F6_184791135711366@lid",
+        "sender": "[Vendor Daily Invoices] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Vendor Daily Invoices",
+        "raw_text": "Subramnyam",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Subramnyam"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T14:57:15.777222+05:30",
+        "message_id": "false_120363404679476946@g.us_3EB0024BDCA4FDCB0B8E7D_184791135711366@lid",
+        "sender": "[Vendor Daily Invoices] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Vendor Daily Invoices",
+        "raw_text": "Ramchandra naidu",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Ramchandra naidu"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T15:32:51.240181+05:30",
+        "message_id": "false_120363428417403024@g.us_3A7337537EA7F4DA191D_220765681147957@lid",
+        "sender": "[Sunfra Hyperscale] Purna K (220765681147957)",
+        "sender_name": "Purna K",
+        "is_group": true,
+        "group_name": "Sunfra Hyperscale",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:32:51.620781+05:30",
+        "message_id": "false_120363428417403024@g.us_3AE99F4A3F0D0364D07B_220765681147957@lid",
+        "sender": "[Sunfra Hyperscale] Purna K (220765681147957)",
+        "sender_name": "Purna K",
+        "is_group": true,
+        "group_name": "Sunfra Hyperscale",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:32:51.712120+05:30",
+        "message_id": "false_20353900396674@lid_ACC7A328139A8B71948FCBC622513D83",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Hi kusum",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:32:51.893915+05:30",
+        "message_id": "false_20353900396674@lid_ACCA63384F41EDC4D50DFCC3730C19EF",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Nivu graduation day ge bartira",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:32:52.072342+05:30",
+        "message_id": "false_20353900396674@lid_ACCF71583DAB1CBA23244E79FD76147C",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Alla",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:32:52.254716+05:30",
+        "message_id": "false_20353900396674@lid_AC8E05DDE2F7DCBD57E8F3CD4F12A0FF",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "How are you",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:32:52.435326+05:30",
+        "message_id": "false_20353900396674@lid_ACF1D1AC7E4318E79DCE5F6998126380",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Yes dr",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:32:52.613608+05:30",
+        "message_id": "false_20353900396674@lid_AC7FC2870853DC2C6FB67B8615BB9BF8",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Fine dr",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:32:52.792251+05:30",
+        "message_id": "false_20353900396674@lid_AC1BD7553FFE32EF688BAA479E2665AC",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Job madtidira??",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:32:52.969022+05:30",
+        "message_id": "false_20353900396674@lid_ACB5208242A9A51328D9F4D5156D7AAE",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Which company dr",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:32:53.148370+05:30",
+        "message_id": "false_20353900396674@lid_AC3A6BB77B787CF054E7A09290ED3049",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Ok",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:32:53.792650+05:30",
+        "message_id": "false_20353900396674@lid_AC471CF50FC228D8DCA65F3E57F19CF8",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Ai melena",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:32:54.591909+05:30",
+        "message_id": "false_120363428417403024@g.us_3A901F2E566B0A81B19D_220765681147957@lid",
+        "sender": "[Sunfra Hyperscale] Purna K (220765681147957)",
+        "sender_name": "Purna K",
+        "is_group": true,
+        "group_name": "Sunfra Hyperscale",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:32:54.668494+05:30",
+        "message_id": "false_20353900396674@lid_AC51D94F3E22628E90EF28772EEDB00F",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "DLP companige nimdu place agidena??",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:32:54.771320+05:30",
+        "message_id": "false_20353900396674@lid_AC1589FF2B9721F305795197BA81F224",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "7s kadeinda yavadadru place aita nimage",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:32:54.941305+05:30",
+        "message_id": "false_20353900396674@lid_AC56F958B0D8945AF42CF3CFE57039DF",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Hege apply madidri",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:32:55.159572+05:30",
+        "message_id": "false_20353900396674@lid_AC9C7098B44AA0B272044B8583B8B298",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Ok",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:33:16.058278+05:30",
+        "message_id": "false_20353900396674@lid_AC83FC1512C9A65B9DB7E23305DFB1A1",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Alli join agtira??",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:34:19.185923+05:30",
+        "message_id": "false_20353900396674@lid_AC3DDD43E8877A40064BBD3CD7A3674B",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Company chaangidena",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:34:22.758459+05:30",
+        "message_id": "false_20353900396674@lid_AC845A30AA23851EF37B2E504CC5FDA4",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Adu",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:34:23.174413+05:30",
+        "message_id": "false_20353900396674@lid_ACA305CD1B2AFB7CF02D791A1B1F75AD",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "DLP",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:36:27.484895+05:30",
+        "message_id": "false_120363046205890693@g.us_AC32AAE3728E45029DC8F11F75361449_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] \ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a (141927630536871)",
+        "sender_name": "\ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "Eggs Gowdown Photos",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "egg_collection_1",
+            "quantity": 500,
+            "unit": "trays",
+            "amount": 2500,
+            "notes": "",
+            "confidence_score": 0.9,
+            "processed_text": "Eggs Gowdown Photos"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T15:36:28.012925+05:30",
+        "message_id": "false_20353900396674@lid_ACA14D19EFF55834727DA676FE0C904E",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Means",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:36:29.468490+05:30",
+        "message_id": "false_20353900396674@lid_AC5A5533581D84487CE1F07305DB6502",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Illa de",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:36:30.350193+05:30",
+        "message_id": "false_20353900396674@lid_ACC15E9F95872E9AFF73D6E6D45E66CD",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "27bge joining ide",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:36:30.851055+05:30",
+        "message_id": "false_20353900396674@lid_AC4532311BD5D3CD4DDFB5D99EB33534",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Company hegide",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:36:31.135532+05:30",
+        "message_id": "false_20353900396674@lid_ACAAA664E876184AB28511E4FF9EAF5F",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Nandu",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:36:31.360213+05:30",
+        "message_id": "false_20353900396674@lid_AC3FCA731D03E41D078683AD5037FD3C",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Nange idea illa adkke keltidini",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:36:31.488238+05:30",
+        "message_id": "false_20353900396674@lid_ACF40E83C770730E96EB22B045304BE1",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "July 27 th",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:36:31.830138+05:30",
+        "message_id": "false_20353900396674@lid_ACA661106220B216AAD0921E2D6F591B",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Illi openings idena dr",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:36:50.784297+05:30",
+        "message_id": "false_20353900396674@lid_ACD65E44AB9117650193167CA1E69B33",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Yaradru nimge gottiroru idara a company li",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:37:40.469104+05:30",
+        "message_id": "false_20353900396674@lid_AC95522D234206A32E65A945774A502B",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Nimge gottidena DLP alli yaradru",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:37:46.333003+05:30",
+        "message_id": "false_20353900396674@lid_ACFE8EC241164D9C3761EF28D96A70C0",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Join agiddu",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:38:16.903209+05:30",
+        "message_id": "false_20353900396674@lid_AC342D69D1BA38FEE307BE8C5ADFCB4E",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Ok",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:38:50.519802+05:30",
+        "message_id": "false_20353900396674@lid_ACAD6C5003761D4AB896ABC7B46E781E",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Join agabahudalla dr",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:38:55.374326+05:30",
+        "message_id": "false_20353900396674@lid_ACD19CAFEFB8F7279B7755A299A7D7CE",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Companige",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:41:01.097008+05:30",
+        "message_id": "false_20353900396674@lid_AC4E07767DE2C890302B0DF088D46235",
+        "sender": "Pratibha (20353900396674)",
+        "sender_name": "Pratibha",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Ok",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T15:43:19.523700+05:30",
+        "message_id": "false_120363212822578807@g.us_AC30AAA1AB4A219FD7EA8A2E1FCC459B_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead water spraying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T16:00:12.815372+05:30",
+        "message_id": "false_120363212822578807@g.us_ACA0F1ACA91C326D1A955A7634AA9C97_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead flush out",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T16:30:39.806527+05:30",
+        "message_id": "false_120363212822578807@g.us_AC03E795B67F115B0A7C8A7CCC9B7CA0_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-07-11T16:30:40.820889+05:30",
+        "message_id": "false_120363225998735559@g.us_A503AF43BDA53871AD64FE23E5290B25_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Im",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Im"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T16:30:57.374620+05:30",
+        "message_id": "false_120363225998735559@g.us_A54EE11A443A5029861012FC13DEB518_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T16:32:42.762798+05:30",
+        "message_id": "false_120363212822578807@g.us_AC4BC5D4DA1C79028452E1B45FBCEB64_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T16:33:23.707180+05:30",
+        "message_id": "false_120363212822578807@g.us_AC233770BD693AD64165805FBEDE3B2E_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T16:35:21.859576+05:30",
+        "message_id": "false_120363225998735559@g.us_A5FDAE639C6054F559CFA7655EA6DB5B_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T16:36:32.465569+05:30",
+        "message_id": "false_120363046205890693@g.us_ACAFEED97C801F43D88E7396B2C87F9C_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] \ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a (141927630536871)",
+        "sender_name": "\ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T16:36:44.280611+05:30",
+        "message_id": "false_120363225998735559@g.us_A541CAFAE49DFB3E0693A3B5E969036A_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "In",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": ""
+        }
+    },
+    {
+        "timestamp": "2026-07-11T16:39:33.505631+05:30",
+        "message_id": "false_120363212822578807@g.us_AC55157B858A2D552D846F290269E8E6_231275432571022@lid",
+        "sender": "[120363212822578807] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "120363212822578807",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T16:39:39.626226+05:30",
+        "message_id": "false_120363046205890693@g.us_AC5E84FE356DDF75648EA809CCCD7AEB_141927630536871@lid",
+        "sender": "[120363046205890693] \ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a (141927630536871)",
+        "sender_name": "\ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a",
+        "is_group": true,
+        "group_name": "120363046205890693",
+        "raw_text": "593.9 Trays of production 1st Shead",
+        "ai_extracted": {
+            "shead_name": "1st",
+            "category": "egg_collection_1",
+            "quantity": 593.9,
+            "unit": "trays",
+            "amount": 20487.6,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "593.9 trays of production"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T16:39:55.616471+05:30",
+        "message_id": "false_120363212822578807@g.us_AC033EAEEFC14E5631113B1E1E0DAB51_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Motor on",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T16:39:56.470783+05:30",
+        "message_id": "false_120363225998735559@g.us_A5DFCE83FD96448BBD2B50CF347F11BE_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
     }
 ]

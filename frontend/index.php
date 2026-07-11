@@ -57,7 +57,15 @@ try {
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS sunfra_system_settings (
         `key` VARCHAR(50) PRIMARY KEY,
-        `value` VARCHAR(255) NULL
+        `value` LONGTEXT NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS sunfra_waha_events (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        event_type VARCHAR(50) NOT NULL,
+        status VARCHAR(50) NOT NULL,
+        details TEXT,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 } catch (PDOException $e) {
     // Fallback to SQLite syntax if MySQL fails
@@ -90,7 +98,14 @@ try {
         )");
         $pdo->exec("CREATE TABLE IF NOT EXISTS sunfra_system_settings (
             `key` VARCHAR(50) PRIMARY KEY,
-            `value` VARCHAR(255) NULL
+            `value` TEXT NULL
+        )");
+        $pdo->exec("CREATE TABLE IF NOT EXISTS sunfra_waha_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            event_type VARCHAR(50) NOT NULL,
+            status VARCHAR(50) NOT NULL,
+            details TEXT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )");
     } catch (PDOException $e2) {
         // Output the error to help debug
@@ -110,6 +125,8 @@ try { @$pdo->exec("ALTER TABLE sunfra_custom_alarms ADD COLUMN repeat_interval V
 try { @$pdo->exec("ALTER TABLE sunfra_custom_alarms MODIFY COLUMN target_id INT NULL"); } catch (Exception $e) {}
 try { @$pdo->exec("ALTER TABLE sunfra_employees ADD COLUMN whatsapp_group_id VARCHAR(255) NULL"); } catch (Exception $e) {}
 try { @$pdo->exec("ALTER TABLE sunfra_employees MODIFY COLUMN group_id INT NULL"); } catch (Exception $e) {}
+try { @$pdo->exec("ALTER TABLE sunfra_system_settings MODIFY COLUMN `value` LONGTEXT NULL"); } catch (Exception $e) {}
+try { @$pdo->exec("ALTER TABLE sunfra_system_settings MODIFY COLUMN `value` TEXT NULL"); } catch (Exception $e) {}
 
 // 3. Simple REST API Router
 if (isset($_GET['api'])) {
@@ -238,6 +255,87 @@ if (isset($_GET['api'])) {
             } else {
                 $stmt2 = $pdo->prepare("INSERT INTO sunfra_system_settings (`key`, value) VALUES ('custom_report_types', ?)");
                 $stmt2->execute([$val_str]);
+            }
+            echo json_encode(['success' => true]);
+        }
+        elseif ($route === 'waha/status' && $method === 'GET') {
+            $stmt = $pdo->prepare("SELECT value FROM sunfra_system_settings WHERE `key` = 'waha_status'");
+            $stmt->execute();
+            $status = $stmt->fetchColumn() ?: 'UNKNOWN';
+            
+            $stmt = $pdo->prepare("SELECT value FROM sunfra_system_settings WHERE `key` = 'waha_qr_base64'");
+            $stmt->execute();
+            $qr = $stmt->fetchColumn() ?: '';
+            
+            echo json_encode([
+                'status' => $status,
+                'qr_code' => $qr
+            ]);
+        }
+        elseif ($route === 'waha/status' && $method === 'POST') {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $status = $data['status'] ?? 'UNKNOWN';
+            $qr = $data['qr_code'] ?? '';
+            
+            // Upsert status
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM sunfra_system_settings WHERE `key` = 'waha_status'");
+            $stmt->execute();
+            if ($stmt->fetchColumn() > 0) {
+                $pdo->prepare("UPDATE sunfra_system_settings SET value = ? WHERE `key` = 'waha_status'")->execute([$status]);
+            } else {
+                $pdo->prepare("INSERT INTO sunfra_system_settings (`key`, value) VALUES ('waha_status', ?)")->execute([$status]);
+            }
+            
+            // Upsert qr_code
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM sunfra_system_settings WHERE `key` = 'waha_qr_base64'");
+            $stmt->execute();
+            if ($stmt->fetchColumn() > 0) {
+                $pdo->prepare("UPDATE sunfra_system_settings SET value = ? WHERE `key` = 'waha_qr_base64'")->execute([$qr]);
+            } else {
+                $pdo->prepare("INSERT INTO sunfra_system_settings (`key`, value) VALUES ('waha_qr_base64', ?)")->execute([$qr]);
+            }
+            
+            echo json_encode(['success' => true]);
+        }
+        elseif ($route === 'waha/events' && $method === 'GET') {
+            $stmt = $pdo->query("SELECT * FROM sunfra_waha_events ORDER BY timestamp DESC LIMIT 50");
+            echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+        }
+        elseif ($route === 'settings/waha' && $method === 'GET') {
+            $keys = ['smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass', 'smtp_to', 'waha_alert_phone'];
+            $settings = [];
+            foreach ($keys as $k) {
+                $stmt = $pdo->prepare("SELECT value FROM sunfra_system_settings WHERE `key` = ?");
+                $stmt->execute([$k]);
+                $settings[$k] = $stmt->fetchColumn() ?: '';
+            }
+            if (!empty($settings['smtp_pass'])) {
+                $settings['smtp_pass'] = '********';
+            }
+            echo json_encode($settings);
+        }
+        elseif ($route === 'settings/waha' && $method === 'POST') {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $keys = ['smtp_host', 'smtp_port', 'smtp_user', 'smtp_to', 'waha_alert_phone'];
+            foreach ($keys as $k) {
+                if (isset($data[$k])) {
+                    $stmt = $pdo->prepare("SELECT COUNT(*) FROM sunfra_system_settings WHERE `key` = ?");
+                    $stmt->execute([$k]);
+                    if ($stmt->fetchColumn() > 0) {
+                        $pdo->prepare("UPDATE sunfra_system_settings SET value = ? WHERE `key` = ?")->execute([$data[$k], $k]);
+                    } else {
+                        $pdo->prepare("INSERT INTO sunfra_system_settings (`key`, value) VALUES (?, ?)")->execute([$k, $data[$k]]);
+                    }
+                }
+            }
+            if (isset($data['smtp_pass']) && $data['smtp_pass'] !== '********') {
+                $stmt = $pdo->prepare("SELECT COUNT(*) FROM sunfra_system_settings WHERE `key` = 'smtp_pass'");
+                $stmt->execute();
+                if ($stmt->fetchColumn() > 0) {
+                    $pdo->prepare("UPDATE sunfra_system_settings SET value = ? WHERE `key` = 'smtp_pass'")->execute([$data['smtp_pass']]);
+                } else {
+                    $pdo->prepare("INSERT INTO sunfra_system_settings (`key`, value) VALUES ('smtp_pass', ?)")->execute([$data['smtp_pass']]);
+                }
             }
             echo json_encode(['success' => true]);
         }
@@ -666,6 +764,7 @@ try {
             <nav>
                 <a href="#" class="nav-item active" data-target="dashboard">Dashboard</a>
                 <a href="#" class="nav-item" data-target="reminders_view">Reminders</a>
+                <a href="#" class="nav-item" data-target="waha_settings_view">WAHA Status & Settings</a>
             </nav>
         </aside>
         <!-- Main Content -->
@@ -674,6 +773,10 @@ try {
             <section id="dashboard" class="view active">
             <header>
                 <h1>Management Dashboard</h1>
+                <div class="user-profile" id="waha-status-indicator" style="display: flex; align-items: center; gap: 8px; cursor: pointer;" onclick="openWahaQrFromIndicator()">
+                    <span class="status-dot" id="waha-status-dot" style="width: 12px; height: 12px; border-radius: 50%; background-color: #94a3b8; display: inline-block; transition: background-color 0.3s ease;"></span> 
+                    <span id="waha-status-text" style="font-weight: 600;">Checking WAHA...</span>
+                </div>
             </header>
                 <div class="stats-grid">
                     <div class="card stat-card" onclick="document.querySelector('.nav-item[data-target=\'reminders_view\']').click()" style="cursor: pointer; margin-right: 0;" title="Go to Reminders">
@@ -696,9 +799,9 @@ try {
                 <div class="header-row">
                     <h2>Reminders Management</h2>
                     <div style="display: flex; gap: 0.5rem; align-items: center;">
-                        <input type="text" id="remindersSearchInput" placeholder="Search reminders..." oninput="filterRemindersTable()" style="padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); width: 250px; font-size: 0.9rem; background: white; margin: 0; box-sizing: border-box;">
-                        <button class="btn btn-secondary" onclick="openVisibilityModal()" style="margin: 0;">Filter Groups</button>
                         <button class="btn btn-primary" onclick="openReminderModal()" style="margin: 0;">+ Create Reminder</button>
+                        <button class="btn btn-secondary" onclick="openVisibilityModal()" style="margin: 0;">Filter Groups</button>
+                        <input type="text" id="remindersSearchInput" placeholder="Search..." oninput="filterRemindersTable()" style="padding: 0.5rem 0.75rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); width: 150px; font-size: 0.9rem; background: white; margin: 0; box-sizing: border-box;">
                     </div>
                 </div>
                 <div class="card table-card">
@@ -716,6 +819,69 @@ try {
                         </thead>
                         <tbody id="reminders-tbody"></tbody>
                     </table>
+                </div>
+            </section>
+            
+            <!-- WAHA Settings View -->
+            <section id="waha_settings_view" class="view">
+                <div class="header-row">
+                    <h2>WAHA Status &amp; Settings</h2>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-secondary" onclick="checkWahaStatus(true)" style="margin: 0;">&#x21bb; Refresh</button>
+                        <button class="btn btn-primary" onclick="openAlertSettingsModal()" style="margin: 0;">&#9881; Configure Alerts</button>
+                    </div>
+                </div>
+
+                <!-- Status Card (full width) -->
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="status-dot" id="waha-view-status-dot" style="width: 16px; height: 16px; border-radius: 50%; background-color: #94a3b8; display: inline-block; flex-shrink: 0;"></span>
+                            <div>
+                                <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">WAHA Session Status</div>
+                                <div style="font-size: 1.4rem; font-weight: 700;" id="waha-view-status-text">UNKNOWN</div>
+                            </div>
+                        </div>
+                        <div style="flex: 1; min-width: 200px; display: flex; gap: 2rem; flex-wrap: wrap; border-left: 1px solid rgba(0,0,0,0.06); padding-left: 1.5rem;">
+                            <div>
+                                <div style="font-size: 0.8rem; color: var(--text-secondary);">Session</div>
+                                <div style="font-weight: 600;">default</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.8rem; color: var(--text-secondary);">Alert Email</div>
+                                <div style="font-weight: 600;" id="info-smtp-to">kusumpakira1@gmail.com</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.8rem; color: var(--text-secondary);">Alert Phone</div>
+                                <div style="font-weight: 600;" id="info-waha-phone">7259510983</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- QR Code (shows only when needed) -->
+                    <div id="waha-qr-container-inline" style="margin-top: 1.5rem; background: #fff7ed; border: 1px solid #fed7aa; padding: 1.25rem; border-radius: 12px; text-align: center; display: none;">
+                        <p style="font-weight: 700; margin-bottom: 1rem; color: #c2410c;">&#9888; QR Code Scan Required — Scan to reconnect WhatsApp</p>
+                        <div id="waha-qr-img-inline"></div>
+                    </div>
+                </div>
+
+                <!-- Connection Events -->
+                <div class="card">
+                    <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">Connection History &amp; Events</h3>
+                    <div class="table-card" style="max-height: 320px;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Event</th>
+                                    <th>Status</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="waha-events-tbody">
+                                <tr><td colspan="4" style="text-align: center; color: var(--text-secondary);">No events yet.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
         </main>
@@ -843,6 +1009,72 @@ try {
             </div>
         </div>
     </div>
+    <!-- WAHA QR Code Scan Modal -->
+    <div id="wahaQrModal" class="modal">
+        <div class="modal-content card" style="max-width: 420px; text-align: center;">
+            <h3 style="margin-bottom: 1rem;">Scan WhatsApp QR Code</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.95rem;">
+                Your WhatsApp Bot is currently disconnected. Please scan the QR code below using WhatsApp on your phone to reconnect.
+            </p>
+            <div id="modal-qr-container" style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; width: 100%; box-sizing: border-box; min-height: 250px;">
+                <div id="modal-qr-placeholder">Loading QR Code...</div>
+            </div>
+            <div style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 1.5rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('wahaQrModal')">Close</button>
+                <button type="button" class="btn btn-primary" onclick="checkWahaStatus(true)">Refresh QR</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Settings Modal -->
+    <div id="alertSettingsModal" class="modal">
+        <div class="modal-content card" style="width: 480px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="margin: 0;">&#9881; Alert &amp; SMTP Configuration</h3>
+                <button type="button" onclick="closeModal('alertSettingsModal')" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary); line-height: 1;">&times;</button>
+            </div>
+            <form id="wahaSettingsForm" onsubmit="saveWahaSettings(event)">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div class="form-group" style="margin: 0;">
+                        <label style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.4rem;">Alert Phone (WhatsApp)</label>
+                        <input type="text" id="settingAlertPhone" placeholder="7259510983" style="width: 100%; padding: 0.65rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); font-family: inherit; box-sizing: border-box;">
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.4rem;">Alert Email</label>
+                        <input type="email" id="settingAlertEmail" placeholder="kusumpakira1@gmail.com" style="width: 100%; padding: 0.65rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); font-family: inherit; box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <div style="border-top: 1px solid rgba(0,0,0,0.06); padding-top: 1rem; margin-top: 0.5rem;">
+                    <p style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.5px;">SMTP Email Sender</p>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div class="form-group" style="margin: 0;">
+                            <label style="font-size: 0.85rem; display: block; margin-bottom: 0.4rem;">SMTP Host</label>
+                            <input type="text" id="settingSmtpHost" placeholder="smtp.gmail.com" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); font-family: inherit; box-sizing: border-box;">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label style="font-size: 0.85rem; display: block; margin-bottom: 0.4rem;">Port</label>
+                            <input type="number" id="settingSmtpPort" placeholder="587" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); font-family: inherit; box-sizing: border-box;">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label style="font-size: 0.85rem; display: block; margin-bottom: 0.4rem;">SMTP Username</label>
+                        <input type="text" id="settingSmtpUser" placeholder="your_email@gmail.com" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); font-family: inherit; box-sizing: border-box;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label style="font-size: 0.85rem; display: block; margin-bottom: 0.4rem;">SMTP Password / App Password</label>
+                        <input type="password" id="settingSmtpPass" placeholder="Your app password" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); font-family: inherit; box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.75rem;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('alertSettingsModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">&#10003; Save Settings</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         const API_URL = '?api=';
         let waha_groups = [];
@@ -1166,15 +1398,37 @@ try {
         }
 
         function formatDateTime(isoString) {
+            if (!isoString) return '-';
             const dt = parseLocalStatusTime(isoString);
-            return dt.toLocaleString('en-US', {
+            return dt.toLocaleString('en-IN', {
+                timeZone: 'Asia/Kolkata',
                 day: '2-digit',
                 month: 'short',
                 year: 'numeric',
-                hour: 'numeric',
+                hour: '2-digit',
                 minute: '2-digit',
                 hour12: true
-            });
+            }) + ' IST';
+        }
+
+        function formatIST(rawDbTimestamp) {
+            // DB stores timestamps as "2026-07-11 08:30:00" (UTC or local server time)
+            if (!rawDbTimestamp) return '-';
+            // Treat as UTC by appending Z if no timezone info
+            const normalized = rawDbTimestamp.replace(' ', 'T');
+            const hasZ = normalized.endsWith('Z') || normalized.includes('+');
+            const dt = new Date(hasZ ? normalized : normalized + 'Z');
+            if (isNaN(dt)) return rawDbTimestamp; // fallback if unparseable
+            return dt.toLocaleString('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            }) + ' IST';
         }
 
         let reminders = [];
@@ -1444,11 +1698,203 @@ try {
             fetchReminders();
         }
 
+        let lastWahaStatus = '';
+        async function checkWahaStatus(forceModal = false) {
+            try {
+                const response = await fetch(API_URL + 'waha/status');
+                const data = await response.json();
+                
+                const status = data.status || 'UNKNOWN';
+                const qrCode = data.qr_code || '';
+
+                // ── Colour coding ─────────────────────────────────────────────
+                const dotColor = status === 'WORKING'
+                    ? 'var(--success-color)'
+                    : (status === 'SCAN_QR_CODE' ? 'var(--danger-color)'
+                    : (status === 'STOPPED' || status === 'FAILED' ? '#ef4444' : '#94a3b8'));
+
+                const headerDot = document.getElementById('waha-status-dot');
+                if (headerDot) headerDot.style.backgroundColor = dotColor;
+                const headerText = document.getElementById('waha-status-text');
+                if (headerText) headerText.innerText = `WAHA: ${status}`;
+                const viewDot = document.getElementById('waha-view-status-dot');
+                if (viewDot) viewDot.style.backgroundColor = dotColor;
+                const viewText = document.getElementById('waha-view-status-text');
+                if (viewText) viewText.innerText = status;
+
+                // ── Status Banner (shown in WAHA status view) ─────────────────
+                let banner = document.getElementById('waha-status-banner');
+                if (!banner) {
+                    banner = document.createElement('div');
+                    banner.id = 'waha-status-banner';
+                    banner.style.cssText = 'margin-bottom:1.25rem; padding:0.9rem 1.2rem; border-radius:10px; font-weight:600; font-size:0.95rem; display:none;';
+                    const card = document.querySelector('#waha_settings_view .card');
+                    if (card) card.parentNode.insertBefore(banner, card);
+                }
+
+                if (status === 'STOPPED' || status === 'FAILED') {
+                    banner.style.display = 'block';
+                    banner.style.background = '#fef2f2';
+                    banner.style.border = '1px solid #fecaca';
+                    banner.style.color = '#dc2626';
+                    banner.innerHTML = '&#9888; <strong>WhatsApp Bot is ' + status + '.</strong> Auto-restart is in progress (every 5 min). The QR code will appear here automatically once WAHA is ready. Check your email for alerts.';
+                } else if (status === 'SCAN_QR_CODE') {
+                    banner.style.display = 'block';
+                    banner.style.background = '#fff7ed';
+                    banner.style.border = '1px solid #fed7aa';
+                    banner.style.color = '#c2410c';
+                    banner.innerHTML = '&#128247; <strong>QR Scan Required!</strong> Scan the QR code below using WhatsApp on your phone to reconnect the bot.';
+                } else if (status === 'WORKING') {
+                    banner.style.display = 'block';
+                    banner.style.background = '#f0fdf4';
+                    banner.style.border = '1px solid #bbf7d0';
+                    banner.style.color = '#16a34a';
+                    banner.innerHTML = '&#10003; <strong>WhatsApp Bot is Online and Working.</strong> All reminders are being sent normally.';
+                } else {
+                    banner.style.display = 'none';
+                }
+
+                // ── QR Code display ───────────────────────────────────────────
+                const inlineContainer = document.getElementById('waha-qr-container-inline');
+                const inlineImg = document.getElementById('waha-qr-img-inline');
+                const modalContainer = document.getElementById('modal-qr-container');
+
+                if (status === 'SCAN_QR_CODE') {
+                    if (inlineContainer) inlineContainer.style.display = 'block';
+                    if (qrCode) {
+                        const qrImgHtml = `<img src="${qrCode}" style="max-width:280px; border:1px solid rgba(0,0,0,0.1); border-radius:8px;" alt="Scan WhatsApp QR">`;
+                        if (inlineImg) inlineImg.innerHTML = qrImgHtml;
+                        if (modalContainer) modalContainer.innerHTML = qrImgHtml;
+                    } else {
+                        if (inlineImg) inlineImg.innerHTML = '<p style="color:#94a3b8; font-size:0.9rem;">&#8635; QR loading... refresh in a moment.</p>';
+                        if (modalContainer) modalContainer.innerHTML = '<div id="modal-qr-placeholder">&#8635; QR loading... please wait.</div>';
+                    }
+                    // Auto-open modal on state change
+                    if ((lastWahaStatus !== 'SCAN_QR_CODE' || forceModal) && !document.getElementById('wahaQrModal').classList.contains('active')) {
+                        openModal('wahaQrModal');
+                    }
+                } else {
+                    if (inlineContainer) inlineContainer.style.display = 'none';
+                    closeModal('wahaQrModal');
+                }
+
+                lastWahaStatus = status;
+            } catch (err) {
+                console.error("Failed to check WAHA status:", err);
+            }
+        }
+        
+        function openWahaQrFromIndicator() {
+            if (lastWahaStatus === 'SCAN_QR_CODE') {
+                openModal('wahaQrModal');
+            } else {
+                checkWahaStatus(true);
+            }
+        }
+        
+        async function loadWahaEvents() {
+            try {
+                const response = await fetch(API_URL + 'waha/events');
+                const events = await response.json();
+                
+                const tbody = document.getElementById('waha-events-tbody');
+                if (!tbody) return;
+                
+                if (events.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-secondary);">No connection events logged yet.</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = '';
+                events.forEach(e => {
+                    tbody.innerHTML += `
+                        <tr>
+                        <td style="font-weight: 500; white-space: nowrap;">${formatIST(e.timestamp)}</td>
+                            <td><span style="padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; background: rgba(59,130,246,0.1); color: var(--primary-color);">${e.event_type}</span></td>
+                            <td><span style="font-weight: 600; color: ${e.status === 'WORKING' ? 'var(--success-color)' : 'var(--danger-color)'}">${e.status}</span></td>
+                            <td style="color: var(--text-secondary); font-size: 0.9rem;">${escapeHtml(e.details || '')}</td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                console.error("Failed to load WAHA events:", err);
+            }
+        }
+        
+        async function loadWahaSettings() {
+            try {
+                const response = await fetch(API_URL + 'settings/waha');
+                const settings = await response.json();
+                
+                document.getElementById('settingAlertPhone').value = settings.waha_alert_phone || '';
+                document.getElementById('settingAlertEmail').value = settings.smtp_to || '';
+                document.getElementById('settingSmtpHost').value = settings.smtp_host || '';
+                document.getElementById('settingSmtpPort').value = settings.smtp_port || '';
+                document.getElementById('settingSmtpUser').value = settings.smtp_user || '';
+                document.getElementById('settingSmtpPass').value = settings.smtp_pass || '';
+                
+                if (settings.smtp_to) document.getElementById('info-smtp-to').innerText = settings.smtp_to;
+                if (settings.waha_alert_phone) document.getElementById('info-waha-phone').innerText = settings.waha_alert_phone;
+            } catch (err) {
+                console.error("Failed to load WAHA settings:", err);
+            }
+        }
+        
+        async function saveWahaSettings(e) {
+            e.preventDefault();
+            try {
+                const payload = {
+                    waha_alert_phone: document.getElementById('settingAlertPhone').value,
+                    smtp_to: document.getElementById('settingAlertEmail').value,
+                    smtp_host: document.getElementById('settingSmtpHost').value,
+                    smtp_port: document.getElementById('settingSmtpPort').value,
+                    smtp_user: document.getElementById('settingSmtpUser').value,
+                    smtp_pass: document.getElementById('settingSmtpPass').value
+                };
+                
+                const response = await fetch(API_URL + 'settings/waha', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                const res = await response.json();
+                if (res.success) {
+                    closeModal('alertSettingsModal');
+                    loadWahaSettings();
+                    // Show a non-blocking success toast
+                    const toast = document.createElement('div');
+                    toast.innerText = '✓ Alert settings saved!';
+                    toast.style.cssText = 'position:fixed;bottom:2rem;right:2rem;background:#10b981;color:white;padding:0.75rem 1.5rem;border-radius:10px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,0.15);z-index:9999;transition:opacity 0.4s;';
+                    document.body.appendChild(toast);
+                    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 400); }, 2500);
+                } else {
+                    alert("Failed to save settings.");
+                }
+            } catch (err) {
+                console.error("Failed to save WAHA settings:", err);
+                alert("Error saving settings.");
+            }
+        }
+
+        function openAlertSettingsModal() {
+            loadWahaSettings(); // Pre-fill form with current values
+            openModal('alertSettingsModal');
+        }
+
         window.onload = async () => {
             await fetchWahaGroups();
             await loadReportTypesDropdowns();
             await fetchReminders();
             renderMembersChecklist([]);
+            
+            // WAHA Session Monitoring Init
+            await checkWahaStatus();
+            await loadWahaEvents();
+            await loadWahaSettings();
+            
+            // Periodically check status (every 60s) and events (every 2 min)
+            setInterval(() => checkWahaStatus(), 60000);
+            setInterval(() => loadWahaEvents(), 120000);
         };
     </script>
 </body>

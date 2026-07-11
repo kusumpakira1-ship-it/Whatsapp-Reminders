@@ -10,7 +10,7 @@ from typing import List, Optional
 from contextlib import asynccontextmanager
 
 from database import engine, Base, SessionLocal
-from models import Whitelist, RawMessage, ProcessedData, Group, Employee, SystemSetting, CustomAlarm, WhatsAppMessage
+from models import Whitelist, RawMessage, ProcessedData, Group, Employee, SystemSetting, CustomAlarm, WhatsAppMessage, WAHAEvent
 from ai_processor import process_text, process_image, process_document
 from waha_service import download_waha_media, get_waha_chat_name, send_waha_message, send_waha_file
 from scheduler import setup_scheduler, scheduler, schedule_custom_alarm
@@ -21,6 +21,27 @@ logger = logging.getLogger(__name__)
 
 # Create tables in the remote database (if they don't exist)
 Base.metadata.create_all(bind=engine)
+
+def _seed_default_settings():
+    """Seed default alert phone/email if not already configured."""
+    db = SessionLocal()
+    try:
+        defaults = {
+            "waha_alert_phone": "7259510983",
+            "smtp_to": "kusumpakira1@gmail.com"
+        }
+        for key, value in defaults.items():
+            existing = db.query(SystemSetting).filter(SystemSetting.key == key).first()
+            if not existing:
+                db.add(SystemSetting(key=key, value=value))
+        db.commit()
+        logger.info("Default WAHA alert settings seeded.")
+    except Exception as e:
+        logger.error(f"Failed to seed default settings: {e}")
+    finally:
+        db.close()
+
+_seed_default_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

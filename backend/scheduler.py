@@ -1,4 +1,5 @@
 import logging
+import os
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from report_generator import generate_daily_reports, generate_custom_report
@@ -7,7 +8,7 @@ from config import settings
 from apscheduler.triggers.date import DateTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 from database import SessionLocal
-from models import ReportRecipient, Group, Employee, ProcessedData, SystemSetting, CustomAlarm, UnifiedReminder
+from models import ReportRecipient, Group, Employee, ProcessedData, SystemSetting, CustomAlarm, UnifiedReminder, WAHAEvent
 from sqlalchemy import func
 
 logger = logging.getLogger(__name__)
@@ -172,37 +173,250 @@ async def scheduled_targeted_reminder_job():
     finally:
         db.close()
 
-# Global state to prevent alert spamming
-alert_state = {"is_alerted": False}
+# Global state to prevent alert spamming and track last status
+alert_state = {"is_alerted": False, "last_status": "UNKNOWN", "qr_alerted": False}
+
+# Restart cooldown — only restart WAHA container once per 5 minutes
+_last_restart_time = 0
+RESTART_COOLDOWN_SEC = 300  # 5 minutes
+
+# ── In-memory settings cache (refreshed every 10 min, NOT every 60 sec) ──────
+import time
+_settings_cache = {}
+_settings_cache_ts = 0
+SETTINGS_CACHE_TTL = 600  # 10 minutes
+
+def get_cached_settings():
+    """Read alert/SMTP settings from DB once per 10 min, cache rest in memory."""
+    global _settings_cache, _settings_cache_ts
+    now = time.time()
+    if now - _settings_cache_ts < SETTINGS_CACHE_TTL and _settings_cache:
+        return _settings_cache
+    db = SessionLocal()
+    try:
+        keys = ['smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass', 'smtp_to', 'waha_alert_phone']
+        result = {}
+        rows = db.query(SystemSetting).filter(SystemSetting.key.in_(keys)).all()
+        for row in rows:
+            result[row.key] = row.value
+        # Defaults
+        result.setdefault('smtp_to', 'kusumpakira1@gmail.com')
+        result.setdefault('waha_alert_phone', '7259510983')
+        _settings_cache = result
+        _settings_cache_ts = now
+        logger.info("Settings cache refreshed from DB.")
+        return _settings_cache
+    except Exception as e:
+        logger.error(f"Failed to refresh settings cache: {e}")
+        return _settings_cache or {'smtp_to': 'kusumpakira1@gmail.com', 'waha_alert_phone': '7259510983'}
+    finally:
+        db.close()
+
+def send_smtp_email(subject, body, attachment_path=None):
+    """Uses in-memory cached settings — NO extra DB connection opened."""
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.image import MIMEImage
+    
+    cfg = get_cached_settings()
+    host     = cfg.get('smtp_host', '')
+    port_str = cfg.get('smtp_port', '587')
+    user     = cfg.get('smtp_user', '')
+    password = cfg.get('smtp_pass', '')
+    to_email = cfg.get('smtp_to', 'kusumpakira1@gmail.com')
+    port     = int(port_str) if str(port_str).isdigit() else 587
+    
+    if not host or not user or not password:
+        logger.warning("SMTP configuration is incomplete. Skipping email alert.")
+        return False
+        
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = user
+        msg['To'] = to_email
+        msg['Subject'] = subject
+        msg.attach(MIMEText(body, 'plain'))
+        
+        if attachment_path and os.path.exists(attachment_path):
+            with open(attachment_path, 'rb') as f:
+                img_data = f.read()
+                image = MIMEImage(img_data, name=os.path.basename(attachment_path))
+                msg.attach(image)
+                
+        with smtplib.SMTP(host, port) as server:
+            server.starttls()
+            server.login(user, password)
+            server.send_message(msg)
+        logger.info(f"SMTP Email alert sent successfully to {to_email}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to send SMTP email: {e}")
+        return False
+
+def restart_waha_container():
+    logger.info("Triggering automatic WAHA container restart...")
+    import socket
+    try:
+        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        s.settimeout(10)
+        s.connect("/var/run/docker.sock")
+        s.sendall(b"POST /containers/waha/restart HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n")
+        resp = s.recv(1024)
+        s.close()
+        logger.info(f"WAHA Container restart signal sent. Docker daemon response: {resp[:100]}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to restart WAHA container via Docker socket: {e}")
+        return False
+
+def log_waha_event(event_type: str, status: str, details: str = None, db=None):
+    """Accepts an existing db session to avoid opening a new connection."""
+    from datetime import datetime
+    own_session = db is None
+    if own_session:
+        db = SessionLocal()
+    try:
+        event = WAHAEvent(
+            event_type=event_type,
+            status=status,
+            details=details,
+            timestamp=datetime.now()
+        )
+        db.add(event)
+        db.commit()
+        logger.info(f"WAHA Event Logged: {event_type} | {status} | {details}")
+    except Exception as e:
+        logger.error(f"Failed to log WAHA event: {e}")
+    finally:
+        if own_session:
+            db.close()
+
+def sync_status_to_live(status, qr_code_base64=""):
+    """Write WAHA status directly to MySQL — no HTTP call to live PHP server."""
+    db = SessionLocal()
+    try:
+        for key, val in [("waha_status", status), ("waha_qr_base64", qr_code_base64)]:
+            row = db.query(SystemSetting).filter(SystemSetting.key == key).first()
+            if row:
+                row.value = val
+            else:
+                db.add(SystemSetting(key=key, value=val))
+        db.commit()
+        logger.info(f"WAHA status updated in DB directly: {status}")
+    except Exception as e:
+        logger.error(f"Error writing WAHA status to DB: {e}")
+    finally:
+        db.close()
+
+def get_qr_base64(qr_path):
+    if not qr_path or not os.path.exists(qr_path):
+        return ""
+    try:
+        import base64
+        with open(qr_path, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+            return f"data:image/png;base64,{encoded_string}"
+    except Exception as e:
+        logger.error(f"Failed to encode QR code: {e}")
+        return ""
 
 async def health_monitor_job():
     logger.info("Running WAHA Health Monitor...")
     primary_session = settings.WAHA_SESSION
     status = get_session_status(primary_session)
     
-    # If the session is disconnected or scanning
+    # ── ONE single DB session for all reads/writes this run ──────────────────
+    db = SessionLocal()
+    try:
+        # 1. Detect if status changed and log event (reuse same session)
+        if status != alert_state["last_status"]:
+            log_waha_event("status_changed", status,
+                           f"WAHA session status changed from {alert_state['last_status']} to {status}",
+                           db=db)
+            alert_state["last_status"] = status
+    finally:
+        db.close()
+
+    # 2. Get alert destinations from MEMORY CACHE (no extra DB connection)
+    cfg = get_cached_settings()
+    to_email   = cfg.get('smtp_to', 'kusumpakira1@gmail.com')
+    alert_phone = cfg.get('waha_alert_phone', '7259510983')
+        
+    admin_phone = f"91{alert_phone}" if len(alert_phone) == 10 and alert_phone.isdigit() else alert_phone
+    if not admin_phone.endswith('@c.us') and not admin_phone.endswith('@g.us') and not admin_phone.endswith('@lid'):
+        admin_phone += '@c.us'
+
     if status in ("STOPPED", "FAILED", "SCAN_QR_CODE"):
-        if not alert_state["is_alerted"]:
-            logger.warning(f"Primary WAHA Session '{primary_session}' is {status}! Fetching QR...")
+        # ── Auto-restart with COOLDOWN (5 min) so WAHA can reach SCAN_QR_CODE ──
+        if status in ("STOPPED", "FAILED"):
+            global _last_restart_time
+            now_ts = time.time()
+            if now_ts - _last_restart_time >= RESTART_COOLDOWN_SEC:
+                log_waha_event("stopped_restart", status, "WAHA session stopped/failed. Triggering container restart.", db=None)
+                restart_waha_container()
+                _last_restart_time = now_ts
+                logger.info("WAHA restart triggered. Next restart allowed in 5 minutes.")
+            else:
+                remaining = int(RESTART_COOLDOWN_SEC - (time.time() - _last_restart_time))
+                logger.info(f"WAHA is {status} — restart on cooldown ({remaining}s remaining). Waiting for SCAN_QR_CODE...")
+        
+        qr_path = None
+        qr_base64 = ""
+        if status == "SCAN_QR_CODE":
+            logger.warning(f"Primary WAHA Session '{primary_session}' needs QR scan! Fetching QR...")
             qr_path = get_session_qr(primary_session)
-            
-            admin_phone = f"{settings.MANAGER_PHONE}@c.us"
-            alert_msg = f"🚨 *URGENT ALERT*\nYour Primary Farm Auto Bot (Session: {primary_session}) is currently logged out (Status: {status}).\n\nPlease scan the QR code below from your primary phone to reconnect!"
-            
-            # Send message using the 'backup' session
-            send_waha_message(admin_phone, alert_msg, session="backup")
             if qr_path:
-                send_waha_file(admin_phone, qr_path, caption="Scan this QR code to login", session="backup")
-                
+                qr_base64 = get_qr_base64(qr_path)
+        
+        # Push Status and QR to live index.php server
+        sync_status_to_live(status, qr_base64)
+
+        # Send disconnect alert (once)
+        if not alert_state["is_alerted"]:
+            email_body = (
+                f"Hello Admin,\n\n"
+                f"Your Primary Farm Auto Bot is logged out (Status: {status}).\n\n"
+                f"The system has automatically attempted to restart the bot.\n"
+                f"A separate email with the QR code will be sent once WAHA is ready to reconnect.\n\n"
+                f"You can also check the dashboard for live status and QR code."
+            )
+            send_smtp_email(f"🚨 URGENT: WAHA WhatsApp Bot disconnected ({status})", email_body, None)
+            # NOTE: WhatsApp alert not possible here — WAHA itself is DOWN (status={status})
+            logger.info(f"Disconnect email sent. WhatsApp alert skipped (WAHA is {status}, cannot send messages).")
             alert_state["is_alerted"] = True
+        
+        # Send QR code separately when WAHA is running but needs scan
+        if status == "SCAN_QR_CODE" and not alert_state["qr_alerted"]:
+            logger.info("WAHA needs QR scan — sending QR code to email...")
+            email_body = (
+                f"Hello Admin,\n\n"
+                f"Your WhatsApp Bot needs to be reconnected. Please scan the attached QR code.\n\n"
+                f"How to scan:\n"
+                f"  1. Open WhatsApp on your phone\n"
+                f"  2. Go to Settings → Linked Devices\n"
+                f"  3. Tap 'Link a Device'\n"
+                f"  4. Scan the QR code in this email\n\n"
+                f"You can also scan directly from the dashboard."
+            )
+            send_smtp_email("📱 WhatsApp QR Code — Scan to Reconnect Bot", email_body, qr_path)
+            alert_state["qr_alerted"] = True
     else:
-        # If it recovers, reset the alert state
+        # Reconnected / Working fine
+        sync_status_to_live(status)
         if alert_state["is_alerted"] and status == "WORKING":
             logger.info(f"Primary WAHA Session '{primary_session}' is back online!")
-            admin_phone = f"{settings.MANAGER_PHONE}@c.us"
-            recovery_msg = f"✅ *RECOVERY ALERT*\nYour Primary Farm Auto Bot is back online and working perfectly!"
-            send_waha_message(admin_phone, recovery_msg, session="backup")
+            # Send recovery email
+            email_body = "Hello Admin,\n\nYour Primary Farm Auto Bot is back online and working perfectly!\nNo further action is required."
+            send_smtp_email("✅ RECOVERY: WAHA WhatsApp Bot is back online", email_body)
+            # Send WhatsApp recovery message via default session (now working)
+            try:
+                recovery_msg = "✅ *RECOVERY ALERT*\nYour Primary Farm Auto Bot is back online and working perfectly!"
+                send_waha_message(admin_phone, recovery_msg, session=primary_session)
+            except Exception as e:
+                logger.warning(f"Could not send WhatsApp recovery notification: {e}")
             alert_state["is_alerted"] = False
+            alert_state["qr_alerted"] = False
 
 def _check_if_report_submitted(db, alarm, today) -> bool:
     report_type = alarm.report_type
@@ -720,43 +934,44 @@ def sync_groups_to_live():
         logger.error(f"Error syncing groups: {e}")
 
 def poll_live_alarms():
-    logger.info("Polling live server for pending alarms...")
+    """Read and execute custom alarms directly from MySQL — no HTTP call to live PHP server."""
+    logger.info("Checking DB for pending custom alarms...")
+    db = SessionLocal()
     try:
-        import requests
-        response = requests.get("https://sunfragroup.com/kusum/Whatsapp_Rem/index.php?api=bridge/alarms", timeout=10)
-        if response.status_code == 200:
-            alarms = response.json()
-            
-            from datetime import timezone, timedelta
-            IST = timezone(timedelta(hours=5, minutes=30))
-            now_ist = datetime.now(IST).replace(tzinfo=None)
-            
-            pending_found = False
-            for alarm in alarms:
-                if alarm.get('status') == 'pending':
-                    pending_found = True
-                    trigger_time = datetime.fromisoformat(alarm['trigger_time'])
-                    
-                    if trigger_time <= now_ist:
-                        target_id = alarm.get('whatsapp_id')
-                        notes = alarm.get('task_notes', '')
-                        if target_id:
-                            logger.info(f"Triggering live alarm {alarm['id']} to {target_id}")
-                            msg = f"🔔 *Live Custom Alarm*\n\n{notes}"
-                            send_waha_message(target_id, msg)
-                            
-                            # Mark as sent on live server
-                            requests.post(f"https://sunfragroup.com/kusum/Whatsapp_Rem/index.php?api=alarms/{alarm['id']}/trigger", timeout=10)
-            if not pending_found:
-                logger.debug("No pending live alarms found.")
+        from datetime import datetime, timezone, timedelta
+        IST = timezone(timedelta(hours=5, minutes=30))
+        now_ist = datetime.now(IST).replace(tzinfo=None)
+
+        pending = db.query(CustomAlarm).filter(
+            CustomAlarm.status == 'pending',
+            CustomAlarm.trigger_time <= now_ist
+        ).all()
+
+        if not pending:
+            logger.debug("No pending custom alarms.")
+            return
+
+        for alarm in pending:
+            target_id = alarm.whatsapp_target_id
+            if not target_id:
+                continue
+            notes = alarm.task_notes or ''
+            logger.info(f"Triggering custom alarm {alarm.id} to {target_id}")
+            msg = f"🔔 *Custom Alarm*\n\n{notes}"
+            send_waha_message(target_id, msg)
+            alarm.status = 'sent'
+
+        db.commit()
     except Exception as e:
-        logger.error(f"Error polling live server: {e}")
+        logger.error(f"Error processing custom alarms: {e}")
+    finally:
+        db.close()
 
 def setup_scheduler():
     global scheduler
     
-    # Schedule Health Monitor every 5 minutes
-    scheduler.add_job(health_monitor_job, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300)
+    # Schedule Health Monitor every 1 minute
+    scheduler.add_job(health_monitor_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60)
     
     # Schedule media/report cleanup daily at 12:05 AM IST
     scheduler.add_job(cleanup_old_files_job, CronTrigger(hour=0, minute=5, timezone="Asia/Kolkata"), misfire_grace_time=3600)
