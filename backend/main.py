@@ -89,15 +89,24 @@ def process_message_background(
                 raw_msg.media_path = media_path
                 db.commit()
                 
-                media_path_lower = media_path.lower()
-                if media_path_lower.endswith(('.jpg', '.jpeg', '.png')):
-                    ai_result = process_image(media_path, caption=text)
-                    source_type = "image"
-                elif media_path_lower.endswith('.pdf'):
-                    ai_result = process_document(media_path, caption=text)
-                    source_type = "document"
-                else:
-                    logger.info(f"Unsupported media type for AI: {media_path}")
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error fetching raw_msg before AI: {e}")
+    finally:
+        db.close()
+                
+    # Proceed with AI Processing WITHOUT holding the database connection open!
+    if has_media:
+        if media_path:
+            media_path_lower = media_path.lower()
+            if media_path_lower.endswith(('.jpg', '.jpeg', '.png')):
+                ai_result = process_image(media_path, caption=text)
+                source_type = "image"
+            elif media_path_lower.endswith('.pdf'):
+                ai_result = process_document(media_path, caption=text)
+                source_type = "document"
+            else:
+                logger.info(f"Unsupported media type for AI: {media_path}")
         
         # Determine the category from the vision result (if any)
         vision_cat = "unknown"
@@ -127,7 +136,9 @@ def process_message_background(
                     ai_result = text_ai_result
                     source_type = "text"
 
-        # Save Processed Data
+    # Re-open database connection to save Processed Data
+    db = SessionLocal()
+    try:
         if ai_result:
             records = []
             if isinstance(ai_result, list):

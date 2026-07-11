@@ -55,7 +55,6 @@ def generate_custom_report(range_type: str = 'daily'):
         ProcessedData.processed_time >= f"{start_date} 00:00:00",
         ProcessedData.processed_time <= f"{end_date} 23:59:59"
     ).all()
-    db.close()
 
     os.makedirs("/app/media/reports", exist_ok=True)
     import glob
@@ -69,6 +68,7 @@ def generate_custom_report(range_type: str = 'daily'):
     pdf_path = f"/app/media/reports/{range_type.capitalize()}_Report_{timestamp}.pdf"
 
     if not data:
+        db.close()
         msg = f"📭 No farm data collected for {start_date.strftime('%d %b %Y')}."
         _generate_empty_pdf(pdf_path, msg)
         return pdf_path, msg
@@ -88,6 +88,7 @@ def generate_custom_report(range_type: str = 'daily'):
 
     df = df[df['category'] != 'unknown']
     if df.empty:
+        db.close()
         msg = f"📭 No classifiable farm data found for {start_date.strftime('%d %b %Y')}."
         _generate_empty_pdf(pdf_path, msg)
         return pdf_path, msg
@@ -142,6 +143,7 @@ def generate_custom_report(range_type: str = 'daily'):
         if feed_mt > 0:
             default_feed_cost_ton = amt / feed_mt
 
+    db.close()
     summary_text = build_whatsapp_summary(df, range_type, start_date, end_date, birds_map, default_egg_rate, default_feed_cost_ton)
     generate_pdf(pdf_path, df, range_type, start_date, end_date, birds_map, default_egg_rate, default_feed_cost_ton)
 

@@ -1,0 +1,2 @@
+{"__type":"$$EventMessageAudit","id":"d98a01c7-4ff2-44da-bad4-fe22621be60f","ts":"2026-07-10T10:16:13.731+00:00","eventName":"n8n.audit.user.login.success","message":"n8n.audit.user.login.success","payload":{"userId":"7b3e0480-85d1-4351-8a64-bff74bd5f199","_email":"kusumpakira1@gmail.com","_firstName":"Kusum","_lastName":"Pakira","globalRole":"global:owner","authenticationMethod":"email"}}
+{"__type":"$$EventMessageConfirm","confirm":"d98a01c7-4ff2-44da-bad4-fe22621be60f","ts":"2026-07-10T10:16:13.764+00:00","source":{"id":"0","name":"eventBus"}}

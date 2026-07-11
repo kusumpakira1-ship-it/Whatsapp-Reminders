@@ -22,7 +22,7 @@ def send_waha_message(chat_id: str, text: str, session: str = None, mentions: li
         headers["X-Api-Key"] = api_key
     
     try:
-        response = requests.post(url, json=payload, headers=headers)
+        response = requests.post(url, json=payload, headers=headers, timeout=30)
         if response.status_code not in (200, 201):
             print(f"WAHA sendText failed: {response.status_code} - {response.text}")
         return response.status_code in (200, 201)
@@ -64,7 +64,7 @@ def send_waha_file(chat_id: str, file_path: str, caption: str = "", session: str
             "session": session if session else settings.WAHA_SESSION
         }
         
-        response = requests.post(url, json=payload, headers=headers)
+        response = requests.post(url, json=payload, headers=headers, timeout=30)
         if response.status_code not in (200, 201):
             print(f"WAHA sendFile failed: {response.status_code} - {response.text}")
         return response.status_code in (200, 201)
@@ -94,7 +94,7 @@ def download_waha_media(message_id: str, media_url: str = None, mimetype: str = 
         url = f"{settings.WAHA_URL}/api/{settings.WAHA_SESSION}/messages/{encoded_msg_id}/download"
         
     try:
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=30)
         if response.status_code == 200:
             # Determine extension using mimetype, Content-Type, or filename (case-insensitive)
             check_mime = (mimetype or response.headers.get("Content-Type", "")).lower()

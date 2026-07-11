@@ -57,12 +57,17 @@ def reprocess_missing():
         print("Querying missing raw messages from database...")
         sys.stdout.flush()
         
+        from sqlalchemy import or_
         raw_msgs = db.query(RawMessage).outerjoin(
             ProcessedData, RawMessage.message_id == ProcessedData.message_id
         ).filter(
             and_(
                 RawMessage.timestamp >= cutoff,
-                ProcessedData.id == None
+                or_(
+                    ProcessedData.id == None,
+                    ProcessedData.notes == "AI processing failed or unreachable",
+                    ProcessedData.category == "unknown"
+                )
             )
         ).order_by(RawMessage.timestamp.asc()).all()
         
@@ -172,10 +177,10 @@ def reprocess_missing():
                 retries -= 1
                 ai_result = None
 
-        # Sleep 30 seconds between loop iterations to respect the 6,000 TPM limit of llama-3.1-8b-instant
-        print("Sleeping 30s to respect rate limits...")
+        # Sleep 1 second between loop iterations (Ollama)
+        print("Sleeping 1s...")
         sys.stdout.flush()
-        time.sleep(30)
+        time.sleep(1)
 
         if ai_result:
             print(f"AI Result: {json.dumps(ai_result, indent=2)}")
@@ -196,6 +201,9 @@ def reprocess_missing():
             # Open a fresh connection ONLY when we need to write, and close it immediately
             write_db = SessionLocal()
             try:
+                # Delete any existing processed data for this message to prevent duplicates/placeholders
+                write_db.query(ProcessedData).filter(ProcessedData.message_id == msg_id).delete()
+                
                 for record in records:
                     if isinstance(record, dict) and record.get("category", "unknown") != "unknown":
                         proc_data = ProcessedData(

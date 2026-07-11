@@ -578,7 +578,7 @@ def poll_and_execute_unified_reminders():
                         private_body = f"Please submit today's *{missing_str}* Report so the daily records and reports can be completed accurately."
                     
                     private_msg = (
-                        "⏰Sunfra Farms Reminder\n\n"
+                        "⏰Reminder\n\n"
                         f"Hi *{p['name']}*,\n\n"
                         f"{private_body}\n\n"
                         "Thank you! 🌱"
@@ -600,7 +600,7 @@ def poll_and_execute_unified_reminders():
                         group_body = f"Please submit today's *{missing_str}* Report so the daily records and reports can be completed accurately."
                         
                     group_msg = (
-                        "⏰Sunfra Farms Reminder\n\n"
+                        "⏰Reminder\n\n"
                         f"Hi {name_tags},\n\n"
                         f"{group_body}\n\n"
                         "Thank you! 🌱"
