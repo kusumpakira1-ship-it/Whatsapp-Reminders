@@ -4356,5 +4356,646 @@
         "group_name": "Gate Manager",
         "raw_text": "",
         "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T17:04:28.600587+05:30",
+        "message_id": "false_120363225998735559@g.us_A523EBFA1595B9DE05949325E0500A92_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "unknown",
+            "category": "egg_collection_1",
+            "quantity": 300,
+            "unit": "eggs",
+            "amount": 6000,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "10\u00d75\u00d76 = 300 eggs"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:07:12.199192+05:30",
+        "message_id": "false_120363225998735559@g.us_A5F6D059ED8FD9986D2B5957F0C1A121_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Image processing failed"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:09:53.212967+05:30",
+        "message_id": "false_120363046205890693@g.us_AC16FBC2018E0486C87AD8A2A5CCA8EA_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] \ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a (141927630536871)",
+        "sender_name": "\ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "(Local Sale) \nShead Big eggs 21 Trays\n3Shead Big eggs 80 Trays\nPaper trays 20 Piece\nSend to Local Sale",
+        "ai_extracted": {
+            "shead_name": "Big",
+            "category": "sales",
+            "quantity": 59,
+            "unit": "trays",
+            "amount": null,
+            "notes": "Local Sale, Send to Local Sale",
+            "confidence_score": 1.0,
+            "processed_text": "Local Sale: Big eggs (21 trays) and 3Shead Big eggs (80 trays). Paper trays (20 pieces). Sent to Local Sale."
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:12:59.740990+05:30",
+        "message_id": "false_120363212822578807@g.us_AC23E54867883934E711E10BB2ED267D_92282304913416@lid",
+        "sender": "[120363212822578807] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "120363212822578807",
+        "raw_text": "Shead3",
+        "ai_extracted": {
+            "shead_name": "Shead 3",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "The image shows a padlock on a gate, but does not provide any specific data related to poultry farming."
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:13:11.556504+05:30",
+        "message_id": "false_120363225998735559@g.us_A55E31E884631F3981E1B6228242B8CC_234952327213239@lid",
+        "sender": "[120363225998735559] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "120363225998735559",
+        "raw_text": "Out",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T17:13:12.037775+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0EF4AF388785353277D_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Paying \n5 load Kasu Raallu.\n5*4900=24500",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T17:15:06.662455+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB031D8AD713C12C922C2_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "5 load kasu rallu",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "sales",
+            "quantity": 5,
+            "unit": "load",
+            "amount": 24000.0,
+            "notes": "kasu rallu 5 load",
+            "confidence_score": 1.0,
+            "processed_text": "Sales of kasu rallu for 5 loads"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:21:42.403032+05:30",
+        "message_id": "false_120363225998735559@g.us_A58C74476E22EB54DBB4757104F6DD5F_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Out",
+        "ai_extracted": {
+            "shead_name": "unknown",
+            "category": "unknown",
+            "quantity": 10,
+            "unit": "people",
+            "amount": null,
+            "notes": "Out",
+            "confidence_score": 1.0,
+            "processed_text": "Out"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:21:51.654332+05:30",
+        "message_id": "false_120363225998735559@g.us_A577AF99E4AE6B5F4972323A98C1A888_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Out"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:22:00.952716+05:30",
+        "message_id": "false_120363225998735559@g.us_A55E259D8C50A02410DA31872C093AD2_234952327213239@lid",
+        "sender": "[120363225998735559] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "120363225998735559",
+        "raw_text": "Out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Out"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:22:11.237596+05:30",
+        "message_id": "false_120363405469158412@g.us_ACF20DDA29E3EF000D8EC52EEFA0E83E_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "5 load kasu rallu",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "5 load kasu rallu"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:29:52.893679+05:30",
+        "message_id": "false_120363225998735559@g.us_A526638E80B2B4708865E650FC06BF33_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Out",
+        "ai_extracted": {
+            "shead_name": "Out",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "Out",
+            "confidence_score": 1.0,
+            "processed_text": "Out"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:30:41.222565+05:30",
+        "message_id": "false_120363212822578807@g.us_ACD0F3309E238850CCD3A3477CF5B6E9_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead getwaals",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T17:31:14.486536+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB02DFEE1EE8EE6A4E2CC_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Payment for purchase of ice bars \nfor 2nd shed lasota vaccine",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T17:31:28.995618+05:30",
+        "message_id": "false_120363212822578807@g.us_AC5D903C4304D86B233BAC8EC085DE8E_231275432571022@lid",
+        "sender": "[120363212822578807] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "120363212822578807",
+        "raw_text": "2nd Shead getwaals",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T17:31:42.999534+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB03448088537E9FD2843_184791135711366@lid",
+        "sender": "[120363405469158412] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "120363405469158412",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T17:32:13.575939+05:30",
+        "message_id": "false_120363212822578807@g.us_AC9D0F8C92C7B589F96D9ED5948EF12F_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead1",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T17:32:22.869737+05:30",
+        "message_id": "false_120363225998735559@g.us_A585BEF901E7AF7239C21B426955D65E_234952327213239@lid",
+        "sender": "[120363225998735559] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "120363225998735559",
+        "raw_text": "In",
+        "ai_extracted": {
+            "shead_name": "Shead 1",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": null,
+            "notes": "",
+            "confidence_score": 0.95,
+            "processed_text": "In the image, there are no clear details related to poultry farm data such as egg collection, hen weight, mortality, sales, feed, raw materials, medicine, expenses, purchases, or any calculations involving quantities and prices."
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:34:50.694499+05:30",
+        "message_id": "false_120363212822578807@g.us_AC1C7CBEB91E18ABCA470DDE16876EAF_231275432571022@lid",
+        "sender": "[120363212822578807] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "120363212822578807",
+        "raw_text": "4th Shead",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "4th Shead"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:34:55.188044+05:30",
+        "message_id": "false_120363225998735559@g.us_A5E8188BB1801F7267295262C69ADEB1_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Out"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:35:59.279937+05:30",
+        "message_id": "false_120363212822578807@g.us_AC6DB3B4FF8AD0DB3A0E080F602FC150_231275432571022@lid",
+        "sender": "[120363212822578807] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "120363212822578807",
+        "raw_text": "2nd Shead",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "2nd Shead"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:36:29.339348+05:30",
+        "message_id": "false_120363212822578807@g.us_AC5B5764245B397F8FA1A6C7F4A10F30_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "7th Shead",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "7th Shead"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:36:43.336123+05:30",
+        "message_id": "false_120363212822578807@g.us_ACD10A05DEDBD19AEC59910B635A3683_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead1",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Shead1"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:36:50.387623+05:30",
+        "message_id": "false_120363212822578807@g.us_AC563CF75ECCE8DD56E5F3DFBF309B30_231275432571022@lid",
+        "sender": "[120363212822578807] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "120363212822578807",
+        "raw_text": "8th Shead",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "8th Shead"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:37:00.840721+05:30",
+        "message_id": "false_120363212822578807@g.us_AC6BBD10996AC46BA201B9F11896CEB4_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "6th Shead",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "6th Shead"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:37:09.978153+05:30",
+        "message_id": "false_120363225998735559@g.us_A5A7A55869332C63F7F004A8B2C5C459_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Out",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T17:37:19.141555+05:30",
+        "message_id": "false_120363212822578807@g.us_AC4B7CDC0A87BB094D36CEA7A8ED79D0_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (231275432571022)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "5th Shead",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "5th Shead"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:37:29.427125+05:30",
+        "message_id": "false_120363212822578807@g.us_AC99C5EB16807ECCDB382E0CE58173BD_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (92282304913416)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Shead3"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:37:41.349619+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0081DE506F2A62D33AC_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Bhajan Commission For June  month \nRs 1020",
+        "ai_extracted": {
+            "shead_name": "unknown",
+            "category": "sales",
+            "quantity": 1,
+            "unit": "month",
+            "amount": 1020.0,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "Bhajan Commission For June month Rs 1020"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:37:50.500219+05:30",
+        "message_id": "false_120363225998735559@g.us_A532708F2C4063EB0D57483B761CB71D_234952327213239@lid",
+        "sender": "[120363225998735559] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "120363225998735559",
+        "raw_text": "Out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Out"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:52:00.087698+05:30",
+        "message_id": "false_120363046205890693@g.us_AC65ED400FB67ABF114E2D7373FA4EF0_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] \ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a (141927630536871)",
+        "sender_name": "\ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "190.18 Trays of production 8th Shead Second collection",
+        "ai_extracted": {
+            "shead_name": "8th Shead",
+            "category": "egg_collection_2",
+            "quantity": 190,
+            "unit": "trays",
+            "amount": 190.18,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "190.18 trays of production"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T17:53:28.411551+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB016888C0043C857C962_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Purchase of blades and jali for feed plant",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-11T17:55:48.727643+05:30",
+        "message_id": "false_120363046205890693@g.us_AC01054CFC44ADA9768BC6CBE0BDCA0F_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] \ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a (141927630536871)",
+        "sender_name": "\ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "195.11 Trays of production 6th Shead Second collection",
+        "ai_extracted": {
+            "shead_name": "Second Collection",
+            "category": "egg_collection_2",
+            "quantity": 195,
+            "unit": "trays",
+            "amount": 0,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "195 trays of production"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T18:00:56.594490+05:30",
+        "message_id": "false_120363046205890693@g.us_AC22D5108BE245898A7B554B5D0CC592_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] \ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a (141927630536871)",
+        "sender_name": "\ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "08.24 Trays of production 5th Shead",
+        "ai_extracted": {
+            "shead_name": "5th Shead",
+            "category": "production",
+            "quantity": 5,
+            "unit": "trays",
+            "amount": null,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "08.24 Trays of production from 5th Shead"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T18:01:07.717624+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB07D18D3F0B25436D80F_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (184791135711366)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Sales_52 (26-27).pdf",
+        "ai_extracted": {
+            "shead_name": "unknown",
+            "category": "sales",
+            "quantity": 1,
+            "unit": "trays",
+            "amount": 0.0,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "Sales of 1 tray on 26-27"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T18:01:22.836725+05:30",
+        "message_id": "false_120363046205890693@g.us_ACD6DB9C3CC400F1785C4C1005BCD964_141927630536871@lid",
+        "sender": "[120363046205890693] \ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a (141927630536871)",
+        "sender_name": "\ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a",
+        "is_group": true,
+        "group_name": "120363046205890693",
+        "raw_text": "161.22 Trays of production 7th Shead Second collection",
+        "ai_extracted": {
+            "shead_name": "7th Shead",
+            "category": "egg_collection_2",
+            "quantity": 161.22,
+            "unit": "trays",
+            "amount": null,
+            "notes": "",
+            "confidence_score": 0.95,
+            "processed_text": "161.22 trays of egg collection in the second round from Shead 7th"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T18:01:32.168947+05:30",
+        "message_id": "false_120363225998735559@g.us_A53637E93A6A071FCE2FADA8FAFE0882_234952327213239@lid",
+        "sender": "[120363225998735559] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "120363225998735559",
+        "raw_text": "Out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Out"
+        }
+    },
+    {
+        "timestamp": "2026-07-11T18:01:40.884468+05:30",
+        "message_id": "false_120363225998735559@g.us_A50BD21A970409C800E58DC40C54336B_234952327213239@lid",
+        "sender": "[Gate Manager] Anand Raj (234952327213239)",
+        "sender_name": "Anand Raj",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Out",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Out"
+        }
     }
 ]
