@@ -289,5 +289,143 @@
         "group_name": "Farm Supervisors",
         "raw_text": "",
         "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-15T12:03:44.526534+05:30",
+        "message_id": "false_82798413090865@lid_ACC535038EF7FF847FAF875A539DBFC4",
+        "sender": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f (82798413090865)",
+        "sender_name": "\u2764\ufe0f K\u00fas\u00f9 \u2764\ufe0f",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "Feed Report \nMaize 1 kg\nSoya 2kg",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-15T12:05:49.333202+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB074F8FD3DA5046BD3DD_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (916364817749)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": null,
+            "unit": null,
+            "amount": 1060.82,
+            "notes": "This payment was charged from the credit card ending with @yespo",
+            "confidence_score": 1.0,
+            "processed_text": "ZOHO Corporation Private Limited"
+        }
+    },
+    {
+        "timestamp": "2026-07-15T12:06:10.767521+05:30",
+        "message_id": "false_120363212822578807@g.us_AC7A5B61EC4A05D9858B0834C2ED5D19_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (916202757898)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 7\nStone",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-15T12:06:13.863603+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB04C099941B0EF8152C9_112300593815672@lid",
+        "sender": "[Payments - Sunfra Farms] Nani Chinnam (918985779911)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Please transfer 40,400/- to Raj Farms HDFC Account as we took the below Cement Bags from them.\n\n80 Cement Bags @ 260/- (20,800/-)\n80 Cement Bags @ 245/- (19,600/-)\n@184791135711366",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-15T12:06:15.572941+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB02BF1A61C5B84C6D9B5_112300593815672@lid",
+        "sender": "[120363405469158412] Nani Chinnam (918985779911)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "120363405469158412",
+        "raw_text": "Please send 320/- to Pratap Reddy for loading 80 Cement bags\n@184791135711366",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-15T12:06:26.927775+05:30",
+        "message_id": "false_120363212822578807@g.us_AC61C06E50AD13E0DC8A9DC1FF8F6253_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (916202757898)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 8 \nSpreying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-15T12:06:30.913380+05:30",
+        "message_id": "false_120363212822578807@g.us_AC9567783A13CA7733E81CABDCAD3E11_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (916202757898)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-15T12:06:31.106432+05:30",
+        "message_id": "false_120363212822578807@g.us_ACBCC9FF9913989453EF7746AE9DC1A9_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (916202757898)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 8 \nSpreying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-15T12:09:04.369413+05:30",
+        "message_id": "false_120363212822578807@g.us_ACD41E669CA1405F6AA40AAA8FBAC85A_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (916202757898)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 8 \nFlushout",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-15T12:13:36.927188+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB08C2C311EDB86E8A453_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (916364817749)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "purchase of  pvc pipes \nfor construction",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-15T12:16:20.572419+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0C71425E08045D197ED_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (916364817749)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "unknown",
+            "category": "sales",
+            "quantity": 8,
+            "unit": "bags",
+            "amount": 29600,
+            "notes": "",
+            "confidence_score": 1.0,
+            "processed_text": "Total amount: 29,600"
+        }
+    },
+    {
+        "timestamp": "2026-07-15T12:16:48.413054+05:30",
+        "message_id": "false_120363212822578807@g.us_AC8C4203B29DC431A91CEC64954B8416_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (916202757898)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 7\nFlushout",
+        "ai_extracted": null
     }
 ]

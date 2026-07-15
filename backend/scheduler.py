@@ -898,12 +898,16 @@ def poll_and_execute_unified_reminders():
                         db.commit()
                         logger.info(f"Nagging reminder scheduled for {r.person_name} in {minutes} mins.")
                         continue
-                        
-            # Mark as sent — trigger_time stays as today's time so UI shows today's date.
-            # midnight_reset_job at 00:00 IST will advance trigger_time and reset to pending.
-            r.status = 'sent'
-            db.commit()
-            logger.info(f"Reminder for {r.person_name} marked sent at {r.trigger_time} (frequency: {r.frequency}). Will reset at midnight.")
+                
+                # Sent: Actual message(s) sent out
+                r.status = 'sent'
+                db.commit()
+                logger.info(f"Reminder for {r.person_name} marked sent at {r.trigger_time} (frequency: {r.frequency}). Will reset at midnight.")
+            else:
+                # Skipped: All assignees had already submitted reports
+                r.status = 'skipped'
+                db.commit()
+                logger.info(f"Reminder for {r.person_name} marked skipped at {r.trigger_time} (all reports submitted). Will reset at midnight.")
             
     except Exception as e:
         logger.error(f"Error in poll_and_execute_unified_reminders: {e}")
@@ -1038,9 +1042,9 @@ def midnight_reset_job():
 
     db = SessionLocal()
     try:
-        # Find all sent recurring reminders
+        # Find all sent or skipped recurring reminders
         sent_recurring = db.query(UnifiedReminder).filter(
-            UnifiedReminder.status == 'sent',
+            UnifiedReminder.status.in_(['sent', 'skipped']),
             UnifiedReminder.frequency != 'once'
         ).all()
 
