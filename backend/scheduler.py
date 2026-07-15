@@ -112,6 +112,195 @@ def check_missing_reports_for_today() -> dict:
     finally:
         db.close()
 
+
+async def group_submission_audit_job():
+    """Checks all group reminders at 8:00 PM IST to see if assigned reports were submitted.
+    Notifies admin numbers 7259510983 and 9346763549 of any missing reports.
+    """
+    logger.info("Starting group submission audit report at 8:00 PM IST...")
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST).replace(tzinfo=None)
+    today = now_ist.date()
+
+    db = SessionLocal()
+    try:
+        # Fetch all unified reminders that have a group assigned and are recurring
+        reminders = db.query(UnifiedReminder).filter(
+            UnifiedReminder.whatsapp_group_id != None,
+            UnifiedReminder.frequency != 'once'
+        ).all()
+
+        if not reminders:
+            logger.info("No group reminders found in database for audit.")
+            return
+
+        submissions = db.query(ProcessedData).filter(
+            func.date(ProcessedData.processed_time) == today
+        ).all()
+
+        raw_messages = db.query(RawMessage).filter(
+            func.date(RawMessage.timestamp) == today
+        ).all()
+
+        groups = db.query(Group).all()
+        group_names_by_id = {g.whatsapp_group_id: g.name for g in groups}
+
+        REPORT_KEYWORDS = {
+            'production': ['shead', 'egg', 'lps', 'hrt', 'mortality', 'hitstoke', 'alc', 'production', 'collection', 'week bird', 'bird count'],
+            'feed':       ['feed', 'maize', 'soya', 'bran', 'fodder'],
+            'sales':      ['sale', 'sold', 'invoice', 'dispatch', 'unload'],
+            'sale':       ['sale', 'sold', 'invoice', 'dispatch', 'unload'],
+            'expense':    ['expense', 'expenditure', 'payment', 'bill', 'amount paid'],
+            'expenditure':['expense', 'expenditure', 'payment', 'bill', 'amount paid'],
+            'profit':     ['sale', 'sold', 'expense', 'expenditure', 'profit', 'loss'],
+            'p&l':        ['sale', 'sold', 'expense', 'expenditure', 'profit', 'loss'],
+            'p and l':    ['sale', 'sold', 'expense', 'expenditure', 'profit', 'loss'],
+        }
+
+        # Date formats for flexible matching (e.g. EOD report)
+        # e.g., "15-07", "15/07", "15 July", "July 15"
+        date_formats = [
+            today.strftime("%d-%m"),
+            today.strftime("%d/%m"),
+            today.strftime("%d %B"),
+            today.strftime("%B %d"),
+            today.strftime("%dth %B"),
+            today.strftime("%B %dth"),
+        ]
+        # Clean date formats to remove leading zeros (e.g. "5 July" instead of "05 July")
+        cleaned_dates = []
+        for df in date_formats:
+            cleaned_dates.append(df.lower())
+            if df.startswith("0"):
+                cleaned_dates.append(df[1:].lower())
+            cleaned_dates.append(df.replace(" 0", " ").lower())
+        date_formats = list(set(cleaned_dates))
+        update_keywords = ["update", "updates", "eod", "work update", "daily update"]
+
+        missing_list = []
+
+        for r in reminders:
+            assigned_reports = [rep.strip() for rep in str(r.report_types or '').split(',') if rep.strip()]
+            if not assigned_reports:
+                continue
+
+            group_name = group_names_by_id.get(r.whatsapp_group_id)
+            if not group_name:
+                continue
+
+            phones = [p.strip() for p in str(r.person_phone or '').split(',') if p.strip()]
+            names = [n.strip() for n in str(r.person_name or '').split(',') if n.strip()]
+
+            unsubmitted_reports = []
+
+            for report in assigned_reports:
+                submitted = False
+                report_lower = report.lower()
+                
+                # Check category mapping
+                categories = []
+                if "production" in report_lower or "egg" in report_lower:
+                    categories = ["egg_collection", "egg_collection_1", "egg_collection_2", "egg"]
+                elif "feed" in report_lower:
+                    categories = ["feed", "raw_material"]
+                elif "expense" in report_lower or "expenditure" in report_lower or "cost" in report_lower:
+                    categories = ["expense", "medicine", "expenditure"]
+                elif "sale" in report_lower:
+                    categories = ["sales"]
+
+                is_update_report = any(w in report_lower for w in ["update", "eod", "daily report"])
+
+                # 1. Check ProcessedData
+                for sub in submissions:
+                    match_group = sub.group_name and str(sub.group_name).lower() == group_name.lower()
+                    
+                    match_sender = False
+                    for phone in phones:
+                        clean_phone = "".join(filter(str.isdigit, phone))
+                        alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
+                        if clean_phone in str(sub.sender) or alt_phone in str(sub.sender):
+                            match_sender = True
+                            break
+
+                    if match_sender or match_group:
+                        if is_update_report:
+                            sub_notes_lower = str(sub.notes or '').lower()
+                            if any(kw in sub_notes_lower for kw in update_keywords) or any(df in sub_notes_lower for df in date_formats):
+                                submitted = True
+                                break
+                        
+                        if categories:
+                            if sub.category in categories:
+                                submitted = True
+                                break
+                        else:
+                            if report_lower in str(sub.notes).lower():
+                                submitted = True
+                                break
+
+                # 2. Check RawMessage fallback
+                if not submitted:
+                    raw_keywords = []
+                    if is_update_report:
+                        raw_keywords = update_keywords + date_formats
+                    else:
+                        for key, kws in REPORT_KEYWORDS.items():
+                            if key in report_lower:
+                                raw_keywords = kws
+                                break
+                        if not raw_keywords:
+                            raw_keywords = [w for w in report.split() if len(w) > 3]
+
+                    for raw_msg in raw_messages:
+                        raw_text_lower = str(raw_msg.raw_text or '').lower()
+                        match_group_raw = raw_msg.group_name and str(raw_msg.group_name).lower() == group_name.lower()
+                        
+                        match_sender_raw = False
+                        for phone in phones:
+                            clean_phone = "".join(filter(str.isdigit, phone))
+                            alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
+                            if clean_phone in str(raw_msg.sender) or alt_phone in str(raw_msg.sender):
+                                match_sender_raw = True
+                                break
+
+                        if match_sender_raw or match_group_raw:
+                            if any(kw.lower() in raw_text_lower for kw in raw_keywords):
+                                submitted = True
+                                break
+
+                if not submitted:
+                    unsubmitted_reports.append(report)
+
+            if unsubmitted_reports:
+                missing_reports_str = ", ".join(unsubmitted_reports)
+                if names:
+                    formatted_names = " & ".join([f"*{n}*" for n in names])
+                    missing_list.append(f"- {formatted_names} (*{group_name}*) has not submitted today's *{missing_reports_str}* report(s).")
+                else:
+                    missing_list.append(f"- *{group_name}* has not submitted today's *{missing_reports_str}* report(s).")
+
+        if missing_list:
+            audit_msg = (
+                "⏰ *Group Submission Audit Alert (8:00 PM IST)*\n\n"
+                "The following group reports are missing for today:\n" +
+                "\n".join(missing_list) +
+                "\n\nPlease verify."
+            )
+            
+            # Send notification to the 2 admin numbers
+            admin_phones = ["917259510983", "919346763549"]
+            for admin in admin_phones:
+                logger.info(f"Sending group submission audit alert to admin: {admin}")
+                send_waha_message(admin, audit_msg)
+        else:
+            logger.info("Group submission audit complete: All groups submitted successfully.")
+
+    except Exception as e:
+        logger.error(f"Error in group_submission_audit_job: {e}")
+    finally:
+        db.close()
+
 async def scheduled_reminder_job():
     logger.info("Starting scheduled 6 PM data entry reminder...")
     missing = check_missing_reports_for_today()
@@ -688,6 +877,26 @@ def poll_and_execute_unified_reminders():
     now_ist = datetime.now(IST).replace(tzinfo=None)
     today = now_ist.date()
 
+    # Date formats for flexible matching (e.g. EOD report)
+    # e.g., "15-07", "15/07", "15 July", "July 15"
+    date_formats = [
+        today.strftime("%d-%m"),
+        today.strftime("%d/%m"),
+        today.strftime("%d %B"),
+        today.strftime("%B %d"),
+        today.strftime("%dth %B"),
+        today.strftime("%B %dth"),
+    ]
+    # Clean date formats to remove leading zeros (e.g. "5 July" instead of "05 July")
+    cleaned_dates = []
+    for df in date_formats:
+        cleaned_dates.append(df.lower())
+        if df.startswith("0"):
+            cleaned_dates.append(df[1:].lower())
+        cleaned_dates.append(df.replace(" 0", " ").lower())
+    date_formats = list(set(cleaned_dates))
+    update_keywords = ["update", "updates", "eod", "work update", "daily update", "daily work update", "eod update", "daily report", "report"]
+
     # ── WAHA guard: don't attempt sends if WhatsApp session is not WORKING ──
     primary_session = settings.WAHA_SESSION
     waha_status = get_session_status(primary_session)
@@ -775,6 +984,8 @@ def poll_and_execute_unified_reminders():
                     elif "profit" in report or "p&l" in report or "p and l" in report:
                         categories = ['sales', 'expense', 'purchase']
                         
+                    is_update_report = any(w in report for w in ["update", "eod", "daily report"])
+
                     for sub in submissions:
                         # Match by phone — check both with and without country code 91
                         alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
@@ -783,6 +994,12 @@ def poll_and_execute_unified_reminders():
                         match_group = r.whatsapp_group_id and group_name and sub.group_name and str(sub.group_name).lower() == group_name.lower()
                         
                         if match_sender or match_group:
+                            if is_update_report:
+                                sub_notes_lower = str(sub.notes or '').lower()
+                                if any(kw in sub_notes_lower for kw in update_keywords) or any(df in sub_notes_lower for df in date_formats):
+                                    submitted = True
+                                    break
+
                             if categories:
                                 if sub.category in categories:
                                     submitted = True
@@ -795,13 +1012,16 @@ def poll_and_execute_unified_reminders():
                     # Fallback: also check raw messages for keyword matches
                     if not submitted:
                         raw_keywords = []
-                        for key, kws in REPORT_KEYWORDS.items():
-                            if key in report:
-                                raw_keywords = kws
-                                break
-                        if not raw_keywords:
-                            # Generic: match any keyword from report name itself
-                            raw_keywords = [w for w in report.split() if len(w) > 3]
+                        if is_update_report:
+                            raw_keywords = update_keywords + date_formats
+                        else:
+                            for key, kws in REPORT_KEYWORDS.items():
+                                if key in report:
+                                    raw_keywords = kws
+                                    break
+                            if not raw_keywords:
+                                # Generic: match any keyword from report name itself
+                                raw_keywords = [w for w in report.split() if len(w) > 3]
 
                         group_name = group_names_by_id.get(r.whatsapp_group_id)
                         for raw_msg in raw_messages:
@@ -1078,6 +1298,9 @@ def setup_scheduler():
     
     # Schedule 6:00 PM data entry reminders everyday
     scheduler.add_job(scheduled_reminder_job, CronTrigger(hour=18, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    
+    # Schedule group submission audit report daily at 8:00 PM IST
+    scheduler.add_job(group_submission_audit_job, CronTrigger(hour=20, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
     # Schedule daily report at 10:00 PM IST everyday
     scheduler.add_job(scheduled_report_job, CronTrigger(hour=22, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
