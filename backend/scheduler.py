@@ -8,7 +8,7 @@ from config import settings
 from apscheduler.triggers.date import DateTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 from database import SessionLocal
-from models import ReportRecipient, Group, Employee, ProcessedData, SystemSetting, CustomAlarm, UnifiedReminder, WAHAEvent
+from models import ReportRecipient, Group, Employee, ProcessedData, RawMessage, SystemSetting, CustomAlarm, UnifiedReminder, WAHAEvent
 from sqlalchemy import func
 
 logger = logging.getLogger(__name__)
@@ -687,16 +687,17 @@ def poll_and_execute_unified_reminders():
     IST = timezone(timedelta(hours=5, minutes=30))
     now_ist = datetime.now(IST).replace(tzinfo=None)
     today = now_ist.date()
+
+    # ── WAHA guard: don't attempt sends if WhatsApp session is not WORKING ──
+    primary_session = settings.WAHA_SESSION
+    waha_status = get_session_status(primary_session)
+    if waha_status != "WORKING":
+        logger.warning(f"WAHA session is {waha_status} — skipping reminder dispatch. Will retry next cycle.")
+        return
     
     db = SessionLocal()
     try:
-        # Auto-reset sent recurring reminders back to pending once their next trigger time is reached
-        db.query(UnifiedReminder).filter(
-            UnifiedReminder.status == 'sent',
-            UnifiedReminder.frequency != 'once',
-            UnifiedReminder.trigger_time <= now_ist
-        ).update({"status": "pending"})
-        db.commit()
+        # (Midnight reset is handled by midnight_reset_job at 00:00 IST)
 
         pending = db.query(UnifiedReminder).filter(
             UnifiedReminder.status == 'pending',
@@ -708,6 +709,10 @@ def poll_and_execute_unified_reminders():
             
         submissions = db.query(ProcessedData).filter(
             func.date(ProcessedData.processed_time) == today
+        ).all()
+        
+        raw_messages = db.query(RawMessage).filter(
+            func.date(RawMessage.timestamp) == today
         ).all()
         
         groups = db.query(Group).all()
@@ -742,6 +747,19 @@ def poll_and_execute_unified_reminders():
                 if not target_jid.endswith('@c.us') and not target_jid.endswith('@g.us') and not target_jid.endswith('@lid'):
                     target_jid += '@c.us'
                 
+                # Build report-type keyword map for raw message fallback check
+                REPORT_KEYWORDS = {
+                    'production': ['shead', 'egg', 'lps', 'hrt', 'mortality', 'hitstoke', 'alc', 'production', 'collection', 'week bird', 'bird count'],
+                    'feed':       ['feed', 'maize', 'soya', 'bran', 'fodder'],
+                    'sales':      ['sale', 'sold', 'invoice', 'dispatch', 'unload'],
+                    'sale':       ['sale', 'sold', 'invoice', 'dispatch', 'unload'],
+                    'expense':    ['expense', 'expenditure', 'payment', 'bill', 'amount paid'],
+                    'expenditure':['expense', 'expenditure', 'payment', 'bill', 'amount paid'],
+                    'profit':     ['sale', 'sold', 'expense', 'expenditure', 'profit', 'loss'],
+                    'p&l':        ['sale', 'sold', 'expense', 'expenditure', 'profit', 'loss'],
+                    'p and l':    ['sale', 'sold', 'expense', 'expenditure', 'profit', 'loss'],
+                }
+
                 missing_reports = []
                 for report in assigned_reports:
                     submitted = False
@@ -758,7 +776,9 @@ def poll_and_execute_unified_reminders():
                         categories = ['sales', 'expense', 'purchase']
                         
                     for sub in submissions:
-                        match_sender = phone in str(sub.sender)
+                        # Match by phone — check both with and without country code 91
+                        alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
+                        match_sender = clean_phone in str(sub.sender) or alt_phone in str(sub.sender)
                         group_name = group_names_by_id.get(r.whatsapp_group_id)
                         match_group = r.whatsapp_group_id and group_name and sub.group_name and str(sub.group_name).lower() == group_name.lower()
                         
@@ -771,6 +791,42 @@ def poll_and_execute_unified_reminders():
                                 if report in str(sub.notes).lower():
                                     submitted = True
                                     break
+
+                    # Fallback: also check raw messages for keyword matches
+                    if not submitted:
+                        raw_keywords = []
+                        for key, kws in REPORT_KEYWORDS.items():
+                            if key in report:
+                                raw_keywords = kws
+                                break
+                        if not raw_keywords:
+                            # Generic: match any keyword from report name itself
+                            raw_keywords = [w for w in report.split() if len(w) > 3]
+
+                        group_name = group_names_by_id.get(r.whatsapp_group_id)
+                        for raw_msg in raw_messages:
+                            raw_text_lower = str(raw_msg.raw_text or '').lower()
+                            alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
+                            match_sender_raw = clean_phone in str(raw_msg.sender) or alt_phone in str(raw_msg.sender)
+                            match_group_raw = (
+                                r.whatsapp_group_id and group_name
+                                and raw_msg.group_name
+                                and str(raw_msg.group_name).lower() == group_name.lower()
+                            )
+                            # Extra fallback for person-only reminders (no group assigned):
+                            # Direct/private messages (group_name IS NULL) use LID numbers
+                            # which can't be matched to phone. If no group is set, treat
+                            # ANY direct message containing the keywords as a submission.
+                            match_direct_private = (
+                                not r.whatsapp_group_id
+                                and raw_msg.group_name is None
+                            )
+                            if match_sender_raw or match_group_raw or match_direct_private:
+                                if any(kw.lower() in raw_text_lower for kw in raw_keywords):
+                                    submitted = True
+                                    logger.info(f"Raw message keyword match for '{report}' from {raw_msg.sender} — skipping reminder.")
+                                    break
+
                     if not submitted:
                         missing_reports.append(report)
                 
@@ -783,6 +839,11 @@ def poll_and_execute_unified_reminders():
                     })
                     
             if pending_assignees:
+                # Re-check WAHA is still WORKING right before sending
+                if get_session_status(primary_session) != "WORKING":
+                    logger.warning(f"WAHA went down before sending reminder for {r.person_name}. Will retry next cycle.")
+                    continue
+
                 # 1. Send private reminder to each pending assignee
                 for p in pending_assignees:
                     if not assigned_reports:
@@ -838,14 +899,11 @@ def poll_and_execute_unified_reminders():
                         logger.info(f"Nagging reminder scheduled for {r.person_name} in {minutes} mins.")
                         continue
                         
-            freq = str(r.frequency).lower()
-            if freq == 'once':
-                r.status = 'sent'
-            else:
-                r.trigger_time = get_next_occurrence(r.trigger_time, freq)
-                r.status = 'sent'  # Set status to sent so it displays as green (complete for today) in UI
+            # Mark as sent — trigger_time stays as today's time so UI shows today's date.
+            # midnight_reset_job at 00:00 IST will advance trigger_time and reset to pending.
+            r.status = 'sent'
             db.commit()
-            logger.info(f"Reminder for {r.person_name} updated to next occurrence: {r.trigger_time} (status: sent)")
+            logger.info(f"Reminder for {r.person_name} marked sent at {r.trigger_time} (frequency: {r.frequency}). Will reset at midnight.")
             
     except Exception as e:
         logger.error(f"Error in poll_and_execute_unified_reminders: {e}")
@@ -967,12 +1025,50 @@ def poll_live_alarms():
     finally:
         db.close()
 
+
+def midnight_reset_job():
+    """Runs at 00:00 IST every night.
+    Advances trigger_time for sent recurring reminders to the next occurrence
+    and resets their status to 'pending' so the UI shows them as upcoming.
+    """
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST).replace(tzinfo=None)
+    logger.info(f"Running midnight reset job at {now_ist}")
+
+    db = SessionLocal()
+    try:
+        # Find all sent recurring reminders
+        sent_recurring = db.query(UnifiedReminder).filter(
+            UnifiedReminder.status == 'sent',
+            UnifiedReminder.frequency != 'once'
+        ).all()
+
+        reset_count = 0
+        for r in sent_recurring:
+            freq = str(r.frequency).lower()
+            r.trigger_time = get_next_occurrence(r.trigger_time, freq)
+            r.status = 'pending'
+            reset_count += 1
+            logger.info(f"Midnight reset: {r.person_name} → next trigger: {r.trigger_time} (freq: {freq})")
+
+        db.commit()
+        logger.info(f"Midnight reset complete: {reset_count} reminders reset to pending.")
+    except Exception as e:
+        logger.error(f"Error in midnight_reset_job: {e}")
+    finally:
+        db.close()
+
 def setup_scheduler():
+
     global scheduler
     
     # Schedule Health Monitor every 1 minute
     scheduler.add_job(health_monitor_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60)
     
+    # Midnight reset: advance trigger_time and reset sent recurring reminders to pending at 00:00 IST
+    scheduler.add_job(midnight_reset_job, CronTrigger(hour=0, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+
     # Schedule media/report cleanup daily at 12:05 AM IST
     scheduler.add_job(cleanup_old_files_job, CronTrigger(hour=0, minute=5, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     

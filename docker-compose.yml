@@ -50,6 +50,7 @@ services:
       - MANAGER_PHONE=${MANAGER_PHONE}
       - WAHA_URL=http://waha:3000
       - WAHA_SESSION=${WAHA_SESSION}
+      - WAHA_API_KEY=${WAHA_API_KEY}
       - AI_PROVIDER=${AI_PROVIDER}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - OLLAMA_URL=${OLLAMA_URL}

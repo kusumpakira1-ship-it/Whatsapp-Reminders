@@ -269,8 +269,12 @@ async def waha_webhook(request: Request, background_tasks: BackgroundTasks):
 
     is_group = '@g.us' in sender
     group_id = sender if is_group else None
-    
-    sender_phone = msg.get("participant", sender) if is_group else sender
+
+    # Prefer participantAlt (real phone JID) over participant (may be LID)
+    raw_participant = msg.get("participant", sender) if is_group else sender
+    participant_alt = msg.get("_data", {}).get("key", {}).get("participantAlt", "") or ""
+    # Use participantAlt if it looks like a real phone JID (contains @s.whatsapp.net)
+    sender_phone = participant_alt if "@s.whatsapp.net" in participant_alt else raw_participant
     for domain in ('@c.us', '@s.whatsapp.net', '@lid'):
         sender_phone = sender_phone.replace(domain, '')
     if group_id:
