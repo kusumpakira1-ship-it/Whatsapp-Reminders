@@ -67,6 +67,37 @@ try {
         details TEXT,
         timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS sunfra_unified_reminders (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        person_name VARCHAR(255) NOT NULL,
+        person_phone VARCHAR(50) NOT NULL,
+        whatsapp_group_id VARCHAR(255) NULL,
+        report_types TEXT NULL,
+        task_notes TEXT NULL,
+        trigger_time DATETIME NOT NULL,
+        status VARCHAR(20) DEFAULT 'pending',
+        frequency VARCHAR(20) DEFAULT 'daily',
+        repeat_interval VARCHAR(20) DEFAULT 'none',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS sunfra_tasks (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        task_name VARCHAR(255) NOT NULL,
+        task_type VARCHAR(50) DEFAULT 'general',
+        assigned_person_name VARCHAR(255) NULL,
+        assigned_person_phone VARCHAR(100) NULL,
+        whatsapp_group_id VARCHAR(255) NULL,
+        due_time DATETIME NOT NULL,
+        completion_keywords TEXT NULL,
+        status VARCHAR(20) DEFAULT 'pending',
+        approver_phone VARCHAR(100) NULL,
+        completion_details TEXT NULL,
+        frequency VARCHAR(20) DEFAULT 'once',
+        repeat_interval VARCHAR(20) DEFAULT 'none',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 } catch (PDOException $e) {
     // Fallback to SQLite syntax if MySQL fails
     try {
@@ -107,6 +138,37 @@ try {
             details TEXT,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )");
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS sunfra_unified_reminders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            person_name VARCHAR(255) NOT NULL,
+            person_phone VARCHAR(50) NOT NULL,
+            whatsapp_group_id VARCHAR(255) NULL,
+            report_types TEXT NULL,
+            task_notes TEXT NULL,
+            trigger_time DATETIME NOT NULL,
+            status VARCHAR(20) DEFAULT 'pending',
+            frequency VARCHAR(20) DEFAULT 'daily',
+            repeat_interval VARCHAR(20) DEFAULT 'none',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )");
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS sunfra_tasks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            task_name VARCHAR(255) NOT NULL,
+            task_type VARCHAR(50) DEFAULT 'general',
+            assigned_person_name VARCHAR(255) NULL,
+            assigned_person_phone VARCHAR(100) NULL,
+            whatsapp_group_id VARCHAR(255) NULL,
+            due_time DATETIME NOT NULL,
+            completion_keywords TEXT NULL,
+            status VARCHAR(20) DEFAULT 'pending',
+            approver_phone VARCHAR(100) NULL,
+            completion_details TEXT NULL,
+            frequency VARCHAR(20) DEFAULT 'once',
+            repeat_interval VARCHAR(20) DEFAULT 'none',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )");
     } catch (PDOException $e2) {
         // Output the error to help debug
         if (isset($_GET['api'])) {
@@ -127,8 +189,186 @@ try { @$pdo->exec("ALTER TABLE sunfra_employees ADD COLUMN whatsapp_group_id VAR
 try { @$pdo->exec("ALTER TABLE sunfra_employees MODIFY COLUMN group_id INT NULL"); } catch (Exception $e) {}
 try { @$pdo->exec("ALTER TABLE sunfra_system_settings MODIFY COLUMN `value` LONGTEXT NULL"); } catch (Exception $e) {}
 try { @$pdo->exec("ALTER TABLE sunfra_system_settings MODIFY COLUMN `value` TEXT NULL"); } catch (Exception $e) {}
+try { @$pdo->exec("ALTER TABLE sunfra_unified_reminders ADD COLUMN frequency VARCHAR(20) DEFAULT 'daily'"); } catch (Exception $e) {}
+try { @$pdo->exec("ALTER TABLE sunfra_unified_reminders ADD COLUMN repeat_interval VARCHAR(20) DEFAULT 'none'"); } catch (Exception $e) {}
+try { @$pdo->exec("ALTER TABLE sunfra_tasks ADD COLUMN frequency VARCHAR(20) DEFAULT 'once'"); } catch (Exception $e) {}
+try { @$pdo->exec("ALTER TABLE sunfra_tasks ADD COLUMN repeat_interval VARCHAR(20) DEFAULT 'none'"); } catch (Exception $e) {}
+try { @$pdo->exec("ALTER TABLE sunfra_tasks ADD COLUMN approver_phone VARCHAR(100) NULL"); } catch (Exception $e) {}
+try { @$pdo->exec("ALTER TABLE sunfra_tasks ADD COLUMN completion_details TEXT NULL"); } catch (Exception $e) {}
 
-// 3. Simple REST API Router
+// 4. AUTO-RESET ONCE PER DAY (midnight equivalent on Hostinger server)
+//    Checks if today's reset already ran. If not, advances all sent/skipped
+//    recurring reminders to their next future date and resets to 'pending'.
+//    Runs on first page load after midnight each day — no cron job needed.
+try {
+    $IST_OFFSET = 5.5 * 3600; // IST = UTC+5:30
+    $now_ist = new DateTime('@' . (time() + $IST_OFFSET));
+    $today_ist = $now_ist->format('Y-m-d');
+
+    // Check last reset date stored in DB
+    $chk = $pdo->prepare("SELECT value FROM sunfra_system_settings WHERE `key` = 'last_midnight_reset'");
+    $chk->execute();
+    $last_reset = $chk->fetchColumn();
+
+    if ($last_reset !== $today_ist) {
+        // Run the reset
+        $stmt = $pdo->query("SELECT id, trigger_time, frequency FROM sunfra_unified_reminders WHERE status IN ('sent','skipped') AND (frequency IS NULL OR frequency != 'once')");
+        $overdue = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $now_utc = new DateTime();
+        foreach ($overdue as $r) {
+            $freq = strtolower($r['frequency'] ?? 'daily');
+            $dt = new DateTime($r['trigger_time']);
+            $advanced = false;
+            while ($dt <= $now_utc) {
+                if ($freq === 'weekly')       { $dt->modify('+7 days'); }
+                elseif ($freq === 'monthly')  { $dt->modify('+1 month'); }
+                elseif ($freq === 'yearly')   { $dt->modify('+1 year'); }
+                else                          { $dt->modify('+1 day'); } // daily default
+                $advanced = true;
+            }
+            if ($advanced) {
+                $upd = $pdo->prepare("UPDATE sunfra_unified_reminders SET trigger_time = ?, status = 'pending' WHERE id = ?");
+                $upd->execute([$dt->format('Y-m-d H:i:s'), $r['id']]);
+            }
+        }
+        // Mark today's reset as done
+        $exists = $pdo->prepare("SELECT COUNT(*) FROM sunfra_system_settings WHERE `key` = 'last_midnight_reset'");
+        $exists->execute();
+        if ($exists->fetchColumn() > 0) {
+            $pdo->prepare("UPDATE sunfra_system_settings SET value = ? WHERE `key` = 'last_midnight_reset'")->execute([$today_ist]);
+        } else {
+            $pdo->prepare("INSERT INTO sunfra_system_settings (`key`, value) VALUES ('last_midnight_reset', ?)")->execute([$today_ist]);
+        }
+    }
+} catch (Exception $e) { /* silent fail - never break the page */ }
+
+// 5. AUTO-COMPLETE TASKS: Check WhatsApp messages for completion replies.
+//    - Individual tasks: checks sunfra_raw_messages by sender phone
+//    - Group tasks: checks sunfra_whatsapp_messages by group_id
+//    Runs on every page load on Hostinger (24/7).
+try {
+    $pending_tasks_stmt = $pdo->query("SELECT id, task_name, assigned_person_phone, whatsapp_group_id, due_time, completion_keywords FROM sunfra_tasks WHERE status IN ('pending', 'overdue')");
+    $pending_tasks = $pending_tasks_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $default_keywords = ['done', 'completed', 'finish', 'finished', 'ok done', 'complete', 'ho gaya', 'ho gya', 'kar diya', '✅', 'done✅'];
+
+    // Pre-calculate pending task counts per group/phone to handle "done" ambiguity
+    $group_task_counts = [];
+    $phone_task_counts = [];
+    foreach ($pending_tasks as $t) {
+        if (!empty($t['whatsapp_group_id'])) {
+            $gid = $t['whatsapp_group_id'];
+            $group_task_counts[$gid] = ($group_task_counts[$gid] ?? 0) + 1;
+        }
+        if (!empty($t['assigned_person_phone'])) {
+            foreach (explode(',', $t['assigned_person_phone']) as $ph) {
+                $digits = preg_replace('/\D/', '', $ph);
+                if (strlen($digits) === 10) $digits = '91' . $digits;
+                if ($digits) $phone_task_counts[$digits] = ($phone_task_counts[$digits] ?? 0) + 1;
+            }
+        }
+    }
+
+    foreach ($pending_tasks as $task) {
+        // Build completion keyword list
+        $keywords = $default_keywords;
+        if (!empty($task['completion_keywords'])) {
+            $custom = array_map('trim', explode(',', strtolower($task['completion_keywords'])));
+            $keywords = array_merge($keywords, $custom);
+        }
+
+        // Generate task-identifying keywords from the task name (e.g. "Silo Cleaning" -> "silo", "cleaning")
+        $task_name_words = explode(' ', strtolower(preg_replace('/[^a-zA-Z0-9\s]/', '', $task['task_name'])));
+        $task_identifiers = [];
+        foreach ($task_name_words as $w) {
+            if (strlen($w) > 3 && !in_array($w, ['task', 'check', 'please', 'update', 'submit', 'report'])) {
+                $task_identifiers[] = $w;
+            }
+        }
+
+        $since = $task['due_time'] ?? date('Y-m-d H:i:s', strtotime('-24 hours'));
+        $all_messages = [];
+        $matched = false;
+        $is_ambiguous = false;
+
+        // === CHECK GROUP ===
+        if (!empty($task['whatsapp_group_id'])) {
+            $grp_id = $task['whatsapp_group_id'];
+            if (($group_task_counts[$grp_id] ?? 0) > 1) $is_ambiguous = true;
+            
+            if (strpos($grp_id, '@') === false) $grp_id .= '@g.us';
+            $msg_stmt = $pdo->prepare("SELECT message_text FROM sunfra_whatsapp_messages WHERE group_id = ? AND timestamp >= ? ORDER BY timestamp DESC LIMIT 30");
+            $msg_stmt->execute([$grp_id, $since]);
+            $all_messages = array_merge($all_messages, $msg_stmt->fetchAll(PDO::FETCH_COLUMN));
+        }
+
+        // === CHECK INDIVIDUAL ===
+        if (!empty($task['assigned_person_phone'])) {
+            $phones_raw = array_map('trim', explode(',', $task['assigned_person_phone']));
+            $phone_patterns = [];
+            foreach ($phones_raw as $ph) {
+                $digits = preg_replace('/\D/', '', $ph);
+                if (strlen($digits) === 10) $digits = '91' . $digits;
+                if ($digits) {
+                    $phone_patterns[] = $digits;
+                    if (($phone_task_counts[$digits] ?? 0) > 1) $is_ambiguous = true;
+                }
+            }
+            if (!empty($phone_patterns)) {
+                $sender_conditions = implode(' OR ', array_fill(0, count($phone_patterns), "sender LIKE ?"));
+                $msg_stmt = $pdo->prepare("SELECT raw_text FROM sunfra_raw_messages WHERE timestamp >= ? AND ($sender_conditions) ORDER BY timestamp DESC LIMIT 20");
+                $params = [$since];
+                foreach ($phone_patterns as $ph) { $params[] = '%' . $ph . '%'; }
+                $msg_stmt->execute($params);
+                $all_messages = array_merge($all_messages, $msg_stmt->fetchAll(PDO::FETCH_COLUMN));
+            }
+        }
+
+        if (empty($all_messages)) continue;
+
+        // Check messages for completion logic
+        foreach ($all_messages as $msg_text) {
+            $msg_lower = strtolower(trim($msg_text ?? ''));
+            
+            // 1. Does it have a completion word? ("done", "completed", etc.)
+            $has_completion = false;
+            foreach ($keywords as $kw) {
+                if ($kw && strpos($msg_lower, trim($kw)) !== false) {
+                    $has_completion = true;
+                    break;
+                }
+            }
+
+            if ($has_completion) {
+                // 2. If ambiguous (multiple tasks), it MUST contain a task identifier word (e.g. "silo")
+                if ($is_ambiguous && !empty($task_identifiers)) {
+                    $has_identifier = false;
+                    foreach ($task_identifiers as $id_kw) {
+                        if (strpos($msg_lower, $id_kw) !== false) {
+                            $has_identifier = true;
+                            break;
+                        }
+                    }
+                    if ($has_identifier) {
+                        $matched = true;
+                        break;
+                    }
+                } else {
+                    // Not ambiguous (only 1 task pending) OR no identifiable words in task name
+                    $matched = true;
+                    break;
+                }
+            }
+        }
+
+        if ($matched) {
+            $pdo->prepare("UPDATE sunfra_tasks SET status = 'completed', completion_details = 'Auto-completed: WhatsApp reply detected' WHERE id = ?")->execute([$task['id']]);
+        }
+    }
+} catch (Exception $e) { /* silent fail */ }
+
+
+// 5. Simple REST API Router
 if (isset($_GET['api'])) {
     header("Content-Type: application/json");
     $method = $_SERVER['REQUEST_METHOD'];
@@ -208,6 +448,126 @@ if (isset($_GET['api'])) {
         }
         elseif (preg_match('/^reminders\/(\d+)\/instant$/', $route, $matches) && $method === 'POST') {
             $pdo->prepare("UPDATE sunfra_unified_reminders SET trigger_time = NOW(), status = 'pending' WHERE id = ?")->execute([$matches[1]]);
+            echo json_encode(['success' => true]);
+        }
+        elseif ($route === 'reminders/reset-daily' && $method === 'POST') {
+            // Advance trigger_time for all sent/skipped recurring reminders (same as Python midnight_reset_job)
+            $stmt = $pdo->query("SELECT id, trigger_time, frequency FROM sunfra_unified_reminders WHERE status IN ('sent','skipped') AND frequency != 'once'");
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $count = 0;
+            foreach ($rows as $r) {
+                $freq = strtolower($r['frequency']);
+                $dt = new DateTime($r['trigger_time']);
+                $now = new DateTime();
+                while ($dt <= $now) {
+                    if ($freq === 'daily') {
+                        $dt->modify('+1 day');
+                    } elseif ($freq === 'weekly') {
+                        $dt->modify('+7 days');
+                    } elseif ($freq === 'monthly') {
+                        $dt->modify('+1 month');
+                    } elseif ($freq === 'yearly') {
+                        $dt->modify('+1 year');
+                    } else {
+                        $dt->modify('+1 day');
+                    }
+                }
+                $newTime = $dt->format('Y-m-d H:i:s');
+                $upd = $pdo->prepare("UPDATE sunfra_unified_reminders SET trigger_time = ?, status = 'pending' WHERE id = ?");
+                $upd->execute([$newTime, $r['id']]);
+                $count++;
+            }
+            echo json_encode(['success' => true, 'reset_count' => $count]);
+        }
+        elseif ($route === 'settings/task_types' && $method === 'GET') {
+            $stmt = $pdo->prepare("SELECT value FROM sunfra_system_settings WHERE `key` = 'custom_task_types'");
+            $stmt->execute();
+            $val = $stmt->fetchColumn();
+            if ($val) {
+                echo $val;
+            } else {
+                echo json_encode(["Silo Cleaning / Check", "Wednesday Meeting Checklist", "Feed Formula (Requires Approval)"]);
+            }
+        }
+        elseif ($route === 'settings/task_types' && $method === 'POST') {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $val_str = json_encode($data['task_types']);
+            
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM sunfra_system_settings WHERE `key` = 'custom_task_types'");
+            $stmt->execute();
+            if ($stmt->fetchColumn() > 0) {
+                $stmt2 = $pdo->prepare("UPDATE sunfra_system_settings SET value = ? WHERE `key` = 'custom_task_types'");
+                $stmt2->execute([$val_str]);
+            } else {
+                $stmt2 = $pdo->prepare("INSERT INTO sunfra_system_settings (`key`, value) VALUES ('custom_task_types', ?)");
+                $stmt2->execute([$val_str]);
+            }
+            echo json_encode(['success' => true]);
+        }
+        elseif ($route === 'tasks' && $method === 'GET') {
+            $stmt = $pdo->query("SELECT * FROM sunfra_tasks ORDER BY due_time DESC");
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            $waha_file = __DIR__ . '/waha_groups.json';
+            $waha_groups = file_exists($waha_file) ? json_decode(file_get_contents($waha_file), true)['groups'] ?? [] : [];
+            
+            foreach ($rows as &$row) {
+                $row['group_name'] = 'No Group / Private Only';
+                if ($row['whatsapp_group_id']) {
+                    foreach ($waha_groups as $g) {
+                        if ($g['id'] === $row['whatsapp_group_id']) {
+                            $row['group_name'] = $g['name'];
+                            break;
+                        }
+                    }
+                }
+            }
+            echo json_encode($rows);
+        }
+        elseif ($route === 'tasks' && $method === 'POST') {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $stmt = $pdo->prepare("INSERT INTO sunfra_tasks (task_name, task_type, assigned_person_name, assigned_person_phone, whatsapp_group_id, due_time, completion_keywords, status, approver_phone, frequency, repeat_interval) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)");
+            $stmt->execute([
+                $data['task_name'],
+                $data['task_type'],
+                $data['assigned_person_name'] ?? null,
+                $data['assigned_person_phone'] ?? null,
+                !empty($data['whatsapp_group_id']) ? $data['whatsapp_group_id'] : null,
+                $data['due_time'],
+                $data['completion_keywords'] ?? null,
+                $data['approver_phone'] ?? null,
+                $data['frequency'] ?? 'once',
+                $data['repeat_interval'] ?? 'none'
+            ]);
+            echo json_encode(['success' => true]);
+        }
+        elseif (preg_match('/^tasks\/(\d+)$/', $route, $matches) && $method === 'PUT') {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $stmt = $pdo->prepare("UPDATE sunfra_tasks SET task_name = ?, task_type = ?, assigned_person_name = ?, assigned_person_phone = ?, whatsapp_group_id = ?, due_time = ?, completion_keywords = ?, status = 'pending', approver_phone = ?, frequency = ?, repeat_interval = ? WHERE id = ?");
+            $stmt->execute([
+                $data['task_name'],
+                $data['task_type'],
+                $data['assigned_person_name'] ?? null,
+                $data['assigned_person_phone'] ?? null,
+                !empty($data['whatsapp_group_id']) ? $data['whatsapp_group_id'] : null,
+                $data['due_time'],
+                $data['completion_keywords'] ?? null,
+                $data['approver_phone'] ?? null,
+                $data['frequency'] ?? 'once',
+                $data['repeat_interval'] ?? 'none',
+                $matches[1]
+            ]);
+            echo json_encode(['success' => true]);
+        }
+        elseif (preg_match('/^tasks\/(\d+)$/', $route, $matches) && $method === 'DELETE') {
+            $pdo->prepare("DELETE FROM sunfra_tasks WHERE id = ?")->execute([$matches[1]]);
+            echo json_encode(['success' => true]);
+        }
+        elseif (preg_match('/^tasks\/(\d+)\/complete$/', $route, $matches) && $method === 'POST') {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $details = $data['details'] ?? 'Manually completed';
+            $stmt = $pdo->prepare("UPDATE sunfra_tasks SET status = 'completed', completion_details = ? WHERE id = ?");
+            $stmt->execute([$details, $matches[1]]);
             echo json_encode(['success' => true]);
         }
         elseif ($route === 'employees' && $method === 'GET') {
@@ -732,6 +1092,9 @@ try {
         .badge-green { background: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid rgba(16,185,129,0.2); }
         .badge-orange { background: rgba(245, 158, 11, 0.1); color: #d97706; border: 1px solid rgba(245,158,11,0.2); }
         .badge-gray { background: rgba(107, 114, 128, 0.15); color: #4b5563; border: 1px solid rgba(107,114,128,0.25); }
+        .badge-yellow { background: rgba(234, 179, 8, 0.1); color: #ca8a04; border: 1px solid rgba(234,179,8,0.2); }
+        .badge-red { background: rgba(239, 68, 68, 0.1); color: #dc2626; border: 1px solid rgba(239,68,68,0.2); }
+
 
         /* Responsive Design */
         @media (max-width: 768px) {
@@ -765,6 +1128,7 @@ try {
             <nav>
                 <a href="#" class="nav-item active" data-target="dashboard">Dashboard</a>
                 <a href="#" class="nav-item" data-target="reminders_view">Reminders</a>
+                <a href="#" class="nav-item" data-target="tasks_view">Tasks & Approvals</a>
                 <a href="#" class="nav-item" data-target="waha_settings_view">WAHA Status & Settings</a>
             </nav>
         </aside>
@@ -779,7 +1143,8 @@ try {
                     <span id="waha-status-text" style="font-weight: 600;">Checking WAHA...</span>
                 </div>
             </header>
-                <div class="stats-grid">
+                <h2 style="font-size: 1.2rem; margin-bottom: 1rem; color: var(--text-color);">Reminders Overview</h2>
+                <div class="stats-grid" style="margin-bottom: 2rem;">
                     <div class="card stat-card" onclick="document.querySelector('.nav-item[data-target=\'reminders_view\']').click()" style="cursor: pointer; margin-right: 0;" title="Go to Reminders">
                         <h3>Unique Members</h3>
                         <div class="stat-value" id="stat-employees">0</div>
@@ -793,6 +1158,22 @@ try {
                         <div class="stat-value" id="stat-alarms">0</div>
                     </div>
                 </div>
+
+                <h2 style="font-size: 1.2rem; margin-bottom: 1rem; color: var(--text-color);">Tasks & Approvals Overview</h2>
+                <div class="stats-grid">
+                    <div class="card stat-card" onclick="document.querySelector('.nav-item[data-target=\'tasks_view\']').click()" style="cursor: pointer; margin-right: 0;" title="Go to Tasks & Approvals">
+                        <h3>Unique Members</h3>
+                        <div class="stat-value" id="stat-task-employees">0</div>
+                    </div>
+                    <div class="card stat-card" onclick="document.querySelector('.nav-item[data-target=\'tasks_view\']').click()" style="cursor: pointer; margin-right: 0;" title="Go to Tasks & Approvals">
+                        <h3>Groups Used</h3>
+                        <div class="stat-value" id="stat-task-groups">0</div>
+                    </div>
+                    <div class="card stat-card" onclick="document.querySelector('.nav-item[data-target=\'tasks_view\']').click()" style="cursor: pointer; margin-right: 0;" title="Go to Tasks & Approvals">
+                        <h3>Total Tasks</h3>
+                        <div class="stat-value" id="stat-tasks">0</div>
+                    </div>
+                </div>
             </section>
             
             <!-- Reminders View -->
@@ -802,6 +1183,7 @@ try {
                     <div style="display: flex; gap: 0.5rem; align-items: center;">
                         <button class="btn btn-primary" onclick="openReminderModal()" style="margin: 0;">+ Create Reminder</button>
                         <button class="btn btn-secondary" onclick="openVisibilityModal()" style="margin: 0;">Filter Groups</button>
+                        <button class="btn btn-secondary" onclick="resetDailyReminders()" style="margin: 0; background: rgba(245,158,11,0.12); color: #b45309; border: 1px solid rgba(245,158,11,0.3);" title="Advance all Daily/Weekly/Monthly reminders to next scheduled date">🔄 Reset Recurring</button>
                         <input type="text" id="remindersSearchInput" placeholder="Search..." oninput="filterRemindersTable()" style="padding: 0.5rem 0.75rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); width: 150px; font-size: 0.9rem; background: white; margin: 0; box-sizing: border-box;">
                     </div>
                 </div>
@@ -813,6 +1195,8 @@ try {
                                 <th>WhatsApp Group</th>
                                 <th>Assigned Reports</th>
                                 <th>Task / Notes</th>
+                                <th>Frequency</th>
+                                <th>Nagging</th>
                                 <th>Trigger Time</th>
                                 <th>Status</th>
                                 <th>Actions</th>
@@ -822,6 +1206,38 @@ try {
                     </table>
                 </div>
             </section>
+            
+            <!-- Tasks & Approvals View -->
+            <section id="tasks_view" class="view">
+                <div class="header-row">
+                    <h2>Tasks &amp; Approvals Management</h2>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <button class="btn btn-primary" onclick="openCreateTaskModal()" style="margin: 0;">+ Create Task</button>
+                        <button class="btn btn-secondary" onclick="openVisibilityModal()" style="margin: 0;">Filter Groups</button>
+                        <input type="text" id="tasksSearchInput" placeholder="Search..." oninput="filterTasksTable()" style="padding: 0.5rem 0.75rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); width: 150px; font-size: 0.9rem; background: white; margin: 0; box-sizing: border-box;">
+                    </div>
+                </div>
+                <div class="card table-card">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name &amp; Phone</th>
+                                <th>WhatsApp Group</th>
+                                <th>Assigned Tasks</th>
+                                <th>Task / Custom Message</th>
+                                <th>Frequency</th>
+                                <th>Nagging</th>
+                                <th>Trigger Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tasks-tbody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+
             
             <!-- WAHA Settings View -->
             <section id="waha_settings_view" class="view">
@@ -886,6 +1302,107 @@ try {
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- Create Task Modal -->
+    <div id="createTaskModal" class="modal">
+        <div class="modal-content card" style="width: 480px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.08); padding-bottom: 0.8rem; margin-bottom: 1.5rem;">
+                <h3 id="task-modal-title" style="margin: 0; font-size: 1.4rem;">Create Task</h3>
+                <span class="close-modal" onclick="closeCreateTaskModal()" style="font-size: 1.8rem; cursor: pointer; color: var(--text-secondary);">&times;</span>
+            </div>
+            <form id="task-form" onsubmit="handleTaskSubmit(event)">
+                <input type="hidden" id="task-id">
+                
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <label style="font-weight: 600; margin: 0;">Assign Members</label>
+                        <button type="button" class="btn" onclick="showAddManualMemberForm()" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; background: rgba(59,130,246,0.1); color: var(--primary-color); border: 1px solid rgba(59,130,246,0.2); border-radius: 6px; cursor: pointer; font-weight: 600;">[ + Add New Member ]</button>
+                    </div>
+                    
+                    <!-- Search bar and members checkbox container -->
+                    <input type="text" id="taskMemberSearchInput" placeholder="Search members..." oninput="filterTaskMembersList()" style="width: 100%; padding: 0.6rem; margin-bottom: 0.5rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); font-size: 0.9rem; background: white; color: var(--text-primary); box-sizing: border-box;">
+                    
+                    <div id="taskMembersCheckboxContainer" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 180px; overflow-y: auto; padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; background: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">
+                        <!-- Checkboxes populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <label style="font-weight: 600; margin: 0;">Assigned Tasks</label>
+                        <button type="button" class="btn" onclick="showAddCustomTaskForm()" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; background: rgba(59,130,246,0.1); color: var(--primary-color); border: 1px solid rgba(59,130,246,0.2); border-radius: 6px; cursor: pointer; font-weight: 600;">[ + Add Custom Task ]</button>
+                    </div>
+                    
+                    <!-- Form to add new custom task type (initially hidden) -->
+                    <div id="customTaskFormContainer" style="display: none; background: rgba(0,0,0,0.03); padding: 0.75rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05); margin-bottom: 0.75rem; gap: 0.5rem; flex-direction: column;">
+                        <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Add Custom Task Type</div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="newTaskTypeInput" placeholder="Add custom task type..." style="flex: 1; padding: 0.5rem; font-size: 0.9rem; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); background: white;">
+                        </div>
+                        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.25rem;">
+                            <button type="button" class="btn btn-secondary" onclick="hideAddCustomTaskForm()" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 6px;">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="addNewTaskTypeCheckbox()" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 6px;">Add</button>
+                        </div>
+                    </div>
+                    
+                    <div id="taskTypesCheckboxContainer" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 150px; overflow-y: auto; padding: 0.5rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; background: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">
+                        <!-- Checkboxes populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="form-group" id="task-message-group" style="display: none;">
+                    <label style="font-weight: 600;">Custom Text Message</label>
+                    <textarea id="task-name" placeholder="Type your own custom message to remind them..." style="width: 100%; height: 100px; padding: 0.6rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); background: white;"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label style="font-weight: 600;">WhatsApp Group (Optional)</label>
+                    <select id="task-group-id" style="width: 100%;">
+                        <option value="">No Group / Private Only</option>
+                        <!-- Group options populated dynamically -->
+                    </select>
+                </div>
+
+                <div class="form-group" id="task-approver-row" style="display: none;">
+                    <label style="font-weight: 600;">Approver Manager Phone</label>
+                    <input type="text" id="task-approver-phone" placeholder="e.g. 9346763549" style="width: 100%;">
+                </div>
+
+                <div class="form-group" id="taskDatetimeSection">
+                    <label style="font-weight: 600;">Trigger Time</label>
+                    <input type="datetime-local" id="task-due-time" required style="width: 100%;">
+                </div>
+
+                <div class="form-group">
+                    <label style="font-weight: 600;">Frequency</label>
+                    <select id="task-frequency" style="width: 100%;">
+                        <option value="once">Once</option>
+                        <option value="daily" selected>Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label style="font-weight: 600;">Repeat Interval (Nagging)</label>
+                    <select id="task-repeat-interval" style="width: 100%;">
+                        <option value="none" selected>None / No Nagging</option>
+                        <option value="5m">Every 5 Minutes</option>
+                        <option value="10m">Every 10 Minutes</option>
+                        <option value="15m">Every 15 Minutes</option>
+                        <option value="30m">Every 30 Minutes</option>
+                        <option value="1h">Every 1 Hour</option>
+                    </select>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeCreateTaskModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Task</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- Reminder Modal -->
@@ -968,7 +1485,8 @@ try {
                 <div class="form-group">
                     <label>Schedule Frequency</label>
                     <select id="remFrequency" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; background: transparent; color: var(--text-primary);">
-                        <option value="daily">Daily</option>
+                        <option value="once">Once</option>
+                        <option value="daily" selected>Daily</option>
                         <option value="weekly">Weekly</option>
                         <option value="monthly">Monthly</option>
                         <option value="yearly">Yearly</option>
@@ -1083,6 +1601,7 @@ try {
         let employees = [];
         let alarms = [];
         let report_types = [];
+        let task_types = [];
         
         let all_contacts = <?php echo json_encode($waha_contacts); ?> || [];
         let manual_added_contacts = [];
@@ -1091,10 +1610,16 @@ try {
             return String(string).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
         }
 
-        function renderMembersChecklist(selectedPhones = []) {
-            const container = document.getElementById('membersCheckboxContainer');
-            if (!container) return;
-            container.innerHTML = '';
+        function renderMembersChecklist(selectedPhones = null, selectedTaskPhones = null) {
+            const containerRem = document.getElementById('membersCheckboxContainer');
+            const containerTask = document.getElementById('taskMembersCheckboxContainer');
+            
+            if (selectedPhones === null) {
+                selectedPhones = Array.from(document.querySelectorAll('.member-checkbox:checked')).map(cb => cb.value);
+            }
+            if (selectedTaskPhones === null) {
+                selectedTaskPhones = Array.from(document.querySelectorAll('.task-member-checkbox:checked')).map(cb => cb.value);
+            }
             
             // Combine database contacts with manually added ones
             const combined = [...all_contacts, ...manual_added_contacts];
@@ -1112,22 +1637,60 @@ try {
             // Sort alphabetically by name
             uniqueContacts.sort((a, b) => a.name.localeCompare(b.name));
             
-            uniqueContacts.forEach(c => {
-                const checked = selectedPhones.includes(c.phone) ? 'checked' : '';
-                container.innerHTML += `
-                    <div class="member-checkbox-item" data-phone="${c.phone}" data-name="${c.name.toLowerCase()}" style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.35rem 0; border-bottom: 1px solid rgba(0,0,0,0.03);">
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <input type="checkbox" id="member-${c.phone}" value="${c.phone}" data-name="${c.name}" ${checked} class="member-checkbox" style="width:16px; height:16px; cursor:pointer;">
-                            <label for="member-${c.phone}" style="cursor:pointer; font-size:0.95rem; color:var(--text-primary); font-weight:500;">
-                                ${c.name} <span style="font-weight:400; color:var(--text-secondary); font-size:0.85rem;">(${c.phone})</span>
-                            </label>
+            if (containerRem) {
+                containerRem.innerHTML = '';
+                uniqueContacts.forEach(c => {
+                    const checked = selectedPhones.includes(c.phone) ? 'checked' : '';
+                    containerRem.innerHTML += `
+                        <div class="member-checkbox-item" data-phone="${c.phone}" data-name="${c.name.toLowerCase()}" style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.35rem 0; border-bottom: 1px solid rgba(0,0,0,0.03);">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox" id="member-${c.phone}" value="${c.phone}" data-name="${c.name}" ${checked} class="member-checkbox" style="width:16px; height:16px; cursor:pointer;">
+                                <label for="member-${c.phone}" style="cursor:pointer; font-size:0.95rem; color:var(--text-primary); font-weight:500;">
+                                    ${c.name} <span style="font-weight:400; color:var(--text-secondary); font-size:0.85rem;">(${c.phone})</span>
+                                </label>
+                            </div>
+                            <div style="display: flex; gap: 0.25rem;">
+                                <button type="button" class="btn" onclick="editMemberOption('${c.phone}', '${escapeHtml(c.name)}')" style="padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; border: 1px solid rgba(59,130,246,0.2); background: rgba(59,130,246,0.05); color: var(--primary-color); cursor: pointer; margin: 0;">Edit</button>
+                                <button type="button" class="btn" onclick="deleteMemberOption('${c.phone}')" style="padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; border: 1px solid rgba(239,68,68,0.2); background: rgba(239,68,68,0.05); color: #ef4444; cursor: pointer; margin: 0;">Delete</button>
+                            </div>
                         </div>
-                        <div style="display: flex; gap: 0.25rem;">
-                            <button type="button" class="btn" onclick="editMemberOption('${c.phone}', '${escapeHtml(c.name)}')" style="padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; border: 1px solid rgba(59,130,246,0.2); background: rgba(59,130,246,0.05); color: var(--primary-color); cursor: pointer; margin: 0;">Edit</button>
-                            <button type="button" class="btn" onclick="deleteMemberOption('${c.phone}')" style="padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; border: 1px solid rgba(239,68,68,0.2); background: rgba(239,68,68,0.05); color: #ef4444; cursor: pointer; margin: 0;">Delete</button>
+                    `;
+                });
+            }
+
+            if (containerTask) {
+                containerTask.innerHTML = '';
+                uniqueContacts.forEach(c => {
+                    const checked = selectedTaskPhones.includes(c.phone) ? 'checked' : '';
+                    containerTask.innerHTML += `
+                        <div class="task-member-checkbox-item" data-phone="${c.phone}" data-name="${c.name.toLowerCase()}" style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.35rem 0; border-bottom: 1px solid rgba(0,0,0,0.03);">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox" id="task-member-${c.phone}" value="${c.phone}" data-name="${c.name}" ${checked} class="task-member-checkbox" style="width:16px; height:16px; cursor:pointer;">
+                                <label for="task-member-${c.phone}" style="cursor:pointer; font-size:0.95rem; color:var(--text-primary); font-weight:500;">
+                                    ${c.name} <span style="font-weight:400; color:var(--text-secondary); font-size:0.85rem;">(${c.phone})</span>
+                                </label>
+                            </div>
+                            <div style="display: flex; gap: 0.25rem;">
+                                <button type="button" class="btn" onclick="editMemberOption('${c.phone}', '${escapeHtml(c.name)}')" style="padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; border: 1px solid rgba(59,130,246,0.2); background: rgba(59,130,246,0.05); color: var(--primary-color); cursor: pointer; margin: 0;">Edit</button>
+                                <button type="button" class="btn" onclick="deleteMemberOption('${c.phone}')" style="padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; border: 1px solid rgba(239,68,68,0.2); background: rgba(239,68,68,0.05); color: #ef4444; cursor: pointer; margin: 0;">Delete</button>
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                });
+            }
+        }
+
+        function filterTaskMembersList() {
+            const query = document.getElementById('taskMemberSearchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.task-member-checkbox-item');
+            items.forEach(item => {
+                const name = item.getAttribute('data-name');
+                const phone = item.getAttribute('data-phone');
+                if (name.includes(query) || phone.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
             });
         }
 
@@ -1310,6 +1873,93 @@ try {
             }
         }
 
+        async function editTaskOption(oldName) {
+            const newName = prompt("Edit Task Type Name:", oldName);
+            if (newName === null) return;
+            const cleanName = newName.trim();
+            if (!cleanName) return alert("Name cannot be empty");
+            if (cleanName === oldName) return;
+            
+            task_types = task_types.map(t => t === oldName ? cleanName : t);
+            try {
+                await fetch(API_URL + 'settings/task_types', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({task_types: task_types})
+                });
+                
+                const checked = Array.from(document.querySelectorAll('.task-report-checkbox:checked'))
+                    .map(cb => cb.value === oldName ? cleanName : cb.value);
+                renderTaskCheckboxes(checked);
+                handleTaskTypeCheckboxChange();
+            } catch (err) {
+                console.error("Failed to edit task type:", err);
+            }
+        }
+
+        async function deleteTaskOption(name) {
+            if (!confirm(`Are you sure you want to delete task type "${name}"?`)) return;
+            
+            task_types = task_types.filter(t => t !== name);
+            try {
+                await fetch(API_URL + 'settings/task_types', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({task_types: task_types})
+                });
+                
+                const checked = Array.from(document.querySelectorAll('.task-report-checkbox:checked'))
+                    .map(cb => cb.value)
+                    .filter(v => v !== name);
+                renderTaskCheckboxes(checked);
+                handleTaskTypeCheckboxChange();
+            } catch (err) {
+                console.error("Failed to delete task type:", err);
+            }
+        }
+
+        function showAddCustomTaskForm() {
+            const container = document.getElementById('customTaskFormContainer');
+            if (container) {
+                container.style.display = 'flex';
+                document.getElementById('newTaskTypeInput').focus();
+            }
+        }
+        
+        function hideAddCustomTaskForm() {
+            const container = document.getElementById('customTaskFormContainer');
+            if (container) {
+                container.style.display = 'none';
+                document.getElementById('newTaskTypeInput').value = '';
+            }
+        }
+
+        async function addNewTaskTypeCheckbox() {
+            const input = document.getElementById('newTaskTypeInput');
+            const cleanName = input.value.trim();
+            if (!cleanName) return alert("Please type a task name first");
+            
+            if (!task_types.includes(cleanName)) {
+                task_types.push(cleanName);
+                try {
+                    await fetch(API_URL + 'settings/task_types', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({task_types: task_types})
+                    });
+                } catch (e) {
+                    console.error("Failed to save task type:", e);
+                }
+                const checked = Array.from(document.querySelectorAll('.task-report-checkbox:checked')).map(cb => cb.value);
+                checked.push(cleanName);
+                renderTaskCheckboxes(checked);
+                handleTaskTypeCheckboxChange();
+                hideAddCustomTaskForm();
+            } else {
+                alert("This task type already exists!");
+            }
+        }
+
         async function loadReportTypesDropdowns() {
             try {
                 const res = await fetch(API_URL + 'settings/report_types');
@@ -1320,24 +1970,75 @@ try {
             renderReportCheckboxes([]);
         }
 
-        function renderReportCheckboxes(selected = []) {
-            const container = document.getElementById('reportCheckboxesContainer');
-            container.innerHTML = '';
-            report_types.forEach(r => {
-                const checked = selected.includes(r) ? 'checked' : '';
-                container.innerHTML += `
-                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.35rem 0; border-bottom: 1px solid rgba(0,0,0,0.02);">
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <input type="checkbox" id="report-${r}" value="${r}" ${checked} class="report-checkbox" style="width:16px; height:16px; cursor:pointer;" onchange="updateNotesFromCheckedReports()">
-                            <label for="report-${r}" style="cursor:pointer; font-size:0.9rem; color:var(--text-primary); font-weight:500;">${r}</label>
+        async function loadTaskTypesDropdowns() {
+            try {
+                const res = await fetch(API_URL + 'settings/task_types');
+                task_types = await res.json();
+            } catch (err) {
+                task_types = ["Silo Cleaning / Check", "Wednesday Meeting Checklist", "Feed Formula (Requires Approval)"];
+            }
+            renderTaskCheckboxes([]);
+        }
+
+        function renderReportCheckboxes(selected = null) {
+            const containerRem = document.getElementById('reportCheckboxesContainer');
+            if (selected === null) {
+                selected = Array.from(document.querySelectorAll('.report-checkbox:checked')).map(cb => cb.value);
+            }
+            if (containerRem) {
+                containerRem.innerHTML = '';
+                report_types.forEach(r => {
+                    const checked = selected.includes(r) ? 'checked' : '';
+                    containerRem.innerHTML += `
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.35rem 0; border-bottom: 1px solid rgba(0,0,0,0.02);">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox" id="report-${r}" value="${r}" ${checked} class="report-checkbox" style="width:16px; height:16px; cursor:pointer;" onchange="updateNotesFromCheckedReports()">
+                                <label for="report-${r}" style="cursor:pointer; font-size:0.9rem; color:var(--text-primary); font-weight:500;">${r}</label>
+                            </div>
+                            <div style="display: flex; gap: 0.25rem;">
+                                <button type="button" class="btn" onclick="editReportOption('${escapeHtml(r)}')" style="padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; border: 1px solid rgba(59,130,246,0.2); background: rgba(59,130,246,0.05); color: var(--primary-color); cursor: pointer; margin: 0;">Edit</button>
+                                <button type="button" class="btn" onclick="deleteReportOption('${escapeHtml(r)}')" style="padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; border: 1px solid rgba(239,68,68,0.2); background: rgba(239,68,68,0.05); color: #ef4444; cursor: pointer; margin: 0;">Delete</button>
+                            </div>
                         </div>
-                        <div style="display: flex; gap: 0.25rem;">
-                            <button type="button" class="btn" onclick="editReportOption('${escapeHtml(r)}')" style="padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; border: 1px solid rgba(59,130,246,0.2); background: rgba(59,130,246,0.05); color: var(--primary-color); cursor: pointer; margin: 0;">Edit</button>
-                            <button type="button" class="btn" onclick="deleteReportOption('${escapeHtml(r)}')" style="padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; border: 1px solid rgba(239,68,68,0.2); background: rgba(239,68,68,0.05); color: #ef4444; cursor: pointer; margin: 0;">Delete</button>
+                    `;
+                });
+            }
+        }
+
+        function renderTaskCheckboxes(selectedTasks = null) {
+            const containerTask = document.getElementById('taskTypesCheckboxContainer');
+            if (selectedTasks === null) {
+                selectedTasks = Array.from(document.querySelectorAll('.task-report-checkbox:checked')).map(cb => cb.value);
+            }
+            if (containerTask) {
+                containerTask.innerHTML = '';
+                // Append special Personal option
+                const personalChecked = selectedTasks.includes('Personal') ? 'checked' : '';
+                containerTask.innerHTML += `
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.35rem 0; border-bottom: 1px solid rgba(0,0,0,0.02); background: rgba(59,130,246,0.03);">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" id="task-report-Personal" value="Personal" ${personalChecked} class="task-report-checkbox" style="width:16px; height:16px; cursor:pointer;" onchange="handleTaskTypeCheckboxChange()">
+                            <label for="task-report-Personal" style="cursor:pointer; font-size:0.9rem; color:var(--primary-color); font-weight:600;">Personal (Custom Message)</label>
                         </div>
                     </div>
                 `;
-            });
+
+                task_types.forEach(t => {
+                    const checked = selectedTasks.includes(t) ? 'checked' : '';
+                    containerTask.innerHTML += `
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.35rem 0; border-bottom: 1px solid rgba(0,0,0,0.02);">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox" id="task-report-${t}" value="${t}" ${checked} class="task-report-checkbox" style="width:16px; height:16px; cursor:pointer;" onchange="handleTaskTypeCheckboxChange()">
+                                <label for="task-report-${t}" style="cursor:pointer; font-size:0.9rem; color:var(--text-primary); font-weight:500;">${t}</label>
+                            </div>
+                            <div style="display: flex; gap: 0.25rem;">
+                                <button type="button" class="btn" onclick="editTaskOption('${escapeHtml(t)}')" style="padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; border: 1px solid rgba(59,130,246,0.2); background: rgba(59,130,246,0.05); color: var(--primary-color); cursor: pointer; margin: 0;">Edit</button>
+                                <button type="button" class="btn" onclick="deleteTaskOption('${escapeHtml(t)}')" style="padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; border: 1px solid rgba(239,68,68,0.2); background: rgba(239,68,68,0.05); color: #ef4444; cursor: pointer; margin: 0;">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
         }
 
         function updateNotesFromCheckedReports() {
@@ -1386,6 +2087,12 @@ try {
                 const targetView = e.currentTarget.getAttribute('data-target');
                 document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
                 document.getElementById(targetView).classList.add('active');
+
+                if (targetView === 'tasks_view') {
+                    fetchTasks();
+                } else if (targetView === 'godown_inventory_view') {
+                    fetchInventory();
+                }
             });
         });
 
@@ -1456,6 +2163,8 @@ try {
                     <td>${groupText}</td>
                     <td>${reportsText}</td>
                     <td>${r.task_notes}</td>
+                    <td style="text-transform: capitalize; font-weight: 500;">${r.frequency || 'daily'}</td>
+                    <td style="text-transform: capitalize; font-weight: 500; color: #b45309;">${r.repeat_interval && r.repeat_interval !== 'none' ? r.repeat_interval : 'None'}</td>
                     <td>${formatDateTime(r.trigger_time)}</td>
                     <td><span class="badge ${badgeClass}">${r.status}</span></td>
                     <td>
@@ -1474,6 +2183,19 @@ try {
         function filterRemindersTable() {
             const query = document.getElementById('remindersSearchInput').value.toLowerCase();
             const rows = document.querySelectorAll('#reminders-tbody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function filterTasksTable() {
+            const query = document.getElementById('tasksSearchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#tasks-tbody tr');
             rows.forEach(row => {
                 const text = row.innerText.toLowerCase();
                 if (text.includes(query)) {
@@ -1509,6 +2231,12 @@ try {
                 select.innerHTML = '<option value="">No Group / Private Only</option>';
                 const visible = waha_groups.filter(g => !hidden_groups.includes(g.id));
                 visible.forEach(g => { select.innerHTML += `<option value="${g.id}">${g.name}</option>`; });
+            }
+            const taskSelect = document.getElementById('task-group-id');
+            if (taskSelect) {
+                taskSelect.innerHTML = '<option value="">No Group / Private Only</option>';
+                const visible = waha_groups.filter(g => !hidden_groups.includes(g.id));
+                visible.forEach(g => { taskSelect.innerHTML += `<option value="${g.id}">${g.name}</option>`; });
             }
         }
 
@@ -1644,6 +2372,17 @@ try {
             if(confirm("Delete reminder?")) {
                 await fetch(API_URL + 'reminders/' + id, {method: 'DELETE'});
                 fetchReminders();
+            }
+        }
+
+        async function resetDailyReminders() {
+            const res = await fetch(API_URL + 'reminders/reset-daily', {method: 'POST'});
+            const data = await res.json();
+            if (data.success) {
+                alert(`✅ Done! ${data.reset_count} recurring reminder(s) advanced to their next scheduled date and set to Pending.`);
+                fetchReminders();
+            } else {
+                alert('❌ Reset failed. Please try again.');
             }
         }
 
@@ -1878,14 +2617,311 @@ try {
         }
 
         function openAlertSettingsModal() {
-            loadWahaSettings(); // Pre-fill form with current values
+            loadWahaSettings();
             openModal('alertSettingsModal');
+        }
+        let tasksList = [];
+
+        async function fetchTasks() {
+            try {
+                const res = await fetch(API_URL + 'tasks');
+                tasksList = await res.json();
+                renderTasks(tasksList);
+            } catch (err) {
+                console.error("Error fetching tasks:", err);
+            }
+        }
+
+        function renderTasks(tasks) {
+            const tbody = document.getElementById('tasks-tbody');
+            tbody.innerHTML = '';
+            
+            // Map JID to Group Names
+            const groups_list = waha_groups || [];
+
+            const nowTs = new Date().getTime();
+            tasks.forEach(t => {
+                // Auto-detect overdue client-side: if due_time is in past and not completed
+                const dueTs = t.due_time ? new Date(t.due_time.replace(/-/g, '/').replace('T', ' ')).getTime() : null;
+                if (t.status === 'pending' && dueTs && dueTs < nowTs) {
+                    t.status = 'overdue';
+                }
+                let badgeClass = 'badge-gray';
+                if (t.status === 'completed') badgeClass = 'badge-green';
+                else if (t.status === 'overdue') badgeClass = 'badge-red';
+                else if (t.status === 'pending_approval') badgeClass = 'badge-yellow';
+
+                // Find group name
+                let groupName = 'Private Only / No Group';
+                if (t.whatsapp_group_id) {
+                    const found = groups_list.find(g => g.id === t.whatsapp_group_id);
+                    if (found) {
+                        groupName = found.name;
+                    } else {
+                        groupName = t.whatsapp_group_id.split('@')[0];
+                    }
+                }
+
+                // Assigned Task badge
+                let taskTypeLabel = t.task_type.toUpperCase();
+                if (t.task_type === 'general') taskTypeLabel = 'SILO CLEANING';
+                else if (t.task_type === 'meeting') taskTypeLabel = 'WED MEETING';
+                else if (t.task_type === 'approval') taskTypeLabel = 'FEED APPROVAL';
+                else if (t.task_type === 'personal') taskTypeLabel = 'PERSONAL';
+
+                const names = (t.assigned_person_name || '').split(',').map(n => n.trim()).filter(Boolean);
+                const phones = (t.assigned_person_phone || '').split(',').map(p => p.trim()).filter(Boolean);
+                const formattedAssignees = names.length > 0 ? names.map((name, idx) => {
+                    const phone = phones[idx] || '';
+                    return `${name} (${phone})`;
+                }).join(', ') : (t.assigned_person_name || 'Group Member');
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${formattedAssignees}</strong></td>
+                        <td>${groupName}</td>
+                        <td><span class="badge badge-blue">${taskTypeLabel}</span></td>
+                        <td>
+                            <div style="max-width:250px; font-size:0.9rem;">
+                                ${t.task_name}
+                                ${t.approver_phone ? `<br><small style="color:var(--text-secondary)">Approver: ${t.approver_phone}</small>` : ''}
+                            </div>
+                        </td>
+                        <td style="text-transform: capitalize; font-weight: 500;">${t.frequency || 'once'}</td>
+                        <td style="text-transform: capitalize; font-weight: 500; color: #b45309;">${t.repeat_interval && t.repeat_interval !== 'none' ? t.repeat_interval : 'None'}</td>
+                        <td>${formatDateTime(t.due_time)}</td>
+                        <td><span class="badge ${badgeClass}" style="text-transform: uppercase;">${t.status}</span></td>
+                        <td>
+                            <div style="display:flex; gap:0.25rem; flex-wrap:wrap;">
+                                <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.8rem; margin:0;" onclick="editTask(${t.id})">Edit</button>
+                                ${t.status !== 'completed' ? `<button class="btn btn-primary" style="padding:0.25rem 0.5rem; font-size:0.8rem; margin:0;" onclick="completeTask(${t.id})">Done</button>` : ''}
+                                <button class="btn" style="padding:0.25rem 0.5rem; font-size:0.8rem; background:#fee2e2; color:#ef4444; border:1px solid #fca5a5; margin:0;" onclick="deleteTask(${t.id})">Delete</button>
+                                ${t.completion_details ? `<button class="btn" style="padding:0.25rem 0.5rem; font-size:0.8rem; margin:0;" onclick="alert('Completion Details:\\n\\n' + \`${t.completion_details.replace(/'/g, "\\'")}\`)">Details</button>` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            // Populate Tasks & Approvals dashboard stats
+            const uniqueTaskPhones = new Set();
+            tasks.forEach(t => {
+                if (t.assigned_person_phone) {
+                    t.assigned_person_phone.split(',').forEach(p => uniqueTaskPhones.add(p.trim()));
+                }
+            });
+            uniqueTaskPhones.delete(''); // remove empty if any
+            
+            const taskStatEmployees = document.getElementById('stat-task-employees');
+            if (taskStatEmployees) taskStatEmployees.innerText = uniqueTaskPhones.size;
+            
+            const taskStatGroups = document.getElementById('stat-task-groups');
+            if (taskStatGroups) taskStatGroups.innerText = new Set(tasks.map(t => t.whatsapp_group_id).filter(g => g)).size;
+            
+            const statTasks = document.getElementById('stat-tasks');
+            if (statTasks) statTasks.innerText = tasks.length;
+        }
+
+        function openCreateTaskModal() {
+            document.getElementById('task-id').value = '';
+            document.getElementById('task-form').reset();
+            document.getElementById('task-modal-title').innerText = "Create Task";
+            
+            // Populate groups select options dynamically (filtering hidden ones)
+            const groupSelect = document.getElementById('task-group-id');
+            groupSelect.innerHTML = '<option value="">No Group / Private Only</option>';
+            if (waha_groups) {
+                const visible = waha_groups.filter(g => !hidden_groups.includes(g.id));
+                visible.forEach(g => {
+                    groupSelect.innerHTML += `<option value="${g.id}">${g.name}</option>`;
+                });
+            }
+
+            renderMembersChecklist([], []);
+            renderTaskCheckboxes([]);
+            handleTaskTypeCheckboxChange();
+            openModal('createTaskModal');
+        }
+
+        function closeCreateTaskModal() {
+            closeModal('createTaskModal');
+        }
+
+        function handleTaskTypeCheckboxChange() {
+            const personalCheckbox = document.getElementById('task-report-Personal');
+            const messageGroup = document.getElementById('task-message-group');
+            const approverRow = document.getElementById('task-approver-row');
+            
+            if (personalCheckbox && personalCheckbox.checked) {
+                messageGroup.style.display = 'block';
+            } else {
+                messageGroup.style.display = 'none';
+            }
+            
+            const checkedTypes = Array.from(document.querySelectorAll('.task-report-checkbox:checked')).map(cb => cb.value.toLowerCase());
+            const hasFeed = checkedTypes.some(t => t.includes('feed') || t.includes('formula'));
+            if (hasFeed) {
+                approverRow.style.display = 'block';
+            } else {
+                approverRow.style.display = 'none';
+            }
+        }
+
+        async function handleTaskSubmit(e) {
+            e.preventDefault();
+            const taskId = document.getElementById('task-id').value;
+            
+            // Get selected members
+            const selectedMembers = Array.from(document.querySelectorAll('.task-member-checkbox:checked'));
+            const phones = selectedMembers.map(cb => cb.value).join(', ');
+            const names = selectedMembers.map(cb => cb.getAttribute('data-name')).join(', ');
+            
+            // Get selected task/report types
+            const checkedTaskTypes = Array.from(document.querySelectorAll('.task-report-checkbox:checked')).map(cb => cb.value).join(', ');
+            
+            const groupSelectVal = document.getElementById('task-group-id').value;
+            
+            if (!phones && !groupSelectVal) {
+                alert("Please select either a member or a WhatsApp group!");
+                return;
+            }
+            
+            if (!checkedTaskTypes) {
+                alert("Please select at least one Assigned Task / Report type!");
+                return;
+            }
+            
+            let taskName = '';
+            const personalChecked = document.getElementById('task-report-Personal')?.checked;
+            if (personalChecked) {
+                taskName = document.getElementById('task-name').value.trim();
+                if (!taskName) {
+                    alert("Please type a custom text message for your Personal reminder!");
+                    return;
+                }
+            } else {
+                taskName = checkedTaskTypes;
+            }
+            
+            const payload = {
+                task_name: taskName,
+                task_type: checkedTaskTypes,
+                assigned_person_name: names || null,
+                assigned_person_phone: phones || null,
+                whatsapp_group_id: groupSelectVal || null,
+                due_time: document.getElementById('task-due-time').value,
+                completion_keywords: null,
+                approver_phone: document.getElementById('task-approver-phone').value || null,
+                frequency: document.getElementById('task-frequency').value,
+                repeat_interval: document.getElementById('task-repeat-interval').value
+            };
+
+            try {
+                const url = taskId ? (API_URL + 'tasks/' + taskId) : (API_URL + 'tasks');
+                const method = taskId ? 'PUT' : 'POST';
+                const res = await fetch(url, {
+                    method: method,
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    closeCreateTaskModal();
+                    fetchTasks();
+                } else {
+                    alert("Error saving task: " + (data.error || JSON.stringify(data)));
+                }
+            } catch (err) {
+                console.error("Error submitting task:", err);
+            }
+        }
+
+        async function editTask(id) {
+            const t = tasksList.find(x => x.id === id);
+            if (!t) return;
+            
+            // Re-populate groups list first (filtering hidden ones)
+            const groupSelect = document.getElementById('task-group-id');
+            groupSelect.innerHTML = '<option value="">No Group / Private Only</option>';
+            if (waha_groups) {
+                const visible = waha_groups.filter(g => !hidden_groups.includes(g.id));
+                visible.forEach(g => {
+                    groupSelect.innerHTML += `<option value="${g.id}">${g.name}</option>`;
+                });
+            }
+            
+            document.getElementById('task-id').value = t.id;
+            document.getElementById('task-group-id').value = t.whatsapp_group_id || '';
+            
+            if (t.due_time) {
+                const dt = new Date(t.due_time);
+                const tzoffset = dt.getTimezoneOffset() * 60000;
+                const localISOTime = (new Date(dt.getTime() - tzoffset)).toISOString().slice(0, 16);
+                document.getElementById('task-due-time').value = localISOTime;
+            }
+            
+            document.getElementById('task-frequency').value = t.frequency || 'once';
+            document.getElementById('task-repeat-interval').value = t.repeat_interval || 'none';
+            document.getElementById('task-approver-phone').value = t.approver_phone || '';
+            
+            // Parse assigned person phones & names
+            const selectedPhones = (t.assigned_person_phone || '').split(',').map(p => p.trim()).filter(Boolean);
+            renderMembersChecklist([], selectedPhones);
+            
+            // Parse assigned task/report types
+            const selectedTasks = (t.task_type || '').split(',').map(x => x.trim()).filter(Boolean);
+            renderTaskCheckboxes(selectedTasks);
+            
+            // Set custom message value if Personal was checked
+            if (selectedTasks.includes('Personal')) {
+                document.getElementById('task-name').value = t.task_name || '';
+            } else {
+                document.getElementById('task-name').value = '';
+            }
+            
+            document.getElementById('task-modal-title').innerText = "Edit Task";
+            handleTaskTypeCheckboxChange();
+            openModal('createTaskModal');
+        }
+
+        async function completeTask(id) {
+            if (!confirm("Are you sure you want to mark this task as completed?")) return;
+            try {
+                const res = await fetch(API_URL + `tasks/${id}/complete`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({details: "Manually marked completed from dashboard"})
+                });
+                const data = await res.json();
+                if (data.success) {
+                    fetchTasks();
+                } else {
+                    alert('Failed to mark as done. Please try again.');
+                }
+            } catch (err) {
+                console.error("Error completing task:", err);
+            }
+        }
+
+        async function deleteTask(id) {
+            if (!confirm("Are you sure you want to delete this task?")) return;
+            try {
+                const res = await fetch(API_URL + `tasks/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (data.success) {
+                    fetchTasks();
+                }
+            } catch (err) {
+                console.error("Error deleting task:", err);
+            }
         }
 
         window.onload = async () => {
             await fetchWahaGroups();
             await loadReportTypesDropdowns();
+            await loadTaskTypesDropdowns();
             await fetchReminders();
+            await fetchTasks();
             renderMembersChecklist([]);
             
             // WAHA Session Monitoring Init
@@ -1899,4 +2935,5 @@ try {
         };
     </script>
 </body>
+
 </html>

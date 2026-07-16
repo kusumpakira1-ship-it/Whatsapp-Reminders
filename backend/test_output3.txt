@@ -1,0 +1,13 @@
+--- Any messages with 'done' or 'silo' ---
+[2026-07-16 15:23:18] ❤️ Kúsù ❤️ (82798413090865): Silo cleaning done
+[2026-07-16 15:05:53] ❤️ Kúsù ❤️ (82798413090865): Silo cleaning done
+[2026-07-16 13:39:02] ❤️ Kúsù ❤️ (82798413090865): Silo cleaning done
+[2026-07-16 12:43:16] ❤️ Kúsù ❤️ (82798413090865): Done
+[2026-07-15 08:55:13] [Feed Plant] Vara Prasad (917204021105): @183300681367688 every day one silo show be empty and cleaning should be done
+
+--- Group messages ---
+[2026-07-16 15:23:18] Group : Silo cleaning done
+[2026-07-16 15:05:53] Group : Silo cleaning done
+[2026-07-16 13:39:02] Group : Silo cleaning done
+[2026-07-16 12:43:16] Group : Done
+[2026-07-15 08:55:13] Group 120363111757096162@g.us: @183300681367688 every day one silo show be empty and cleaning should be done

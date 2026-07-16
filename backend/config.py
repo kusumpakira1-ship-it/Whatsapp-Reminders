@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     OLLAMA_VISION_MODEL: str = os.getenv("OLLAMA_VISION_MODEL", "llava")
     USE_N8N: str = os.getenv("USE_N8N", "false")
     class Config:
+        extra = 'ignore'
         env_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env")
 
 settings = Settings()

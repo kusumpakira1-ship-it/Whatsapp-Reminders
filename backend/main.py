@@ -10,7 +10,7 @@ from typing import List, Optional
 from contextlib import asynccontextmanager
 
 from database import engine, Base, SessionLocal
-from models import Whitelist, RawMessage, ProcessedData, Group, Employee, SystemSetting, CustomAlarm, WhatsAppMessage, WAHAEvent
+from models import Whitelist, RawMessage, ProcessedData, Group, Employee, SystemSetting, CustomAlarm, WhatsAppMessage, WAHAEvent, Task, EggGodownInventory
 from ai_processor import process_text, process_image, process_document
 from waha_service import download_waha_media, get_waha_chat_name, send_waha_message, send_waha_file
 from scheduler import setup_scheduler, scheduler, schedule_custom_alarm
@@ -230,6 +230,133 @@ def process_message_background(
         except Exception as json_err:
             logger.error(f"Failed to save to json in background: {json_err}")
             
+        # =========================================================================
+        # 4. Check for Temperature Alert (>38°C)
+        # =========================================================================
+        text_lower = text.lower()
+        if any(w in text_lower for w in ["temp", "temperature"]):
+            import re
+            match = re.search(r'(\d+(?:\.\d+)?)', text)
+            if match:
+                try:
+                    temp_val = float(match.group(1))
+                    if temp_val > 38.0:
+                        alert_msg = (
+                            f"🚨 *HIGH TEMPERATURE ALERT* 🚨\n\n"
+                            f"The reported temperature is *{temp_val}°C*!\n"
+                            f"Please spray water in the sheds immediately to protect the birds. 🚿"
+                        )
+                        admin_phones = ["917259510983", "919346763549"]
+                        # Send alert to admin numbers
+                        for admin in admin_phones:
+                            logger.info(f"Sending temperature alert to admin: {admin}")
+                            send_waha_message(admin, alert_msg)
+                        
+                        # Also send back to the group/chat where it came from
+                        if sender:
+                            logger.info(f"Sending temperature alert to chat source: {sender}")
+                            send_waha_message(sender, alert_msg)
+                except Exception as temp_err:
+                    logger.error(f"Error parsing temperature: {temp_err}")
+
+        # =========================================================================
+        # 5. Task Workflows Matching Logic
+        # =========================================================================
+        # Find all pending/approval tasks
+        tasks = db.query(Task).filter(Task.status.in_(['pending', 'pending_approval', 'overdue'])).all()
+        for t in tasks:
+            # Check if this task is assigned to the sender
+            clean_sender_phone = "".join(filter(str.isdigit, sender_phone))
+            is_assigned = False
+            
+            # Check assignee phone match
+            if t.assigned_person_phone:
+                phones = [p.strip() for p in t.assigned_person_phone.split(',') if p.strip()]
+                for p in phones:
+                    clean_p = "".join(filter(str.isdigit, p))
+                    if clean_p in clean_sender_phone or clean_sender_phone in clean_p:
+                        is_assigned = True
+                        break
+            
+            # Check group match
+            if t.whatsapp_group_id and group_name_str:
+                clean_target_group = t.whatsapp_group_id.replace('@g.us', '').strip()
+                clean_sender_group = sender.replace('@g.us', '').strip()
+                if clean_target_group == clean_sender_group:
+                    is_assigned = True
+ 
+            # If not assigned, skip
+            if not is_assigned:
+                continue
+ 
+            # Check Rule 1: Approval confirmation logic
+            if t.status == 'pending_approval' and t.approver_phone:
+                # Only the approver can approve this task!
+                clean_approver = "".join(filter(str.isdigit, t.approver_phone))
+                if clean_approver in clean_sender_phone or clean_sender_phone in clean_approver:
+                    if "approve" in text_lower:
+                        t.status = 'completed'
+                        t.completion_details = f"Approved by manager {sender_name} ({sender_phone}) at {datetime.now(IST).strftime('%Y-%m-%d %H:%M:%S')}"
+                        db.commit()
+                        logger.info(f"Task ID {t.id} ('{t.task_name}') approved by {sender_phone}.")
+                        send_waha_message(sender, f"✅ Task *\"{t.task_name}\"* has been approved and completed!")
+                        continue
+                continue
+ 
+            # Check Rule 2: Wednesday Meeting points check
+            is_meeting = t.task_type and 'meeting' in t.task_type.lower()
+            if is_meeting:
+                meeting_keywords = ["points", "minutes", "checklist", "topics", "discussed", "conducting", "conducted"]
+                if any(kw in text_lower for kw in meeting_keywords) and len(text) > 20:
+                    t.status = 'completed'
+                    t.completion_details = text
+                    db.commit()
+                    logger.info(f"Meeting task ID {t.id} completed. Saved points: '{text[:50]}...'")
+                    send_waha_message(sender, f"✅ Meeting follow-up *\"{t.task_name}\"* completed! Points covered saved.")
+                    continue
+                continue
+ 
+            # Check Rule 3: Feed Formula update (Approval Flow initiator)
+            is_approval = t.task_type and ('approval' in t.task_type.lower() or 'feed formula' in t.task_name.lower())
+            if is_approval:
+                keywords = [k.strip().lower() for k in (t.completion_keywords or 'update,updates,formula,done').split(',') if k.strip()]
+                update_kws = ["update", "updated", "updates", "eod", "status", "formula"]
+                match_kws = keywords + update_kws
+                if any(kw in text_lower for kw in match_kws):
+                    t.status = 'pending_approval'
+                    t.completion_details = f"Submitted by {sender_name} ({sender_phone}): '{text[:100]}'"
+                    db.commit()
+                    logger.info(f"Feed Formula task ID {t.id} submitted. Pending approval from approver.")
+                    
+                    if t.approver_phone:
+                        target_approver = t.approver_phone.strip()
+                        if not target_approver.endswith('@c.us') and not target_approver.endswith('@g.us'):
+                            target_approver += '@c.us'
+                        prompt_msg = (
+                            f"🔔 *Approval Request* 🔔\n\n"
+                            f"The Feed Formula has been updated by *{sender_name}*:\n"
+                            f"\"{text}\"\n\n"
+                            f"Please reply with *\"Approve Feed Formula\"* or click approve on the dashboard to complete."
+                        )
+                        send_waha_message(target_approver, prompt_msg)
+                    continue
+                continue
+ 
+            # Check Rule 4: Generic/Silo tasks match keywords
+            keywords = [k.strip().lower() for k in (t.completion_keywords or 'done,completed,cleaned,empty,silo').split(',') if k.strip()]
+            update_kws = ["update", "updated", "updates", "eod", "status"]
+            has_update = any(kw in text_lower for kw in update_kws)
+            task_nouns = [w.lower() for w in t.task_name.split() if len(w) > 3]
+            match_update_smart = has_update and any(n in text_lower for n in task_nouns)
+
+            if any(kw in text_lower for kw in keywords) or match_update_smart:
+                t.status = 'completed'
+                t.completion_details = f"Marked done via WhatsApp message: '{text}'"
+                db.commit()
+                logger.info(f"Task ID {t.id} ('{t.task_name}') completed via keyword match.")
+                send_waha_message(sender, f"✅ Task *\"{t.task_name}\"* marked completed!")
+                continue
+            
     except Exception as e:
         db.rollback()
         logger.error(f"Error in process_message_background: {e}")
@@ -434,6 +561,32 @@ class ReminderTimeUpdate(BaseModel):
 class ReportTypesUpdate(BaseModel):
     report_types: List[str]
 
+class TaskTypesUpdate(BaseModel):
+    task_types: List[str]
+
+class TaskCreate(BaseModel):
+    task_name: str
+    task_type: Optional[str] = 'general'
+    assigned_person_name: Optional[str] = None
+    assigned_person_phone: Optional[str] = None
+    whatsapp_group_id: Optional[str] = None
+    due_time: str
+    completion_keywords: Optional[str] = None
+    approver_phone: Optional[str] = None
+    frequency: Optional[str] = 'once'
+    repeat_interval: Optional[str] = 'none'
+
+class EggGodownInventoryCreate(BaseModel):
+    date: str
+    opening_balance: int
+    closing_balance: int
+
+class CustomMessageSend(BaseModel):
+    recipient: str
+    message: str
+
+
+
 @app.get("/api/settings/report_types")
 def get_report_types():
     db = SessionLocal()
@@ -463,6 +616,37 @@ def update_report_types(payload: ReportTypesUpdate):
             setting.value = value_str
         db.commit()
         return {"status": "success", "report_types": payload.report_types}
+    finally:
+        db.close()
+
+@app.get("/api/settings/task_types")
+def get_task_types():
+    db = SessionLocal()
+    try:
+        setting = db.query(SystemSetting).filter_by(key="custom_task_types").first()
+        if setting:
+            try:
+                return json.loads(setting.value)
+            except Exception:
+                pass
+        default_list = ["Silo Cleaning / Check", "Wednesday Meeting Checklist", "Feed Formula (Requires Approval)"]
+        return default_list
+    finally:
+        db.close()
+
+@app.post("/api/settings/task_types")
+def update_task_types(payload: TaskTypesUpdate):
+    db = SessionLocal()
+    try:
+        setting = db.query(SystemSetting).filter_by(key="custom_task_types").first()
+        value_str = json.dumps(payload.task_types)
+        if not setting:
+            setting = SystemSetting(key="custom_task_types", value=value_str)
+            db.add(setting)
+        else:
+            setting.value = value_str
+        db.commit()
+        return {"status": "success", "task_types": payload.task_types}
     finally:
         db.close()
 
@@ -700,3 +884,120 @@ def delete_employee(employee_id: int):
         return {"status": "success"}
     finally:
         db.close()
+
+
+@app.get("/api/tasks")
+def list_tasks():
+    db = SessionLocal()
+    try:
+        tasks = db.query(Task).order_by(Task.due_time.desc()).all()
+        return [
+            {
+                "id": t.id,
+                "task_name": t.task_name,
+                "task_type": t.task_type,
+                "assigned_person_name": t.assigned_person_name,
+                "assigned_person_phone": t.assigned_person_phone,
+                "whatsapp_group_id": t.whatsapp_group_id,
+                "due_time": t.due_time.isoformat(),
+                "completion_keywords": t.completion_keywords,
+                "status": t.status,
+                "approver_phone": t.approver_phone,
+                "completion_details": t.completion_details,
+                "frequency": t.frequency,
+                "repeat_interval": t.repeat_interval,
+                "created_at": t.created_at.isoformat() if t.created_at else None
+            } for t in tasks
+        ]
+    finally:
+        db.close()
+
+@app.post("/api/tasks")
+def create_task(t: TaskCreate):
+    db = SessionLocal()
+    try:
+        try:
+            dt = datetime.fromisoformat(t.due_time.replace('Z', '+00:00'))
+            dt = dt.astimezone(IST).replace(tzinfo=None)
+        except Exception:
+            dt = datetime.strptime(t.due_time, "%Y-%m-%d %H:%M:%S")
+            
+        new_task = Task(
+            task_name=t.task_name,
+            task_type=t.task_type,
+            assigned_person_name=t.assigned_person_name,
+            assigned_person_phone=t.assigned_person_phone,
+            whatsapp_group_id=t.whatsapp_group_id,
+            due_time=dt,
+            completion_keywords=t.completion_keywords,
+            approver_phone=t.approver_phone,
+            frequency=t.frequency,
+            repeat_interval=t.repeat_interval,
+            status='pending'
+        )
+        db.add(new_task)
+        db.commit()
+        db.refresh(new_task)
+        return {"status": "success", "id": new_task.id}
+    finally:
+        db.close()
+
+@app.put("/api/tasks/{task_id}")
+def update_task(task_id: int, t: TaskCreate):
+    db = SessionLocal()
+    try:
+        task = db.query(Task).filter(Task.id == task_id).first()
+        if not task:
+            raise HTTPException(status_code=404, detail="Task not found")
+        try:
+            dt = datetime.fromisoformat(t.due_time.replace('Z', '+00:00'))
+            dt = dt.astimezone(IST).replace(tzinfo=None)
+        except Exception:
+            dt = datetime.strptime(t.due_time, "%Y-%m-%d %H:%M:%S")
+
+        task.task_name = t.task_name
+        task.task_type = t.task_type
+        task.assigned_person_name = t.assigned_person_name
+        task.assigned_person_phone = t.assigned_person_phone
+        task.whatsapp_group_id = t.whatsapp_group_id
+        task.due_time = dt
+        task.completion_keywords = t.completion_keywords
+        task.approver_phone = t.approver_phone
+        task.frequency = t.frequency
+        task.repeat_interval = t.repeat_interval
+        db.commit()
+        return {"status": "success"}
+    finally:
+        db.close()
+
+@app.delete("/api/tasks/{task_id}")
+def delete_task(task_id: int):
+    db = SessionLocal()
+    try:
+        task = db.query(Task).filter(Task.id == task_id).first()
+        if not task:
+            raise HTTPException(status_code=404, detail="Task not found")
+        db.delete(task)
+        db.commit()
+        return {"status": "success"}
+    finally:
+        db.close()
+
+@app.post("/api/tasks/{task_id}/complete")
+def complete_task(task_id: int, payload: dict = None):
+    db = SessionLocal()
+    try:
+        task = db.query(Task).filter(Task.id == task_id).first()
+        if not task:
+            raise HTTPException(status_code=404, detail="Task not found")
+        task.status = 'completed'
+        if payload and "details" in payload:
+            task.completion_details = payload["details"]
+        db.commit()
+        return {"status": "success"}
+    finally:
+        db.close()
+
+
+
+

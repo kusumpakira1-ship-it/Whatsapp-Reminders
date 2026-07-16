@@ -8,7 +8,7 @@ from config import settings
 from apscheduler.triggers.date import DateTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 from database import SessionLocal
-from models import ReportRecipient, Group, Employee, ProcessedData, RawMessage, SystemSetting, CustomAlarm, UnifiedReminder, WAHAEvent
+from models import ReportRecipient, Group, Employee, ProcessedData, RawMessage, SystemSetting, CustomAlarm, UnifiedReminder, WAHAEvent, Task, EggGodownInventory
 from sqlalchemy import func
 
 logger = logging.getLogger(__name__)
@@ -53,6 +53,21 @@ async def scheduled_report_job():
     logger.info("Starting scheduled 10 PM daily report generation...")
     pdf_path, summary_text = generate_daily_reports()
     await _send_reports_to_all(pdf_path, summary_text)
+
+async def scheduled_godown_report_job():
+    logger.info("Starting scheduled 9 PM daily egg godown summary report...")
+    try:
+        from report_generator_godown import generate_godown_report
+        pdf_path, summary_text = generate_godown_report()
+        admin_phones = ["917259510983", "919346763549"]
+        for phone in admin_phones:
+            logger.info(f"Sending daily egg godown summary to {phone}")
+            send_waha_message(phone, summary_text)
+            if pdf_path and os.path.exists(pdf_path):
+                send_waha_file(phone, pdf_path, caption=f"Egg Godown Report - {pdf_path.split('/')[-1]}")
+    except Exception as e:
+        logger.error(f"Error in scheduled_godown_report_job: {e}")
+
 
 async def scheduled_weekly_report_job():
     logger.info("Starting scheduled weekly report generation...")
@@ -1252,8 +1267,8 @@ def poll_live_alarms():
 
 def midnight_reset_job():
     """Runs at 00:00 IST every night.
-    Advances trigger_time for sent recurring reminders to the next occurrence
-    and resets their status to 'pending' so the UI shows them as upcoming.
+    Advances trigger_time for sent recurring reminders and tasks to the next occurrence
+    and resets their status to 'pending'.
     """
     from datetime import datetime, timezone, timedelta
     IST = timezone(timedelta(hours=5, minutes=30))
@@ -1262,7 +1277,7 @@ def midnight_reset_job():
 
     db = SessionLocal()
     try:
-        # Find all sent or skipped recurring reminders
+        # 1. Reset reminders
         sent_recurring = db.query(UnifiedReminder).filter(
             UnifiedReminder.status.in_(['sent', 'skipped']),
             UnifiedReminder.frequency != 'once'
@@ -1274,14 +1289,253 @@ def midnight_reset_job():
             r.trigger_time = get_next_occurrence(r.trigger_time, freq)
             r.status = 'pending'
             reset_count += 1
-            logger.info(f"Midnight reset: {r.person_name} → next trigger: {r.trigger_time} (freq: {freq})")
+            logger.info(f"Midnight reset reminder: {r.person_name} → next trigger: {r.trigger_time} (freq: {freq})")
+
+        # 2. Reset tasks
+        completed_tasks = db.query(Task).filter(
+            Task.status == 'completed',
+            Task.frequency != 'once'
+        ).all()
+
+        for t in completed_tasks:
+            freq = str(t.frequency).lower()
+            t.due_time = get_next_occurrence(t.due_time, freq)
+            t.status = 'pending'
+            reset_count += 1
+            logger.info(f"Midnight reset task: {t.task_name} → next trigger: {t.due_time} (freq: {freq})")
 
         db.commit()
-        logger.info(f"Midnight reset complete: {reset_count} reminders reset to pending.")
+        logger.info(f"Midnight reset complete: {reset_count} items reset to pending.")
     except Exception as e:
         logger.error(f"Error in midnight_reset_job: {e}")
     finally:
         db.close()
+
+
+def get_interval_minutes(interval):
+    if not interval or interval == 'none':
+        return 0
+    interval = str(interval).lower()
+    if interval.endswith('m'):
+        try: return int(interval[:-1])
+        except: return 0
+    if interval.endswith('h'):
+        try: return int(interval[:-1]) * 60
+        except: return 0
+    return 0
+
+
+async def poll_and_remind_tasks_job():
+    """Polls database for overdue/pending tasks and sends alerts/reminders with custom nagging intervals."""
+    logger.info("Polling database for pending/overdue tasks...")
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST).replace(tzinfo=None)
+
+    db = SessionLocal()
+    try:
+        # 1. Update status to overdue if deadline passed and still pending
+        overdue_tasks = db.query(Task).filter(
+            Task.status == 'pending',
+            Task.due_time <= now_ist
+        ).all()
+        for t in overdue_tasks:
+            t.status = 'overdue'
+            db.commit()
+            logger.info(f"Task ID {t.id} ('{t.task_name}') marked overdue.")
+
+        # 1.5 AUTO-COMPLETE TASKS (Python background equivalent of index.php logic)
+        try:
+            pending_tasks = db.query(Task).filter(Task.status.in_(['pending', 'overdue'])).all()
+            default_keywords = ['done', 'completed', 'finish', 'finished', 'ok done', 'complete', 'ho gaya', 'ho gya', 'kar diya', '✅', 'done✅']
+            
+            group_task_counts = {}
+            phone_task_counts = {}
+            for t in pending_tasks:
+                if t.whatsapp_group_id:
+                    gid = t.whatsapp_group_id
+                    group_task_counts[gid] = group_task_counts.get(gid, 0) + 1
+                if t.assigned_person_phone:
+                    for ph in [x.strip() for x in t.assigned_person_phone.split(',') if x.strip()]:
+                        digits = "".join(filter(str.isdigit, ph))
+                        if len(digits) == 10: digits = "91" + digits
+                        if digits: phone_task_counts[digits] = phone_task_counts.get(digits, 0) + 1
+            
+            for t in pending_tasks:
+                keywords = list(default_keywords)
+                if t.completion_keywords:
+                    keywords.extend([x.strip().lower() for x in t.completion_keywords.split(',')])
+                
+                import re
+                task_name_words = re.sub(r'[^a-zA-Z0-9\s]', '', t.task_name).lower().split()
+                task_identifiers = [w for w in task_name_words if len(w) > 3 and w not in ['task', 'check', 'please', 'update', 'submit', 'report']]
+                
+                # Look back up to 24 hours to catch early completions!
+                since = now_ist - timedelta(hours=24)
+                if t.created_at and t.created_at > since:
+                    since = t.created_at
+                
+                all_messages = []
+                is_ambiguous = False
+                matched = False
+                
+                # Check group messages
+                if t.whatsapp_group_id:
+                    grp_id = t.whatsapp_group_id
+                    if group_task_counts.get(grp_id, 0) > 1: is_ambiguous = True
+                    if '@' not in grp_id: grp_id += '@g.us'
+                    
+                    msgs = db.query(WhatsAppMessage.message_text).filter(
+                        WhatsAppMessage.group_id == grp_id,
+                        WhatsAppMessage.timestamp >= since
+                    ).order_by(WhatsAppMessage.timestamp.desc()).limit(30).all()
+                    all_messages.extend([m[0] for m in msgs if m[0]])
+                
+                # Check individual messages
+                if t.assigned_person_phone:
+                    phones_raw = [x.strip() for x in t.assigned_person_phone.split(',')]
+                    phone_patterns = []
+                    for ph in phones_raw:
+                        digits = "".join(filter(str.isdigit, ph))
+                        if len(digits) == 10: digits = "91" + digits
+                        if digits:
+                            phone_patterns.append(digits)
+                            if phone_task_counts.get(digits, 0) > 1: is_ambiguous = True
+                    
+                    if phone_patterns:
+                        from sqlalchemy import or_
+                        conditions = [RawMessage.sender.like(f"%{p}%") for p in phone_patterns]
+                        msgs = db.query(RawMessage.raw_text).filter(
+                            RawMessage.timestamp >= since,
+                            or_(*conditions)
+                        ).order_by(RawMessage.timestamp.desc()).limit(20).all()
+                        all_messages.extend([m[0] for m in msgs if m[0]])
+                
+                if not all_messages: continue
+                
+                for msg_text in all_messages:
+                    msg_lower = msg_text.lower().strip()
+                    has_completion = any(kw in msg_lower for kw in keywords if kw)
+                    if has_completion:
+                        if is_ambiguous and task_identifiers:
+                            has_identifier = any(id_kw in msg_lower for id_kw in task_identifiers)
+                            if has_identifier:
+                                matched = True
+                                break
+                        else:
+                            matched = True
+                            break
+                            
+                if matched:
+                    t.status = 'completed'
+                    t.completion_details = 'Auto-completed: WhatsApp reply detected'
+                    db.commit()
+                    logger.info(f"Task ID {t.id} ('{t.task_name}') auto-completed from WhatsApp reply.")
+        except Exception as e:
+            logger.error(f"Error in auto-completing tasks: {e}")
+
+        # 2. Get all overdue tasks and trigger reminders
+        tasks = db.query(Task).filter(Task.status == 'overdue').all()
+        for t in tasks:
+            diff = now_ist - t.due_time
+            if diff.total_seconds() < 0:
+                continue
+                
+            minutes_ago = int(diff.total_seconds() / 60.0)
+            interval_min = get_interval_minutes(t.repeat_interval)
+            
+            should_remind = False
+            if interval_min:
+                # If they set "every 5m", it triggers at 0, 5, 10, etc.
+                if minutes_ago % interval_min == 0:
+                    should_remind = True
+            else:
+                # NAG ONCE: If no repeat interval, just send ONCE
+                if minutes_ago == 0:
+                    should_remind = True
+
+            if should_remind:
+                targets = []
+                if t.whatsapp_group_id:
+                    target_jid = t.whatsapp_group_id
+                    if not target_jid.endswith('@g.us') and not target_jid.endswith('@c.us'):
+                        target_jid += '@g.us'
+                    targets.append((target_jid, t.assigned_person_name or "Team Members"))
+                elif t.assigned_person_phone:
+                    phones = [p.strip() for p in t.assigned_person_phone.split(',') if p.strip()]
+                    names = [n.strip() for n in (t.assigned_person_name or "").split(',') if n.strip()]
+                    for idx, phone in enumerate(phones):
+                        clean = "".join(filter(str.isdigit, phone))
+                        if not clean:
+                            continue
+                        if len(clean) == 10:
+                            target_jid = "91" + clean + "@c.us"
+                        else:
+                            target_jid = clean + "@c.us"
+                        name = names[idx] if idx < len(names) else "Team Member"
+                        targets.append((target_jid, name))
+
+                for target, target_name in targets:
+                    is_personal = t.task_type and 'Personal' in t.task_type
+                    if is_personal:
+                        msg = f"🔔 *Task Reminder* 🔔\n\n{t.task_name}"
+                    else:
+                        msg = (
+                            f"⏰ *Task Overdue Alert* ⏰\n\n"
+                            f"Hi {target_name},\n"
+                            f"The deadline for task *\"{t.task_name}\"* has passed.\n\n"
+                            f"Please complete this work and reply to this message with *\"done\"* or *\"completed\"* once finished."
+                        )
+                    logger.info(f"Sending overdue task alert to {target} for '{t.task_name}'")
+                    send_waha_message(target, msg)
+    except Exception as e:
+        logger.error(f"Error in poll_and_remind_tasks_job: {e}")
+    finally:
+        db.close()
+
+
+async def create_wednesday_meeting_tasks():
+    """Runs every Wednesday at 6:00 AM to create the standard weekly meeting follow-up tasks."""
+    logger.info("Generating standard Wednesday meeting follow-up tasks...")
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST).replace(tzinfo=None)
+
+    meetings = [
+        "Meeting conducted with shed worker's",
+        "Meeting conducted with feed plant worker's",
+        "Meeting conducted with egg godown worker's",
+        "Meeting conducted with shed supervisors",
+        "Morning feed and water medicine incharges"
+    ]
+
+    db = SessionLocal()
+    try:
+        due = now_ist.replace(hour=17, minute=0, second=0, microsecond=0)
+        
+        for m in meetings:
+            existing = db.query(Task).filter(
+                Task.task_name == m,
+                func.date(Task.due_time) == due.date()
+            ).first()
+            if not existing:
+                new_task = Task(
+                    task_name=m,
+                    task_type='meeting',
+                    assigned_person_name="Supervisors",
+                    whatsapp_group_id="120363428417403024@g.us", # Farm Supervisors group
+                    due_time=due,
+                    completion_keywords="points, minutes, checklist, discussed",
+                    status='pending'
+                )
+                db.add(new_task)
+        db.commit()
+        logger.info("Wednesday meeting tasks successfully generated.")
+    except Exception as e:
+        logger.error(f"Error in create_wednesday_meeting_tasks: {e}")
+    finally:
+        db.close()
+
 
 def setup_scheduler():
 
@@ -1290,6 +1544,15 @@ def setup_scheduler():
     # Schedule Health Monitor every 1 minute
     scheduler.add_job(health_monitor_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60)
     
+    # Schedule Task Overdue Checker & Nagging alert every 1 minute
+    scheduler.add_job(poll_and_remind_tasks_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60)
+    
+    # Schedule Wednesday meetings checklist generation every Wednesday at 6:00 AM IST
+    scheduler.add_job(create_wednesday_meeting_tasks, CronTrigger(day_of_week='wed', hour=6, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    
+    # Schedule Daily Egg Godown report daily at 9:00 PM IST
+    scheduler.add_job(scheduled_godown_report_job, CronTrigger(hour=21, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+
     # Midnight reset: advance trigger_time and reset sent recurring reminders to pending at 00:00 IST
     scheduler.add_job(midnight_reset_job, CronTrigger(hour=0, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
 

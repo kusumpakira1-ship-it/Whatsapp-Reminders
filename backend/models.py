@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, Enum, JSON, DECIMAL, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Date, Text, Enum, JSON, DECIMAL, ForeignKey
 from sqlalchemy.sql import func
 from database import Base
 
@@ -123,6 +123,31 @@ class UnifiedReminder(Base):
     repeat_interval = Column(String(20), default='none')
     created_at = Column(DateTime, default=func.now())
 
+class Task(Base):
+    __tablename__ = "sunfra_tasks"
+    id = Column(Integer, primary_key=True, index=True)
+    task_name = Column(String(255), nullable=False)
+    task_type = Column(String(50), default='general') # 'general', 'approval', 'meeting', 'cleaning', 'personal'
+    assigned_person_name = Column(String(255), nullable=True)
+    assigned_person_phone = Column(String(100), nullable=True)
+    whatsapp_group_id = Column(String(255), nullable=True)
+    due_time = Column(DateTime, nullable=False)
+    completion_keywords = Column(Text, nullable=True) # e.g. "done, cleaned"
+    status = Column(String(20), default='pending') # 'pending', 'pending_approval', 'completed', 'overdue'
+    approver_phone = Column(String(100), nullable=True)
+    completion_details = Column(Text, nullable=True) # E.g., Wednesday meeting points covered
+    frequency = Column(String(20), default='once')
+    repeat_interval = Column(String(20), default='none')
+    created_at = Column(DateTime, default=func.now())
+
+class EggGodownInventory(Base):
+    __tablename__ = "sunfra_egg_godown_inventory"
+    id = Column(Integer, primary_key=True, index=True)
+    date = Column(Date, nullable=False, unique=True, index=True)
+    opening_balance = Column(Integer, default=0)
+    closing_balance = Column(Integer, default=0)
+    total_produced = Column(Integer, default=0)
+
 class WAHAEvent(Base):
     __tablename__ = "sunfra_waha_events"
     id = Column(Integer, primary_key=True, index=True)
@@ -130,4 +155,6 @@ class WAHAEvent(Base):
     status = Column(String(50), nullable=False)
     details = Column(Text, nullable=True)
     timestamp = Column(DateTime, nullable=False, default=func.now())
+
+
 
