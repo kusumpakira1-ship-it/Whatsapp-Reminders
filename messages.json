@@ -163,5 +163,91 @@
         "group_name": "Sunfra Hyperscale",
         "raw_text": "No",
         "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-17T18:28:29.529967+05:30",
+        "message_id": "false_120363046205890693@g.us_AC45F0C0F16F7C8EE67B4D702323B847_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] \ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a (917855812163)",
+        "sender_name": "\ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "622.17 Trays of production 4th Shead",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "622.17 Trays of production 4th Shead"
+        }
+    },
+    {
+        "timestamp": "2026-07-17T18:29:50.436209+05:30",
+        "message_id": "false_120363405469158412@g.us_3AAD512B981A2669BEA3_112300593815672@lid",
+        "sender": "[Payments - Sunfra Farms] Nani Chinnam (918985779911)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Image processing failed"
+        }
+    },
+    {
+        "timestamp": "2026-07-17T18:30:10.140692+05:30",
+        "message_id": "false_120363405469158412@g.us_3A3CF616D9AACA640E42_112300593815672@lid",
+        "sender": "[Payments - Sunfra Farms] Nani Chinnam (918985779911)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Soya Transport Charges\n31010 X 2.2 = 68222/-\n@56556230058144 \nPlease pay to this account.",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-17T18:31:01.292591+05:30",
+        "message_id": "false_120363212822578807@g.us_AC60EF6BE10F0C0DFD668A11BA49CC3B_241274569400567@lid",
+        "sender": "[Farm Supervisors] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "8th shed \nNeomycin 1kg Dispatched for tomorrow",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "8th shed \nNeomycin 1kg Dispatched for tomorrow"
+        }
+    },
+    {
+        "timestamp": "2026-07-17T18:34:30.530494+05:30",
+        "message_id": "false_120363212822578807@g.us_AC4A61DA48F731744B7C1FFC42ED7DCB_241274569400567@lid",
+        "sender": "[Farm Supervisors] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th shed\nCiprifloxin 1kg Dispatched for tomorrow",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "4th shed\nCiprifloxin 1kg Dispatched for tomorrow"
+        }
     }
 ]
