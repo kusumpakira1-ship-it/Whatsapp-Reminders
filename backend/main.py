@@ -285,6 +285,17 @@ def process_message_background(
                 if clean_target_group == clean_sender_group:
                     is_assigned = True
  
+            # Fallback for LIDs (Hidden Phone Numbers): Match by Name using fuzzy string matching
+            if not is_assigned and t.assigned_person_name and sender_name:
+                s_name = sender_name.lower().replace('ss ', '').strip()
+                t_name = t.assigned_person_name.lower().replace('ss ', '').strip()
+                import difflib
+                if len(s_name) >= 3 and len(t_name) >= 3:
+                    ratio = difflib.SequenceMatcher(None, s_name, t_name).ratio()
+                    if ratio > 0.75 or s_name in t_name or t_name in s_name:
+                        is_assigned = True
+                        logger.info(f"Assignee matched via fuzzy name fallback: '{sender_name}' matched '{t.assigned_person_name}' (ratio: {ratio:.2f})")
+
             # If not assigned, skip
             if not is_assigned:
                 continue

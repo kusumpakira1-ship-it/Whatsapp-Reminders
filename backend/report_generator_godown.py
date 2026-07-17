@@ -3,7 +3,7 @@ import glob
 import pandas as pd
 from datetime import datetime, date, timedelta, timezone
 from database import SessionLocal
-from models import ProcessedData, EggGodownInventory
+from models import ProcessedData, EggGodownInventory, RawMessage
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -40,19 +40,56 @@ def generate_godown_report():
         opening = yesterday_inv.closing_balance
 
     # 3. Process production by shed (Shed 1 to Shed 9)
-    # Parse data into dataframe
-    df = pd.DataFrame([{
-        'shed': str(d.shead_name or '').strip(),
-        'qty': float(d.quantity) if d.quantity else 0.0,
-        'unit': str(d.unit or '').lower(),
-        'cat': str(d.category or '').lower()
-    } for d in data]) if data else pd.DataFrame()
+    parsed_records = []
+    import re
+    
+    # ALWAYS check raw messages (ignoring AI processed data for Godown Report)
+    raw_msgs = db.query(RawMessage).filter(
+        RawMessage.timestamp >= f"{today_dt} 00:00:00",
+        RawMessage.timestamp <= f"{today_dt} 23:59:59",
+        RawMessage.message_type.in_(['text', 'image']),
+        RawMessage.group_name == 'Egg Gowdown & Sales'
+    ).all()
+    
+    for rm in raw_msgs:
+        text = str(rm.raw_text or '').lower()
+        
+        # Look for explicit shed listings like "S1 3 trays" or "S2 9trays"
+        matches1 = re.finditer(r's(?:hed)?\s*(\d+)\s*(?:\.\s*\d+\s*)?(\d+(?:\.\d+)?)\s*trays?', text)
+        for m in matches1:
+            shed_num = m.group(1)
+            qty = m.group(2)
+            parsed_records.append({
+                'shed': f"Shed {shed_num}",
+                'qty': float(qty),
+                'unit': 'trays',
+                'cat': 'egg_collection_1' # default to c1
+            })
+            
+        # Look for Uma's format: "193.25 Trays of production 6th Shead"
+        matches2 = re.finditer(r'(\d+(?:\.\d+)?)\s*trays?.*?(?:of production)?\s*(\d+)(?:th|st|nd|rd)?\s*shead', text)
+        for m in matches2:
+            qty = m.group(1)
+            shed_num = m.group(2)
+            
+            cat = 'egg_collection_1'
+            if 'second collection' in text or '2nd' in text:
+                cat = 'egg_collection_2'
+                
+            parsed_records.append({
+                'shed': f"Shed {shed_num}",
+                'qty': float(qty),
+                'unit': 'trays',
+                'cat': cat
+            })
+
+    df = pd.DataFrame(parsed_records) if parsed_records else pd.DataFrame()
 
     shed_data = {}
     for i in range(1, 10):
-        shed_data[f"Shed {i}"] = {"c1": 0, "c2": 0, "total": 0}
+        shed_data[f"Shed {i}"] = {"c1": 0.0, "c2": 0.0, "total": 0.0}
 
-    grand_total_produced = 0
+    grand_total_trays = 0.0
 
     if not df.empty:
         import re
@@ -66,36 +103,40 @@ def generate_godown_report():
                 continue
             
             shed_key = f"Shed {shed_num}"
-            qty = row['qty']
-            eggs = qty * 30 if 'tray' in row['unit'] else qty
+            trays = float(row['qty'])
+            if 'egg' in row['unit'] and 'tray' not in row['unit']:
+                trays = trays / 30.0 # Convert to trays if someone explicitly entered eggs
+            
             cat = row['cat']
 
             if cat == 'egg_collection_1':
-                shed_data[shed_key]["c1"] += int(eggs)
+                shed_data[shed_key]["c1"] += trays
             elif cat == 'egg_collection_2':
-                shed_data[shed_key]["c2"] += int(eggs)
+                shed_data[shed_key]["c2"] += trays
             else:
-                # General collection - split or add to c1
-                shed_data[shed_key]["c1"] += int(eggs)
+                shed_data[shed_key]["c1"] += trays
 
-            shed_data[shed_key]["total"] += int(eggs)
-            grand_total_produced += int(eggs)
+            shed_data[shed_key]["total"] += trays
+            grand_total_trays += trays
+
+    # Convert total trays to eggs for inventory tracking
+    grand_total_eggs = int(grand_total_trays * 30)
 
     # If closing balance is not explicitly entered, closing balance = opening + production
     if not today_inv or today_inv.closing_balance == 0:
-        closing = opening + grand_total_produced
+        closing = opening + grand_total_eggs
 
     # 4. Save total produced back to today's inventory row
     try:
         if today_inv:
-            today_inv.total_produced = grand_total_produced
+            today_inv.total_produced = grand_total_eggs
             db.commit()
         else:
             new_inv = EggGodownInventory(
                 date=today_dt,
                 opening_balance=opening,
                 closing_balance=closing,
-                total_produced=grand_total_produced
+                total_produced=grand_total_eggs
             )
             db.add(new_inv)
             db.commit()
@@ -109,21 +150,22 @@ def generate_godown_report():
         "🥚 *Daily Egg Godown Summary* 🥚",
         f"Date: *{date_str}*",
         "",
-        "*Production by Shed (1st & 2nd Collection):*"
+        "*Production by Shed (Trays):*"
     ]
     for i in range(1, 10):
         sk = f"Shed {i}"
         c1 = shed_data[sk]["c1"]
         c2 = shed_data[sk]["c2"]
         tot = shed_data[sk]["total"]
-        msg_lines.append(f"- *Shed {i}*: 1st: {c1:,} | 2nd: {c2:,} | Total: *{tot:,}*")
+        if tot > 0:
+            msg_lines.append(f"- *Shed {i}*: 1st: {c1:.2f} | 2nd: {c2:.2f} | Total: *{tot:.2f}* trays")
 
     msg_lines.append("")
-    msg_lines.append(f"📈 *Grand Total Production:* {grand_total_produced:,} eggs")
+    msg_lines.append(f"📈 *Grand Total Production:* {grand_total_trays:.2f} trays ({grand_total_eggs:,} eggs)")
     msg_lines.append("")
     msg_lines.append("*Godown Stock Balance:*")
     msg_lines.append(f"- Opening Balance: {opening:,} eggs")
-    msg_lines.append(f"- Received (Production): +{grand_total_produced:,} eggs")
+    msg_lines.append(f"- Received (Production): +{grand_total_eggs:,} eggs")
     msg_lines.append(f"- Closing Balance: *{closing:,}* eggs")
 
     summary_text = "\n".join(msg_lines)
@@ -161,25 +203,25 @@ def generate_godown_report():
     # Create Shed table
     table_data = [[
         Paragraph("<b>Shed</b>", table_header_style),
-        Paragraph("<b>1st Collection</b>", table_header_style),
-        Paragraph("<b>2nd Collection</b>", table_header_style),
-        Paragraph("<b>Total Eggs</b>", table_header_style)
+        Paragraph("<b>1st Collection (Trays)</b>", table_header_style),
+        Paragraph("<b>2nd Collection (Trays)</b>", table_header_style),
+        Paragraph("<b>Total Trays</b>", table_header_style)
     ]]
 
     for i in range(1, 10):
         sk = f"Shed {i}"
         table_data.append([
             Paragraph(sk, table_cell_style),
-            Paragraph(f"{shed_data[sk]['c1']:,}", table_cell_style),
-            Paragraph(f"{shed_data[sk]['c2']:,}", table_cell_style),
-            Paragraph(f"<b>{shed_data[sk]['total']:,}</b>", table_cell_style)
+            Paragraph(f"{shed_data[sk]['c1']:.2f}", table_cell_style),
+            Paragraph(f"{shed_data[sk]['c2']:.2f}", table_cell_style),
+            Paragraph(f"<b>{shed_data[sk]['total']:.2f}</b>", table_cell_style)
         ])
         
     table_data.append([
         Paragraph("<b>Grand Total</b>", table_cell_style),
         Paragraph("", table_cell_style),
         Paragraph("", table_cell_style),
-        Paragraph(f"<b>{grand_total_produced:,}</b>", table_cell_style)
+        Paragraph(f"<b>{grand_total_trays:.2f}</b>", table_cell_style)
     ])
 
     col_widths = [110, 130, 130, 130]
@@ -201,7 +243,7 @@ def generate_godown_report():
     inv_data = [
         [Paragraph("<b>Metric</b>", table_header_style), Paragraph("<b>Quantity (Eggs)</b>", table_header_style)],
         [Paragraph("Opening Balance", table_cell_style), Paragraph(f"{opening:,}", table_cell_style)],
-        [Paragraph("Received (Production)", table_cell_style), Paragraph(f"+{grand_total_produced:,}", table_cell_style)],
+        [Paragraph("Received (Production)", table_cell_style), Paragraph(f"+{grand_total_eggs:,}", table_cell_style)],
         [Paragraph("<b>Closing Balance</b>", table_cell_style), Paragraph(f"<b>{closing:,}</b>", table_cell_style)]
     ]
 
