@@ -20619,5 +20619,24 @@
             "confidence_score": 0.0,
             "processed_text": "13th"
         }
+    },
+    {
+        "timestamp": "2026-07-20T13:08:54.975846+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB093AB47C134ED177603_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (916364817749)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Payment to hdfc corporate AC \npurchase of 32.10 eggs \n@112300593815672 \nShall i pay this bill",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Payment to hdfc corporate AC \npurchase of 32.10 eggs \n@112300593815672 \nShall i pay this bill"
+        }
     }
 ]
