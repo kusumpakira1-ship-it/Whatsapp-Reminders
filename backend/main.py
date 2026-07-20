@@ -310,7 +310,17 @@ def process_message_background(
                         t.completion_details = f"Approved by manager {sender_name} ({sender_phone}) at {datetime.now(IST).strftime('%Y-%m-%d %H:%M:%S')}"
                         db.commit()
                         logger.info(f"Task ID {t.id} ('{t.task_name}') approved by {sender_phone}.")
-                        send_waha_message(sender, f"✅ Task *\"{t.task_name}\"* has been approved and completed!")
+                        
+                        approver_name = sender_name or "Manager"
+                        target_chat = t.whatsapp_group_id if t.whatsapp_group_id else sender
+                        if target_chat:
+                            if not target_chat.endswith('@g.us') and not target_chat.endswith('@c.us') and not target_chat.endswith('@lid'):
+                                if '-' in target_chat or len(target_chat) > 15:
+                                    target_chat += '@g.us'
+                                else:
+                                    target_chat += '@c.us'
+                            confirm_msg = f"task \"{t.task_name} updated and approved by {approver_name}\" marked completed"
+                            send_waha_message(target_chat, confirm_msg)
                         continue
                 continue
  
@@ -339,6 +349,26 @@ def process_message_background(
                     db.commit()
                     logger.info(f"Feed Formula task ID {t.id} submitted. Pending approval from approver.")
                     
+                    # Look up approver name from Employee table
+                    approver_name = t.approver_phone or "Approver"
+                    if t.approver_phone:
+                        clean_approver = "".join(filter(str.isdigit, t.approver_phone))
+                        if len(clean_approver) == 10:
+                            alt_phone = "91" + clean_approver
+                        else:
+                            alt_phone = clean_approver
+                        
+                        emp = db.query(Employee).filter(
+                            (Employee.phone_number == clean_approver) |
+                            (Employee.phone_number == alt_phone)
+                        ).first()
+                        if emp:
+                            approver_name = emp.name
+                    
+                    # Reply back to group/sender
+                    reply_msg = f"task {t.task_name} updation completed but approval pending by {approver_name}"
+                    send_waha_message(sender, reply_msg)
+                    
                     if t.approver_phone:
                         target_approver = t.approver_phone.strip()
                         if not target_approver.endswith('@c.us') and not target_approver.endswith('@g.us'):
@@ -347,7 +377,7 @@ def process_message_background(
                             f"🔔 *Approval Request* 🔔\n\n"
                             f"The Feed Formula has been updated by *{sender_name}*:\n"
                             f"\"{text}\"\n\n"
-                            f"Please reply with *\"Approve Feed Formula\"* or click approve on the dashboard to complete."
+                            f"Please reply with *\"Approve {t.task_name}\"* in that group to complete."
                         )
                         send_waha_message(target_approver, prompt_msg)
                     continue
