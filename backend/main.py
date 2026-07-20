@@ -10,7 +10,7 @@ from typing import List, Optional
 from contextlib import asynccontextmanager
 
 from database import engine, Base, SessionLocal
-from models import Whitelist, RawMessage, ProcessedData, Group, Employee, SystemSetting, CustomAlarm, WhatsAppMessage, WAHAEvent, Task, EggGodownInventory
+from models import Whitelist, RawMessage, ProcessedData, Group, Employee, SystemSetting, CustomAlarm, WhatsAppMessage, WAHAEvent, Task, EggGodownInventory, ReminderLog
 from ai_processor import process_text, process_image, process_document
 from waha_service import download_waha_media, get_waha_chat_name, send_waha_message, send_waha_file
 from scheduler import setup_scheduler, scheduler, schedule_custom_alarm
@@ -319,7 +319,7 @@ def process_message_background(
                                     target_chat += '@g.us'
                                 else:
                                     target_chat += '@c.us'
-                            confirm_msg = f"task \"{t.task_name} updated and approved by {approver_name}\" marked completed"
+                            confirm_msg = f"✅ Task *\"{t.task_name}\"* updated and approved by *{approver_name}* marked completed"
                             send_waha_message(target_chat, confirm_msg)
                         continue
                 continue
@@ -366,7 +366,10 @@ def process_message_background(
                             approver_name = emp.name
                     
                     # Reply back to group/sender
-                    reply_msg = f"task {t.task_name} updation completed but approval pending by {approver_name}"
+                    reply_msg = (
+                        f"🔔 *Approval Request* 🔔\n\n"
+                        f"Task *\"{t.task_name}\"* has been updated but approval is pending by *{approver_name}*"
+                    )
                     send_waha_message(sender, reply_msg)
                     
                     if t.approver_phone:
@@ -377,7 +380,7 @@ def process_message_background(
                             f"🔔 *Approval Request* 🔔\n\n"
                             f"The Feed Formula has been updated by *{sender_name}*:\n"
                             f"\"{text}\"\n\n"
-                            f"Please reply with *\"Approve {t.task_name}\"* in that group to complete."
+                            f"Please reply with *\"approved\"* in that group to complete."
                         )
                         send_waha_message(target_approver, prompt_msg)
                     continue
@@ -1038,6 +1041,16 @@ def complete_task(task_id: int, payload: dict = None):
         return {"status": "success"}
     finally:
         db.close()
+
+@app.get("/api/reminder-logs")
+def get_reminder_logs(limit: int = 100):
+    db = SessionLocal()
+    try:
+        logs = db.query(ReminderLog).order_by(ReminderLog.executed_at.desc()).limit(limit).all()
+        return logs
+    finally:
+        db.close()
+
 
 
 

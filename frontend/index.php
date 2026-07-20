@@ -82,6 +82,19 @@ try {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 
+    $pdo->exec("CREATE TABLE IF NOT EXISTS sunfra_reminder_logs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        reminder_id INT NULL,
+        report_types TEXT NULL,
+        person_name VARCHAR(255) NULL,
+        person_phone VARCHAR(50) NULL,
+        whatsapp_group_id VARCHAR(255) NULL,
+        trigger_time DATETIME NOT NULL,
+        executed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        status VARCHAR(20) NOT NULL,
+        details TEXT NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
     $pdo->exec("CREATE TABLE IF NOT EXISTS sunfra_tasks (
         id INT AUTO_INCREMENT PRIMARY KEY,
         task_name VARCHAR(255) NOT NULL,
@@ -151,6 +164,19 @@ try {
             frequency VARCHAR(20) DEFAULT 'daily',
             repeat_interval VARCHAR(20) DEFAULT 'none',
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )");
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS sunfra_reminder_logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            reminder_id INTEGER NULL,
+            report_types TEXT NULL,
+            person_name VARCHAR(255) NULL,
+            person_phone VARCHAR(50) NULL,
+            whatsapp_group_id VARCHAR(255) NULL,
+            trigger_time DATETIME NOT NULL,
+            executed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            status VARCHAR(20) NOT NULL,
+            details TEXT NULL
         )");
 
         $pdo->exec("CREATE TABLE IF NOT EXISTS sunfra_tasks (
@@ -406,6 +432,10 @@ if (isset($_GET['api'])) {
                 }
             }
             echo json_encode($rows);
+        }
+        elseif ($route === 'reminder-logs' && $method === 'GET') {
+            $stmt = $pdo->query("SELECT * FROM sunfra_reminder_logs ORDER BY executed_at DESC LIMIT 200");
+            echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
         }
         elseif ($route === 'reminders' && $method === 'POST') {
             $data = json_decode(file_get_contents('php://input'), true);

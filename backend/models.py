@@ -123,6 +123,20 @@ class UnifiedReminder(Base):
     repeat_interval = Column(String(20), default='none')
     created_at = Column(DateTime, default=func.now())
 
+class ReminderLog(Base):
+    __tablename__ = "sunfra_reminder_logs"
+    id = Column(Integer, primary_key=True, index=True)
+    reminder_id = Column(Integer, ForeignKey("sunfra_unified_reminders.id", ondelete="SET NULL"), nullable=True)
+    report_types = Column(Text, nullable=True)
+    person_name = Column(String(255), nullable=True)
+    person_phone = Column(String(50), nullable=True)
+    whatsapp_group_id = Column(String(255), nullable=True)
+    trigger_time = Column(DateTime, nullable=False)
+    executed_at = Column(DateTime, default=func.now())
+    status = Column(String(20), nullable=False) # 'sent' or 'skipped'
+    details = Column(Text, nullable=True)
+
+
 class Task(Base):
     __tablename__ = "sunfra_tasks"
     id = Column(Integer, primary_key=True, index=True)

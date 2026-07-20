@@ -8,7 +8,7 @@ from config import settings
 from apscheduler.triggers.date import DateTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 from database import SessionLocal
-from models import ReportRecipient, Group, Employee, ProcessedData, RawMessage, SystemSetting, CustomAlarm, UnifiedReminder, WAHAEvent, Task, EggGodownInventory, WhatsAppMessage
+from models import ReportRecipient, Group, Employee, ProcessedData, RawMessage, SystemSetting, CustomAlarm, UnifiedReminder, WAHAEvent, Task, EggGodownInventory, WhatsAppMessage, ReminderLog
 from sqlalchemy import func
 
 logger = logging.getLogger(__name__)
@@ -1240,11 +1240,36 @@ def poll_and_execute_unified_reminders():
                 
                 # Sent: Actual message(s) sent out
                 r.status = 'sent'
+                log_detail = f"Missing: {', '.join(all_missing)}" if assigned_reports and 'all_missing' in locals() and all_missing else (r.task_notes or "Reminder sent")
+                log = ReminderLog(
+                    reminder_id=r.id,
+                    report_types=r.report_types,
+                    person_name=r.person_name,
+                    person_phone=r.person_phone,
+                    whatsapp_group_id=r.whatsapp_group_id,
+                    trigger_time=r.trigger_time,
+                    executed_at=now_ist,
+                    status='sent',
+                    details=log_detail
+                )
+                db.add(log)
                 db.commit()
                 logger.info(f"Reminder for {r.person_name} marked sent at {r.trigger_time} (frequency: {r.frequency}). Will reset at midnight.")
             else:
                 # Skipped: All assignees had already submitted reports
                 r.status = 'skipped'
+                log = ReminderLog(
+                    reminder_id=r.id,
+                    report_types=r.report_types,
+                    person_name=r.person_name,
+                    person_phone=r.person_phone,
+                    whatsapp_group_id=r.whatsapp_group_id,
+                    trigger_time=r.trigger_time,
+                    executed_at=now_ist,
+                    status='skipped',
+                    details="All assigned reports were submitted on time."
+                )
+                db.add(log)
                 db.commit()
                 logger.info(f"Reminder for {r.person_name} marked skipped at {r.trigger_time} (all reports submitted). Will reset at midnight.")
             

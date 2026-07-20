@@ -20638,5 +20638,1677 @@
             "confidence_score": 0.0,
             "processed_text": "Payment to hdfc corporate AC \npurchase of 32.10 eggs \n@112300593815672 \nShall i pay this bill"
         }
+    },
+    {
+        "timestamp": "2026-07-20T13:12:49.406304+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB071AB6AB3461ED29E7C_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (916364817749)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Payment to HDFC corporate \nWe have paid this amount but it is credited back to our account on 15th july \nshall i make this payment @112300593815672",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Payment to HDFC corporate \nWe have paid this amount but it is credited back to our account on 15th july \nshall i make this payment @112300593815672"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T13:16:17.007358+05:30",
+        "message_id": "false_120363409533299483@g.us_AC0E975E5D791E29BC1B009823DFEDEA_224025628377307@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Taru\u0273 (918967862242)",
+        "sender_name": "Taru\u0273",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "@188458970693637 \n\n\n@253176057962506 FYI",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "@188458970693637 \n\n\n@253176057962506 FYI"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T13:20:03.971747+05:30",
+        "message_id": "false_120363225998735559@g.us_ACD3F135BC0CD2AF7D03D3E5A26A6DE8_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Mohan eggs vehical",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Mohan eggs vehical"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T13:20:39.571745+05:30",
+        "message_id": "false_120363405469158412@g.us_3A9AEB017F6E1CFDB647_112300593815672@lid",
+        "sender": "[Payments - Sunfra Farms] Nani Chinnam (918985779911)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Please pay",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:21:26.550487+05:30",
+        "message_id": "false_120363405469158412@g.us_3A60E8C8F6723DD2FF29_112300593815672@lid",
+        "sender": "[Payments - Sunfra Farms] Nani Chinnam (918985779911)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Please check and pay",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:21:30.890550+05:30",
+        "message_id": "false_120363225998735559@g.us_AC8165D6A1114AD3940960EDB8791E9C_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:22:14.777109+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB03098143A031E571912_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (916364817749)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "13 th bill \n HDFC  corporate account payment",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "13 th bill \n HDFC  corporate account payment"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T13:25:20.047206+05:30",
+        "message_id": "false_120363225998735559@g.us_AC94287764E6EC9B7F29A4101669615F_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "In with lunch",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "In with lunch"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T13:25:46.245083+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB08E71B802BA89E5DF63_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (916364817749)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "11 th  bill\nHDFC corporate account",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "11 th  bill\nHDFC corporate account"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T13:26:37.357091+05:30",
+        "message_id": "false_120363225998735559@g.us_ACF5EBE173B0AA74B3DAED2E803BED59_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Image processing failed"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T13:27:16.897217+05:30",
+        "message_id": "false_120363225998735559@g.us_AC8090B3CFBAB5512B69484E81F287D9_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "4000 trays of eggs out Nagaraju",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "4000 trays of eggs out Nagaraju"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T13:27:29.207127+05:30",
+        "message_id": "false_120363409533299483@g.us_3A5C296430CF5447D5E2_188458970693637@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Shirsa Nandi (917450044378)",
+        "sender_name": "Shirsa Nandi",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "@68148330004576 @7894284132496 @109470193594538 \nThere\u2019s one guy who is texting some random text to me and @104737139630189 at the same time his number is 9083538949",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:28:12.582602+05:30",
+        "message_id": "false_120363225998735559@g.us_ACACFC8AA97A8907C2A043C703C58A28_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Image processing failed"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T13:29:44.906583+05:30",
+        "message_id": "false_120363409533299483@g.us_3AAC3AD51A30E951326D_104737139630189@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Ipsita Goswami (918349000787)",
+        "sender_name": "Ipsita Goswami",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "Yes I alsogot weird text from this number",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:29:48.252648+05:30",
+        "message_id": "false_120363409533299483@g.us_3A1602610C6649232A22_104737139630189@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Ipsita Goswami (918349000787)",
+        "sender_name": "Ipsita Goswami",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "Saying he is army piku",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:30:16.349785+05:30",
+        "message_id": "false_120363409533299483@g.us_3ADA037910DB2B1B54BC_188458970693637@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Shirsa Nandi (917450044378)",
+        "sender_name": "Shirsa Nandi",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "He is in this group",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:31:17.421281+05:30",
+        "message_id": "false_120363409533299483@g.us_AC42A656E660BBBFE660BD4294516095_109470193594538@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Sreenil (919963755433)",
+        "sender_name": "Sreenil",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "He is removed and banned from the community, i would suggest you to block him...",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:31:21.776169+05:30",
+        "message_id": "false_120363409533299483@g.us_AC02DB6415E85FBB2D0C6F261D9A9505_19301650198665@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] POUSHALI \u2665\ufe0f (919832541062)",
+        "sender_name": "POUSHALI \u2665\ufe0f",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "Amakeu text koreche \ud83d\ude11",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:32:46.191524+05:30",
+        "message_id": "false_120363409533299483@g.us_AC45C79D1E8C90AF71CF20D0DE344271_109470193594538@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Sreenil (919963755433)",
+        "sender_name": "Sreenil",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "Thank you all for taking the courage and informing us the same here...please @all do this now onwards whoever dms you, we will remove directly from the community and ban them!",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:33:33.812855+05:30",
+        "message_id": "false_120363409533299483@g.us_3AF175DD5A38C2A62A48_104737139630189@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Ipsita Goswami (918349000787)",
+        "sender_name": "Ipsita Goswami",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "I have taken ss i can share it",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:34:15.509678+05:30",
+        "message_id": "false_120363409533299483@g.us_3EB05997B2578E236197D7_160890129219730@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] MacTavish (919513885669)",
+        "sender_name": "MacTavish",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "what is army piku?",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:34:30.260938+05:30",
+        "message_id": "false_120363409533299483@g.us_3A3B2B07D43972D5F539_104737139630189@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Ipsita Goswami (918349000787)",
+        "sender_name": "Ipsita Goswami",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "God knows",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:34:40.813555+05:30",
+        "message_id": "false_120363409533299483@g.us_3A6212FF32F5FB99CBED_104737139630189@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Ipsita Goswami (918349000787)",
+        "sender_name": "Ipsita Goswami",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "\ud83d\ude02\ud83d\ude02\ud83d\ude02",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:35:03.341249+05:30",
+        "message_id": "false_120363409533299483@g.us_3EB013002575824CC77E75_160890129219730@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] MacTavish (919513885669)",
+        "sender_name": "MacTavish",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "sounds like BTS version of small pikachu",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:35:04.927881+05:30",
+        "message_id": "false_120363409533299483@g.us_AC04BA7B9F2A0905AE1896B357315E6F_180946972242044@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] bickramjit basu (918013817684)",
+        "sender_name": "bickramjit basu",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "SS share please",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:36:01.732378+05:30",
+        "message_id": "false_120363409533299483@g.us_3A137E0A24B9FDC9A121_121998663516346@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Tanmoy (919732275434)",
+        "sender_name": "Tanmoy",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "Ignore koro ar bole dao na korte maybe na bujhe kore feleche",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:36:07.542864+05:30",
+        "message_id": "false_120363409533299483@g.us_ACEC5891CD170B479D07297DC80B6EF2_34836530118876@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Kpiplai (919663077338)",
+        "sender_name": "Kpiplai",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "Seems like a SPAM business account",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:36:34.803280+05:30",
+        "message_id": "false_120363409533299483@g.us_3EB01296BAC271740C5A76_160890129219730@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] MacTavish (919513885669)",
+        "sender_name": "MacTavish",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "Iwanna know what he is selling?",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:37:39.991913+05:30",
+        "message_id": "false_120363409533299483@g.us_AC58D5B402341B6CB5A531B55C3E53A2_145183047995393@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Abhik (918927406325)",
+        "sender_name": "Abhik",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "Loan dichhe naki",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:37:46.385874+05:30",
+        "message_id": "false_120363409533299483@g.us_AC2B84AA5320D96FBABE5677C7E9B32D_145183047995393@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Abhik (918927406325)",
+        "sender_name": "Abhik",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:37:56.307495+05:30",
+        "message_id": "false_120363409533299483@g.us_ACD1D61A7BD90FBBDD93F0CA362DF6C7_253176057962506@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Prasanta\u2764\ufe0f (918910477106)",
+        "sender_name": "Prasanta\u2764\ufe0f",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "\ud83e\udd5c",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:38:18.941175+05:30",
+        "message_id": "false_120363409533299483@g.us_3A5382018DC9278C78B8_280620446036084@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Shinjini (916206215836)",
+        "sender_name": "Shinjini",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "\ud83d\ude02\ud83d\ude02\ud83d\ude02",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:43:20.256476+05:30",
+        "message_id": "false_120363046205890693@g.us_AC818606C2FD78BF19C0B6A9F678F41B_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] \ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a (917855812163)",
+        "sender_name": "\ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:43:21.275899+05:30",
+        "message_id": "false_120363046205890693@g.us_AC6F9B7DC6D47F6FE9A75F29E6E6BDB5_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] \ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a (917855812163)",
+        "sender_name": "\ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Image processing failed"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T13:50:07.199789+05:30",
+        "message_id": "false_120363409533299483@g.us_A531A2C2CDA21856672E7F4FFCF1B98A_156749176823815@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Sayak Chanda Art (918584029307)",
+        "sender_name": "Sayak Chanda Art",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "Hlo @109470193594538 @68148330004576 @7894284132496 \n\nThanks for 22e srabon event announcement... I will register by aug 1st",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T13:52:53.852482+05:30",
+        "message_id": "false_120363421181996594@g.us_3EB01382E2EAF55C7C7BCD_184791135711366@lid",
+        "sender": "[Raw Material Prices & Ordering] mahalakshmi (916364817749)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Raw Material Prices & Ordering",
+        "raw_text": "srinivas annna 58500+5% +transportation charges",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:12:26.663587+05:30",
+        "message_id": "false_120363212822578807@g.us_ACE313D31A251E5B2BFF2C75C6883FC8_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (918179905257)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead water spraying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:12:27.739498+05:30",
+        "message_id": "false_120363212822578807@g.us_AC9D8D048D734B5A7B6045FA960F1596_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (918179905257)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:14:47.883500+05:30",
+        "message_id": "false_120363212822578807@g.us_AC251CB9B9CCBD5EEB075A3D9A7506CD_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (917893108780)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:15:08.027168+05:30",
+        "message_id": "false_120363212822578807@g.us_ACC1A6EBABBC283817E4009030B9E3A2_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (919949249204)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 8",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:15:14.446321+05:30",
+        "message_id": "false_120363212822578807@g.us_AC83FC966B716BFC202F7931272ECE85_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (919949249204)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:15:14.907214+05:30",
+        "message_id": "false_120363212822578807@g.us_AC9A0B381442FC515A7994254CCC9ED0_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (916202757898)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6\nFlushout",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:15:40.928282+05:30",
+        "message_id": "false_120363212822578807@g.us_AC30BE4BED7B2E7743DB3A032EE48C45_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (919949249204)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 8",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:15:45.335000+05:30",
+        "message_id": "false_120363212822578807@g.us_AC6B88F850CF2B1635EC587C6969C046_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (919949249204)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:19:36.255798+05:30",
+        "message_id": "false_120363212822578807@g.us_ACF355000C0D9AA9679237111C1F0686_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (917893108780)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3 water spraying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:19:53.928106+05:30",
+        "message_id": "false_120363212822578807@g.us_AC0871DA91B718D21CA855F19BD69802_241274569400567@lid",
+        "sender": "[Farm Supervisors] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "1234678 sheds disan tab1 Dispatched",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "1234678 sheds disan tab1 Dispatched"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T14:20:35.738840+05:30",
+        "message_id": "false_120363212822578807@g.us_AC3CAA776206C80E86E48B280399F30F_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (916202757898)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6\nFeed raking",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:22:33.759069+05:30",
+        "message_id": "false_120363212822578807@g.us_AC9647236215EC5552D558A199E0E82A_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (919949249204)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 8",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:22:36.424860+05:30",
+        "message_id": "false_120363212822578807@g.us_AC6454573D2EB0EE205ECB7B0B962093_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (919949249204)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:22:57.820660+05:30",
+        "message_id": "false_120363212822578807@g.us_ACDBA2447475502BF196EFB50F24E395_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (916202757898)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 7\nFeed raking",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:25:26.844105+05:30",
+        "message_id": "false_120363212822578807@g.us_ACB7D0D37E4697BA25A15F8C58D420FB_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (917893108780)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:25:39.792912+05:30",
+        "message_id": "false_120363212822578807@g.us_AC5FB078DF0C5B6631C7A71BF9A25BF7_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (916202757898)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 7\nSpreying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:27:54.620960+05:30",
+        "message_id": "false_120363212822578807@g.us_ACCC7F7A00DF9AFE3B660508EF6658E5_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (917893108780)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead3",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:29:52.120631+05:30",
+        "message_id": "false_120363212822578807@g.us_AC187ED5353B68D629B7E7A81E9526C5_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (918179905257)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "2nd Shead Disan teblet 1",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:30:21.406827+05:30",
+        "message_id": "false_120363212822578807@g.us_AC0D303296F5939E61F33BCBFFFB1C72_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (918179905257)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead feed raking",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:30:22.527386+05:30",
+        "message_id": "false_120363212822578807@g.us_AC4247AB26C9695EDB5AA849393DBEA9_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (918179905257)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:30:39.134268+05:30",
+        "message_id": "false_120363212822578807@g.us_ACC666AC508E8347F9B3CF35D9987DE2_231275432571022@lid",
+        "sender": "[Farm Supervisors] tprasanth390 (918179905257)",
+        "sender_name": "tprasanth390",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "4th Shead Disan teblet",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:32:10.809906+05:30",
+        "message_id": "false_120363212822578807@g.us_AC0CDCDF047BC97E4B926D7302AFCDFC_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (916202757898)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 7\nFlushout",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:32:13.393544+05:30",
+        "message_id": "false_120363212822578807@g.us_ACC7B64B368DB4271C9E25B045217E11_241274569400567@lid",
+        "sender": "[Farm Supervisors] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "8th shed\nBroton 4l Dispatched",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "8th shed\nBroton 4l Dispatched"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T14:35:03.638780+05:30",
+        "message_id": "false_120363212822578807@g.us_AC6AD34669C9C406C61626C6BE003761_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (916202757898)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 7\nDisan tablet 1",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:36:25.451360+05:30",
+        "message_id": "false_120363212822578807@g.us_AC5FE9A5E826B31A2221969FEE30B191_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (919949249204)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed,, 8",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:36:27.151810+05:30",
+        "message_id": "false_120363212822578807@g.us_ACC48372C1063FBD6CF7CB0CF7C8D40D_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (919949249204)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:39:44.661636+05:30",
+        "message_id": "false_120363212822578807@g.us_AC80089E3DC5910C072E1250A6DFA832_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (917893108780)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Shead1 water spraying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:42:07.978636+05:30",
+        "message_id": "false_120363225998735559@g.us_AC3B69968C0401594AF5F8A7292C0F90_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:42:08.747189+05:30",
+        "message_id": "false_120363225998735559@g.us_ACA3A01A1EDB3020E04E306EFF19FD24_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:42:18.653819+05:30",
+        "message_id": "false_120363225998735559@g.us_ACCBCED1648BFE3176CEEEC497129B83_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:47:25.485513+05:30",
+        "message_id": "false_120363409533299483@g.us_AC192F17AC5A741D39712F45B20DE172_41622544879831@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Atrayee (917044519379)",
+        "sender_name": "Atrayee",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "Ekhan theke keu Baghbazar Multi Purpose e porasuna korecho??",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:47:29.056630+05:30",
+        "message_id": "false_120363212822578807@g.us_AC672D941A01ED5A8240F6326DD6CCAD_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (916202757898)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 6.\nDisan tablet 1",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:47:41.876390+05:30",
+        "message_id": "false_120363409533299483@g.us_AC6247D98B0474428382B38139E6ECFB_150100533854412@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Dragonryder007 (919731762702)",
+        "sender_name": "Dragonryder007",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "I wanna know what he is smoking \ud83d\ude02\ud83d\udead",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:52:41.080033+05:30",
+        "message_id": "false_120363409533299483@g.us_3A66AD5369A2A9317515_205656086859959@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Asmita Roy Mondal (917439690981)",
+        "sender_name": "Asmita Roy Mondal",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "Bruh me too",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:53:26.835585+05:30",
+        "message_id": "false_120363409533299483@g.us_3A2CA229FA4C0955F568_205656086859959@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Asmita Roy Mondal (917439690981)",
+        "sender_name": "Asmita Roy Mondal",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "\ud83d\ude02\ud83d\ude02\ud83d\ude02",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "\ud83d\ude02\ud83d\ude02\ud83d\ude02"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T14:54:24.315974+05:30",
+        "message_id": "false_120363409533299483@g.us_3ACD3EA00456D69BDB4C_10879756153035@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] \u00c2j (919035028975)",
+        "sender_name": "\u00c2j",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "\ud83d\ude44",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:56:37.116182+05:30",
+        "message_id": "false_120363409533299483@g.us_AC30E2EC9323B8FA6F3591231F34111E_224025628377307@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Taru\u0273 (918967862242)",
+        "sender_name": "Taru\u0273",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "Army Power Dekhabe vabche",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T14:59:10.487196+05:30",
+        "message_id": "false_120363409533299483@g.us_ACE16C4BCA5F4071C69E0231FA26318E_34836530118876@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Kpiplai (919663077338)",
+        "sender_name": "Kpiplai",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "@10879756153035 cam u confirm if that is the now standard army uniform ?",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T15:12:14.644963+05:30",
+        "message_id": "false_120363409533299483@g.us_3EB08878862703DA33AC5E_160890129219730@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] MacTavish (919513885669)",
+        "sender_name": "MacTavish",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "me after watching his photos",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T15:13:25.543360+05:30",
+        "message_id": "false_120363409533299483@g.us_3A7D1D386FB3975D9156_104737139630189@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Ipsita Goswami (918349000787)",
+        "sender_name": "Ipsita Goswami",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T15:13:35.069703+05:30",
+        "message_id": "false_120363409533299483@g.us_3AC054F82C849A44063D_104737139630189@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Ipsita Goswami (918349000787)",
+        "sender_name": "Ipsita Goswami",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "Aamake o",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Aamake o"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T15:13:35.796963+05:30",
+        "message_id": "false_120363409533299483@g.us_3A4899120ACAB5527014_104737139630189@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Ipsita Goswami (918349000787)",
+        "sender_name": "Ipsita Goswami",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Image processing failed"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T15:13:36.276987+05:30",
+        "message_id": "false_120363409533299483@g.us_3AA019CCD8374D1AECB2_104737139630189@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Ipsita Goswami (918349000787)",
+        "sender_name": "Ipsita Goswami",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Image processing failed"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T15:14:08.223870+05:30",
+        "message_id": "false_120363409533299483@g.us_3AF820D921FA54DF8812_123600669540532@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Prabal Roy (918431816728)",
+        "sender_name": "Prabal Roy",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "\ud83d\ude02\ud83d\ude02\ud83d\ude02\ud83d\ude02",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T15:28:33.687358+05:30",
+        "message_id": "false_120363409533299483@g.us_3AFA0B43AF4C977141AF_123600669540532@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Prabal Roy (918431816728)",
+        "sender_name": "Prabal Roy",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "Monday lunch \nAgain doi katla and mutton \ud83d\ude0b\ud83e\udd24 \n@104737139630189 @188458970693637",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Monday lunch \nAgain doi katla and mutton \ud83d\ude0b\ud83e\udd24 \n@104737139630189 @188458970693637"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T15:30:36.272000+05:30",
+        "message_id": "false_120363421181996594@g.us_3A9A46727A9A9F1374B3_112300593815672@lid",
+        "sender": "[Raw Material Prices & Ordering] Nani Chinnam (918985779911)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Raw Material Prices & Ordering",
+        "raw_text": "Please order with Srinivas Anna",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T15:31:51.593558+05:30",
+        "message_id": "false_120363111757096162@g.us_AC9C9DDA8C5B8B7730A81A80091D9861_123622194712585@lid",
+        "sender": "[Feed Plant] Vara Prasad (917204021105)",
+        "sender_name": "Vara Prasad",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "Did we reject this load or not?",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T15:32:55.685968+05:30",
+        "message_id": "false_120363111757096162@g.us_3AB9CF74D1A61C710F09_112300593815672@lid",
+        "sender": "[Feed Plant] Nani Chinnam (918985779911)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Feed Plant",
+        "raw_text": "It was there in only 1 bag\n@123622194712585",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T15:34:10.777429+05:30",
+        "message_id": "false_120363409533299483@g.us_AC1A4237FB671123379435383B7ED8BF_146913701703737@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Aniket (917063505237)",
+        "sender_name": "Aniket",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "is this guy Army piku ?? \ud83e\udd23",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T15:38:16.948828+05:30",
+        "message_id": "false_120363409533299483@g.us_3AE2885CAAFA62F67021_122664400240840@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Suchi\ud83d\udc96 (917003862286)",
+        "sender_name": "Suchi\ud83d\udc96",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "Oxford might wanna call us\u2026\nWe just discovered new meanings for \u201cBay\u201d and \u201cwarry\u201d \u2026\ud83e\udd23",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T15:39:03.530775+05:30",
+        "message_id": "false_120363409533299483@g.us_AC59B84BFADDA1F099615ED59822E05C_13048161038552@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] PM (917259140794)",
+        "sender_name": "PM",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "eke diye lottery ticket kenate hobe 3 te wrong number er ki coincidence",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T15:41:04.323121+05:30",
+        "message_id": "false_134686013665332@lid_ACD49209A8805478AC222DC2FEF8AE14",
+        "sender": "Sujata (134686013665332)",
+        "sender_name": "Sujata",
+        "is_group": false,
+        "group_name": null,
+        "raw_text": "I know",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T15:41:13.975853+05:30",
+        "message_id": "false_120363407511560539@g.us_AC0804AB0D0D81EE16DE2D5A3E1B0497_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "1st shed",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "1st shed"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T15:41:15.797134+05:30",
+        "message_id": "false_120363409533299483@g.us_AC12017509F59042D5D04F8DA27559DA_116685755392210@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Swayam (916290247709)",
+        "sender_name": "Swayam",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T15:41:48.008189+05:30",
+        "message_id": "false_120363407511560539@g.us_ACE3593DE5CCF7CD823FBD3B3B6DB054_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "3rd shed prolapsed",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "3rd shed prolapsed"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T15:42:03.671528+05:30",
+        "message_id": "false_120363407511560539@g.us_AC2ACD3CC3CE3E3DC70769AD67B113FC_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "2nd shed\nProlapsed",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "2nd shed\nProlapsed"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T15:42:41.045394+05:30",
+        "message_id": "false_120363421181996594@g.us_3AE30DB035072A4F5845_112300593815672@lid",
+        "sender": "[Raw Material Prices & Ordering] Nani Chinnam (918985779911)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Raw Material Prices & Ordering",
+        "raw_text": "Please order directly from VB Okls",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T15:44:13.994915+05:30",
+        "message_id": "false_120363407511560539@g.us_AC655252AB7A53E12C484DCAD135872D_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "7th shed \nLps",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "7th shed \nLps"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T15:44:32.909357+05:30",
+        "message_id": "false_120363410607412989@g.us_3EB0D8F60CD60FE3D31D76_184791135711366@lid",
+        "sender": "[Feed Formula] mahalakshmi (916364817749)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Feed Formula",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Image processing failed"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T15:44:33.724141+05:30",
+        "message_id": "false_120363410607412989@g.us_3EB03BE11AFDD77AB01AF4_184791135711366@lid",
+        "sender": "[Feed Formula] mahalakshmi (916364817749)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Feed Formula",
+        "raw_text": "Hello Everyone,\nAs, Discussed \nupdated feed formula \nstarted adding Rapeseed for all the sheds except 4and 8 shed \n@241274569400567 \n@234952327213239 \nplease update in auto batching",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Hello Everyone,\nAs, Discussed \nupdated feed formula \nstarted adding Rapeseed for all the sheds except 4and 8 shed \n@241274569400567 \n@234952327213239 \nplease update in auto batching"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T15:45:03.379181+05:30",
+        "message_id": "false_120363405469158412@g.us_3A709BAC94AEA6574E22_112300593815672@lid",
+        "sender": "[Payments - Sunfra Farms] Nani Chinnam (918985779911)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Please pay 17500/- to Sand Chiranjeevi \nTowards: 7 Sand loads\n@184791135711366",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T15:45:31.626145+05:30",
+        "message_id": "false_120363421181996594@g.us_3EB03F7A3880B530F84237_184791135711366@lid",
+        "sender": "[Raw Material Prices & Ordering] mahalakshmi (916364817749)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Raw Material Prices & Ordering",
+        "raw_text": "okay",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T15:45:41.452916+05:30",
+        "message_id": "false_120363046205890693@g.us_AC2CCAFBA5A4EFE4759C9F5D6561C82B_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] \ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a (917855812163)",
+        "sender_name": "\ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "500 Trays of production 1st Shead first collection",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "500 Trays of production 1st Shead first collection"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T15:46:16.927987+05:30",
+        "message_id": "false_120363407511560539@g.us_ACAF45C70296442FB3DCFE05D0B50F29_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "8th shed\nLps",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "8th shed\nLps"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T15:47:15.803954+05:30",
+        "message_id": "false_120363410607412989@g.us_AC894C571A24C2CAF62D3E572861DD30_26049698091190@lid",
+        "sender": "[Feed Formula] Nani Chinnam (917204041105)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Feed Formula",
+        "raw_text": "This was approved!",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T15:47:26.212210+05:30",
+        "message_id": "false_120363407511560539@g.us_AC63C04DB9A509104420CE948DF02A05_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "8th shed lps",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "8th shed lps"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T15:47:32.422113+05:30",
+        "message_id": "false_120363409533299483@g.us_AC39237582EF3981FC0F7E2AF906E49F_145183047995393@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Abhik (918927406325)",
+        "sender_name": "Abhik",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "Ami kintu chinte parchhi,ei maal ta k china er army dhore niye gechhilo,then bahut maar merechhilo.",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T15:48:10.334828+05:30",
+        "message_id": "false_120363409533299483@g.us_AC0EE90CE16A148F0A556224488427D8_145183047995393@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Abhik (918927406325)",
+        "sender_name": "Abhik",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "Tar por theke ei rokom hoye gechhe",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T15:51:33.806373+05:30",
+        "message_id": "false_120363409533299483@g.us_AC4C60DC6A77C84050C274575A25E79F_23699713425649@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] swastika (919073238801)",
+        "sender_name": "swastika",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "self proclaimed attiyo shojon banache \ud83d\ude2d",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T15:52:29.405133+05:30",
+        "message_id": "false_120363409533299483@g.us_3AFEBD959C48F4CB4A11_205656086859959@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Asmita Roy Mondal (917439690981)",
+        "sender_name": "Asmita Roy Mondal",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "Yes",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T15:56:15.771794+05:30",
+        "message_id": "false_120363409533299483@g.us_AC31746D28BC72521B03117DEF90A354_271704026788013@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Srijita Sinha (919113598750)",
+        "sender_name": "Srijita Sinha",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "\"Bay the way\" Naki Rip english",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T15:58:11.544906+05:30",
+        "message_id": "false_120363407511560539@g.us_AC1E5DB82DE8F57D59655BB96F34A218_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "Chick shed\nNormal",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Chick shed\nNormal"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T15:59:27.083956+05:30",
+        "message_id": "false_120363407511560539@g.us_ACBCADFCE6A2AB42723BA05514C99839_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "Chick shed \nMailed Diarea",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Chick shed \nMailed Diarea"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T16:00:33.327844+05:30",
+        "message_id": "false_120363407511560539@g.us_ACACB9DEB6BDA4DA994F70C0E11E0248_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "Chick shed",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Chick shed"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T16:00:59.186225+05:30",
+        "message_id": "false_120363407511560539@g.us_ACB38F0BC68D69E937A646F2B67B77D9_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "Chick shed",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Chick shed"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T16:01:15.806556+05:30",
+        "message_id": "false_120363409533299483@g.us_ACAC0386F2B504A1571A2568BFBFE46D_34836530118876@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Kpiplai (919663077338)",
+        "sender_name": "Kpiplai",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "Army guy Piku shud be a meme",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T16:01:24.946920+05:30",
+        "message_id": "false_120363407511560539@g.us_AC00FE871F53D7645756470EDAB3EC5B_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "Chick shed",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Chick shed"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T16:01:43.293262+05:30",
+        "message_id": "false_120363407511560539@g.us_AC21A4BE9882AF808CB1F7C93723D32E_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "Entritites",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T16:02:30.331357+05:30",
+        "message_id": "false_120363407511560539@g.us_AC239B79127E7144D0DDC55D454A16B0_241274569400567@lid",
+        "sender": "[Production & Mortality Mohan updates] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Production & Mortality Mohan updates",
+        "raw_text": "Chik Brownie \nBacterial infection",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Chik Brownie \nBacterial infection"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T16:03:12.968131+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB019CD2E548D1796E56B_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (916364817749)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Image processing failed"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T16:03:13.171511+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0AD244CAA7E84D4FF6B_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (916364817749)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "payment for Pandurang  sheety \nIce bars purchase for 1 shed lasota vaccine",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T16:06:33.741561+05:30",
+        "message_id": "false_120363212822578807@g.us_AC5EDA9B2F063E6F76FD11D17DDE438A_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (919949249204)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed, 8",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T16:06:34.710324+05:30",
+        "message_id": "false_120363212822578807@g.us_AC7825B45762205CA893BCF4CFD28EBA_277235877556429@lid",
+        "sender": "[Farm Supervisors] Chandra Babu Reddy (919949249204)",
+        "sender_name": "Chandra Babu Reddy",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T16:07:51.017689+05:30",
+        "message_id": "false_120363409533299483@g.us_3A1E402EE6DEC3C7B925_205656086859959@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] Asmita Roy Mondal (917439690981)",
+        "sender_name": "Asmita Roy Mondal",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "I stand by this",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T16:11:03.329392+05:30",
+        "message_id": "false_120363212822578807@g.us_ACA7DC181236E474FD56B88D01ADCC14_281265026629807@lid",
+        "sender": "[Farm Supervisors] Cute_ Boy_ 13 \ud83e\udd70 (916202757898)",
+        "sender_name": "Cute_ Boy_ 13 \ud83e\udd70",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "Sed 7\nSpreying",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T16:11:08.455267+05:30",
+        "message_id": "false_120363405469158412@g.us_3A5E44C9D6707197E044_112300593815672@lid",
+        "sender": "[Payments - Sunfra Farms] Nani Chinnam (918985779911)",
+        "sender_name": "Nani Chinnam",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "Please ask Nabiya to keep those bags safe, next time no more bags purchase. \nPlease pay for now @184791135711366",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T16:11:31.785485+05:30",
+        "message_id": "false_120363405469158412@g.us_3EB0FAC56A7D913AB061B8_184791135711366@lid",
+        "sender": "[Payments - Sunfra Farms] mahalakshmi (916364817749)",
+        "sender_name": "mahalakshmi",
+        "is_group": true,
+        "group_name": "Payments - Sunfra Farms",
+        "raw_text": "okay",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T16:13:17.586005+05:30",
+        "message_id": "false_120363212822578807@g.us_AC9DC87B9D08288BA1E3381C3BD54445_92282304913416@lid",
+        "sender": "[Farm Supervisors] V (917893108780)",
+        "sender_name": "V",
+        "is_group": true,
+        "group_name": "Farm Supervisors",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T16:16:12.117030+05:30",
+        "message_id": "false_120363409533299483@g.us_3A96FC6CFD3D371C8AE1_205750894874851@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] A.Khasru (919740727010)",
+        "sender_name": "A.Khasru",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "Famous ho tum Ipsita \ud83d\ude03",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T16:17:23.871524+05:30",
+        "message_id": "false_120363409533299483@g.us_3A8DDC9B70A510D51862_205750894874851@lid",
+        "sender": "[2.O Bongo Buddies in Bengaluru 2.O] A.Khasru (919740727010)",
+        "sender_name": "A.Khasru",
+        "is_group": true,
+        "group_name": "2.O Bongo Buddies in Bengaluru 2.O",
+        "raw_text": "And I stand tor sathe \ud83d\ude02\ud83d\ude02\ud83d\ude02",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T16:21:58.127142+05:30",
+        "message_id": "false_120363046205890693@g.us_AC9F2B5748EC4E9290A9EAA37CB3FFDE_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] \ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a (917855812163)",
+        "sender_name": "\ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "500 Trays of production 4th Shead first collection",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "500 Trays of production 4th Shead first collection"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T16:21:59.150118+05:30",
+        "message_id": "false_120363225998735559@g.us_AC3E25AF5176C93B20274D6C453AE3B7_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Mahadeva naidu eggs vehical",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Mahadeva naidu eggs vehical"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T16:22:14.447704+05:30",
+        "message_id": "false_120363046205890693@g.us_AC020489B49D23554928176600DE4A6E_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] \ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a (917855812163)",
+        "sender_name": "\ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "500 Trays of production 7th Shead first collection",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "500 Trays of production 7th Shead first collection"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T16:22:17.777869+05:30",
+        "message_id": "false_120363225998735559@g.us_AC25B050F4DA289564DA124DB2B51608_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "Mahadeva naidu eggs vehical 2",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "Mahadeva naidu eggs vehical 2"
+        }
+    },
+    {
+        "timestamp": "2026-07-20T16:23:20.128642+05:30",
+        "message_id": "false_120363225998735559@g.us_AC0EDCEF21A513E72CD43564E591191C_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T16:23:47.105934+05:30",
+        "message_id": "false_120363225998735559@g.us_ACC71E938CEB330A91F18ED7778E6D56_241274569400567@lid",
+        "sender": "[Gate Manager] NABIYABHANU (918247256522)",
+        "sender_name": "NABIYABHANU",
+        "is_group": true,
+        "group_name": "Gate Manager",
+        "raw_text": "",
+        "ai_extracted": null
+    },
+    {
+        "timestamp": "2026-07-20T16:24:10.121182+05:30",
+        "message_id": "false_120363046205890693@g.us_ACA048A9CFA0028DF0BC811FB092AE8E_141927630536871@lid",
+        "sender": "[Egg Gowdown & Sales] \ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a (917855812163)",
+        "sender_name": "\ud83c\udf3a\ud83e\udeb7\ud83c\udf39Uma\ud83c\udf39\ud83e\udeb7\ud83c\udf3a",
+        "is_group": true,
+        "group_name": "Egg Gowdown & Sales",
+        "raw_text": "500 Trays of production 4th Shead first collection",
+        "ai_extracted": {
+            "shead_name": "",
+            "category": "unknown",
+            "quantity": 0,
+            "unit": "",
+            "amount": 0.0,
+            "notes": "AI processing failed or unreachable",
+            "confidence_score": 0.0,
+            "processed_text": "500 Trays of production 4th Shead first collection"
+        }
     }
 ]
