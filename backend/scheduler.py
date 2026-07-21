@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from report_generator import generate_daily_reports, generate_custom_report
@@ -1026,15 +1027,15 @@ def poll_and_execute_unified_reminders():
                 
                 # Build report-type keyword map for raw message fallback check
                 REPORT_KEYWORDS = {
-                    'production': ['shead', 'egg', 'lps', 'hrt', 'mortality', 'hitstoke', 'alc', 'production', 'collection', 'week bird', 'bird count'],
-                    'feed':       ['feed', 'maize', 'soya', 'bran', 'fodder'],
-                    'sales':      ['sale', 'sold', 'invoice', 'dispatch', 'unload'],
-                    'sale':       ['sale', 'sold', 'invoice', 'dispatch', 'unload'],
-                    'expense':    ['expense', 'expenditure', 'payment', 'bill', 'amount paid'],
-                    'expenditure':['expense', 'expenditure', 'payment', 'bill', 'amount paid'],
-                    'profit':     ['sale', 'sold', 'expense', 'expenditure', 'profit', 'loss'],
-                    'p&l':        ['sale', 'sold', 'expense', 'expenditure', 'profit', 'loss'],
-                    'p and l':    ['sale', 'sold', 'expense', 'expenditure', 'profit', 'loss'],
+                    'production': ['production report', 'daily production', 'total production', 'egg collection report', 'production update', 'production updates', 'production statement', 'daily farm report'],
+                    'feed':       ['feed report', 'feed plant report', 'feed update', 'feed statement', 'maize ordering', 'soya ordering'],
+                    'sales':      ['sales report', 'daily sales', 'total sales', 'dispatch report', 'sales update'],
+                    'sale':       ['sales report', 'daily sales', 'total sales', 'dispatch report', 'sales update'],
+                    'expense':    ['expense report', 'daily expense', 'expenditure report', 'payment report'],
+                    'expenditure':['expense report', 'daily expense', 'expenditure report', 'payment report'],
+                    'profit':     ['p&l report', 'p&l statement', 'profit loss', 'p and l update'],
+                    'p&l':        ['p&l report', 'p&l statement', 'profit loss', 'p and l update'],
+                    'p and l':    ['p&l report', 'p&l statement', 'profit loss', 'p and l update'],
                 }
 
                 missing_reports = []
@@ -1052,16 +1053,19 @@ def poll_and_execute_unified_reminders():
                     elif "profit" in report or "p&l" in report or "p and l" in report:
                         categories = ['sales', 'expense', 'purchase']
                         
-                    is_update_report = any(w in report for w in ["update", "eod", "daily report"]) and "egg pricing" not in report.lower()
+                    is_update_report = any(w in report.lower() for w in ["update", "eod", "daily report", "work update", "work report"]) and "egg pricing" not in report.lower()
+                    update_keywords = [
+                        "daily work update", "eod update", "work update", "today's work update", 
+                        "today work update", "daily report", "today's work report", "today work report",
+                        "work report", "work day report", "eod", "eod report", "daily work report"
+                    ]
 
                     for sub in submissions:
-                        # Match by phone — check both with and without country code 91
                         alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
                         match_sender = clean_phone in str(sub.sender) or alt_phone in str(sub.sender)
                         group_name = group_names_by_id.get(r.whatsapp_group_id)
                         match_group = r.whatsapp_group_id and group_name and sub.group_name and str(sub.group_name).lower() == group_name.lower()
                         
-                        # Fallback for LIDs (Hidden Phone Numbers): Match by Name using fuzzy string matching
                         match_name = False
                         if not match_sender and r.person_name and sub.sender:
                             import difflib
@@ -1074,17 +1078,8 @@ def poll_and_execute_unified_reminders():
                                         match_name = True
                                         break
                         
-                        # Match if sender is the manager (Kusum) satisfying the reminder privately
-                        match_waha_sender = False
-                        if sub.sender:
-                            import difflib
-                            sender_name_part = clean_name_string(sub.sender.split(' (')[0])
-                            manager_name = clean_name_string("kusum")
-                            ratio = difflib.SequenceMatcher(None, sender_name_part, manager_name).ratio()
-                            if ratio > 0.75 or manager_name in sender_name_part or sender_name_part in manager_name:
-                                match_waha_sender = True
-                        
-                        if match_sender or match_group or match_name or match_waha_sender:
+                        # Only allow sender match for personal reminders, or group match for group reminders
+                        if (r.whatsapp_group_id and match_group) or (not r.whatsapp_group_id and (match_sender or match_name)):
                             if "egg pricing" in report.lower():
                                 sub_notes_lower = str(sub.notes or '').lower()
                                 time_keyword = "morning" if "morning" in report.lower() else "afternoon" if "afternoon" in report.lower() else "evening" if "evening" in report.lower() else None
@@ -1101,23 +1096,22 @@ def poll_and_execute_unified_reminders():
                                     submitted = True
                                     break
                             else:
-                                if report in str(sub.notes).lower():
+                                if report.lower() in str(sub.notes).lower():
                                     submitted = True
                                     break
 
-                    # Fallback: also check raw messages for keyword matches
+                    # Fallback: also check raw messages for exact keyword matches
                     if not submitted:
                         raw_keywords = []
                         if is_update_report:
                             raw_keywords = update_keywords + date_formats
                         else:
                             for key, kws in REPORT_KEYWORDS.items():
-                                if key in report:
+                                if key in report.lower():
                                     raw_keywords = kws
                                     break
                             if not raw_keywords:
-                                # Generic: match any keyword from report name itself
-                                raw_keywords = [w for w in report.split() if len(w) > 3]
+                                raw_keywords = [w.lower() for w in report.split() if len(w) > 3]
 
                         group_name = group_names_by_id.get(r.whatsapp_group_id)
                         for raw_msg in raw_messages:
@@ -1129,11 +1123,9 @@ def poll_and_execute_unified_reminders():
                                 and raw_msg.group_name
                                 and str(raw_msg.group_name).lower() == group_name.lower()
                             )
-                            # Fallback for LIDs (Hidden Phone Numbers): Match by Name using fuzzy string matching
                             match_name = False
                             if not match_sender_raw and r.person_name and raw_msg.sender:
                                 import difflib
-                                # raw_msg.sender format: "Name (Phone)" -> Extract Name
                                 sender_name_part = clean_name_string(raw_msg.sender.split(' (')[0])
                                 t_names = [clean_name_string(n) for n in r.person_name.split(',')]
                                 for t_name in t_names:
@@ -1143,27 +1135,50 @@ def poll_and_execute_unified_reminders():
                                             match_name = True
                                             break
                             
-                            # Match if sender is the manager (Kusum) satisfying the reminder privately
-                            match_waha_sender_raw = False
-                            if raw_msg.sender:
-                                import difflib
-                                sender_name_part = clean_name_string(raw_msg.sender.split(' (')[0])
-                                manager_name = clean_name_string("kusum")
-                                ratio = difflib.SequenceMatcher(None, sender_name_part, manager_name).ratio()
-                                if ratio > 0.75 or manager_name in sender_name_part or sender_name_part in manager_name:
-                                    match_waha_sender_raw = True
+                            # Strict match: Group match for group reminders, assigned person match for personal reminders
+                            valid_match = (r.whatsapp_group_id and match_group_raw) or (not r.whatsapp_group_id and (match_sender_raw or match_name))
                             
-                            if match_sender_raw or match_group_raw or match_name or match_waha_sender_raw:
+                            if valid_match:
                                 if "egg pricing" in report.lower():
                                     time_keyword = "morning" if "morning" in report.lower() else "afternoon" if "afternoon" in report.lower() else "evening" if "evening" in report.lower() else None
-                                    if time_keyword and time_keyword in raw_text_lower and any(w in raw_text_lower for w in ["egg", "price", "pricing"]):
+                                    has_price_number = bool(re.search(r'\d{3}', raw_text_lower))
+                                    is_time_match = False
+                                    if time_keyword == 'morning' and (raw_msg.timestamp.hour < 12 or 'morning' in raw_text_lower or '7:' in raw_text_lower or '8:' in raw_text_lower or '9:' in raw_text_lower or '10:' in raw_text_lower or 'veh kol' in raw_text_lower) and 'ppr rate' not in raw_text_lower and 'closing' not in raw_text_lower:
+                                        is_time_match = True
+                                    elif time_keyword == 'afternoon' and (12 <= raw_msg.timestamp.hour < 17 or 'afternoon' in raw_text_lower or 'ppr rate' in raw_text_lower or '12:' in raw_text_lower or '13:' in raw_text_lower or '14:' in raw_text_lower) and 'closing' not in raw_text_lower:
+                                        is_time_match = True
+                                    elif time_keyword == 'evening' and (raw_msg.timestamp.hour >= 17 or 'evening' in raw_text_lower or 'closing' in raw_text_lower or '18:' in raw_text_lower or '19:' in raw_text_lower):
+                                        is_time_match = True
+
+                                    if is_time_match and has_price_number and any(w in raw_text_lower for w in ["egg", "price", "pricing", "ppr rate", "closing", "veh kol"]):
                                         submitted = True
                                         logger.info(f"Egg pricing raw message match for '{report}' from {raw_msg.sender} — skipping reminder.")
+                                        # Send confirmation to the group/chat
+                                        target_report_chat = None
+                                        if raw_msg.group_name:
+                                            grp = db.query(Group).filter(Group.name == raw_msg.group_name).first()
+                                            if grp: target_report_chat = grp.whatsapp_group_id
+                                        if not target_report_chat and r.whatsapp_group_id: target_report_chat = r.whatsapp_group_id
+                                        if not target_report_chat and raw_msg.sender:
+                                            target_report_chat = raw_msg.sender.split(' (')[1].replace(')', '') if '(' in raw_msg.sender else raw_msg.sender
+                                        if target_report_chat:
+                                            try: send_waha_message(target_report_chat, f"✅ Assigned *{report}* report is sent")
+                                            except Exception: pass
                                         break
                                 else:
                                     if any(kw.lower() in raw_text_lower for kw in raw_keywords):
                                         submitted = True
                                         logger.info(f"Raw message keyword match for '{report}' from {raw_msg.sender} — skipping reminder.")
+                                        target_report_chat = None
+                                        if raw_msg.group_name:
+                                            grp = db.query(Group).filter(Group.name == raw_msg.group_name).first()
+                                            if grp: target_report_chat = grp.whatsapp_group_id
+                                        if not target_report_chat and r.whatsapp_group_id: target_report_chat = r.whatsapp_group_id
+                                        if not target_report_chat and raw_msg.sender:
+                                            target_report_chat = raw_msg.sender.split(' (')[1].replace(')', '') if '(' in raw_msg.sender else raw_msg.sender
+                                        if target_report_chat:
+                                            try: send_waha_message(target_report_chat, f"✅ Assigned *{report}* report is sent")
+                                            except Exception: pass
                                         break
 
                     if not submitted:
@@ -1476,7 +1491,7 @@ async def poll_and_remind_tasks_job():
         # 1.5 AUTO-COMPLETE TASKS (Python background equivalent of index.php logic)
         try:
             pending_tasks = db.query(Task).filter(Task.status.in_(['pending', 'overdue'])).all()
-            default_keywords = ['done', 'completed', 'finish', 'finished', 'ok done', 'complete', 'ho gaya', 'ho gya', 'kar diya', '✅', 'done✅']
+            default_keywords = ['done', 'completed', 'finish', 'finished', 'ok done', 'complete', 'conducted', 'conduct', 'ho gaya', 'ho gya', 'kar diya', '✅', 'done✅']
             
             group_task_counts = {}
             phone_task_counts = {}
@@ -1490,98 +1505,122 @@ async def poll_and_remind_tasks_job():
                         if len(digits) == 10: digits = "91" + digits
                         if digits: phone_task_counts[digits] = phone_task_counts.get(digits, 0) + 1
             
+            def check_task_auto_match(task, msg_text):
+                tn = task.task_name.lower()
+                msg = msg_text.lower().strip()
+                if not msg: return False
+
+                kws = list(default_keywords)
+                if task.completion_keywords:
+                    kws.extend([x.strip().lower() for x in task.completion_keywords.split(',') if x.strip()])
+
+                has_completion = any(kw in msg for kw in kws if kw)
+                has_meeting_ctx = any(w in msg for w in ['meeting', 'conducted', 'conduct', 'done', 'completed', 'finished', 'checklist'])
+
+                if 'meeting' in tn or 'follow up' in tn:
+                    if not has_meeting_ctx: return False
+                    if 'egg godown' in tn and any(w in msg for w in ['egg godown', 'godown']): return True
+                    if 'feed plant' in tn and any(w in msg for w in ['feed plant', 'plant']): return True
+                    if 'supervisor' in tn and any(w in msg for w in ['supervisor', 'supervisors']): return True
+                    if ('medicine' in tn or 'incharge' in tn) and any(w in msg for w in ['medicine', 'incharge', 'incharges', 'water']): return True
+                    if 'shed worker' in tn and ('shed worker' in msg or 'shed workers' in msg or ('shed' in msg and 'worker' in msg)):
+                        if not any(x in msg for x in ['godown', 'plant', 'supervisor', 'medicine', 'incharge']): return True
+                    return False
+                else:
+                    return has_completion
+
             for t in pending_tasks:
-                keywords = list(default_keywords)
-                if t.completion_keywords:
-                    keywords.extend([x.strip().lower() for x in t.completion_keywords.split(',')])
+                since = now_ist - timedelta(days=7)
+                if t.created_at:
+                    since = min(since, t.created_at - timedelta(hours=36))
                 
-                import re
-                task_name_words = re.sub(r'[^a-zA-Z0-9\s]', '', t.task_name).lower().split()
-                task_identifiers = [w for w in task_name_words if len(w) > 3 and w not in ['task', 'check', 'please', 'update', 'submit', 'report']]
-                
-                # Look back up to 24 hours to catch early completions!
-                since = now_ist - timedelta(hours=24)
-                if t.created_at and t.created_at > since:
-                    since = t.created_at
-                
-                all_messages = []
-                is_ambiguous = False
                 matched = False
+                matched_msg = None
+                raw_msgs_obj = db.query(RawMessage).filter(
+                    RawMessage.timestamp >= since
+                ).order_by(RawMessage.timestamp.desc()).limit(50).all()
+
+                for rm_obj in raw_msgs_obj:
+                    if rm_obj.raw_text and check_task_auto_match(t, rm_obj.raw_text):
+                        matched = True
+                        matched_msg = rm_obj
+                        break
                 
-                # Check group messages
-                if t.whatsapp_group_id:
-                    grp_id = t.whatsapp_group_id
-                    if group_task_counts.get(grp_id, 0) > 1: is_ambiguous = True
-                    if '@' not in grp_id: grp_id += '@g.us'
-                    
-                    msgs = db.query(WhatsAppMessage.message_text).filter(
-                        WhatsAppMessage.group_id == grp_id,
-                        WhatsAppMessage.timestamp >= since
-                    ).order_by(WhatsAppMessage.timestamp.desc()).limit(30).all()
-                    all_messages.extend([m[0] for m in msgs if m[0]])
-                
-                # Check individual messages
-                if t.assigned_person_phone:
-                    phones_raw = [x.strip() for x in t.assigned_person_phone.split(',')]
-                    phone_patterns = []
-                    for ph in phones_raw:
-                        digits = "".join(filter(str.isdigit, ph))
-                        if len(digits) == 10: digits = "91" + digits
-                        if digits:
-                            phone_patterns.append(digits)
-                            if phone_task_counts.get(digits, 0) > 1: is_ambiguous = True
-                    
-                    if phone_patterns:
-                        from sqlalchemy import or_
-                        conditions = [RawMessage.sender.like(f"%{p}%") for p in phone_patterns]
-                        msgs = db.query(RawMessage.raw_text).filter(
-                            RawMessage.timestamp >= since,
-                            or_(*conditions)
-                        ).order_by(RawMessage.timestamp.desc()).limit(20).all()
-                        all_messages.extend([m[0] for m in msgs if m[0]])
-                
-                if not all_messages: continue
-                
-                for msg_text in all_messages:
-                    msg_lower = msg_text.lower().strip()
-                    has_completion = any(kw in msg_lower for kw in keywords if kw)
-                    if has_completion:
-                        if is_ambiguous and task_identifiers:
-                            has_identifier = any(id_kw in msg_lower for id_kw in task_identifiers)
-                            if has_identifier:
-                                matched = True
-                                break
-                        else:
-                            matched = True
-                            break
-                            
-                if matched:
+                # ✅ FIX: Only run completion logic if a matching message was ACTUALLY found
+                if matched and matched_msg:
                     t.status = 'completed'
                     t.completion_details = 'Auto-completed: WhatsApp reply detected'
                     db.commit()
                     logger.info(f"Task ID {t.id} ('{t.task_name}') auto-completed from WhatsApp reply.")
+                    
+                    # Send Task Completed confirmation message ONLY to the chat/group where it was completed
+                    confirm_msg = f"✅ Task *{t.task_name}* completed"
+                    
+                    target_chat = None
+                    if matched_msg.group_name:
+                        grp = db.query(Group).filter(Group.name == matched_msg.group_name).first()
+                        if grp:
+                            target_chat = grp.whatsapp_group_id
+                    if not target_chat and t.whatsapp_group_id:
+                        target_chat = t.whatsapp_group_id
+                    if not target_chat and matched_msg.sender:
+                        target_chat = matched_msg.sender.split(' (')[1].replace(')', '') if '(' in matched_msg.sender else matched_msg.sender
+                    if not target_chat and t.assigned_person_phone:
+                        target_chat = t.assigned_person_phone.split(',')[0].strip()
+
+                    if target_chat:
+                        try:
+                            send_waha_message(target_chat, confirm_msg)
+                            logger.info(f"Task completion alert sent to chat source: {target_chat}")
+                        except Exception as send_err:
+                            logger.error(f"Failed to send task completion alert to {target_chat}: {send_err}")
         except Exception as e:
             logger.error(f"Error in auto-completing tasks: {e}")
 
         # 2. Get all overdue tasks and trigger reminders
+        # In-memory tracking: only alert once per interval window (NOT every poll cycle)
         tasks = db.query(Task).filter(Task.status == 'overdue').all()
         for t in tasks:
             diff = now_ist - t.due_time
             if diff.total_seconds() < 0:
                 continue
                 
-            minutes_ago = int(diff.total_seconds() / 60.0)
+            minutes_ago = diff.total_seconds() / 60.0
             interval_min = get_interval_minutes(t.repeat_interval)
             
             should_remind = False
-            if interval_min:
-                # If they set "every 5m", it triggers at 0, 5, 10, etc.
-                if minutes_ago % interval_min == 0:
+            if interval_min > 0:
+                # Use last-alert tracking via completion_details timestamp comment
+                # Check if we've already alerted within this interval window
+                last_alert_marker = f"[OVERDUE_ALERT_AT:"
+                already_alerted_recently = False
+                if t.completion_details and last_alert_marker in t.completion_details:
+                    try:
+                        marker_start = t.completion_details.rfind(last_alert_marker) + len(last_alert_marker)
+                        marker_end = t.completion_details.find("]", marker_start)
+                        last_alert_str = t.completion_details[marker_start:marker_end]
+                        from datetime import datetime as dt_class
+                        last_alert_dt = dt_class.fromisoformat(last_alert_str)
+                        mins_since_last = (now_ist - last_alert_dt).total_seconds() / 60.0
+                        if mins_since_last < interval_min:
+                            already_alerted_recently = True
+                    except Exception:
+                        pass
+                
+                if not already_alerted_recently:
                     should_remind = True
+                    # Record this alert time
+                    marker = f"{last_alert_marker}{now_ist.isoformat()}]"
+                    t.completion_details = (t.completion_details or '') + marker
+                    db.commit()
             else:
-                # NAG ONCE: If no repeat interval, just send ONCE
-                if minutes_ago == 0:
+                # NAG ONCE only: send only if first alert (no previous marker)
+                last_alert_marker = f"[OVERDUE_ALERT_AT:"
+                if not (t.completion_details and last_alert_marker in t.completion_details):
                     should_remind = True
+                    marker = f"{last_alert_marker}{now_ist.isoformat()}]"
+                    t.completion_details = (t.completion_details or '') + marker
+                    db.commit()
 
             if should_remind:
                 targets = []
@@ -1730,9 +1769,15 @@ async def manager_escalation_job():
         ).all()
         
         missed_reports = []
+        today_date = now_ist.date()
         for r in reminders_today:
             if r.status == 'skipped':
                 continue
+
+            # Exclude non-daily reminders (Monthly / Yearly) scheduled for future dates
+            if 'monthly' in r.report_types.lower() or 'yearly' in r.report_types.lower():
+                if r.trigger_time and r.trigger_time.date() > today_date + timedelta(days=5):
+                    continue
                 
             clean_group_jid = None
             group_name_display = None
@@ -1765,7 +1810,7 @@ async def manager_escalation_job():
                     match_group_raw = (
                         raw_msg.group_name
                         and group_name
-                        and str(raw_msg.group_name).lower() == group_name.lower()
+                        and str(raw_msg.group_name).lower() in str(group_name).lower()
                     )
                 
                 # Name fallback for LIDs
@@ -1781,9 +1826,9 @@ async def manager_escalation_job():
                                 match_name = True
                                 break
                 
-                # Match if sender is the manager (Kusum) satisfying the reminder privately
+                # Match if sender is the manager (Kusum) satisfying a private reminder (not group)
                 match_waha_sender_raw = False
-                if raw_msg.sender:
+                if raw_msg.sender and not r.whatsapp_group_id:
                     import difflib
                     sender_name_part = clean_name_string(raw_msg.sender.split(' (')[0])
                     manager_name = clean_name_string("kusum")
@@ -1793,26 +1838,45 @@ async def manager_escalation_job():
                                 
                 if match_sender_raw or match_group_raw or match_name or match_waha_sender_raw:
                     msgs_today.append(raw_msg)
+                elif r.person_name and 'mahalakshmi' in r.person_name.lower() and 'mahalakshmi' in str(raw_msg.sender).lower():
+                    msgs_today.append(raw_msg)
             
-            report_keywords = []
-            if r.report_types:
-                rt_lower = r.report_types.lower()
-                if 'production' in rt_lower: report_keywords.extend(['production', 'eggs', 'shed', 'trays', 'collection'])
-                if 'feed' in rt_lower: report_keywords.extend(['feed', 'bags', 'formula', 'intake', 'kg'])
-                if 'mortality' in rt_lower: report_keywords.extend(['mortality', 'dead', 'birds'])
-                if 'sales' in rt_lower or 'expenses' in rt_lower or 'profit' in rt_lower or 'loss' in rt_lower: 
-                    report_keywords.extend(['sales', 'expenses', 'expense', 'profit', 'loss', 'amount', 'rs'])
-            
-            if not report_keywords:
-                report_keywords = ['update', 'report', 'done', 'completed']
-                
+            update_keywords = [
+                "update", "updates", "eod", "work update", "daily update", "daily work update",
+                "eod update", "daily report", "report", "reports", "work report", "work day report",
+                "today's work report", "today work report", "today's work", "today work",
+                "done", "completed", "submitted", "edited", "posted", "shared", "added",
+                "checked", "fixed", "working", "tasks", "work"
+            ]
             is_egg_pricing = "egg pricing" in r.report_types.lower()
+            is_ca_statement = "ca statement" in r.report_types.lower() or "ca" in r.report_types.lower()
+            is_update_report = any(w in r.report_types.lower() for w in ["update", "eod", "daily report", "work"]) and not is_egg_pricing
+            
             submitted = False
             for m in msgs_today:
                 text_lower = (m.raw_text or "").lower()
+                msg_hour = m.timestamp.hour
                 if is_egg_pricing:
                     time_keyword = "morning" if "morning" in r.report_types.lower() else "afternoon" if "afternoon" in r.report_types.lower() else "evening" if "evening" in r.report_types.lower() else None
-                    if time_keyword and time_keyword in text_lower and any(w in text_lower for w in ["egg", "price", "pricing"]):
+                    has_price_number = bool(re.search(r'\d{3}', text_lower))
+                    is_time_match = False
+                    
+                    if time_keyword == 'morning' and (msg_hour < 12 or 'morning' in text_lower or '7:' in text_lower or '8:' in text_lower or '9:' in text_lower or '10:' in text_lower or 'veh kol' in text_lower) and 'ppr rate' not in text_lower and 'closing' not in text_lower:
+                        is_time_match = True
+                    elif time_keyword == 'afternoon' and (12 <= msg_hour < 17 or 'afternoon' in text_lower or 'ppr rate' in text_lower or '12:' in text_lower or '13:' in text_lower or '14:' in text_lower) and 'closing' not in text_lower:
+                        is_time_match = True
+                    elif time_keyword == 'evening' and (msg_hour >= 17 or 'evening' in text_lower or 'closing' in text_lower or '18:' in text_lower or '19:' in text_lower):
+                        is_time_match = True
+
+                    if is_time_match and has_price_number and any(w in text_lower for w in ["egg", "price", "pricing", "ppr rate", "closing", "veh kol", "papaak"]):
+                        submitted = True
+                        break
+                elif is_ca_statement:
+                    if 'ca' in text_lower or 'statement' in text_lower:
+                        submitted = True
+                        break
+                elif is_update_report:
+                    if any(kw in text_lower for kw in update_keywords):
                         submitted = True
                         break
                 else:
@@ -1851,9 +1915,9 @@ async def manager_escalation_job():
                                     match_name = True
                                     break
                     
-                    # Match if sender is the manager (Kusum) satisfying the reminder privately
+                    # Match if sender is the manager (Kusum) satisfying a private reminder (not group)
                     match_waha_sender = False
-                    if p.sender:
+                    if p.sender and not r.whatsapp_group_id:
                         import difflib
                         sender_name_part = clean_name_string(p.sender.split(' (')[0])
                         manager_name = clean_name_string("kusum")
@@ -1900,6 +1964,49 @@ async def manager_escalation_job():
         db.close()
 
 
+def scheduled_godown_report_job():
+    logger.info("Starting scheduled daily egg godown summary report...")
+    try:
+        from report_generator_godown import generate_godown_report
+        pdf_path, summary_text = generate_godown_report()
+        admin_phones = ["917975209680", "917259510983", "919346763549"]
+        for phone in admin_phones:
+            logger.info(f"Sending daily egg godown summary to {phone}")
+            send_waha_message(phone, summary_text)
+            if pdf_path and os.path.exists(pdf_path):
+                send_waha_file(phone, pdf_path, caption=f"Egg Godown Report - {pdf_path.split('/')[-1]}")
+    except Exception as e:
+        logger.error(f"Error in scheduled_godown_report_job: {e}")
+
+
+async def send_all_10pm_daily_reports_job():
+    logger.info("Executing 10:00 PM Daily Reports Dispatcher...")
+    try:
+        # 1. Daily Egg Price & Market Analysis PDF Report
+        from egg_market_analyzer import send_daily_egg_market_pdf_job
+        send_daily_egg_market_pdf_job()
+    except Exception as e:
+        logger.error(f"Error sending Daily Egg Market PDF at 10 PM: {e}")
+        
+    try:
+        # 2. Daily Manager Escalation Alert Report
+        await manager_escalation_job()
+    except Exception as e:
+        logger.error(f"Error sending Manager Escalation Alert at 10 PM: {e}")
+
+    try:
+        # 3. Daily Farm Summary Report (PDF + WhatsApp text)
+        await scheduled_report_job()
+    except Exception as e:
+        logger.error(f"Error sending Daily Farm Summary Report at 10 PM: {e}")
+
+    try:
+        # 4. Daily Egg Godown Summary Report (PDF + WhatsApp text)
+        scheduled_godown_report_job()
+    except Exception as e:
+        logger.error(f"Error sending Daily Egg Godown Report at 10 PM: {e}")
+
+
 def setup_scheduler():
 
     global scheduler
@@ -1912,9 +2019,6 @@ def setup_scheduler():
     
     # Schedule Wednesday meetings checklist generation every Wednesday at 6:00 AM IST
     scheduler.add_job(create_wednesday_meeting_tasks, CronTrigger(day_of_week='wed', hour=6, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
-    
-    # Schedule Manager Escalation check every day at 8:00 PM IST (20:00)
-    scheduler.add_job(manager_escalation_job, CronTrigger(hour=20, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
 
     # Schedule Daily Egg Godown report daily at 9:00 PM IST
     scheduler.add_job(scheduled_godown_report_job, CronTrigger(hour=21, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
@@ -1928,11 +2032,8 @@ def setup_scheduler():
     # Schedule 6:00 PM data entry reminders everyday
     scheduler.add_job(scheduled_reminder_job, CronTrigger(hour=18, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
-    # Schedule group submission audit report daily at 8:00 PM IST
-    scheduler.add_job(group_submission_audit_job, CronTrigger(hour=20, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
-    
-    # Schedule daily report at 10:00 PM IST everyday
-    scheduler.add_job(scheduled_report_job, CronTrigger(hour=22, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    # Combined 10:00 PM Dispatcher: Daily Egg Summary PDF, Escalation Alert, and Daily Farm Report
+    scheduler.add_job(send_all_10pm_daily_reports_job, CronTrigger(hour=22, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
     # Schedule weekly report at 11:00 PM IST on Sunday
     scheduler.add_job(scheduled_weekly_report_job, CronTrigger(day_of_week='sun', hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)

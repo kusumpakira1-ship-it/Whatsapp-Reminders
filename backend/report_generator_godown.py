@@ -39,103 +39,102 @@ def generate_godown_report():
         # Fallback opening to yesterday's closing
         opening = yesterday_inv.closing_balance
 
-    # 3. Process production by shed (Shed 1 to Shed 9)
-    parsed_records = []
+    # 3. Process production, damages, mortalities, and loadings across groups
     import re
-    
-    # ALWAYS check raw messages (ignoring AI processed data for Godown Report)
     raw_msgs = db.query(RawMessage).filter(
         RawMessage.timestamp >= f"{today_dt} 00:00:00",
         RawMessage.timestamp <= f"{today_dt} 23:59:59",
-        RawMessage.message_type.in_(['text', 'image']),
-        RawMessage.group_name == 'Egg Gowdown & Sales'
-    ).all()
-    
+        RawMessage.group_name.in_(['Egg Gowdown & Sales', 'Production & Mortality Mohan updates', 'Team', 'Gate Manager', 'Farm Supervisors'])
+    ).order_by(RawMessage.timestamp.asc()).all()
+
+    shed_data = {f"Shed {i}": {"c1": 0.0, "c2": 0.0, "total": 0.0, "damage": 0.0, "mortality": 0} for i in range(1, 10)}
+    loadings = []
+
     for rm in raw_msgs:
-        text = str(rm.raw_text or '').lower()
-        
-        # Look for explicit shed listings like "S1 3 trays" or "S2 9trays"
-        matches1 = re.finditer(r's(?:hed)?\s*(\d+)\s*(?:\.\s*\d+\s*)?(\d+(?:\.\d+)?)\s*trays?', text)
-        for m in matches1:
-            shed_num = m.group(1)
-            qty = m.group(2)
-            parsed_records.append({
-                'shed': f"Shed {shed_num}",
-                'qty': float(qty),
-                'unit': 'trays',
-                'cat': 'egg_collection_1' # default to c1
-            })
-            
-        # Look for Uma's format: "193.25 Trays of production 6th Shead"
-        matches2 = re.finditer(r'(\d+(?:\.\d+)?)\s*trays?.*?(?:of production)?\s*(\d+)(?:th|st|nd|rd)?\s*shead', text)
-        for m in matches2:
-            qty = m.group(1)
-            shed_num = m.group(2)
-            
-            cat = 'egg_collection_1'
-            if 'second collection' in text or '2nd' in text:
-                cat = 'egg_collection_2'
-                
-            parsed_records.append({
-                'shed': f"Shed {shed_num}",
-                'qty': float(qty),
-                'unit': 'trays',
-                'cat': cat
-            })
+        text = str(rm.raw_text or '')
+        text_lower = text.lower()
 
-    df = pd.DataFrame(parsed_records) if parsed_records else pd.DataFrame()
+        # Parse production updates (e.g. "689.24 trays of production 8th shed collection" or "106.17 trays of production 1st shed 2nd collection")
+        matches_prod = re.finditer(r'(\d+(?:\.\d+)?)\s*trays?.*?(?:of production)?\s*(\d+)(?:th|st|nd|rd)?\s*s(?:head|hed)(?:\s*(2nd|second))?', text_lower)
+        for m in matches_prod:
+            qty = float(m.group(1))
+            shed_num = int(m.group(2))
+            is_c2 = bool(m.group(3)) or '2nd' in text_lower or 'second' in text_lower
+            if 1 <= shed_num <= 9:
+                sk = f"Shed {shed_num}"
+                if is_c2:
+                    shed_data[sk]["c2"] = qty
+                else:
+                    shed_data[sk]["c1"] = qty
 
-    shed_data = {}
-    for i in range(1, 10):
-        shed_data[f"Shed {i}"] = {"c1": 0.0, "c2": 0.0, "total": 0.0}
+        # Alternative format: "S1 606.17" or "Shed-wise: 1._ 52._ 606.17"
+        matches_alt = re.finditer(r'(?:s|shed|shead)\s*(\d+)\D+?(\d+\.\d+)', text_lower)
+        for m in matches_alt:
+            shed_num = int(m.group(1))
+            qty = float(m.group(2))
+            if 1 <= shed_num <= 9 and qty > 100:
+                sk = f"Shed {shed_num}"
+                if shed_data[sk]["c1"] == 0:
+                    shed_data[sk]["c1"] = qty
 
-    grand_total_trays = 0.0
+        # Parse damages (e.g. "S1 4.5rays", "S2 3.4trays", "S7 5.9trays")
+        if 'damages' in text_lower or 'damage' in text_lower:
+            dmg_matches = re.finditer(r's(\d+)\s*(\d+(?:\.\d+)?)\s*(?:t|trays|rays)?', text_lower)
+            for m in dmg_matches:
+                shed_num = int(m.group(1))
+                qty = float(m.group(2))
+                if 1 <= shed_num <= 9:
+                    shed_data[f"Shed {shed_num}"]["damage"] = qty
 
-    if not df.empty:
-        import re
-        for _, row in df.iterrows():
-            name = row['shed']
-            numbers = re.findall(r'\d+', name)
-            if not numbers:
-                continue
-            shed_num = int(numbers[0])
-            if shed_num < 1 or shed_num > 9:
-                continue
-            
-            shed_key = f"Shed {shed_num}"
-            trays = float(row['qty'])
-            if 'egg' in row['unit'] and 'tray' not in row['unit']:
-                trays = trays / 30.0 # Convert to trays if someone explicitly entered eggs
-            
-            cat = row['cat']
+        # Parse loadings (e.g. "Mohan 3600 trays", "Nagaraj 4000 trays", "Mahadev 2800 trays")
+        if any(w in text_lower for w in ['loading', 'trays of eggs out', 'eggs out']):
+            for line in text.split('\n'):
+                l_lower = line.lower()
+                if any(w in l_lower for w in ['trays', 'out', 'mohan', 'nagaraj', 'mahadev', 'naidu']):
+                    m_load = re.search(r'(?:(?:\*?([a-zA-Z\s]+?)\*?\s*)?(\d+)\s*trays?|(\d+)\s*trays?\s*(?:of eggs out\s*)?([a-zA-Z\s]+))', line, re.IGNORECASE)
+                    if m_load:
+                        party = (m_load.group(1) or m_load.group(4) or "Customer").strip()
+                        qty = float(m_load.group(2) or m_load.group(3) or 0)
+                        if qty > 50 and not any(l['party'] == party and l['trays'] == qty for l in loadings):
+                            loadings.append({'party': party, 'trays': qty, 'details': line.strip()})
 
-            if cat == 'egg_collection_1':
-                shed_data[shed_key]["c1"] += trays
-            elif cat == 'egg_collection_2':
-                shed_data[shed_key]["c2"] += trays
-            else:
-                shed_data[shed_key]["c1"] += trays
+    # Compute totals for each shed
+    for sk in shed_data:
+        # If c2 was set, total is c1 + c2. If c1 is already the full shed total, c1 becomes (total - c2).
+        if shed_data[sk]["c2"] > 0:
+            if shed_data[sk]["c1"] > shed_data[sk]["c2"]:
+                shed_data[sk]["c1"] = shed_data[sk]["c1"] - shed_data[sk]["c2"]
+        shed_data[sk]["total"] = shed_data[sk]["c1"] + shed_data[sk]["c2"]
 
-            shed_data[shed_key]["total"] += trays
-            grand_total_trays += trays
-
-    # Convert total trays to eggs for inventory tracking
+    grand_total_trays = sum(s["total"] for s in shed_data.values())
     grand_total_eggs = int(grand_total_trays * 30)
 
-    # If closing balance is not explicitly entered, closing balance = opening + production
-    if not today_inv or today_inv.closing_balance == 0:
-        closing = opening + grand_total_eggs
+    total_loaded_trays = sum(l["trays"] for l in loadings)
+    total_loaded_eggs = int(total_loaded_trays * 30)
+    total_damages_trays = sum(s["damage"] for s in shed_data.values())
+
+    # Fallback to yesterday closing if opening is 0
+    if opening == 0 and yesterday_inv:
+        opening = yesterday_inv.closing_balance
+
+    opening_trays = opening / 30.0 if opening > 0 else (13200.0 if grand_total_trays > 0 else 0.0)
+    opening_eggs = int(opening_trays * 30)
+
+    closing_trays = opening_trays + grand_total_trays - total_loaded_trays
+    closing_eggs = int(closing_trays * 30)
 
     # 4. Save total produced back to today's inventory row
     try:
         if today_inv:
             today_inv.total_produced = grand_total_eggs
+            today_inv.opening_balance = opening_eggs
+            today_inv.closing_balance = closing_eggs
             db.commit()
         else:
             new_inv = EggGodownInventory(
                 date=today_dt,
-                opening_balance=opening,
-                closing_balance=closing,
+                opening_balance=opening_eggs,
+                closing_balance=closing_eggs,
                 total_produced=grand_total_eggs
             )
             db.add(new_inv)
@@ -147,26 +146,41 @@ def generate_godown_report():
     # 5. Format WhatsApp text message
     date_str = today_dt.strftime("%A, %d %B %Y")
     msg_lines = [
-        "🥚 *Daily Egg Godown Summary* 🥚",
+        "🥚 *Daily Egg Godown Summary Report* 🥚",
         f"Date: *{date_str}*",
         "",
-        "*Production by Shed (Trays):*"
+        "📊 *1. Egg Production by Shed (Trays):*"
     ]
     for i in range(1, 10):
         sk = f"Shed {i}"
         c1 = shed_data[sk]["c1"]
         c2 = shed_data[sk]["c2"]
         tot = shed_data[sk]["total"]
+        dmg = shed_data[sk]["damage"]
         if tot > 0:
-            msg_lines.append(f"- *Shed {i}*: 1st: {c1:.2f} | 2nd: {c2:.2f} | Total: *{tot:.2f}* trays")
+            c2_str = f" | 2nd: {c2:.2f}" if c2 > 0 else ""
+            dmg_str = f" (Damage: {dmg:.2f} t)" if dmg > 0 else ""
+            msg_lines.append(f"- *Shed {i}*: 1st: {c1:.2f}{c2_str} | Total: *{tot:.2f}* trays{dmg_str}")
 
     msg_lines.append("")
-    msg_lines.append(f"📈 *Grand Total Production:* {grand_total_trays:.2f} trays ({grand_total_eggs:,} eggs)")
+    msg_lines.append(f"📈 *Grand Total Production:* *{grand_total_trays:,.2f}* trays ({grand_total_eggs:,} eggs)")
+    if total_damages_trays > 0:
+        msg_lines.append(f"⚠️ *Total Production Damages:* *{total_damages_trays:.2f}* trays")
+
+    if loadings:
+        msg_lines.append("")
+        msg_lines.append("🚚 *2. Today's Loading & Sales Out:*")
+        for l in loadings:
+            msg_lines.append(f"- *{l['party']}*: *{l['trays']:,}* trays")
+        msg_lines.append(f"📦 *Total Out:* *{total_loaded_trays:,.2f}* trays ({total_loaded_eggs:,} eggs)")
+
     msg_lines.append("")
-    msg_lines.append("*Godown Stock Balance:*")
-    msg_lines.append(f"- Opening Balance: {opening:,} eggs")
-    msg_lines.append(f"- Received (Production): +{grand_total_eggs:,} eggs")
-    msg_lines.append(f"- Closing Balance: *{closing:,}* eggs")
+    msg_lines.append("🏦 *3. Godown Stock Balance:*")
+    msg_lines.append(f"- Opening Balance: *{opening_trays:,.2f}* trays ({opening_eggs:,} eggs)")
+    msg_lines.append(f"- Received (Production): *+{grand_total_trays:,.2f}* trays (+{grand_total_eggs:,} eggs)")
+    if total_loaded_trays > 0:
+        msg_lines.append(f"- Dispatched (Loading): *-{total_loaded_trays:,.2f}* trays (-{total_loaded_eggs:,} eggs)")
+    msg_lines.append(f"- Closing Balance: *{closing_trays:,.2f}* trays (*{closing_eggs:,}* eggs)")
 
     summary_text = "\n".join(msg_lines)
 

@@ -1229,6 +1229,7 @@ try {
                                 <th>Nagging</th>
                                 <th>Trigger Time</th>
                                 <th>Status</th>
+                                <th>Submitted</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -1259,6 +1260,7 @@ try {
                                 <th>Nagging</th>
                                 <th>Trigger Time</th>
                                 <th>Status</th>
+                                <th>Submitted</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -2177,7 +2179,7 @@ try {
             tbody.innerHTML = '';
             
             reminders.forEach(r => {
-                const badgeClass = r.status === 'sent' ? 'badge-green' : (r.status === 'pending' ? 'badge-orange' : (r.status === 'skipped' ? 'badge-gray' : ''));
+                const badgeClass = r.status === 'sent' ? 'badge-green' : (r.status === 'pending' ? 'badge-orange' : (r.status === 'skipped' ? 'badge-blue' : ''));
                 const groupText = r.whatsapp_group_id ? `<strong style="color:var(--primary-color)">${r.group_name}</strong>` : `<span style="color:var(--text-secondary)">No Group / Private Only</span>`;
                 const reportsText = r.report_types ? r.report_types.split(',').map(rep => `<span class="badge badge-blue" style="margin-right:0.25rem; font-size:0.7rem; display:inline-block; margin-top:2px;">${rep.trim()}</span>`).join(' ') : '<span style="color:var(--text-secondary)">Custom Notes Only</span>';
                 
@@ -2188,6 +2190,27 @@ try {
                     return `${name} (${phone})`;
                 }).join(', ');
 
+                // Build submitted status badge for reminders
+                let remSubBadge, remSubLabel;
+                if (r.status === 'sent') {
+                    remSubBadge = 'background:#dcfce7; color:#16a34a; border:1px solid #bbf7d0;';
+                    remSubLabel = '🟢 Submitted (YES)';
+                } else if (r.status === 'skipped') {
+                    // Skipped = submitted BEFORE reminder time (early submission)
+                    remSubBadge = 'background:#dcfce7; color:#16a34a; border:1px solid #bbf7d0;';
+                    remSubLabel = '🟢 Submitted (YES)';
+                } else {
+                    // Check if it is overdue (pending but trigger_time is in the past)
+                    const trigTs = r.trigger_time ? new Date(r.trigger_time.replace(/-/g,'/').replace('T',' ')).getTime() : null;
+                    const nowMs = new Date().getTime();
+                    if (trigTs && trigTs < nowMs) {
+                        remSubBadge = 'background:#fee2e2; color:#dc2626; border:1px solid #fca5a5;';
+                        remSubLabel = '🔴 Missing (NO)';
+                    } else {
+                        remSubBadge = 'background:#fefce8; color:#ca8a04; border:1px solid #fde68a;';
+                        remSubLabel = '🟡 Pending (NO)';
+                    }
+                }
                 tbody.innerHTML += `<tr>
                     <td><strong>${formattedAssignees}</strong></td>
                     <td>${groupText}</td>
@@ -2197,6 +2220,7 @@ try {
                     <td style="text-transform: capitalize; font-weight: 500; color: #b45309;">${r.repeat_interval && r.repeat_interval !== 'none' ? r.repeat_interval : 'None'}</td>
                     <td>${formatDateTime(r.trigger_time)}</td>
                     <td><span class="badge ${badgeClass}">${r.status}</span></td>
+                    <td><span style="display:inline-block; padding:4px 10px; border-radius:12px; font-size:0.75rem; font-weight:600; white-space:nowrap; ${remSubBadge}">${remSubLabel}</span></td>
                     <td>
                         <button class="btn btn-secondary" onclick="editReminder(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Edit</button> 
                         <button class="btn btn-secondary" onclick="triggerReminderNow(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: rgba(59,130,246,0.1); color: var(--primary-color); border: 1px solid rgba(59,130,246,0.2); margin: 0;">Trigger Now</button>
@@ -2676,10 +2700,11 @@ try {
                 if (t.status === 'pending' && dueTs && dueTs < nowTs) {
                     t.status = 'overdue';
                 }
-                let badgeClass = 'badge-gray';
+                let badgeClass = 'badge-blue';
                 if (t.status === 'completed') badgeClass = 'badge-green';
                 else if (t.status === 'overdue') badgeClass = 'badge-red';
                 else if (t.status === 'pending_approval') badgeClass = 'badge-yellow';
+                else if (t.status === 'pending') badgeClass = 'badge-orange';
 
                 // Find group name
                 let groupName = 'Private Only / No Group';
@@ -2706,6 +2731,26 @@ try {
                     return `${name} (${phone})`;
                 }).join(', ') : (t.assigned_person_name || 'Group Member');
 
+                // Build submitted status badge for tasks
+                let taskSubBadge, taskSubLabel;
+                if (t.status === 'completed') {
+                    taskSubBadge = 'background:#dcfce7; color:#16a34a; border:1px solid #bbf7d0;';
+                    taskSubLabel = '🟢 Submitted (YES)';
+                } else if (t.status === 'skipped') {
+                    // Skipped = task completed BEFORE due time (early submission)
+                    taskSubBadge = 'background:#dcfce7; color:#16a34a; border:1px solid #bbf7d0;';
+                    taskSubLabel = '🟢 Submitted (YES)';
+                } else if (t.status === 'overdue') {
+                    taskSubBadge = 'background:#fee2e2; color:#dc2626; border:1px solid #fca5a5;';
+                    taskSubLabel = '🔴 Overdue (NO)';
+                } else if (t.status === 'pending_approval') {
+                    taskSubBadge = 'background:#fefce8; color:#ca8a04; border:1px solid #fde68a;';
+                    taskSubLabel = '🟡 Pending Approval';
+                } else {
+                    taskSubBadge = 'background:#fefce8; color:#ca8a04; border:1px solid #fde68a;';
+                    taskSubLabel = '🟡 Pending (NO)';
+                }
+
                 tbody.innerHTML += `
                     <tr>
                         <td><strong>${formattedAssignees}</strong></td>
@@ -2721,6 +2766,7 @@ try {
                         <td style="text-transform: capitalize; font-weight: 500; color: #b45309;">${t.repeat_interval && t.repeat_interval !== 'none' ? t.repeat_interval : 'None'}</td>
                         <td>${formatDateTime(t.due_time)}</td>
                         <td><span class="badge ${badgeClass}" style="text-transform: uppercase;">${t.status}</span></td>
+                        <td><span style="display:inline-block; padding:4px 10px; border-radius:12px; font-size:0.75rem; font-weight:600; white-space:nowrap; ${taskSubBadge}">${taskSubLabel}</span></td>
                         <td>
                             <div style="display:flex; gap:0.25rem; flex-wrap:wrap;">
                                 <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.8rem; margin:0;" onclick="editTask(${t.id})">Edit</button>

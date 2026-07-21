@@ -296,7 +296,13 @@ def process_message_background(
                         is_assigned = True
                         logger.info(f"Assignee matched via fuzzy name fallback: '{sender_name}' matched '{t.assigned_person_name}' (ratio: {ratio:.2f})")
 
-            # If not assigned, skip
+            # If not assigned by phone/group/name, allow Team or unassigned or meeting tasks
+            if not is_assigned:
+                t_person = (t.assigned_person_name or '').lower()
+                if 'team' in t_person or t_person == 'none' or not t.assigned_person_name or 'meeting' in (t.task_type or '').lower() or 'meeting' in t.task_name.lower() or 'follow up' in t.task_name.lower():
+                    is_assigned = True
+
+            # If still not assigned, skip
             if not is_assigned:
                 continue
  
@@ -325,16 +331,38 @@ def process_message_background(
                 continue
  
             # Check Rule 2: Wednesday Meeting points check
-            is_meeting = t.task_type and 'meeting' in t.task_type.lower()
+            is_meeting = (t.task_type and 'meeting' in t.task_type.lower()) or 'meeting' in t.task_name.lower() or 'follow up' in t.task_name.lower()
             if is_meeting:
-                meeting_keywords = ["points", "minutes", "checklist", "topics", "discussed", "conducting", "conducted"]
-                if any(kw in text_lower for kw in meeting_keywords) and len(text) > 20:
-                    t.status = 'completed'
-                    t.completion_details = text
-                    db.commit()
-                    logger.info(f"Meeting task ID {t.id} completed. Saved points: '{text[:50]}...'")
-                    send_waha_message(sender, f"✅ Meeting follow-up *\"{t.task_name}\"* completed! Points covered saved.")
-                    continue
+                meeting_keywords = ["points", "minutes", "checklist", "topics", "discussed", "conducting", "conducted", "done", "completed"]
+                if any(kw in text_lower for kw in meeting_keywords):
+                    # Check department matching
+                    tn = t.task_name.lower()
+                    dept_match = False
+                    # ✅ FIX: Check dept keyword in task name FIRST, then match text separately.
+                    # Old elif-and chains caused fallthrough to else:dept_match=True for wrong tasks.
+                    if 'egg godown' in tn:
+                        if any(w in text_lower for w in ['egg godown', 'godown']): dept_match = True
+                    elif 'feed plant' in tn:
+                        if any(w in text_lower for w in ['feed plant', 'plant']): dept_match = True
+                    elif 'supervisor' in tn:
+                        if any(w in text_lower for w in ['supervisor', 'supervisors']): dept_match = True
+                    elif 'medicine' in tn or 'incharge' in tn:
+                        if any(w in text_lower for w in ['medicine', 'incharge', 'incharges', 'water']): dept_match = True
+                    elif 'shed worker' in tn:
+                        if ('shed worker' in text_lower or 'shed workers' in text_lower or ('shed' in text_lower and 'worker' in text_lower)):
+                            if not any(x in text_lower for x in ['godown', 'plant', 'supervisor', 'medicine', 'incharge']): dept_match = True
+                    else:
+                        # No specific department keyword in task name → generic meeting task, any meeting completion message works
+                        dept_match = True
+                    
+                    if dept_match:
+                        t.status = 'completed'
+                        t.completion_details = text
+                        db.commit()
+                        logger.info(f"Meeting task ID {t.id} completed. Saved text: '{text[:50]}...'")
+                        reply_msg = f"✅ Task *{t.task_name}* completed"
+                        send_waha_message(sender, reply_msg)
+                        continue
                 continue
  
             # Check Rule 3: Feed Formula update (Approval Flow initiator)
@@ -1050,6 +1078,13 @@ def get_reminder_logs(limit: int = 100):
         return logs
     finally:
         db.close()
+
+@app.post("/api/reports/egg-market")
+def trigger_egg_market_report(background_tasks: BackgroundTasks):
+    from egg_market_analyzer import send_daily_egg_market_pdf_job
+    background_tasks.add_task(send_daily_egg_market_pdf_job)
+    return {"status": "success", "message": "Egg Market Analysis PDF report generation triggered in background."}
+
 
 
 
