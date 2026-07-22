@@ -265,6 +265,10 @@ def process_message_background(
         # Find all pending/approval tasks
         tasks = db.query(Task).filter(Task.status.in_(['pending', 'pending_approval', 'overdue'])).all()
         for t in tasks:
+            # ✅ FIX: Skip tasks not yet due — don't auto-complete future tasks from today's messages
+            if t.status == 'pending' and t.due_time and t.due_time > datetime.now(IST).replace(tzinfo=None):
+                continue
+            
             # Check if this task is assigned to the sender
             clean_sender_phone = "".join(filter(str.isdigit, sender_phone))
             is_assigned = False

@@ -1490,21 +1490,14 @@ async def poll_and_remind_tasks_job():
 
         # 1.5 AUTO-COMPLETE TASKS (Python background equivalent of index.php logic)
         try:
-            pending_tasks = db.query(Task).filter(Task.status.in_(['pending', 'overdue'])).all()
+            # Find all pending/approval tasks (only those already due or overdue)
+            from datetime import datetime as dt_class
+            now_ist_local = dt_class.now(IST).replace(tzinfo=None)
+            tasks = db.query(Task).filter(Task.status.in_(['pending', 'pending_approval', 'overdue'])).all()
             default_keywords = ['done', 'completed', 'finish', 'finished', 'ok done', 'complete', 'conducted', 'conduct', 'ho gaya', 'ho gya', 'kar diya', '✅', 'done✅']
             
-            group_task_counts = {}
-            phone_task_counts = {}
-            for t in pending_tasks:
-                if t.whatsapp_group_id:
-                    gid = t.whatsapp_group_id
-                    group_task_counts[gid] = group_task_counts.get(gid, 0) + 1
-                if t.assigned_person_phone:
-                    for ph in [x.strip() for x in t.assigned_person_phone.split(',') if x.strip()]:
-                        digits = "".join(filter(str.isdigit, ph))
-                        if len(digits) == 10: digits = "91" + digits
-                        if digits: phone_task_counts[digits] = phone_task_counts.get(digits, 0) + 1
             
+
             def check_task_auto_match(task, msg_text):
                 tn = task.task_name.lower()
                 msg = msg_text.lower().strip()
@@ -1529,10 +1522,13 @@ async def poll_and_remind_tasks_job():
                 else:
                     return has_completion
 
-            for t in pending_tasks:
-                since = now_ist - timedelta(days=7)
-                if t.created_at:
-                    since = min(since, t.created_at - timedelta(hours=36))
+            for t in tasks:
+                # ✅ FIX: Skip auto-complete for tasks not yet due (scheduled for future)
+                if now_ist < t.due_time:
+                    continue
+                
+                # Only check messages received on or after the task's due date (not 7 days back)
+                since = t.due_time.replace(hour=0, minute=0, second=0, microsecond=0)
                 
                 matched = False
                 matched_msg = None
@@ -1737,6 +1733,7 @@ async def manager_escalation_job():
     try:
         raw_messages_today = db.query(RawMessage).filter(RawMessage.timestamp >= start_of_day).all()
         processed_today_all = db.query(ProcessedData).filter(func.date(ProcessedData.processed_time) == start_of_day.date()).all()
+        msg_jids = {w.message_id: w.group_id for w in db.query(WhatsAppMessage).filter(WhatsAppMessage.timestamp >= start_of_day).all()}
         
         # 1. Check Tasks
         overdue_tasks = db.query(Task).filter(
@@ -1836,9 +1833,30 @@ async def manager_escalation_job():
                     if ratio > 0.75 or manager_name in sender_name_part or sender_name_part in manager_name:
                         match_waha_sender_raw = True
                                 
-                if match_sender_raw or match_group_raw or match_name or match_waha_sender_raw:
-                    msgs_today.append(raw_msg)
-                elif r.person_name and 'mahalakshmi' in r.person_name.lower() and 'mahalakshmi' in str(raw_msg.sender).lower():
+                raw_msg_jid = msg_jids.get(raw_msg.message_id) or ''
+                clean_raw_jid = raw_msg_jid.replace('@g.us', '').strip()
+                clean_target_jid_stripped = clean_group_jid.replace('@g.us', '').strip() if clean_group_jid else ''
+                
+                is_group_level = (r.person_phone == '1234567890' or 'team' in r.person_name.lower())
+                
+                is_match = False
+                if is_group_level:
+                    # Group-level reminder (assigned to Team): strictly require matching group JID
+                    is_match = (clean_target_jid_stripped and clean_raw_jid == clean_target_jid_stripped)
+                else:
+                    # Individual-level reminder: sender must match, and message must be either a direct message (no group)
+                    # or sent in the reminder's target group JID (if specified)
+                    sender_matched = match_sender_raw or match_name or match_waha_sender_raw
+                    if not sender_matched and r.person_name and 'mahalakshmi' in r.person_name.lower() and 'mahalakshmi' in str(raw_msg.sender).lower():
+                        sender_matched = True
+                        
+                    if sender_matched:
+                        if not clean_raw_jid:
+                            is_match = True
+                        elif clean_target_jid_stripped and clean_raw_jid == clean_target_jid_stripped:
+                            is_match = True
+                            
+                if is_match:
                     msgs_today.append(raw_msg)
             
             update_keywords = [
@@ -1851,7 +1869,14 @@ async def manager_escalation_job():
             is_egg_pricing = "egg pricing" in r.report_types.lower()
             is_ca_statement = "ca statement" in r.report_types.lower() or "ca" in r.report_types.lower()
             is_update_report = any(w in r.report_types.lower() for w in ["update", "eod", "daily report", "work"]) and not is_egg_pricing
-            
+            # Split keywords by comma and slash
+            report_keywords = []
+            for comma_part in r.report_types.split(","):
+                for slash_part in comma_part.split("/"):
+                    trimmed = slash_part.strip().lower()
+                    if trimmed:
+                        report_keywords.append(trimmed)
+                        
             submitted = False
             for m in msgs_today:
                 text_lower = (m.raw_text or "").lower()
@@ -1925,7 +1950,24 @@ async def manager_escalation_job():
                         if ratio > 0.75 or manager_name in sender_name_part or sender_name_part in manager_name:
                             match_waha_sender = True
                                     
-                    if match_sender or match_group or match_name or match_waha_sender:
+                    p_msg_jid = msg_jids.get(p.message_id) or ''
+                    clean_p_jid = p_msg_jid.replace('@g.us', '').strip()
+                    clean_target_jid_stripped = clean_group_jid.replace('@g.us', '').strip() if clean_group_jid else ''
+                    
+                    is_group_level = (r.person_phone == '1234567890' or 'team' in r.person_name.lower())
+                    
+                    is_match = False
+                    if is_group_level:
+                        is_match = (clean_target_jid_stripped and clean_p_jid == clean_target_jid_stripped)
+                    else:
+                        sender_matched = match_sender or match_name or match_waha_sender
+                        if sender_matched:
+                            if not clean_p_jid:
+                                is_match = True
+                            elif clean_target_jid_stripped and clean_p_jid == clean_target_jid_stripped:
+                                is_match = True
+                                
+                    if is_match:
                         processed_today.append(p)
 
                 for p in processed_today:
@@ -1952,7 +1994,7 @@ async def manager_escalation_job():
             escalation_lines.extend(missed_reports)
             
         if escalation_lines:
-            msg = "🚨 *Daily Escalation Report (8:00 PM)*\n\nThe following items have not been updated today:\n\n" + "\n".join(escalation_lines)
+            msg = "🚨 *Daily Escalation Report (10:00 PM)*\n\nThe following items have not been updated today:\n\n" + "\n".join(escalation_lines)
             send_waha_message(manager_jid, msg)
             logger.info(f"Manager Escalation sent to {manager_jid}")
         else:

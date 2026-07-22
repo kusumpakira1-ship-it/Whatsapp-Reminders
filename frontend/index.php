@@ -4,13 +4,16 @@
 // Single-file unified backend and frontend
 // ============================================================
 @opcache_reset();
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
 // 1. Database Connection
 // Try to load the database configuration from the parent directory
 if (file_exists('../database.php')) {
     require_once '../database.php';
+} elseif (file_exists(__DIR__ . '/database.php')) {
+    // Same directory (e.g. Hostinger FTP root)
+    require_once __DIR__ . '/database.php';
 } else {
     // Fallback: If database.php doesn't exist, use an SQLite database for immediate setup
     try {
@@ -394,6 +397,372 @@ try {
 } catch (Exception $e) { /* silent fail */ }
 
 
+function clean_name_string($name) {
+    if (!$name) return "";
+    $normalized = strtolower(trim($name));
+    $normalized = str_replace('ss ', '', $normalized);
+    $normalized = preg_replace('/[^a-z0-9\s]/', '', $normalized);
+    return trim($normalized);
+}
+
+function verify_reminder_submission($r, $submissions, $raw_messages, $waha_groups) {
+    $reports = array_filter(array_map('trim', explode(',', strtolower($r['report_types'] ?? ''))));
+    $phones = array_filter(array_map('trim', explode(',', $r['person_phone'] ?? '')));
+    $names = array_filter(array_map('trim', explode(',', $r['person_name'] ?? '')));
+    
+    $group_name_target = null;
+    if ($r['whatsapp_group_id']) {
+        foreach ($waha_groups as $g) {
+            if ($g['id'] === $r['whatsapp_group_id']) {
+                $group_name_target = $g['name'];
+                break;
+            }
+        }
+    }
+    
+    $IST_OFFSET = 5.5 * 3600;
+    $tz = new DateTimeZone('Asia/Kolkata');
+    $now_ist = new DateTime('now', $tz);
+    
+    $date_formats = [
+        $now_ist->format('d-m'),
+        $now_ist->format('d/m'),
+        $now_ist->format('d F'),
+        $now_ist->format('F d'),
+        $now_ist->format('dj F'),
+    ];
+    $cleaned_dates = [];
+    foreach ($date_formats as $df) {
+        $df_lower = strtolower($df);
+        $cleaned_dates[] = $df_lower;
+        if ($df_lower[0] === '0') {
+            $cleaned_dates[] = substr($df_lower, 1);
+        }
+        $cleaned_dates[] = str_replace(' 0', ' ', $df_lower);
+    }
+    $date_formats = array_values(array_unique($cleaned_dates));
+    
+    $update_keywords = [
+        "daily work update", "eod update", "work update", "today's work update", 
+        "today work update", "daily report", "today's work report", "today work report",
+        "work report", "work day report", "eod", "eod report", "daily work report",
+        "daily work update report"
+    ];
+    
+    $is_all_submitted = true;
+    $missing_reports = [];
+    $verification_details = [];
+    
+    if (empty($reports)) {
+        return [
+            'is_submitted' => false,
+            'missing_reports' => ['Notes Only'],
+            'details' => 'No reports assigned to this reminder (Notes Only).'
+        ];
+    }
+    
+    foreach ($reports as $report) {
+        $report_submitted = false;
+        $report_match_msg = "";
+        
+        $categories = [];
+        if (strpos($report, 'production') !== false || strpos($report, 'egg') !== false) {
+            $categories = ['production', 'egg_collection', 'egg_collection_1', 'egg_collection_2', 'egg'];
+        } elseif (strpos($report, 'feed') !== false) {
+            $categories = ['feed'];
+        } elseif (strpos($report, 'expense') !== false || strpos($report, 'expenditure') !== false || strpos($report, 'cost') !== false) {
+            $categories = ['expense', 'purchase'];
+        } elseif (strpos($report, 'sale') !== false) {
+            $categories = ['sales'];
+        } elseif (strpos($report, 'profit') !== false || strpos($report, 'p&l') !== false || strpos($report, 'p and l') !== false) {
+            $categories = ['sales', 'expense', 'purchase'];
+        }
+        
+        $is_update_report = (
+            (strpos($report, 'update') !== false || strpos($report, 'eod') !== false || strpos($report, 'daily report') !== false || strpos($report, 'work report') !== false)
+            && strpos($report, 'egg pricing') === false
+        );
+
+        $REPORT_KEYWORDS = [
+            'production' => ['production report', 'daily production', 'total production', 'egg collection report', 'production update', 'production statement', 'daily farm report'],
+            'feed'       => ['feed report', 'feed plant report', 'feed update', 'feed statement', 'maize ordering', 'soya ordering'],
+            'sales'      => ['sales report', 'daily sales', 'total sales', 'dispatch report', 'sales update'],
+            'sale'       => ['sales report', 'daily sales', 'total sales', 'dispatch report', 'sales update'],
+            'expense'    => ['expense report', 'daily expense', 'expenditure report', 'payment report'],
+            'expenditure'=> ['expense report', 'daily expense', 'expenditure report', 'payment report'],
+            'profit'     => ['p&l report', 'p&l statement', 'profit loss', 'p and l update'],
+            'p&l'        => ['p&l report', 'p&l statement', 'profit loss', 'p and l update'],
+            'p and l'    => ['p&l report', 'p&l statement', 'profit loss', 'p and l update'],
+        ];
+        
+        $raw_keywords = [];
+        if ($is_update_report) {
+            $raw_keywords = array_merge($update_keywords, $date_formats);
+        } else {
+            foreach ($REPORT_KEYWORDS as $key => $kws) {
+                if (strpos($report, $key) !== false) {
+                    $raw_keywords = $kws;
+                    break;
+                }
+            }
+        }
+        foreach (explode(',', $report) as $comma_part) {
+            foreach (explode('/', $comma_part) as $slash_part) {
+                $trimmed = trim($slash_part);
+                if ($trimmed !== '') {
+                    $raw_keywords[] = $trimmed;
+                }
+            }
+        }
+        
+        // 1. Check ProcessedData
+        foreach ($submissions as $sub) {
+            $sub_sender = strtolower($sub['sender'] ?? '');
+            $sub_group = strtolower($sub['group_name'] ?? '');
+            $sub_notes = strtolower($sub['notes'] ?? '');
+            $sub_cat = strtolower($sub['category'] ?? '');
+            
+            // Match sender phone or name
+            $sender_matched = false;
+            foreach ($phones as $phone) {
+                $clean_phone = preg_replace('/\D/', '', $phone);
+                if (!$clean_phone) continue;
+                $alt_phone = (strlen($clean_phone) === 10) ? "91" . $clean_phone : $clean_phone;
+                if (strpos($sub_sender, $clean_phone) !== false || strpos($sub_sender, $alt_phone) !== false) {
+                    $sender_matched = true;
+                    break;
+                }
+            }
+            
+            // Match group by JID
+            $group_matched = false;
+            $sub_group_jid = $sub['whatsapp_group_jid'] ?? '';
+            $clean_sub_group_jid = str_replace('@g.us', '', $sub_group_jid);
+            $clean_target_group_jid = str_replace('@g.us', '', $r['whatsapp_group_id'] ?? '');
+            
+            if ($clean_target_group_jid && $clean_sub_group_jid && $clean_target_group_jid === $clean_sub_group_jid) {
+                $group_matched = true;
+            }
+            
+            // Match name fuzzy
+            $name_matched = false;
+            if (!$sender_matched && $r['person_name'] && $sub['sender']) {
+                $sender_name_part = clean_name_string(explode(' (', $sub['sender'])[0]);
+                foreach ($names as $name) {
+                    $t_name = clean_name_string($name);
+                    if (strlen($sender_name_part) >= 3 && strlen($t_name) >= 3) {
+                        if (strpos($sender_name_part, $t_name) !== false || strpos($t_name, $sender_name_part) !== false) {
+                            $name_matched = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            $is_group_level = ($r['person_phone'] === '1234567890' || strpos(strtolower($r['person_name']), 'team') !== false);
+            
+            if ($is_group_level) {
+                // Group-level reminder (assigned to Team): strictly require matching group JID
+                $valid_sender_or_group = $group_matched;
+            } else {
+                // Individual-level reminder: sender must match, and message must be either a direct message (no group)
+                // or sent in the reminder's target group JID (if specified)
+                if ($sender_matched || $name_matched) {
+                    if (empty($clean_sub_group_jid)) {
+                        $valid_sender_or_group = true;
+                    } elseif ($clean_target_group_jid && $clean_sub_group_jid === $clean_target_group_jid) {
+                        $valid_sender_or_group = true;
+                    } else {
+                        $valid_sender_or_group = false;
+                    }
+                } else {
+                    $valid_sender_or_group = false;
+                }
+            }
+            
+            if ($valid_sender_or_group) {
+                if (strpos($report, 'egg pricing') !== false) {
+                    $time_keyword = (strpos($report, 'morning') !== false) ? 'morning' : ((strpos($report, 'afternoon') !== false) ? 'afternoon' : ((strpos($report, 'evening') !== false) ? 'evening' : null));
+                    if ($time_keyword && strpos($sub_notes, $time_keyword) !== false && (strpos($sub_notes, 'egg') !== false || strpos($sub_notes, 'price') !== false || strpos($sub_notes, 'pricing') !== false)) {
+                        $report_submitted = true;
+                        $report_match_msg = "Processed Egg Pricing ({$time_keyword}) entry found in notes by {$sub['sender']}";
+                        break;
+                    }
+                } elseif ($is_update_report) {
+                    $has_kw = false;
+                    foreach ($update_keywords as $kw) {
+                        if (strpos($sub_notes, $kw) !== false) {
+                            $has_kw = true; break;
+                        }
+                    }
+                    $has_df = false;
+                    foreach ($date_formats as $df) {
+                        if (strpos($sub_notes, $df) !== false) {
+                            $has_df = true; break;
+                        }
+                    }
+                    if (!$has_kw && !$has_df) {
+                        // Check specific report name parts as fallback
+                        foreach ($raw_keywords as $kw) {
+                            if ($kw && (strpos($sub_notes, strtolower($kw)) !== false || strpos($sub_cat, strtolower($kw)) !== false)) {
+                                $has_kw = true;
+                                break;
+                            }
+                        }
+                    }
+                    if ($has_kw || $has_df) {
+                        $report_submitted = true;
+                        $report_match_msg = "Processed Daily Work Update entry found in notes by {$sub['sender']}";
+                        break;
+                    }
+                } elseif (!empty($categories)) {
+                    if (in_array($sub_cat, $categories)) {
+                        $report_submitted = true;
+                        $report_match_msg = "Processed farm record of category '{$sub['category']}' sent by {$sub['sender']}";
+                        break;
+                    }
+                } else {
+                    if (strpos($sub_notes, $report) !== false) {
+                        $report_submitted = true;
+                        $report_match_msg = "Processed farm record matching '{$report}' found in notes by {$sub['sender']}";
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // 2. Check RawMessage fallback
+        if (!$report_submitted) {
+            
+            foreach ($raw_messages as $raw_msg) {
+                $raw_text_lower = strtolower($raw_msg['raw_text'] ?? '');
+                $raw_sender = strtolower($raw_msg['sender'] ?? '');
+                $raw_group = strtolower($raw_msg['group_name'] ?? '');
+                
+                // Match sender
+                $sender_matched = false;
+                foreach ($phones as $phone) {
+                    $clean_phone = preg_replace('/\D/', '', $phone);
+                    if (!$clean_phone) continue;
+                    $alt_phone = (strlen($clean_phone) === 10) ? "91" . $clean_phone : $clean_phone;
+                    if (strpos($raw_sender, $clean_phone) !== false || strpos($raw_sender, $alt_phone) !== false) {
+                        $sender_matched = true;
+                        break;
+                    }
+                }
+                
+                // Match group by JID
+                 $group_matched = false;
+                 $raw_group_jid = $raw_msg['whatsapp_group_jid'] ?? '';
+                 $clean_raw_group_jid = str_replace('@g.us', '', $raw_group_jid);
+                 $clean_target_group_jid = str_replace('@g.us', '', $r['whatsapp_group_id'] ?? '');
+                 
+                 if ($clean_target_group_jid && $clean_raw_group_jid && $clean_target_group_jid === $clean_raw_group_jid) {
+                     $group_matched = true;
+                 }
+                 
+                 // Match name fuzzy
+                 $name_matched = false;
+                 if (!$sender_matched && $r['person_name'] && $raw_msg['sender']) {
+                     $sender_name_part = clean_name_string(explode(' (', $raw_msg['sender'])[0]);
+                     foreach ($names as $name) {
+                         $t_name = clean_name_string($name);
+                         if (strlen($sender_name_part) >= 3 && strlen($t_name) >= 3) {
+                             if (strpos($sender_name_part, $t_name) !== false || strpos($t_name, $sender_name_part) !== false) {
+                                 $name_matched = true;
+                                 break;
+                             }
+                         }
+                     }
+                 }
+                 
+                 $is_group_level = ($r['person_phone'] === '1234567890' || strpos(strtolower($r['person_name']), 'team') !== false);
+                 
+                 if ($is_group_level) {
+                     // Group-level reminder (assigned to Team): strictly require matching group JID
+                     $valid_sender_or_group = $group_matched;
+                 } else {
+                     // Individual-level reminder: sender must match, and message must be either a direct message (no group)
+                     // or sent in the reminder's target group JID (if specified)
+                     if ($sender_matched || $name_matched) {
+                         if (empty($clean_raw_group_jid)) {
+                             $valid_sender_or_group = true;
+                         } elseif ($clean_target_group_jid && $clean_raw_group_jid === $clean_target_group_jid) {
+                             $valid_sender_or_group = true;
+                         } else {
+                             $valid_sender_or_group = false;
+                         }
+                     } else {
+                         $valid_sender_or_group = false;
+                     }
+                 }
+                
+                if ($valid_sender_or_group) {
+                    if (strpos($report, 'egg pricing') !== false) {
+                        $time_keyword = (strpos($report, 'morning') !== false) ? 'morning' : ((strpos($report, 'afternoon') !== false) ? 'afternoon' : ((strpos($report, 'evening') !== false) ? 'evening' : null));
+                        $has_price_number = preg_match('/\d{3}/', $raw_text_lower);
+                        
+                        $raw_dt = new DateTime($raw_msg['timestamp'], new DateTimeZone('Asia/Kolkata'));
+                        $raw_hour = (int)$raw_dt->format('H');
+                        $is_time_match = false;
+                        
+                        if ($time_keyword === 'morning' && ($raw_hour < 12 || strpos($raw_text_lower, 'morning') !== false || strpos($raw_text_lower, '7:') !== false || strpos($raw_text_lower, '8:') !== false || strpos($raw_text_lower, '9:') !== false || strpos($raw_text_lower, '10:') !== false || strpos($raw_text_lower, 'veh kol') !== false) && strpos($raw_text_lower, 'ppr rate') === false && strpos($raw_text_lower, 'closing') === false) {
+                            $is_time_match = true;
+                        } elseif ($time_keyword === 'afternoon' && ($raw_hour >= 12 && $raw_hour < 17 || strpos($raw_text_lower, 'afternoon') !== false || strpos($raw_text_lower, 'ppr rate') !== false || strpos($raw_text_lower, '12:') !== false || strpos($raw_text_lower, '13:') !== false || strpos($raw_text_lower, '14:') !== false) && strpos($raw_text_lower, 'closing') === false) {
+                            $is_time_match = true;
+                        } elseif ($time_keyword === 'evening' && ($raw_hour >= 17 || strpos($raw_text_lower, 'evening') !== false || strpos($raw_text_lower, 'closing') !== false || strpos($raw_text_lower, '18:') !== false || strpos($raw_text_lower, '19:') !== false)) {
+                            $is_time_match = true;
+                        }
+                        
+                        $has_price_kw = false;
+                        foreach (["egg", "price", "pricing", "ppr rate", "closing", "veh kol"] as $pkw) {
+                            if (strpos($raw_text_lower, $pkw) !== false) { $has_price_kw = true; break; }
+                        }
+                        
+                        if ($is_time_match && $has_price_number && $has_price_kw) {
+                            $report_submitted = true;
+                            $truncated_text = strlen($raw_msg['raw_text']) > 40 ? substr($raw_msg['raw_text'], 0, 40) . '...' : $raw_msg['raw_text'];
+                            $time_display = $raw_dt->format('g:i A');
+                            $report_match_msg = "WhatsApp message matched egg pricing rules: \"{$truncated_text}\" by {$raw_msg['sender']} at {$time_display}";
+                            break;
+                        }
+                    } else {
+                        $matched_kw = null;
+                        foreach ($raw_keywords as $kw) {
+                            if ($kw && strpos($raw_text_lower, strtolower($kw)) !== false) {
+                                $matched_kw = $kw;
+                                break;
+                            }
+                        }
+                        if ($matched_kw !== null) {
+                            $report_submitted = true;
+                            $truncated_text = strlen($raw_msg['raw_text']) > 40 ? substr($raw_msg['raw_text'], 0, 40) . '...' : $raw_msg['raw_text'];
+                            $raw_dt = new DateTime($raw_msg['timestamp'], new DateTimeZone('Asia/Kolkata'));
+                            $time_display = $raw_dt->format('g:i A');
+                            $report_match_msg = "WhatsApp message matched keyword '{$matched_kw}': \"{$truncated_text}\" by {$raw_msg['sender']} at {$time_display}";
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        if ($report_submitted) {
+            $verification_details[] = "✅ *" . strtoupper($report) . "*: " . $report_match_msg;
+        } else {
+            $is_all_submitted = false;
+            $missing_reports[] = $report;
+            $verification_details[] = "❌ *" . strtoupper($report) . "*: No matching report submitted today.";
+        }
+    }
+    
+    return [
+        'is_submitted' => $is_all_submitted,
+        'missing_reports' => $missing_reports,
+        'details' => implode("\n", $verification_details)
+    ];
+}
+
 // 5. Simple REST API Router
 if (isset($_GET['api'])) {
     header("Content-Type: application/json");
@@ -419,6 +788,57 @@ if (isset($_GET['api'])) {
             $waha_file = __DIR__ . '/waha_groups.json';
             $waha_groups = file_exists($waha_file) ? json_decode(file_get_contents($waha_file), true)['groups'] ?? [] : [];
             
+            // Fetch today's submissions and raw messages for verification
+            $IST_OFFSET = 5.5 * 3600;
+            $today_ist = date('Y-m-d', time() + $IST_OFFSET);
+            
+            try {
+                $sub_stmt = $pdo->prepare("
+                    SELECT p.*, w.group_id AS whatsapp_group_jid 
+                    FROM sunfra_processed_data p 
+                    LEFT JOIN sunfra_whatsapp_messages w ON p.message_id = w.message_id 
+                    WHERE DATE(p.processed_time) = ?
+                ");
+                $sub_stmt->execute([$today_ist]);
+                $submissions = $sub_stmt->fetchAll(PDO::FETCH_ASSOC);
+                
+                $raw_stmt = $pdo->prepare("
+                    SELECT r.*, w.group_id AS whatsapp_group_jid 
+                    FROM sunfra_raw_messages r 
+                    LEFT JOIN sunfra_whatsapp_messages w ON r.message_id = w.message_id 
+                    WHERE DATE(r.timestamp) = ?
+                ");
+                $raw_stmt->execute([$today_ist]);
+                $raw_messages = $raw_stmt->fetchAll(PDO::FETCH_ASSOC);
+            } catch (Exception $db_err) {
+                // Fallback: fetch all and filter in PHP
+                $sub_stmt = $pdo->query("
+                    SELECT p.*, w.group_id AS whatsapp_group_jid 
+                    FROM sunfra_processed_data p 
+                    LEFT JOIN sunfra_whatsapp_messages w ON p.message_id = w.message_id
+                ");
+                $all_subs = $sub_stmt->fetchAll(PDO::FETCH_ASSOC);
+                $submissions = [];
+                foreach ($all_subs as $s) {
+                    if (substr($s['processed_time'], 0, 10) === $today_ist) {
+                        $submissions[] = $s;
+                    }
+                }
+                
+                $raw_stmt = $pdo->query("
+                    SELECT r.*, w.group_id AS whatsapp_group_jid 
+                    FROM sunfra_raw_messages r 
+                    LEFT JOIN sunfra_whatsapp_messages w ON r.message_id = w.message_id
+                ");
+                $all_raws = $raw_stmt->fetchAll(PDO::FETCH_ASSOC);
+                $raw_messages = [];
+                foreach ($all_raws as $r_msg) {
+                    if (substr($r_msg['timestamp'], 0, 10) === $today_ist) {
+                        $raw_messages[] = $r_msg;
+                    }
+                }
+            }
+            
             foreach ($rows as &$row) {
                 $row['whatsapp_id'] = preg_match('/^\d{10}$/', $row['person_phone']) ? "91{$row['person_phone']}@c.us" : "{$row['person_phone']}@c.us";
                 $row['group_name'] = 'No Group / Private Only';
@@ -430,6 +850,11 @@ if (isset($_GET['api'])) {
                         }
                     }
                 }
+                
+                // Verify submission dynamically
+                $verification = verify_reminder_submission($row, $submissions, $raw_messages, $waha_groups);
+                $row['is_submitted'] = $verification['is_submitted'] ? 1 : 0;
+                $row['verification_details'] = $verification['details'];
             }
             echo json_encode($rows);
         }
@@ -2171,6 +2596,24 @@ try {
             }) + ' IST';
         }
 
+        function showReminderDetails(id) {
+            const r = reminders.find(x => x.id == id);
+            if (r && r.verification_details) {
+                alert("Submission Verification Details:\n\n" + r.verification_details);
+            } else {
+                alert("No details available.");
+            }
+        }
+
+        function showTaskDetails(id) {
+            const t = tasksList.find(x => x.id == id);
+            if (t && t.completion_details) {
+                alert("Completion Details:\n\n" + t.completion_details);
+            } else {
+                alert("No details available.");
+            }
+        }
+
         let reminders = [];
         async function fetchReminders() {
             const res = await fetch(API_URL + 'reminders');
@@ -2190,13 +2633,9 @@ try {
                     return `${name} (${phone})`;
                 }).join(', ');
 
-                // Build submitted status badge for reminders
+                // Build submitted status badge for reminders based on dynamic verification
                 let remSubBadge, remSubLabel;
-                if (r.status === 'sent') {
-                    remSubBadge = 'background:#dcfce7; color:#16a34a; border:1px solid #bbf7d0;';
-                    remSubLabel = '🟢 Submitted (YES)';
-                } else if (r.status === 'skipped') {
-                    // Skipped = submitted BEFORE reminder time (early submission)
+                if (r.is_submitted) {
                     remSubBadge = 'background:#dcfce7; color:#16a34a; border:1px solid #bbf7d0;';
                     remSubLabel = '🟢 Submitted (YES)';
                 } else {
@@ -2222,9 +2661,12 @@ try {
                     <td><span class="badge ${badgeClass}">${r.status}</span></td>
                     <td><span style="display:inline-block; padding:4px 10px; border-radius:12px; font-size:0.75rem; font-weight:600; white-space:nowrap; ${remSubBadge}">${remSubLabel}</span></td>
                     <td>
-                        <button class="btn btn-secondary" onclick="editReminder(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Edit</button> 
-                        <button class="btn btn-secondary" onclick="triggerReminderNow(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: rgba(59,130,246,0.1); color: var(--primary-color); border: 1px solid rgba(59,130,246,0.2); margin: 0;">Trigger Now</button>
-                        <button class="btn btn-danger" onclick="deleteReminder(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Delete</button>
+                        <div style="display:flex; gap:0.25rem; flex-wrap:wrap;">
+                            <button class="btn btn-secondary" onclick="editReminder(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Edit</button> 
+                            <button class="btn btn-secondary" onclick="triggerReminderNow(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: rgba(59,130,246,0.1); color: var(--primary-color); border: 1px solid rgba(59,130,246,0.2); margin: 0;">Trigger Now</button>
+                            <button class="btn btn-danger" onclick="deleteReminder(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Delete</button>
+                            ${r.verification_details ? '<button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; margin: 0;" onclick="showReminderDetails(' + r.id + ')">Details</button>' : ''}
+                        </div>
                     </td>
                 </tr>`;
             });
@@ -2772,7 +3214,7 @@ try {
                                 <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.8rem; margin:0;" onclick="editTask(${t.id})">Edit</button>
                                 ${t.status !== 'completed' ? `<button class="btn btn-primary" style="padding:0.25rem 0.5rem; font-size:0.8rem; margin:0;" onclick="completeTask(${t.id})">Done</button>` : ''}
                                 <button class="btn" style="padding:0.25rem 0.5rem; font-size:0.8rem; background:#fee2e2; color:#ef4444; border:1px solid #fca5a5; margin:0;" onclick="deleteTask(${t.id})">Delete</button>
-                                ${t.completion_details ? `<button class="btn" style="padding:0.25rem 0.5rem; font-size:0.8rem; margin:0;" onclick="alert('Completion Details:\\n\\n' + \`${t.completion_details.replace(/'/g, "\\'")}\`)">Details</button>` : ''}
+                                ${t.completion_details ? '<button class="btn" style="padding:0.25rem 0.5rem; font-size:0.8rem; margin:0;" onclick="showTaskDetails(' + t.id + ')">Details</button>' : ''}
                             </div>
                         </td>
                     </tr>
