@@ -1,0 +1,12 @@
+DirectoryIndex index.php index.html
+
+RewriteEngine On
+
+# Proxy /api/ to fastapi_backend
+RewriteRule ^api/(.*)$ http://fastapi_backend:8000/api/$1 [P,L]
+
+# Proxy /webhook to fastapi_backend
+RewriteRule ^webhook$ http://fastapi_backend:8000/webhook [P,L]
+
+# Proxy /media/ to fastapi_backend
+RewriteRule ^media/(.*)$ http://fastapi_backend:8000/media/$1 [P,L]

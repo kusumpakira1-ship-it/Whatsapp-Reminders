@@ -71,6 +71,9 @@ services:
     restart: always
     ports:
       - "80:80"
+    volumes:
+      - ./frontend:/var/www/html
+      - ./database.php:/var/www/database.php
     depends_on:
       - backend
 

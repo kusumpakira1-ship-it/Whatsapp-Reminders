@@ -469,7 +469,7 @@ function clean_name_string($name) {
     return trim($normalized);
 }
 
-function verify_reminder_submission($r, $submissions, $raw_messages, $waha_groups) {
+function verify_reminder_submission($r, $submissions, $raw_messages, $waha_groups, $sent_logs = []) {
     $reports = array_filter(array_map('trim', explode(',', strtolower($r['report_types'] ?? ''))));
     $phones = array_filter(array_map('trim', explode(',', $r['person_phone'] ?? '')));
     $names = array_filter(array_map('trim', explode(',', $r['person_name'] ?? '')));
@@ -526,8 +526,9 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
     }
     
     foreach ($reports as $report) {
-        $report_submitted = false;
-        $report_match_msg = "";
+        $is_manually_done = ($r['status'] === 'sent' && !in_array($r['id'], $sent_logs));
+        $report_submitted = ($r['status'] === 'skipped' || $is_manually_done);
+        $report_match_msg = $is_manually_done ? "Manually marked done on dashboard" : ($r['status'] === 'skipped' ? "Skipped automatically or manually" : "");
         
         $categories = [];
         if (strpos($report, 'production') !== false || strpos($report, 'egg') !== false) {
@@ -797,7 +798,7 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
                             break;
                         }
                     } elseif ($is_rule_book) {
-                        $rule_book_kws = ['rule book', 'rule', 'rules', 'point', 'points', 'policy', 'guideline', 'godown rule', 'farm rule', 'addition', 'update', 'updates'];
+                        $rule_book_kws = ['rule book', 'rule', 'rules', 'point', 'points', 'policy', 'guideline', 'godown rule', 'farm rule', 'addition'];
                         $matched_kw = null;
                         foreach ($rule_book_kws as $kw) {
                             if (strpos($raw_text_lower, $kw) !== false) {
@@ -805,7 +806,7 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
                                 break;
                             }
                         }
-                        if ($group_matched || $matched_kw !== null || strlen(trim($raw_text_lower)) > 0) {
+                        if ($matched_kw !== null) {
                             $report_submitted = true;
                             $truncated_text = strlen($raw_msg['raw_text']) > 40 ? substr($raw_msg['raw_text'], 0, 40) . '...' : $raw_msg['raw_text'];
                             $raw_dt = new DateTime($raw_msg['timestamp'], new DateTimeZone('Asia/Kolkata'));
@@ -925,6 +926,10 @@ if (isset($_GET['api'])) {
                 }
             }
             
+            $log_stmt = $pdo->prepare("SELECT reminder_id FROM sunfra_reminder_logs WHERE DATE(executed_at) = ? AND status = 'sent'");
+            $log_stmt->execute([$today_ist]);
+            $sent_logs = $log_stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
+            
             foreach ($rows as &$row) {
                 $row['whatsapp_id'] = preg_match('/^\d{10}$/', $row['person_phone']) ? "91{$row['person_phone']}@c.us" : "{$row['person_phone']}@c.us";
                 $row['group_name'] = 'No Group / Private Only';
@@ -938,9 +943,23 @@ if (isset($_GET['api'])) {
                 }
                 
                 // Verify submission dynamically
-                $verification = verify_reminder_submission($row, $submissions, $raw_messages, $waha_groups);
-                $row['is_submitted'] = $verification['is_submitted'] ? 1 : 0;
-                $row['verification_details'] = $verification['details'];
+                $verification = verify_reminder_submission($row, $submissions, $raw_messages, $waha_groups, $sent_logs);
+                $is_manually_done = ($row['status'] === 'sent' && !in_array($row['id'], $sent_logs));
+                $auto_skipped = ($row['status'] === 'skipped');
+                
+                if ($is_manually_done || $auto_skipped || $verification['is_submitted']) {
+                    $row['is_submitted'] = 1;
+                    if ($is_manually_done) {
+                        $row['verification_details'] = "Manually marked as completed (Done).\n\n" . $verification['details'];
+                    } elseif ($auto_skipped) {
+                        $row['verification_details'] = "Skipped automatically (already submitted before reminder).\n\n" . $verification['details'];
+                    } else {
+                        $row['verification_details'] = $verification['details'];
+                    }
+                } else {
+                    $row['is_submitted'] = 0;
+                    $row['verification_details'] = $verification['details'];
+                }
             }
             echo json_encode($rows);
         }
@@ -984,7 +1003,61 @@ if (isset($_GET['api'])) {
             echo json_encode(['success' => true]);
         }
         elseif (preg_match('/^reminders\/(\d+)\/trigger$/', $route, $matches) && $method === 'POST') {
-            $pdo->prepare("UPDATE sunfra_unified_reminders SET status = 'sent' WHERE id = ?")->execute([$matches[1]]);
+            $rem_id = $matches[1];
+            $pdo->prepare("UPDATE sunfra_unified_reminders SET status = 'sent' WHERE id = ?")->execute([$rem_id]);
+            
+            // Cross-complete matching pending/overdue tasks
+            $stmt = $pdo->prepare("SELECT * FROM sunfra_unified_reminders WHERE id = ?");
+            $stmt->execute([$rem_id]);
+            $reminder = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($reminder) {
+                $group_id = $reminder['whatsapp_group_id'];
+                $phone = $reminder['person_phone'];
+                $reports = array_filter(array_map('trim', explode(',', strtolower($reminder['report_types'] ?? ''))));
+                
+                $task_stmt = $pdo->query("SELECT * FROM sunfra_tasks WHERE status IN ('pending', 'overdue')");
+                $tasks = $task_stmt->fetchAll(PDO::FETCH_ASSOC);
+                foreach ($tasks as $t) {
+                    $matched = false;
+                    $group_match = ($group_id && $t['whatsapp_group_id'] && str_replace('@g.us', '', $group_id) === str_replace('@g.us', '', $t['whatsapp_group_id']));
+                    
+                    $person_match = false;
+                    if ($phone && $t['assigned_person_phone']) {
+                        $rem_phones = array_filter(array_map('trim', explode(',', $phone)));
+                        $task_phones = array_filter(array_map('trim', explode(',', $t['assigned_person_phone'])));
+                        foreach ($rem_phones as $rp) {
+                            $clean_rp = preg_replace('/\D/', '', $rp);
+                            if (!$clean_rp) continue;
+                            foreach ($task_phones as $tp) {
+                                $clean_tp = preg_replace('/\D/', '', $tp);
+                                if ($clean_rp === $clean_tp || (strlen($clean_rp) === 10 && "91" . $clean_rp === $clean_tp) || (strlen($clean_tp) === 10 && "91" . $clean_tp === $clean_rp)) {
+                                    $person_match = true;
+                                    break 2;
+                                }
+                            }
+                        }
+                    }
+                    
+                    $name_match = false;
+                    $t_name = strtolower($t['task_name'] ?? '');
+                    foreach ($reports as $rep) {
+                        if (strpos($t_name, $rep) !== false || strpos($rep, $t_name) !== false) {
+                            $name_match = true;
+                            break;
+                        }
+                        $rep_words = array_filter(explode(' ', $rep), function($w) { return strlen($w) > 3; });
+                        foreach ($rep_words as $rw) {
+                            if (strpos($t_name, $rw) !== false) {
+                                $name_match = true;
+                                break 2;
+                            }
+                        }
+                    }
+                    if (($group_match || $person_match) && $name_match) {
+                        $pdo->prepare("UPDATE sunfra_tasks SET status = 'completed', completion_details = 'Manually completed via reminder Done button' WHERE id = ?")->execute([$t['id']]);
+                    }
+                }
+            }
             echo json_encode(['success' => true]);
         }
         elseif (preg_match('/^reminders\/(\d+)\/instant$/', $route, $matches) && $method === 'POST') {
@@ -1105,10 +1178,64 @@ if (isset($_GET['api'])) {
             echo json_encode(['success' => true]);
         }
         elseif (preg_match('/^tasks\/(\d+)\/complete$/', $route, $matches) && $method === 'POST') {
+            $task_id = $matches[1];
             $data = json_decode(file_get_contents('php://input'), true);
             $details = $data['details'] ?? 'Manually completed';
             $stmt = $pdo->prepare("UPDATE sunfra_tasks SET status = 'completed', completion_details = ? WHERE id = ?");
-            $stmt->execute([$details, $matches[1]]);
+            $stmt->execute([$details, $task_id]);
+            
+            // Cross-complete matching pending reminders
+            $stmt2 = $pdo->prepare("SELECT * FROM sunfra_tasks WHERE id = ?");
+            $stmt2->execute([$task_id]);
+            $task = $stmt2->fetch(PDO::FETCH_ASSOC);
+            if ($task) {
+                $group_id = $task['whatsapp_group_id'];
+                $phone = $task['assigned_person_phone'];
+                $t_name = strtolower($task['task_name'] ?? '');
+                
+                $rem_stmt = $pdo->query("SELECT * FROM sunfra_unified_reminders WHERE status = 'pending'");
+                $reminders = $rem_stmt->fetchAll(PDO::FETCH_ASSOC);
+                foreach ($reminders as $r) {
+                    $matched = false;
+                    $group_match = ($group_id && $r['whatsapp_group_id'] && str_replace('@g.us', '', $group_id) === str_replace('@g.us', '', $r['whatsapp_group_id']));
+                    
+                    $person_match = false;
+                    if ($phone && $r['person_phone']) {
+                        $rem_phones = array_filter(array_map('trim', explode(',', $r['person_phone'])));
+                        $task_phones = array_filter(array_map('trim', explode(',', $phone)));
+                        foreach ($rem_phones as $rp) {
+                            $clean_rp = preg_replace('/\D/', '', $rp);
+                            if (!$clean_rp) continue;
+                            foreach ($task_phones as $tp) {
+                                $clean_tp = preg_replace('/\D/', '', $tp);
+                                if ($clean_rp === $clean_tp || (strlen($clean_rp) === 10 && "91" . $clean_rp === $clean_tp) || (strlen($clean_tp) === 10 && "91" . $clean_tp === $clean_rp)) {
+                                    $person_match = true;
+                                    break 2;
+                                }
+                            }
+                        }
+                    }
+                    
+                    $name_match = false;
+                    $reports = array_filter(array_map('trim', explode(',', strtolower($r['report_types'] ?? ''))));
+                    foreach ($reports as $rep) {
+                        if (strpos($t_name, $rep) !== false || strpos($rep, $t_name) !== false) {
+                            $name_match = true;
+                            break;
+                        }
+                        $rep_words = array_filter(explode(' ', $rep), function($w) { return strlen($w) > 3; });
+                        foreach ($rep_words as $rw) {
+                            if (strpos($t_name, $rw) !== false) {
+                                $name_match = true;
+                                break 2;
+                            }
+                        }
+                    }
+                    if (($group_match || $person_match) && $name_match) {
+                        $pdo->prepare("UPDATE sunfra_unified_reminders SET status = 'sent' WHERE id = ?")->execute([$r['id']]);
+                    }
+                }
+            }
             echo json_encode(['success' => true]);
         }
         elseif ($route === 'employees' && $method === 'GET') {
@@ -2749,7 +2876,7 @@ try {
                     <td>
                         <div style="display:flex; gap:0.25rem; flex-wrap:wrap;">
                             <button class="btn btn-secondary" onclick="editReminder(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Edit</button> 
-                            <button class="btn btn-secondary" onclick="triggerReminderNow(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: rgba(59,130,246,0.1); color: var(--primary-color); border: 1px solid rgba(59,130,246,0.2); margin: 0;">Trigger Now</button>
+                            ${r.status === 'pending' ? `<button class="btn btn-primary" onclick="markReminderDone(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Done</button>` : ''}
                             <button class="btn btn-danger" onclick="deleteReminder(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Delete</button>
                             ${r.verification_details ? '<button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; margin: 0;" onclick="showReminderDetails(' + r.id + ')">Details</button>' : ''}
                         </div>
@@ -2968,10 +3095,15 @@ try {
             }
         }
 
-        async function triggerReminderNow(id) {
-            if(confirm("Trigger now?")) {
-                await fetch(API_URL + 'reminders/' + id + '/instant', {method: 'POST'});
-                fetchReminders();
+        async function markReminderDone(id) {
+            if(confirm("Mark this reminder as done?")) {
+                const res = await fetch(API_URL + 'reminders/' + id + '/trigger', {method: 'POST'});
+                const data = await res.json();
+                if (data.success) {
+                    fetchReminders();
+                } else {
+                    alert('❌ Failed to mark as done. Please try again.');
+                }
             }
         }
 

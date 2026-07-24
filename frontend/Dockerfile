@@ -1,11 +1,15 @@
-FROM nginx:alpine
+FROM php:8.2-apache
 
-# Copy static frontend files
-COPY index.html /usr/share/nginx/html/
-COPY app.js     /usr/share/nginx/html/
-COPY style.css  /usr/share/nginx/html/
+# Enable Apache modules for proxying and rewrites
+RUN a2enmod proxy proxy_http rewrite
 
-# Copy nginx config (proxies /api/* to FastAPI backend)
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Install pdo_mysql extension
+RUN docker-php-ext-install pdo pdo_mysql
+
+# Configure document root
+ENV APACHE_DOCUMENT_ROOT /var/www/html
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-depth/*.conf 2>/dev/null || true
 
 EXPOSE 80
+
