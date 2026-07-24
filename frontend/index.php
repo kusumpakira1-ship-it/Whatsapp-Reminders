@@ -310,12 +310,12 @@ try {
         $task_name_words = explode(' ', strtolower(preg_replace('/[^a-zA-Z0-9\s]/', '', $task['task_name'])));
         $task_identifiers = [];
         foreach ($task_name_words as $w) {
-            if (strlen($w) > 3 && !in_array($w, ['task', 'check', 'please', 'update', 'submit', 'report'])) {
+            if (strlen($w) > 3 && !in_array($w, ['task', 'check', 'please', 'update', 'submit', 'report', 'reports', 'checklist', 'updates', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'monday', 'tuesday'])) {
                 $task_identifiers[] = $w;
             }
         }
 
-        $since = $task['due_time'] ?? date('Y-m-d H:i:s', strtotime('-24 hours'));
+        $since = date('Y-m-d 00:00:00', strtotime($task['due_time'] ?? 'now'));
         $all_messages = [];
         $matched = false;
         $is_ambiguous = false;
@@ -334,22 +334,68 @@ try {
         // === CHECK INDIVIDUAL ===
         if (!empty($task['assigned_person_phone'])) {
             $phones_raw = array_map('trim', explode(',', $task['assigned_person_phone']));
-            $phone_patterns = [];
-            foreach ($phones_raw as $ph) {
-                $digits = preg_replace('/\D/', '', $ph);
-                if (strlen($digits) === 10) $digits = '91' . $digits;
-                if ($digits) {
-                    $phone_patterns[] = $digits;
-                    if (($phone_task_counts[$digits] ?? 0) > 1) $is_ambiguous = true;
+            $names_raw = array_filter(array_map('trim', explode(',', $task['assigned_person_name'] ?? '')));
+            
+            // Fetch raw messages since $since
+            $msg_stmt = $pdo->prepare("
+                SELECT r.raw_text, r.sender, w.group_id AS whatsapp_group_jid, w.sender_id AS whatsapp_sender_id
+                FROM sunfra_raw_messages r
+                LEFT JOIN sunfra_whatsapp_messages w ON r.message_id = w.message_id
+                WHERE r.timestamp >= ? 
+                ORDER BY r.timestamp DESC LIMIT 50
+            ");
+            $msg_stmt->execute([$since]);
+            $raw_msgs_pool = $msg_stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            foreach ($raw_msgs_pool as $rm) {
+                $raw_sender = strtolower($rm['sender'] ?? '');
+                $raw_sender_id = $rm['whatsapp_sender_id'] ?? '';
+                $clean_raw_group_jid = str_replace('@g.us', '', $rm['whatsapp_group_jid'] ?? '');
+                $clean_target_group_jid = str_replace('@g.us', '', $task['whatsapp_group_id'] ?? '');
+                $sender_matched = false;
+                
+                // 1. Check phone match
+                foreach ($phones_raw as $ph) {
+                    $digits = preg_replace('/\D/', '', $ph);
+                    if (!$digits) continue;
+                    $alt_digits = (strlen($digits) === 10) ? '91' . $digits : $digits;
+                    if (strpos($raw_sender, $digits) !== false || strpos($raw_sender, $alt_digits) !== false || ($raw_sender_id && (strpos($raw_sender_id, $digits) !== false || strpos($raw_sender_id, $alt_digits) !== false))) {
+                        $sender_matched = true;
+                        break;
+                    }
                 }
-            }
-            if (!empty($phone_patterns)) {
-                $sender_conditions = implode(' OR ', array_fill(0, count($phone_patterns), "sender LIKE ?"));
-                $msg_stmt = $pdo->prepare("SELECT raw_text FROM sunfra_raw_messages WHERE timestamp >= ? AND ($sender_conditions) ORDER BY timestamp DESC LIMIT 20");
-                $params = [$since];
-                foreach ($phone_patterns as $ph) { $params[] = '%' . $ph . '%'; }
-                $msg_stmt->execute($params);
-                $all_messages = array_merge($all_messages, $msg_stmt->fetchAll(PDO::FETCH_COLUMN));
+                
+                // 2. Check name match (fuzzy & diacritics-aware)
+                $name_matched = false;
+                if (!$sender_matched && !empty($names_raw) && $rm['sender']) {
+                    $sender_name_part = clean_name_string(explode(' (', $rm['sender'])[0]);
+                    foreach ($names_raw as $name) {
+                        $t_name = clean_name_string($name);
+                        if (strlen($sender_name_part) >= 3 && strlen($t_name) >= 3) {
+                            if (strpos($sender_name_part, $t_name) !== false || strpos($t_name, $sender_name_part) !== false) {
+                                $name_matched = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                // Individual task rules: sender must match, and message must be direct or in target group JID
+                $valid_sender_or_group = false;
+                if ($sender_matched || $name_matched) {
+                    if (empty($clean_raw_group_jid)) {
+                        $valid_sender_or_group = true;
+                    } elseif ($clean_target_group_jid && $clean_raw_group_jid === $clean_target_group_jid) {
+                        $valid_sender_or_group = true;
+                    } else {
+                        // Allow any group if no specific group is set for individual task
+                        $valid_sender_or_group = empty($clean_target_group_jid);
+                    }
+                }
+                
+                if ($valid_sender_or_group && !empty($rm['raw_text'])) {
+                    $all_messages[] = $rm['raw_text'];
+                }
             }
         }
 
@@ -368,7 +414,19 @@ try {
                 }
             }
 
-            if ($has_completion) {
+            // 1b. Or does it contain all core task identifier words?
+            $has_all_identifiers = false;
+            if (!empty($task_identifiers)) {
+                $has_all_identifiers = true;
+                foreach ($task_identifiers as $id_kw) {
+                    if (strpos($msg_lower, $id_kw) === false) {
+                        $has_all_identifiers = false;
+                        break;
+                    }
+                }
+            }
+
+            if ($has_completion || $has_all_identifiers) {
                 // 2. If ambiguous (multiple tasks), it MUST contain a task identifier word (e.g. "silo")
                 if ($is_ambiguous && !empty($task_identifiers)) {
                     $has_identifier = false;
@@ -399,7 +457,13 @@ try {
 
 function clean_name_string($name) {
     if (!$name) return "";
-    $normalized = strtolower(trim($name));
+    $normalized = trim($name);
+    if (function_exists('transliterator_transliterate')) {
+        $normalized = transliterator_transliterate('Any-Latin; Latin-ASCII', $normalized);
+    } else {
+        $normalized = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $normalized);
+    }
+    $normalized = strtolower($normalized);
     $normalized = str_replace('ss ', '', $normalized);
     $normalized = preg_replace('/[^a-z0-9\s]/', '', $normalized);
     return trim($normalized);
@@ -478,9 +542,12 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
             $categories = ['sales', 'expense', 'purchase'];
         }
         
+        $is_rule_book = (strpos(strtolower($report), 'rule book') !== false || strpos(strtolower($report), 'rule') !== false);
+
         $is_update_report = (
-            (strpos($report, 'update') !== false || strpos($report, 'eod') !== false || strpos($report, 'daily report') !== false || strpos($report, 'work report') !== false)
-            && strpos($report, 'egg pricing') === false
+            (strpos(strtolower($report), 'update') !== false || strpos(strtolower($report), 'eod') !== false || strpos(strtolower($report), 'daily report') !== false || strpos(strtolower($report), 'work report') !== false)
+            && strpos(strtolower($report), 'egg pricing') === false
+            && !$is_rule_book
         );
 
         $REPORT_KEYWORDS = [
@@ -493,10 +560,13 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
             'profit'     => ['p&l report', 'p&l statement', 'profit loss', 'p and l update'],
             'p&l'        => ['p&l report', 'p&l statement', 'profit loss', 'p and l update'],
             'p and l'    => ['p&l report', 'p&l statement', 'profit loss', 'p and l update'],
+            'rule book'  => ['rule book', 'rule', 'rules', 'point', 'points', 'policy', 'guideline', 'godown rule', 'farm rule', 'addition', 'update', 'updates'],
         ];
         
         $raw_keywords = [];
-        if ($is_update_report) {
+        if ($is_rule_book) {
+            $raw_keywords = ['rule book', 'rule', 'rules', 'point', 'points', 'policy', 'guideline', 'godown rule', 'farm rule', 'addition', 'update', 'updates'];
+        } elseif ($is_update_report) {
             $raw_keywords = array_merge($update_keywords, $date_formats);
         } else {
             foreach ($REPORT_KEYWORDS as $key => $kws) {
@@ -726,6 +796,23 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
                             $report_match_msg = "WhatsApp message matched egg pricing rules: \"{$truncated_text}\" by {$raw_msg['sender']} at {$time_display}";
                             break;
                         }
+                    } elseif ($is_rule_book) {
+                        $rule_book_kws = ['rule book', 'rule', 'rules', 'point', 'points', 'policy', 'guideline', 'godown rule', 'farm rule', 'addition', 'update', 'updates'];
+                        $matched_kw = null;
+                        foreach ($rule_book_kws as $kw) {
+                            if (strpos($raw_text_lower, $kw) !== false) {
+                                $matched_kw = $kw;
+                                break;
+                            }
+                        }
+                        if ($group_matched || $matched_kw !== null || strlen(trim($raw_text_lower)) > 0) {
+                            $report_submitted = true;
+                            $truncated_text = strlen($raw_msg['raw_text']) > 40 ? substr($raw_msg['raw_text'], 0, 40) . '...' : $raw_msg['raw_text'];
+                            $raw_dt = new DateTime($raw_msg['timestamp'], new DateTimeZone('Asia/Kolkata'));
+                            $time_display = $raw_dt->format('g:i A');
+                            $report_match_msg = "WhatsApp Rule Book entry found: \"{$truncated_text}\" by {$raw_msg['sender']} at {$time_display}";
+                            break;
+                        }
                     } else {
                         $matched_kw = null;
                         foreach ($raw_keywords as $kw) {
@@ -779,7 +866,6 @@ if (isset($_GET['api'])) {
             } else {
                 echo "File not found";
             }
-            exit;
         }
         if ($route === 'reminders' && $method === 'GET') {
             $stmt = $pdo->query("SELECT * FROM sunfra_unified_reminders ORDER BY trigger_time DESC");
@@ -803,7 +889,7 @@ if (isset($_GET['api'])) {
                 $submissions = $sub_stmt->fetchAll(PDO::FETCH_ASSOC);
                 
                 $raw_stmt = $pdo->prepare("
-                    SELECT r.*, w.group_id AS whatsapp_group_jid 
+                    SELECT r.*, w.group_id AS whatsapp_group_jid, w.sender_id AS whatsapp_sender_id
                     FROM sunfra_raw_messages r 
                     LEFT JOIN sunfra_whatsapp_messages w ON r.message_id = w.message_id 
                     WHERE DATE(r.timestamp) = ?
@@ -826,7 +912,7 @@ if (isset($_GET['api'])) {
                 }
                 
                 $raw_stmt = $pdo->query("
-                    SELECT r.*, w.group_id AS whatsapp_group_jid 
+                    SELECT r.*, w.group_id AS whatsapp_group_jid, w.sender_id AS whatsapp_sender_id
                     FROM sunfra_raw_messages r 
                     LEFT JOIN sunfra_whatsapp_messages w ON r.message_id = w.message_id
                 ");

@@ -365,7 +365,7 @@ def process_message_background(
                         db.commit()
                         logger.info(f"Meeting task ID {t.id} completed. Saved text: '{text[:50]}...'")
                         reply_msg = f"✅ Task *{t.task_name}* completed"
-                        send_waha_message(sender, reply_msg)
+                        # send_waha_message(sender, reply_msg)  # Disabled: user requested no reply back messages in group
                         continue
                 continue
  
@@ -402,7 +402,7 @@ def process_message_background(
                         f"🔔 *Approval Request* 🔔\n\n"
                         f"Task *\"{t.task_name}\"* has been updated but approval is pending by *{approver_name}*"
                     )
-                    send_waha_message(sender, reply_msg)
+                    # send_waha_message(sender, reply_msg)  # Disabled: user requested no reply back messages in group
                     
                     if t.approver_phone:
                         target_approver = t.approver_phone.strip()
@@ -430,7 +430,7 @@ def process_message_background(
                 t.completion_details = f"Marked done via WhatsApp message: '{text}'"
                 db.commit()
                 logger.info(f"Task ID {t.id} ('{t.task_name}') completed via keyword match.")
-                send_waha_message(sender, f"✅ Task *\"{t.task_name}\"* marked completed!")
+                # send_waha_message(sender, f"✅ Task *\"{t.task_name}\"* marked completed!")  # Disabled: user requested no reply back messages in group
                 continue
             
     except Exception as e:
