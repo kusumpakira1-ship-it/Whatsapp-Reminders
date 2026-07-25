@@ -405,46 +405,46 @@ try {
         foreach ($all_messages as $msg_text) {
             $msg_lower = strtolower(trim($msg_text ?? ''));
             
-            // 1. Does it have a completion word? ("done", "completed", etc.)
-            $has_completion = false;
-            foreach ($keywords as $kw) {
-                if ($kw && strpos($msg_lower, trim($kw)) !== false) {
-                    $has_completion = true;
-                    break;
-                }
-            }
-
-            // 1b. Or does it contain all core task identifier words?
-            $has_all_identifiers = false;
-            if (!empty($task_identifiers)) {
-                $has_all_identifiers = true;
-                foreach ($task_identifiers as $id_kw) {
-                    if (strpos($msg_lower, $id_kw) === false) {
-                        $has_all_identifiers = false;
+            $is_silo_task = (strpos(strtolower($task['task_name']), 'silo') !== false || strpos(strtolower($task['task_name']), 'selo') !== false);
+            $is_matched_task = false;
+            
+            if ($is_silo_task) {
+                $has_silo_word = (strpos($msg_lower, 'silo') !== false || strpos($msg_lower, 'selo') !== false);
+                $has_silo_completion = false;
+                foreach (['done', 'completed', 'complete', 'clean', 'cleaned', 'empty', 'emptied', 'cleared', '✅', 'done✅'] as $skw) {
+                    if (strpos($msg_lower, $skw) !== false) {
+                        $has_silo_completion = true;
                         break;
                     }
                 }
-            }
-
-            if ($has_completion || $has_all_identifiers) {
-                // 2. If ambiguous (multiple tasks), it MUST contain a task identifier word (e.g. "silo")
-                if ($is_ambiguous && !empty($task_identifiers)) {
-                    $has_identifier = false;
+                $is_matched_task = ($has_silo_word && $has_silo_completion);
+            } else {
+                // 1. Does it have a completion word?
+                $has_completion = false;
+                foreach ($keywords as $kw) {
+                    if ($kw && strpos($msg_lower, trim($kw)) !== false) {
+                        $has_completion = true;
+                        break;
+                    }
+                }
+                
+                // 2. Does it contain at least one task identifier?
+                $has_identifier_match = empty($task_identifiers);
+                if (!$has_identifier_match) {
                     foreach ($task_identifiers as $id_kw) {
                         if (strpos($msg_lower, $id_kw) !== false) {
-                            $has_identifier = true;
+                            $has_identifier_match = true;
                             break;
                         }
                     }
-                    if ($has_identifier) {
-                        $matched = true;
-                        break;
-                    }
-                } else {
-                    // Not ambiguous (only 1 task pending) OR no identifiable words in task name
-                    $matched = true;
-                    break;
                 }
+                
+                $is_matched_task = ($has_completion && $has_identifier_match);
+            }
+
+            if ($is_matched_task) {
+                $matched = true;
+                break;
             }
         }
 

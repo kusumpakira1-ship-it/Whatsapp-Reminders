@@ -54,7 +54,17 @@ def get_company_category(display_name: str) -> str:
         return "Sunfra Farms"
 
 IST = timezone(timedelta(hours=5, minutes=30))
-now_ist = datetime.now(IST).replace(tzinfo=None)
+import sys
+if len(sys.argv) > 1:
+    try:
+        now_ist = datetime.strptime(sys.argv[1], "%Y-%m-%d")
+        print(f"Generating escalation report for custom date: {sys.argv[1]}")
+    except Exception as e:
+        print(f"Error parsing date argument: {e}")
+        now_ist = datetime.now(IST).replace(tzinfo=None)
+else:
+    now_ist = datetime.now(IST).replace(tzinfo=None)
+
 start_of_day = now_ist.replace(hour=0, minute=0, second=0, microsecond=0)
 
 db = SessionLocal()
@@ -69,13 +79,16 @@ try:
     from sqlalchemy import or_, and_
     end_of_day = now_ist.replace(hour=23, minute=59, second=59, microsecond=999999)
     
-    tasks_today = db.query(Task).filter(
-        Task.due_time <= end_of_day,
-        or_(
-            Task.status != 'completed',
-            and_(Task.status == 'completed', Task.due_time >= start_of_day)
-        )
-    ).order_by(Task.due_time).all()
+    if len(sys.argv) > 1:
+        tasks_today = db.query(Task).all()
+    else:
+        tasks_today = db.query(Task).filter(
+            Task.due_time <= end_of_day,
+            or_(
+                Task.status != 'completed',
+                and_(Task.status == 'completed', Task.due_time >= start_of_day)
+            )
+        ).order_by(Task.due_time).all()
     
     # Organize by company
     companies = {
@@ -114,13 +127,18 @@ try:
             companies[comp]["tasks"].append((t.status == 'completed', line))
     
     # 2. Fetch today's scheduled and overdue reminders
-    reminders_today = db.query(UnifiedReminder).filter(
-        UnifiedReminder.trigger_time <= end_of_day,
-        or_(
-            UnifiedReminder.status == 'pending',
-            and_(UnifiedReminder.status.in_(['sent', 'skipped']), UnifiedReminder.trigger_time >= start_of_day)
-        )
-    ).all()
+    if len(sys.argv) > 1:
+        reminders_today = db.query(UnifiedReminder).filter(
+            UnifiedReminder.report_types != 'Monthly'
+        ).all()
+    else:
+        reminders_today = db.query(UnifiedReminder).filter(
+            UnifiedReminder.trigger_time <= end_of_day,
+            or_(
+                UnifiedReminder.status == 'pending',
+                and_(UnifiedReminder.status.in_(['sent', 'skipped']), UnifiedReminder.trigger_time >= start_of_day)
+            )
+        ).all()
     
     # Fetch sent logs today
     sent_logs_today = db.query(ReminderLog).filter(
@@ -217,9 +235,13 @@ try:
                 msgs_today.append(raw_msg)
         
         update_keywords = [
-            "daily work update", "eod update", "work update", "today's work update", 
-            "today work update", "daily report", "today's work report", "today work report",
-            "work report", "work day report", "eod", "eod report", "daily work report"
+            "update", "updates", "work report", "work update", "work updates",
+            "daily update", "daily updates", "daily work update", "daily work updates",
+            "eod", "eod update", "eod updates", "eod report", "eod reports",
+            "today, i worked", "today i worked", "today's work", "today work",
+            "today's work report", "today work report", "work day report",
+            "daily report", "daily reports", "work done", "tasks completed",
+            "task completed", "tasks done", "task done", "today's update", "today update"
         ]
         is_egg_pricing = "egg pricing" in r["report_types"].lower()
         is_ca_statement = "ca statement" in r["report_types"].lower() or "ca" in r["report_types"].lower()

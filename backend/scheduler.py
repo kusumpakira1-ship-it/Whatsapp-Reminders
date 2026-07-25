@@ -959,9 +959,13 @@ def poll_and_execute_unified_reminders():
         cleaned_dates.append(df.replace(" 0", " ").lower())
     date_formats = list(set(cleaned_dates))
     update_keywords = [
-        "daily work update", "eod update", "work update", "today's work update", 
-        "today work update", "daily report", "today's work report", "today work report",
-        "work report", "work day report", "eod", "eod report", "daily work report"
+        "update", "updates", "work report", "work update", "work updates",
+        "daily update", "daily updates", "daily work update", "daily work updates",
+        "eod", "eod update", "eod updates", "eod report", "eod reports",
+        "today, i worked", "today i worked", "today's work", "today work",
+        "today's work report", "today work report", "work day report",
+        "daily report", "daily reports", "work done", "tasks completed",
+        "task completed", "tasks done", "task done", "today's update", "today update"
     ]
 
     # ── WAHA guard: don't attempt sends if WhatsApp session is not WORKING ──
@@ -1060,10 +1064,14 @@ def poll_and_execute_unified_reminders():
                     is_rule_book = "rule book" in report.lower() or "rule" in report.lower()
                     is_update_report = any(w in report.lower() for w in ["update", "eod", "daily report", "work update", "work report"]) and "egg pricing" not in report.lower() and not is_rule_book
                     update_keywords = [
-                        "daily work update", "eod update", "work update", "today's work update", 
-                        "today work update", "daily report", "today's work report", "today work report",
-                        "work report", "work day report", "eod", "eod report", "daily work report"
-                    ]
+                         "update", "updates", "work report", "work update", "work updates",
+                         "daily update", "daily updates", "daily work update", "daily work updates",
+                         "eod", "eod update", "eod updates", "eod report", "eod reports",
+                         "today, i worked", "today i worked", "today's work", "today work",
+                         "today's work report", "today work report", "work day report",
+                         "daily report", "daily reports", "work done", "tasks completed",
+                         "task completed", "tasks done", "task done", "today's update", "today update"
+                     ]
 
                     for sub in submissions:
                         alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
@@ -1974,9 +1982,13 @@ async def manager_escalation_job():
                     msgs_today.append(raw_msg)
             
             update_keywords = [
-                "daily work update", "eod update", "work update", "today's work update", 
-                "today work update", "daily report", "today's work report", "today work report",
-                "work report", "work day report", "eod", "eod report", "daily work report"
+                "update", "updates", "work report", "work update", "work updates",
+                "daily update", "daily updates", "daily work update", "daily work updates",
+                "eod", "eod update", "eod updates", "eod report", "eod reports",
+                "today, i worked", "today i worked", "today's work", "today work",
+                "today's work report", "today work report", "work day report",
+                "daily report", "daily reports", "work done", "tasks completed",
+                "task completed", "tasks done", "task done", "today's update", "today update"
             ]
             is_egg_pricing = "egg pricing" in r["report_types"].lower()
             is_ca_statement = "ca statement" in r["report_types"].lower() or "ca" in r["report_types"].lower()
@@ -2317,9 +2329,13 @@ async def company_wise_escalation_job():
                     msgs_today.append(raw_msg)
             
             update_keywords = [
-                "daily work update", "eod update", "work update", "today's work update", 
-                "today work update", "daily report", "today's work report", "today work report",
-                "work report", "work day report", "eod", "eod report", "daily work report"
+                "update", "updates", "work report", "work update", "work updates",
+                "daily update", "daily updates", "daily work update", "daily work updates",
+                "eod", "eod update", "eod updates", "eod report", "eod reports",
+                "today, i worked", "today i worked", "today's work", "today work",
+                "today's work report", "today work report", "work day report",
+                "daily report", "daily reports", "work done", "tasks completed",
+                "task completed", "tasks done", "task done", "today's update", "today update"
             ]
             is_egg_pricing = "egg pricing" in r["report_types"].lower()
             is_ca_statement = "ca statement" in r["report_types"].lower() or "ca" in r["report_types"].lower()

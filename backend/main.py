@@ -302,9 +302,13 @@ def process_message_background(
 
             # If not assigned by phone/group/name, allow Team or unassigned or meeting tasks
             if not is_assigned:
-                t_person = (t.assigned_person_name or '').lower()
-                if 'team' in t_person or t_person == 'none' or not t.assigned_person_name or 'meeting' in (t.task_type or '').lower() or 'meeting' in t.task_name.lower() or 'follow up' in t.task_name.lower():
-                    is_assigned = True
+                # If the task has a specific group assigned, and we did not match it, do NOT allow fallback!
+                if t.whatsapp_group_id:
+                    pass
+                else:
+                    t_person = (t.assigned_person_name or '').lower()
+                    if 'team' in t_person or t_person == 'none' or not t.assigned_person_name or 'meeting' in (t.task_type or '').lower() or 'meeting' in t.task_name.lower() or 'follow up' in t.task_name.lower():
+                        is_assigned = True
 
             # If still not assigned, skip
             if not is_assigned:
@@ -419,13 +423,23 @@ def process_message_background(
                 continue
  
             # Check Rule 4: Generic/Silo tasks match keywords
-            keywords = [k.strip().lower() for k in (t.completion_keywords or 'done,completed,cleaned,empty,silo').split(',') if k.strip()]
-            update_kws = ["update", "updated", "updates", "eod", "status"]
-            has_update = any(kw in text_lower for kw in update_kws)
-            task_nouns = [w.lower() for w in t.task_name.split() if len(w) > 3]
-            match_update_smart = has_update and any(n in text_lower for n in task_nouns)
+            is_silo_task = "silo" in t.task_name.lower() or "selo" in t.task_name.lower()
+            if is_silo_task:
+                has_silo_word = "silo" in text_lower or "selo" in text_lower
+                has_silo_completion = any(kw in text_lower for kw in ["done", "completed", "complete", "clean", "cleaned", "empty", "emptied", "cleared", "✅", "done✅"])
+                is_matched_task = has_silo_word and has_silo_completion
+            else:
+                import re
+                keywords = [k.strip().lower() for k in (t.completion_keywords or 'done,completed,cleaned,empty').split(',') if k.strip()]
+                # Generate task identifiers dynamically
+                task_name_words = re.sub(r'[^a-zA-Z0-9\s]', '', t.task_name).lower().split()
+                task_identifiers = [w for w in task_name_words if len(w) > 3 and w not in ['task', 'check', 'please', 'update', 'submit', 'report', 'reports', 'checklist', 'updates', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'monday', 'tuesday']]
+                
+                has_completion = any(kw in text_lower for kw in keywords)
+                has_identifier_match = any(id_kw in text_lower for id_kw in task_identifiers) if task_identifiers else True
+                is_matched_task = has_completion and has_identifier_match
 
-            if any(kw in text_lower for kw in keywords) or match_update_smart:
+            if is_matched_task:
                 t.status = 'completed'
                 t.completion_details = f"Marked done via WhatsApp message: '{text}'"
                 db.commit()
