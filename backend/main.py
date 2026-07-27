@@ -10,7 +10,7 @@ from typing import List, Optional
 from contextlib import asynccontextmanager
 
 from database import engine, Base, SessionLocal
-from models import Whitelist, RawMessage, ProcessedData, Group, Employee, SystemSetting, CustomAlarm, WhatsAppMessage, WAHAEvent, Task, EggGodownInventory, ReminderLog
+from models import Whitelist, RawMessage, ProcessedData, Group, Employee, SystemSetting, CustomAlarm, WhatsAppMessage, WAHAEvent, Task, EggGodownInventory, ReminderLog, Flock, BookStandard
 from ai_processor import process_text, process_image, process_document
 from waha_service import download_waha_media, get_waha_chat_name, send_waha_message, send_waha_file
 from scheduler import setup_scheduler, scheduler, schedule_custom_alarm
@@ -676,6 +676,13 @@ class CustomMessageSend(BaseModel):
     message: str
 
 
+class FlockUpdate(BaseModel):
+    hatch_date: str
+    initial_chicks: int
+    batch_id: Optional[str] = None
+
+
+
 
 @app.get("/api/settings/report_types")
 def get_report_types():
@@ -974,6 +981,73 @@ def delete_employee(employee_id: int):
         return {"status": "success"}
     finally:
         db.close()
+
+
+@app.get("/api/flocks")
+def get_flocks():
+    db = SessionLocal()
+    try:
+        flocks = db.query(Flock).all()
+        result = []
+        for f in flocks:
+            # 1. Calculate age in weeks
+            days = (datetime.now(IST).date() - f.hatch_date).days
+            running_weeks = max(0, days // 7)
+            
+            # 2. Query cumulative mortality since hatch date
+            shed_norm = f.shed_name.replace('Shead', 'Shed').strip()
+            shed_alt = f.shed_name.replace('Shed', 'Shead').strip()
+            
+            if f.shed_name.lower().startswith('chick'):
+                mortality_sum = db.query(func.sum(ProcessedData.quantity)).filter(
+                    ProcessedData.shead_name.like('%Chick%'),
+                    ProcessedData.category == 'mortality',
+                    ProcessedData.processed_time >= f.hatch_date
+                ).scalar() or 0
+            else:
+                mortality_sum = db.query(func.sum(ProcessedData.quantity)).filter(
+                    ProcessedData.shead_name.in_([shed_norm, shed_alt]),
+                    ProcessedData.category == 'mortality',
+                    ProcessedData.processed_time >= f.hatch_date
+                ).scalar() or 0
+                
+            total_live = max(0, f.initial_chicks - int(mortality_sum))
+            
+            result.append({
+                "id": f.id,
+                "shed_name": f.shed_name,
+                "hatch_date": f.hatch_date.isoformat(),
+                "initial_chicks": f.initial_chicks,
+                "batch_id": f.batch_id,
+                "status": f.status,
+                "running_weeks": running_weeks,
+                "total_live_birds": total_live
+            })
+        return result
+    finally:
+        db.close()
+
+
+@app.put("/api/flocks/{flock_id}")
+def update_flock(flock_id: int, payload: FlockUpdate):
+    db = SessionLocal()
+    try:
+        flock = db.query(Flock).filter(Flock.id == flock_id).first()
+        if not flock:
+            raise HTTPException(status_code=404, detail="Flock not found")
+        try:
+            parsed_date = datetime.strptime(payload.hatch_date, "%Y-%m-%d").date()
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid date format, use YYYY-MM-DD")
+            
+        flock.hatch_date = parsed_date
+        flock.initial_chicks = payload.initial_chicks
+        flock.batch_id = payload.batch_id
+        db.commit()
+        return {"status": "success"}
+    finally:
+        db.close()
+
 
 
 @app.get("/api/tasks")

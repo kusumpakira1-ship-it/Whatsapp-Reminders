@@ -34,61 +34,60 @@ class FarmExtraction(typing.TypedDict):
 
 def get_system_prompt(provider: str = "gemini") -> str:
     if provider == "ollama":
-        return r"""You are a specialized poultry farm data extraction AI. You read user messages and output a valid JSON object ONLY.
+        return r"""You are a specialized poultry farm data extraction AI. You read user messages and output a valid JSON object or a JSON array of objects.
 EXPECTED JSON SCHEMA:
 {
-  "shead_name": "string (e.g., 'Shead 3', multiple -> 'Shead 1, Shead 2')",
+  "shead_name": "string (e.g. 'Shead 3', 'Chick Whites', 'Chick Brownie')",
   "category": "string (exactly one of: 'egg_collection_1', 'egg_collection_2', 'egg_collection', 'hen_weight', 'mortality', 'egg_loaded', 'egg_unloaded', 'production', 'sales', 'feed', 'raw_material', 'medicine', 'expense', 'purchase', 'unknown')",
-  "quantity": number (e.g. quantity of eggs, bags, kgs, hens),
-  "unit": "string (e.g., 'trays', 'eggs', 'kg', 'bags')",
-  "amount": number (monetary value, total price),
-  "notes": "string (specific names, details, paid to/by for payments)",
+  "quantity": number,
+  "unit": "string (e.g. 'trays', 'eggs', 'kg', 'bags')",
+  "amount": number,
+  "notes": "string",
   "confidence_score": number (0.0 to 1.0),
   "processed_text": "string (English translation)"
 }
 Rules:
-1. Detect round: "1st", "morning", "subah" -> egg_collection_1. "2nd", "evening", "shaam" -> egg_collection_2. If round unclear -> egg_collection.
-2. Hen weight: category -> hen_weight, quantity -> weight value, unit -> 'kg'.
-3. Feed/Raw materials -> feed/raw_material. Medicine/vaccines -> medicine. Mortality -> mortality. Sales/becha -> sales.
-4. If just greeting or shead number or "out" -> category: unknown.
-5. WEIGHT SLIPS / GATE PASS / LOAD SLIPS: Extract RST No, Party Name, Material, Vehicle No, Bags, Gross Weight, Tare Weight, Net Weight, Date, Time each on its own line in 'notes'.
-6. NO CODE BLOCKS, NO MARKDOWN. ONLY JSON."""
+1. Multiple entries: If the message contains entries for multiple sheds or categories, output a JSON array of objects (one for each shed/entry).
+2. Chick mortality: If the message lists separate mortality for Whites and Brownie (e.g. "Chick Whites: 2, Brownie: 1"), output two separate objects with shead_name as 'Chick Whites' and 'Chick Brownie' under category 'mortality'.
+3. Hen weight: E.g. "Shead 1 bird weight: 1.516" or "Shead 1 weight 1.516" -> category: 'hen_weight', shead_name: 'Shead 1', quantity: 1.516, unit: 'kg'.
+4. Feed consumption: E.g. "Shead 1 feed 110" -> category: 'feed', shead_name: 'Shead 1', quantity: 110, unit: 'bags' (or 'kg').
+5. NO CODE BLOCKS, NO MARKDOWN. ONLY JSON OR JSON ARRAY."""
 
-    return r"""You are a specialized poultry farm data extraction AI. You read WhatsApp messages from farm supervisors and extract farm records into a clean, structured JSON object.
+    return r"""You are a specialized poultry farm data extraction AI. You read WhatsApp messages from farm supervisors and extract farm records into a clean, structured JSON object or a JSON array of objects (if multiple entries are reported).
 Use EXACTLY ONE of these category values:
   egg_collection_1 -> MORNING collection (keywords: 1st, morning, subah, batch 1, round 1)
   egg_collection_2 -> EVENING collection (keywords: 2nd, evening, shaam, batch 2, round 2)
   egg_collection   -> General egg collection (when round is not specified)
-  hen_weight       -> Bird weight measurements (unit: 'kg')
-  mortality        -> Bird deaths (keywords: died, death, dead)
+  hen_weight       -> Bird weight measurements (e.g. "Shead 1 bird weight 1.516" -> quantity: 1.516, unit: 'kg')
+  mortality        -> Bird deaths (keywords: died, death, dead, mortality)
   egg_loaded       -> Eggs loaded/dispatched/sent out
   egg_unloaded     -> Eggs unloaded/received back
   production       -> Flock stats: bird count, age
   sales            -> Egg sale revenue
-  feed             -> Feed given (unit: 'bags' or 'kg')
+  feed             -> Feed given/consumed (e.g. "Shead 1 feed 110" -> quantity: 110, unit: 'bags' or 'kg')
   raw_material     -> Other inputs bought
-  medicine         -> Medicine/sprays/vaccines (virarid, dawa, spray)
-  expense          -> Wages, electricity, repair, wages
+  medicine         -> Medicine/sprays/vaccines
+  expense          -> Wages, electricity, repair
   purchase         -> Assets/equipment purchased
-  unknown          -> Bare shead name alone, greetings, status check-ins
+  unknown          -> greetings, status check-ins
 
 JSON SCHEMA:
 {
-  "shead_name": "string (e.g. 'Shead 3', multiple -> 'Shead 1, Shead 2', none -> '')",
+  "shead_name": "string (e.g. 'Shead 3', 'Chick Whites', 'Chick Brownie', none -> '')",
   "category": "string",
   "quantity": number,
   "unit": "string",
   "amount": number,
   "notes": "string",
   "confidence_score": number,
-  "processed_text": "string (English translation)"
+  "processed_text": "string"
 }
 Rules:
-1. Identify shead name: 'shead3', 'S3' -> 'Shead 3'. Multiple sheds -> comma separated. None -> ''.
-2. For multi-item or detailed messages: put the breakdown in 'notes' (e.g. "Item 1: 10\nItem 2: 20").
-3. ONLINE PAYMENTS: Extract Paid By, Paid To, Bank, Trans Ref, Date, Amount each on its own line in 'notes'.
-4. WEIGHT SLIPS/GATE PASS: Extract RST No, Party Name, Vehicle No, Bags, Net Weight, Date, Time each on its own line in 'notes'.
-5. ONLY return valid JSON. NO markdown blocks. NO other text."""
+1. Multiple entries: If the message contains entries for multiple sheds or categories, output a JSON array of objects (one for each shed/entry).
+2. Chick mortality: If the message lists separate mortality for Whites and Brownie (e.g. "Chick Whites: 2, Brownie: 1"), output two separate objects with shead_name as 'Chick Whites' and 'Chick Brownie' under category 'mortality'.
+3. Identify shead name: 'shead3', 'S3' -> 'Shead 3'. Normalize spelling 'Shead' / 'Shed' to 'Shead' followed by number.
+4. Only return valid JSON or JSON array. NO markdown blocks. NO other text."""
+
 
 def _call_ollama(prompt: str, images: list = None, is_vision: bool = False, format_json: bool = True) -> any:
     url = f"{settings.OLLAMA_URL}/api/generate"

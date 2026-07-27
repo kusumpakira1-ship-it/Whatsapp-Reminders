@@ -1,0 +1,645 @@
+Week	Day	Vaccine	Perumal	Medicine	1A1	1B1		Shead 5 Additional	Day Production	Week AVg	eggs As per book	As per book body weight	Feed Consumption
+1	1	32.2 C			06-Apr	04-Jul				1	0	65	11
+	2				07-Apr	05-Jul							
+	3	Mareks HVT + SB1 (intervet) Hema	Mareks HVT + SB1 (intervet) Hema		08-Apr	06-Jul							
+	4				09-Apr	07-Jul							
+	5	ND + IBD Killed (Indo/Aster) && IB Lasata (MA5 Intervet)	ND + IBD Killed (Indo/Aster) && IB Lasata (MA5 Intervet)	Hema	10-Apr	08-Jul							
+	6				11-Apr	09-Jul							
+	7				12-Apr	10-Jul							
+2	8	Body: 65 Feed: 11			13-Apr	11-Jul				2	0	110	16
+	9	Debeaking + K Cox	Debeaking + K Cox	Hema	14-Apr	12-Jul							
+	10	29.5 C			15-Apr	13-Jul							
+	11				16-Apr	14-Jul							
+	12				17-Apr	15-Jul							
+	13	IBD Live (Ventri)			18-Apr	16-Jul							
+	14				19-Apr	17-Jul							
+3	15	Body: 110 Feed 16			20-Apr	18-Jul				3	0	165	18
+	16				21-Apr	19-Jul							
+	17	26.7 C			22-Apr	20-Jul							
+	18				23-Apr	21-Jul							
+	19				24-Apr	22-Jul							
+	20				25-Apr	23-Jul							
+	21				26-Apr	24-Jul							
+4	22	Body 165 Feed 18			27-Apr	25-Jul				4	0	230	25
+	23	IBD Live 2 (Ventri)			28-Apr	26-Jul							
+	24	23.9 C			29-Apr	27-Jul							
+	25				30-Apr	28-Jul							
+	26				01-May	29-Jul							
+	27				02-May	30-Jul							
+	28				03-May	31-Jul							
+5	29	Body 230 Feed 25			04-May	01-Aug				5	0	310	35
+	30	IB LOSATA (Ma5) Ventri			05-May	02-Aug							
+	31				06-May	03-Aug							
+	32				07-May	04-Aug							
+	33				08-May	05-Aug							
+	34				09-May	06-Aug							
+	35	Coryza 1 (0.5Ml) Intervet (MSD)/(Fordoge)		Hema	10-May	07-Aug							
+6	36	Body 310 Feed 35			11-May	08-Aug				6	0	400	40
+	37				12-May	09-Aug							
+	38				13-May	10-Aug							
+	39				14-May	11-Aug							
+	40				15-May	12-Aug							
+	41				16-May	13-Aug							
+	42	Fowl Pox 1 (0.2Ml)(Ventri)			17-May	14-Aug							
+7	43	Body 400 Feed 40			18-May	15-Aug				7	0	490	49
+	44				19-May	16-Aug							
+	45				20-May	17-Aug							
+	46	VVND Killed 1 (0.5ml) Aster//Indo			21-May	18-Aug							
+	47				22-May	19-Aug							
+	48				23-May	20-Aug							
+	49				24-May	21-Aug							
+8	50	Body 490 Feed 49			25-May	22-Aug				8	0	580	48
+	51				26-May	23-Aug							
+	52	ND Killed (0.5ml) Ventri/Indo			27-May	24-Aug							
+	53				28-May	25-Aug							
+	54				29-May	26-Aug							
+	55				30-May	27-Aug							
+	56				31-May	28-Aug							
+9	57	Body 580 Feed 48			01-Jun	29-Aug				9	0	670	49
+	58				02-Jun	30-Aug							
+	59				03-Jun	31-Aug							
+	60				04-Jun	01-Sep							
+	61				05-Jun	02-Sep							
+	62				06-Jun	03-Sep							
+	63				07-Jun	04-Sep							
+10	64	Body 670 Feed 49			08-Jun	05-Sep				10	0	750	50
+	65				09-Jun	06-Sep							
+	66				10-Jun	07-Sep							
+	67				11-Jun	08-Sep							
+	68				12-Jun	09-Sep							
+	69				13-Jun	10-Sep							
+	70				14-Jun	11-Sep							
+11	71	Body 750 Feed 50			15-Jun	12-Sep				11	0	830	51
+	72				16-Jun	13-Sep							
+	73				17-Jun	14-Sep							
+	74				18-Jun	15-Sep							
+	75				19-Jun	16-Sep							
+	76				20-Jun	17-Sep							
+	77				21-Jun	18-Sep							
+12	78	Body 830, 51 feed		Deworking( Liwomysiol)	22-Jun	19-Sep				12	0	910	54
+	79	IB Lasota Ma5			23-Jun	20-Sep							
+	80				24-Jun	21-Sep							
+	81				25-Jun	22-Sep							
+	82				26-Jun	23-Sep							
+	83				27-Jun	24-Sep							
+	84			R2B (ND) Venky	28-Jun	25-Sep							
+13	85	Body 910, Feed 54			29-Jun	26-Sep				13	0	980	56
+	86	Fowl Pox 2 (0.2ml)			30-Jun	27-Sep							
+	87				01-Jul	28-Sep							
+	88				02-Jul	29-Sep							
+	89			FowlPox	03-Jul	30-Sep							
+	90				04-Jul	01-Oct							
+	91				05-Jul	02-Oct							
+14	92	Body 980, Feed 56			06-Jul	03-Oct				14	0	1040	58
+	93	Coryza 2 (0.5ml)			07-Jul	04-Oct							
+	94				08-Jul	05-Oct							
+	95				09-Jul	06-Oct							
+	96			Coryza	10-Jul	07-Oct							
+	97				11-Jul	08-Oct							
+	98				12-Jul	09-Oct							
+15	99	Body 1040, Feed 58			13-Jul	10-Oct				15	0	1090	60
+	100	Dewarming			14-Jul	11-Oct							
+	101	Lasota			15-Jul	12-Oct							
+	102				16-Jul	13-Oct							
+	103				17-Jul	14-Oct							
+	104				18-Jul	15-Oct							
+	105				19-Jul	16-Oct							
+16	106	Body 1090, Feed 60			20-Jul	17-Oct				16	0	1140	62
+	107	VVND Killed 2 (0.5ml) && ND Killed (Indo)			21-Jul	18-Oct							
+	108				22-Jul	19-Oct							
+	109				23-Jul	20-Oct							
+	110				24-Jul	21-Oct							
+	111				25-Jul	22-Oct							
+	112				26-Jul	23-Oct							
+17	113	Body 1140, Feed 62			27-Jul	24-Oct				17	0	1180	63
+	114				28-Jul	25-Oct							
+	115				29-Jul	26-Oct							
+	116				30-Jul	27-Oct							
+	117				31-Jul	28-Oct							
+	118				01-Aug	29-Oct							
+	119				02-Aug	30-Oct							
+18	120	Body 1180, Feed 63		IB Losota	03-Aug	31-Oct				18	0	1220	66
+	121				04-Aug	01-Nov							
+	122				05-Aug	02-Nov							
+	123				06-Aug	03-Nov							
+	124				07-Aug	04-Nov							
+	125				08-Aug	05-Nov							
+	126				09-Aug	06-Nov							
+19	127	Body 1220, Feed 66			10-Aug	07-Nov				19	20	1250	80
+	128				11-Aug	08-Nov							
+	129				12-Aug	09-Nov							
+	130				13-Aug	10-Nov							
+	131			VVND+ND Killed	14-Aug	11-Nov							
+	132				15-Aug	12-Nov							
+	133				16-Aug	13-Nov							
+20	134				17-Aug	14-Nov				20	45	1300	85
+	135				18-Aug	15-Nov							
+	136				19-Aug	16-Nov							
+	137				20-Aug	17-Nov							
+	138				21-Aug	18-Nov							
+	139				22-Aug	19-Nov							
+	140				23-Aug	20-Nov							
+21	141				24-Aug	21-Nov				21	65	1305	90
+	142				25-Aug	22-Nov							
+	143				26-Aug	23-Nov							
+	144				27-Aug	24-Nov							
+	145				28-Aug	25-Nov							
+	146				29-Aug	26-Nov							
+	147				30-Aug	27-Nov							
+22	148				31-Aug	28-Nov				22	82	1310	95
+	149				01-Sep	29-Nov							
+	150				02-Sep	30-Nov							
+	151				03-Sep	01-Dec							
+	152				04-Sep	02-Dec							
+	153				05-Sep	03-Dec							
+	154				06-Sep	04-Dec							
+23	155				07-Sep	05-Dec				23	90	1315	100
+	156				08-Sep	06-Dec							
+	157				09-Sep	07-Dec							
+	158				10-Sep	08-Dec							
+	159				11-Sep	09-Dec							
+	160				12-Sep	10-Dec							
+	161				13-Sep	11-Dec							
+24	162				14-Sep	12-Dec				24	94	1320	105
+	163				15-Sep	13-Dec							
+	164				16-Sep	14-Dec							
+	165			Trumaric	17-Sep	15-Dec							
+	166			Trumaric	18-Sep	16-Dec							
+	167			Trumaric	19-Sep	17-Dec							
+	168			Trumaric	20-Sep	18-Dec							
+25	169			Trumaric	21-Sep	19-Dec				25	95.5	1325	105
+	170			Trumaric	22-Sep	20-Dec							
+	171			Trumaric	23-Sep	21-Dec							
+	172			AD3EC + B'complex+Calcium	24-Sep	22-Dec							
+	173			AD3EC + B'complex+Calcium	25-Sep	23-Dec							
+	174			AD3EC + B'complex+Calcium	26-Sep	24-Dec							
+	175			AD3EC + B'complex+Calcium	27-Sep	25-Dec							
+26	176			AD3EC + B'complex+Calcium	28-Sep	26-Dec				26	96.2	1330	107
+	177			AD3EC + B'complex+Calcium	29-Sep	27-Dec							
+	178				30-Sep	28-Dec							
+	179				01-Oct	29-Dec							
+	180	Deworming			02-Oct	30-Dec							
+	181				03-Oct	31-Dec							
+	182				04-Oct	01-Jan							
+27	183	Losota Double Dose			05-Oct	02-Jan				27	96.5	1335	108
+	184				06-Oct	03-Jan							
+	185				07-Oct	04-Jan							
+	186				08-Oct	05-Jan							
+	187				09-Oct	06-Jan							
+	188				10-Oct	07-Jan							
+	189				11-Oct	08-Jan							
+28	190				12-Oct	09-Jan				28	97	1340	110
+	191				13-Oct	10-Jan							
+	192				14-Oct	11-Jan							
+	193				15-Oct	12-Jan							
+	194				16-Oct	13-Jan							
+	195				17-Oct	14-Jan							
+	196			Trumaric	18-Oct	15-Jan							
+29	197			Trumaric	19-Oct	16-Jan				29	97	1345	110
+	198			Trumaric	20-Oct	17-Jan							
+	199			Trumaric	21-Oct	18-Jan							
+	200			Trumaric	22-Oct	19-Jan							
+	201			Trumaric	23-Oct	20-Jan							
+	202			Trumaric	24-Oct	21-Jan							
+	203			AD3EC + B'complex+Calcium	25-Oct	22-Jan							
+30	204			AD3EC + B'complex+Calcium	26-Oct	23-Jan				30	97	1350	112
+	205			AD3EC + B'complex+Calcium	27-Oct	24-Jan							
+	206				28-Oct	25-Jan							
+	207				29-Oct	26-Jan							
+	208				30-Oct	27-Jan							
+	209				31-Oct	28-Jan							
+	210				01-Nov	29-Jan							
+31	211				02-Nov	30-Jan				31	97	1355	112
+	212				03-Nov	31-Jan							
+	213				04-Nov	01-Feb							
+	214				05-Nov	02-Feb							
+	215				06-Nov	03-Feb							
+	216				07-Nov	04-Feb							
+	217				08-Nov	05-Feb							
+32	218				09-Nov	06-Feb				32	96.9	1360	112
+	219				10-Nov	07-Feb							
+	220				11-Nov	08-Feb							
+	221				12-Nov	09-Feb							
+	222				13-Nov	10-Feb							
+	223				14-Nov	11-Feb							
+	224	IB Losota			15-Nov	12-Feb							
+33	225				16-Nov	13-Feb				33	96.8	1365	112
+	226			Trumaric	17-Nov	14-Feb							
+	227			Trumaric	18-Nov	15-Feb							
+	228			Trumaric	19-Nov	16-Feb							
+	229			Trumaric	20-Nov	17-Feb							
+	230			Trumaric	21-Nov	18-Feb							
+	231			Trumaric	22-Nov	19-Feb							
+34	232			Trumaric	23-Nov	20-Feb				34	96.6	1370	112
+	233			AD3EC + B'complex+Calcium	24-Nov	21-Feb							
+	234			AD3EC + B'complex+Calcium	25-Nov	22-Feb							
+	235			AD3EC + B'complex+Calcium	26-Nov	23-Feb							
+	236				27-Nov	24-Feb							
+	237				28-Nov	25-Feb							
+	238				29-Nov	26-Feb							
+35	239				30-Nov	27-Feb				35	96.4	1375	112
+	240	Deworming			01-Dec	28-Feb							
+	241				02-Dec	01-Mar							
+	242				03-Dec	02-Mar							
+	243				04-Dec	03-Mar							
+	244				05-Dec	04-Mar							
+	245				06-Dec	05-Mar							
+36	246				07-Dec	06-Mar				36	96.2	1380	112
+	247				08-Dec	07-Mar							
+	248				09-Dec	08-Mar							
+	249				10-Dec	09-Mar							
+	250				11-Dec	10-Mar							
+	251				12-Dec	11-Mar							
+	252				13-Dec	12-Mar							
+37	253				14-Dec	13-Mar				37	96	1385	112
+	254				15-Dec	14-Mar							
+	255				16-Dec	15-Mar							
+	256				17-Dec	16-Mar							
+	257			Trumaric	18-Dec	17-Mar							
+	258			Trumaric	19-Dec	18-Mar							
+	259			Trumaric	20-Dec	19-Mar							
+38	260			Trumaric	21-Dec	20-Mar				38	95..8	1390	112
+	261			Trumaric	22-Dec	21-Mar							
+	262			Trumaric	23-Dec	22-Mar							
+	263			Trumaric	24-Dec	23-Mar							
+	264			AD3EC + B'complex+Calcium	25-Dec	24-Mar							
+	265			AD3EC + B'complex+Calcium	26-Dec	25-Mar							
+	266			AD3EC + B'complex+Calcium	27-Dec	26-Mar							
+39	267				28-Dec	27-Mar				39	95.6	1395	112
+	268				29-Dec	28-Mar							
+	269	LOSATA			30-Dec	29-Mar							
+	270				31-Dec	30-Mar							
+	271				01-Jan	31-Mar							
+	272				02-Jan	01-Apr							
+	273				03-Jan	02-Apr							
+40	274				04-Jan	03-Apr				40	95.5	1400	112
+	275				05-Jan	04-Apr							
+	276				06-Jan	05-Apr							
+	277				07-Jan	06-Apr							
+	278				08-Jan	07-Apr							
+	279				09-Jan	08-Apr							
+	280				10-Jan	09-Apr							
+41	281				11-Jan	10-Apr				41	95.2	1405	112
+	282				12-Jan	11-Apr							
+	283				13-Jan	12-Apr							
+	284				14-Jan	13-Apr							
+	285				15-Jan	14-Apr							
+	286				16-Jan	15-Apr							
+	287			Trumaric	17-Jan	16-Apr							
+42	288			Trumaric	18-Jan	17-Apr				42	95	1410	112
+	289			Trumaric	19-Jan	18-Apr							
+	290			Trumaric	20-Jan	19-Apr							
+	291			Trumaric	21-Jan	20-Apr							
+	292			Trumaric	22-Jan	21-Apr							
+	293			Trumaric	23-Jan	22-Apr							
+	294			AD3EC + B'complex+Calcium	24-Jan	23-Apr							
+43	295			AD3EC + B'complex+Calcium	25-Jan	24-Apr				43	94.7	1415	112
+	296			AD3EC + B'complex+Calcium	26-Jan	25-Apr							
+	297				27-Jan	26-Apr							
+	298				28-Jan	27-Apr							
+	299				29-Jan	28-Apr							
+	300	Deworming			30-Jan	29-Apr							
+	301				31-Jan	30-Apr							
+44	302				01-Feb	01-May				44	94.4	1420	112
+	303				02-Feb	02-May							
+	304				03-Feb	03-May							
+	305				04-Feb	04-May							
+	306				05-Feb	05-May							
+	307				06-Feb	06-May							
+	308				07-Feb	07-May							
+45	309				08-Feb	08-May				45	94.1	1425	112
+	310				09-Feb	09-May							
+	311				10-Feb	10-May							
+	312				11-Feb	11-May							
+	313				12-Feb	12-May							
+	314	IB Losata			13-Feb	13-May							
+	315				14-Feb	14-May							
+46	316				15-Feb	15-May				46	93.8	1430	112
+	317				16-Feb	16-May							
+	318			Trumaric	17-Feb	17-May							
+	319			Trumaric	18-Feb	18-May							
+	320			Trumaric	19-Feb	19-May							
+	321			Trumaric	20-Feb	20-May							
+	322			Trumaric	21-Feb	21-May							
+47	323			Trumaric	22-Feb	22-May				47	93.5	1435	112
+	324			Trumaric	23-Feb	23-May							
+	325			AD3EC + B'complex+Calcium	24-Feb	24-May							
+	326			AD3EC + B'complex+Calcium	25-Feb	25-May							
+	327			AD3EC + B'complex+Calcium	26-Feb	26-May							
+	328				27-Feb	27-May							
+	329				28-Feb	28-May							
+48	330				01-Mar	29-May				48	93.2	1440	112
+	331				02-Mar	30-May							
+	332				03-Mar	31-May							
+	333				04-Mar	01-Jun							
+	334				05-Mar	02-Jun							
+	335				06-Mar	03-Jun							
+	336				07-Mar	04-Jun							
+49	337				08-Mar	05-Jun				49	92.9	1445	112
+	338				09-Mar	06-Jun							
+	339				10-Mar	07-Jun							
+	340				11-Mar	08-Jun							
+	341				12-Mar	09-Jun							
+	342				13-Mar	10-Jun							
+	343				14-Mar	11-Jun							
+50	344				15-Mar	12-Jun				50	92.6	1450	112
+	345				16-Mar	13-Jun							
+	346				17-Mar	14-Jun							
+	347				18-Mar	15-Jun							
+	348				19-Mar	16-Jun							
+	349			Trumaric	20-Mar	17-Jun							
+	350			Trumaric	21-Mar	18-Jun							
+51	351			Trumaric	22-Mar	19-Jun				51	92.3	1455	113
+	352	Deworming		Trumaric	23-Mar	20-Jun							
+	353			Trumaric	24-Mar	21-Jun							
+	354			Trumaric	25-Mar	22-Jun							
+	355			Trumaric	26-Mar	23-Jun							
+	356			AD3EC + B'complex+Calcium	27-Mar	24-Jun							
+	357			AD3EC + B'complex+Calcium	28-Mar	25-Jun							
+52	358	Losata		AD3EC + B'complex+Calcium	29-Mar	26-Jun				52	92	1460	114
+	359				30-Mar	27-Jun							
+	360				31-Mar	28-Jun							
+	361				01-Apr	29-Jun							
+	362				02-Apr	30-Jun							
+	363				03-Apr	01-Jul							
+	364				04-Apr	02-Jul							
+53	365				05-Apr	03-Jul				53	91.7	1465	114
+	366				06-Apr	04-Jul							
+	367				07-Apr	05-Jul							
+	368				08-Apr	06-Jul							
+	369				09-Apr	07-Jul							
+	370				10-Apr	08-Jul							
+	371				11-Apr	09-Jul							
+54	372				12-Apr	10-Jul				54	91.4	1470	114
+	373				13-Apr	11-Jul							
+	374				14-Apr	12-Jul							
+	375				15-Apr	13-Jul							
+	376				16-Apr	14-Jul							
+	377				17-Apr	15-Jul							
+	378			Trumaric	18-Apr	16-Jul							
+55	379			Trumaric	19-Apr	17-Jul				55	91.1	1475	114
+	380			Trumaric	20-Apr	18-Jul							
+	381			Trumaric	21-Apr	19-Jul							
+	382			Trumaric	22-Apr	20-Jul							
+	383			Trumaric	23-Apr	21-Jul							
+	384			Trumaric	24-Apr	22-Jul							
+	385			AD3EC + B'complex+Calcium	25-Apr	23-Jul							
+56	386			AD3EC + B'complex+Calcium	26-Apr	24-Jul				56	90.8	1480	114
+	387			AD3EC + B'complex+Calcium	27-Apr	25-Jul							
+	388				28-Apr	26-Jul							
+	389				29-Apr	27-Jul							
+	390				30-Apr	28-Jul							
+	391				01-May	29-Jul							
+	392				02-May	30-Jul							
+57	393				03-May	31-Jul				57	90.5	1485	114
+	394				04-May	01-Aug							
+	395				05-May	02-Aug							
+	396				06-May	03-Aug							
+	397				07-May	04-Aug							
+	398				08-May	05-Aug							
+	399				09-May	06-Aug							
+58	400				10-May	07-Aug				58	90.2	1490	114
+	401				11-May	08-Aug							
+	402				12-May	09-Aug							
+	403	IB Losata			13-May	10-Aug							
+	404				14-May	11-Aug							
+	405				15-May	12-Aug							
+	406				16-May	13-Aug							
+59	407				17-May	14-Aug				59	89.8	1495	114
+	408				18-May	15-Aug							
+	409				19-May	16-Aug							
+	410				20-May	17-Aug							
+	411				21-May	18-Aug							
+	412				22-May	19-Aug							
+	413				23-May	20-Aug							
+60	414				24-May	21-Aug				60	89.5	1500	114
+	415				25-May	22-Aug							
+	416				26-May	23-Aug							
+	417				27-May	24-Aug							
+	418				28-May	25-Aug							
+	419				29-May	26-Aug							
+	420	Deworming			30-May	27-Aug							
+61	421				31-May	28-Aug				61	89.1	1505	114
+	422				01-Jun	29-Aug							
+	423				02-Jun	30-Aug							
+	424				03-Jun	31-Aug							
+	425				04-Jun	01-Sep							
+	426				05-Jun	02-Sep							
+	427				06-Jun	03-Sep							
+62	428				07-Jun	04-Sep				62	88.8	1510	114
+	429				08-Jun	05-Sep							
+	430				09-Jun	06-Sep							
+	431				10-Jun	07-Sep							
+	432				11-Jun	08-Sep							
+	433				12-Jun	09-Sep							
+	434				13-Jun	10-Sep							
+63	435				14-Jun	11-Sep				63	88.4	1515	114
+	436				15-Jun	12-Sep							
+	437				16-Jun	13-Sep							
+	438				17-Jun	14-Sep							
+	439			Trumaric	18-Jun	15-Sep							
+	440			Trumaric	19-Jun	16-Sep							
+	441			Trumaric	20-Jun	17-Sep							
+64	442			Trumaric	21-Jun	18-Sep				64	88.01	1520	114
+	443			Trumaric	22-Jun	19-Sep							
+	444			Trumaric	23-Jun	20-Sep							
+	445			Trumaric	24-Jun	21-Sep							
+	446			AD3EC + B'complex+Calcium	25-Jun	22-Sep							
+	447			AD3EC + B'complex+Calcium	26-Jun	23-Sep							
+	448	LOSATA		AD3EC + B'complex+Calcium	27-Jun	24-Sep							
+65	449				28-Jun	25-Sep				65	87.7	1525	114
+	450				29-Jun	26-Sep							
+	451				30-Jun	27-Sep							
+	452				01-Jul	28-Sep							
+	453				02-Jul	29-Sep							
+	454				03-Jul	30-Sep							
+	455				04-Jul	01-Oct							
+66	456				05-Jul	02-Oct				66	87.4	1530	114
+	457				06-Jul	03-Oct							
+	458				07-Jul	04-Oct							
+	459				08-Jul	05-Oct							
+	460				09-Jul	06-Oct							
+	461				10-Jul	07-Oct							
+	462				11-Jul	08-Oct							
+67	463				12-Jul	09-Oct				67	87	1535	114
+	464				13-Jul	10-Oct							
+	465				14-Jul	11-Oct							
+	466				15-Jul	12-Oct							
+	467				16-Jul	13-Oct							
+	468				17-Jul	14-Oct							
+	469				18-Jul	15-Oct							
+68	470			Trumaric	19-Jul	16-Oct				68	68	1540	114
+	471			Trumaric	20-Jul	17-Oct							
+	472			Trumaric	21-Jul	18-Oct							
+	473			Trumaric	22-Jul	19-Oct							
+	474			Trumaric	23-Jul	20-Oct							
+	475			Trumaric	24-Jul	21-Oct							
+	476			Trumaric	25-Jul	22-Oct							
+69	477			AD3EC + B'complex+Calcium	26-Jul	23-Oct				69	86.7	1545	114
+	478			AD3EC + B'complex+Calcium	27-Jul	24-Oct							
+	479			AD3EC + B'complex+Calcium	28-Jul	25-Oct							
+	480				29-Jul	26-Oct							
+	481				30-Jul	27-Oct							
+	482				31-Jul	28-Oct							
+	483				01-Aug	29-Oct							
+70	484				02-Aug	30-Oct				70	86.3	1550	114
+	485				03-Aug	31-Oct							
+	486				04-Aug	01-Nov							
+	487				05-Aug	02-Nov							
+	488				06-Aug	03-Nov							
+	489				07-Aug	04-Nov							
+	490				08-Aug	05-Nov							
+71	491				09-Aug	06-Nov				71	86	1555	114
+	492				10-Aug	07-Nov							
+	493	IB Losata			11-Aug	08-Nov							
+	494				12-Aug	09-Nov							
+	495				13-Aug	10-Nov							
+	496				14-Aug	11-Nov							
+	497				15-Aug	12-Nov							
+72	498				16-Aug	13-Nov				72	85.6	1560	114
+	499				17-Aug	14-Nov							
+	500			Trumaric	18-Aug	15-Nov							
+	501			Trumaric	19-Aug	16-Nov							
+	502			Trumaric	20-Aug	17-Nov							
+	503			Trumaric	21-Aug	18-Nov							
+	504			Trumaric	22-Aug	19-Nov							
+73	505			Trumaric	23-Aug	20-Nov				73	85.3	1565	114
+	506			Trumaric	24-Aug	21-Nov							
+	507			AD3EC + B'complex+Calcium	25-Aug	22-Nov							
+	508			AD3EC + B'complex+Calcium	26-Aug	23-Nov							
+	509			AD3EC + B'complex+Calcium	27-Aug	24-Nov							
+	510				28-Aug	25-Nov							
+	511				29-Aug	26-Nov							
+74	512				30-Aug	27-Nov				74	84.9	1570	114
+	513				31-Aug	28-Nov							
+	514				01-Sep	29-Nov							
+	515				02-Sep	30-Nov							
+	516				03-Sep	01-Dec							
+	517				04-Sep	02-Dec							
+	518				05-Sep	03-Dec							
+75	519				06-Sep	04-Dec				75	84.5	1575	114
+	520				07-Sep	05-Dec							
+	521				08-Sep	06-Dec							
+	522				09-Sep	07-Dec							
+	523				10-Sep	08-Dec							
+	524				11-Sep	09-Dec							
+	525				12-Sep	10-Dec							
+76	526				13-Sep	11-Dec				76	83.6	1580	114
+	527				14-Sep	12-Dec							
+	528				15-Sep	13-Dec							
+	529				16-Sep	14-Dec							
+	530				17-Sep	15-Dec							
+	531			Trumaric	18-Sep	16-Dec							
+	532			Trumaric	19-Sep	17-Dec							
+77	533			Trumaric	20-Sep	18-Dec				77	83.1	1585	114
+	534			Trumaric	21-Sep	19-Dec							
+	535			Trumaric	22-Sep								
+	536			Trumaric	23-Sep								
+	537			Trumaric	24-Sep								
+	538	LOSATA		AD3EC + B'complex+Calcium	25-Sep								
+	539			AD3EC + B'complex+Calcium	26-Sep								
+78	540	Deworming		AD3EC + B'complex+Calcium	27-Sep					78	82.6	1590	114
+	541				28-Sep								
+	542				29-Sep								
+	543				30-Sep								
+	544				01-Oct								
+	545				02-Oct								
+	546				03-Oct								
+79	547				04-Oct					79	82	1595	114
+	548				05-Oct								
+	549				06-Oct								
+	550				07-Oct								
+	551				08-Oct								
+	552				09-Oct								
+	553				10-Oct								
+80	554				11-Oct					80	81.5	1600	114
+	555				12-Oct								
+	556				13-Oct								
+	557				14-Oct								
+	558				15-Oct								
+	559				16-Oct								
+	560				17-Oct								
+81	561				18-Oct					81	81	1605	114
+	562			Trumaric	19-Oct								
+	563			Trumaric	20-Oct								
+	564			Trumaric	21-Oct								
+	565			Trumaric	22-Oct								
+	566			Trumaric	23-Oct								
+	567			Trumaric	24-Oct								
+82	568			Trumaric	25-Oct					82	82	1610	114
+	569			AD3EC + B'complex+Calcium	26-Oct								
+	570			AD3EC + B'complex+Calcium	27-Oct								
+	571			AD3EC + B'complex+Calcium	28-Oct								
+	572				29-Oct								
+	573				30-Oct								
+	574				31-Oct								
+83	575				01-Nov					83	83	1615	114
+	576				02-Nov								
+	577				03-Nov								
+	578				04-Nov								
+	579				05-Nov								
+	580				06-Nov								
+	581				07-Nov								
+84	582				08-Nov					84	84	1620	114
+	583	IB Losata			09-Nov								
+	584				10-Nov								
+	585				11-Nov								
+	586				12-Nov								
+	587				13-Nov								
+	588				14-Nov								
+85	589				15-Nov					85	85	1625	114
+	590				16-Nov								
+	591				17-Nov								
+	592			Trumaric	18-Nov								
+	593			Trumaric	19-Nov								
+	594			Trumaric	20-Nov								
+	595			Trumaric	21-Nov								
+86	596			Trumaric	22-Nov					86	86	1630	114
+	597			Trumaric	23-Nov								
+	598			Trumaric	24-Nov								
+	599			AD3EC + B'complex+Calcium	25-Nov								
+	600	Deworming		AD3EC + B'complex+Calcium	26-Nov								
+	601			AD3EC + B'complex+Calcium	27-Nov								
+	602				28-Nov								
+87	603				29-Nov					87	87	1635	114
+	604				30-Nov								
+	605				01-Dec								
+	606				02-Dec								
+	607				03-Dec								
+	608				04-Dec								
+	609				05-Dec								
+88	610				06-Dec					88	88	1640	114
+	611				07-Dec								
+	612				08-Dec								
+	613				09-Dec								
+	614				10-Dec								
+	615				11-Dec								
+	616				12-Dec								
+89	617				13-Dec					89	89	1645	114
+	618				14-Dec								
+	619				15-Dec								
+	620				16-Dec								
+	621				17-Dec								
+	622				18-Dec								
+	623			Trumaric	19-Dec								
+90	624			Trumaric	20-Dec					90	90	1650	114
+	625			Trumaric	21-Dec								
+	626			Trumaric	22-Dec								
+	627			Trumaric	23-Dec								
+	628			Trumaric	24-Dec								
+	629			Trumaric	25-Dec								
+	630			AD3EC + B'complex+Calcium	26-Dec								
+91	631			AD3EC + B'complex+Calcium	27-Dec					91	91	1655	114
+	632			AD3EC + B'complex+Calcium	28-Dec								
+	633				29-Dec								
+	634				30-Dec								
+	635				31-Dec								
+	636				01-Jan								
+	637				02-Jan								
+92	638				03-Jan					92	92	1660	114
+	639				04-Jan								
+	640				05-Jan								
+	641				06-Jan								
+	642				07-Jan								
+	643				08-Jan								
+	644				09-Jan								

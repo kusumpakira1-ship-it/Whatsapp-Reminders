@@ -1815,9 +1815,15 @@ async def create_wednesday_meeting_tasks():
         db.close()
 
 
+# Recipients for both escalation reports
+ESCALATION_REPORT_PHONES = [
+    "917259510983@c.us",  # Manager 1
+    "917204021105@c.us",  # Manager 2
+    "918985779911@c.us",  # Manager 3
+]
+
 async def manager_escalation_job():
-    logger.info("Starting 9:25 PM Manager Escalation Check...")
-    manager_jid = "917259510983@c.us"
+    logger.info("Starting 9:30 PM Manager Escalation Check...")
 
     from datetime import datetime, timezone, timedelta
     import re
@@ -2139,8 +2145,9 @@ async def manager_escalation_job():
             report_msg_lines.append("All scheduled tasks and reports have been completed/submitted successfully today! ✅")
             
         final_msg = "\n".join(report_msg_lines)
-        send_waha_message(manager_jid, final_msg)
-        logger.info(f"Manager Escalation sent to {manager_jid}")
+        for phone in ESCALATION_REPORT_PHONES:
+            send_waha_message(phone, final_msg)
+            logger.info(f"Manager Escalation sent to {phone}")
         
     except Exception as e:
         logger.error(f"Error in manager_escalation_job: {e}")
@@ -2159,8 +2166,7 @@ def get_company_category(display_name: str) -> str:
 
 
 async def company_wise_escalation_job():
-    logger.info("Starting 11:55 PM Company-Wise Manager Escalation Check...")
-    manager_jid = "917259510983@c.us"
+    logger.info("Starting 11:59 PM Company-Wise Manager Escalation Check...")
 
     from datetime import datetime, timezone, timedelta
     import re
@@ -2499,8 +2505,9 @@ async def company_wise_escalation_job():
                 report_msg_lines.append("")
                 
         final_msg = "\n".join(report_msg_lines).strip()
-        send_waha_message(manager_jid, final_msg)
-        logger.info(f"Company-Wise Manager Escalation sent to {manager_jid}")
+        for phone in ESCALATION_REPORT_PHONES:
+            send_waha_message(phone, final_msg)
+            logger.info(f"Company-Wise Manager Escalation sent to {phone}")
         
     except Exception as e:
         logger.error(f"Error in company_wise_escalation_job: {e}")
@@ -2547,6 +2554,173 @@ async def send_all_10pm_daily_reports_job():
         logger.error(f"Error sending Daily Egg Godown Report at 10 PM: {e}")
 
 
+# Recipients for vaccine approval requests
+VACCINE_APPROVAL_PHONES = [
+    "917259510983@c.us",  # Person 1: 7259510983
+    "916364817749@c.us",  # Person 2: 6364817749
+]
+VACCINE_APPROVAL_KEYWORDS = ["yes", "ok", "okay", "approve", "approved", "send", "ha", "haa", "han", "ho", "haan", "confirm", "confirmed", "proceed"]
+
+# Vaccine WhatsApp group JID (found from WAHA: group name = "Vaccine")
+VACCINE_GROUP_JID = "120363411507945065@g.us"
+
+
+async def scheduled_vaccine_approval_request_job():
+    """Runs at 6:30 AM IST - sends today's vaccine list to ALL approvers for approval."""
+    logger.info("Sending vaccine reminder approval request to all approvers...")
+    from datetime import datetime, timedelta
+    from models import Flock, BookStandard
+
+    db = SessionLocal()
+    try:
+        today = datetime.now(IST).date()
+        flocks = db.query(Flock).filter(Flock.status == 'active').all()
+
+        reminders = []
+        for f in flocks:
+            age_days = (today - f.hatch_date).days + 1
+            if age_days < 1:
+                continue
+            standard = db.query(BookStandard).filter(BookStandard.day == age_days).first()
+            if standard and standard.vaccine and standard.vaccine.strip():
+                vacc_text = standard.vaccine.strip()
+                if not re.search(r'^\d+(\.\d+)?\s*c$', vacc_text.lower()) and not vacc_text.lower().startswith('body'):
+                    reminders.append(f"- *{f.shed_name}* (Age: Day {age_days}): {vacc_text}")
+
+        if not reminders:
+            logger.info("No vaccines scheduled today. Skipping approval request.")
+            return
+
+        msg_lines = [
+            "🔔 *Vaccine Reminder Approval Request*",
+            f"Today ({today.strftime('%d %b %Y')}) vaccines are scheduled for:",
+            ""
+        ]
+        msg_lines.extend(reminders)
+        msg_lines.append("")
+        msg_lines.append("✅ Reply *YES* to send this reminder to the farm group at 7:00 AM.")
+        msg_lines.append("❌ Reply *NO* to skip today's vaccine reminder.")
+
+        approval_msg = "\n".join(msg_lines)
+        # Send to ALL approver numbers
+        for phone in VACCINE_APPROVAL_PHONES:
+            logger.info(f"Sending vaccine approval request to {phone}")
+            send_waha_message(phone, approval_msg)
+
+    except Exception as e:
+        logger.error(f"Error in scheduled_vaccine_approval_request_job: {e}")
+    finally:
+        db.close()
+
+
+async def scheduled_vaccine_reminder_job():
+    """Runs at 7:00 AM IST - sends vaccine reminder to group ONLY if manager approved."""
+    logger.info("Starting scheduled morning vaccine reminder job...")
+    from datetime import datetime, timedelta
+    from models import Flock, BookStandard, SystemSetting
+
+    db = SessionLocal()
+    try:
+        # --- STEP 1: Check if ANY approver has approved by looking at their recent messages ---
+        WAHA_URL = os.getenv("WAHA_URL", "http://localhost:3000")
+        WAHA_SESSION = os.getenv("WAHA_SESSION", "default")
+        WAHA_API_KEY = os.getenv("WAHA_API_KEY", "")
+
+        headers = {"X-Api-Key": WAHA_API_KEY} if WAHA_API_KEY else {}
+        approval_given = False
+        approved_by = None
+        explicit_rejection = False
+        rejected_by = None
+
+        cutoff_ts = int((datetime.now(IST).replace(hour=6, minute=20, second=0, microsecond=0)).timestamp())
+
+        for phone in VACCINE_APPROVAL_PHONES:
+            try:
+                msg_url = f"{WAHA_URL}/api/{WAHA_SESSION}/chats/{phone}/messages?limit=20"
+                r = requests.get(msg_url, headers=headers, timeout=10)
+                if r.status_code != 200:
+                    continue
+                messages = r.json()
+                for msg in messages:
+                    # Only consider messages FROM them (not sent by us)
+                    if msg.get('fromMe', True):
+                        continue
+                    msg_ts = msg.get('timestamp', 0)
+                    if msg_ts < cutoff_ts:
+                        continue
+                    body = msg.get('body', msg.get('text', '')).lower().strip()
+                    # Check for rejection first
+                    if any(rej in body for rej in ['no', 'nahi', 'nope', 'cancel', 'skip', 'stop']):
+                        if not approval_given:  # Only reject if nobody has approved yet
+                            explicit_rejection = True
+                            rejected_by = phone
+                        break
+                    # Check for approval
+                    if any(kw in body for kw in VACCINE_APPROVAL_KEYWORDS):
+                        approval_given = True
+                        approved_by = phone
+                        explicit_rejection = False  # Approval overrides rejection
+                        break
+            except Exception as waha_err:
+                logger.warning(f"Could not check approval messages from {phone}: {waha_err}")
+
+        if explicit_rejection and not approval_given:
+            logger.info(f"Vaccine reminder rejected by {rejected_by}. Skipping.")
+            for phone in VACCINE_APPROVAL_PHONES:
+                send_waha_message(phone, "❌ Understood. Today's vaccine reminder has been skipped.")
+            return
+
+        if not approval_given:
+            logger.warning("No approval received from any approver. Skipping group message.")
+            for phone in VACCINE_APPROVAL_PHONES:
+                send_waha_message(phone, "⚠️ No approval reply was received from anyone. Vaccine reminder was NOT sent to the farm group today.")
+            return
+
+        logger.info(f"Vaccine reminder approved by {approved_by}.")
+
+        logger.info("Manager approved vaccine reminder. Preparing to send to group...")
+
+        # --- STEP 2: Get the vaccine group JID (hardcoded from WAHA group "Vaccine") ---
+        vaccine_group_jid = VACCINE_GROUP_JID
+        logger.info(f"Using hardcoded Vaccine group JID: {vaccine_group_jid}")
+
+        # --- STEP 3: Build and send the vaccine message to the farm group ---
+        today = datetime.now(IST).date()
+        flocks = db.query(Flock).filter(Flock.status == 'active').all()
+
+        reminders = []
+        for f in flocks:
+            age_days = (today - f.hatch_date).days + 1
+            if age_days < 1:
+                continue
+            standard = db.query(BookStandard).filter(BookStandard.day == age_days).first()
+            if standard and standard.vaccine and standard.vaccine.strip():
+                vacc_text = standard.vaccine.strip()
+                if not re.search(r'^\d+(\.\d+)?\s*c$', vacc_text.lower()) and not vacc_text.lower().startswith('body'):
+                    reminders.append(f"- *{f.shed_name}* (Age: Day {age_days}): {vacc_text}")
+
+        if reminders:
+            msg_lines = [
+                "💉 *Daily Vaccine & Medicine Reminder*",
+                "Please administer/schedule the following treatments today:\n"
+            ]
+            msg_lines.extend(reminders)
+            reminder_msg = "\n".join(msg_lines)
+
+            logger.info(f"Sending vaccine reminder to group {vaccine_group_jid}")
+            send_waha_message(vaccine_group_jid, reminder_msg)
+            # Notify ALL approvers that reminder was sent
+            for phone in VACCINE_APPROVAL_PHONES:
+                send_waha_message(phone, "✅ Vaccine reminder sent to the farm group at 7:00 AM.")
+        else:
+            logger.info("No vaccines due today. Nothing sent to group.")
+
+    except Exception as e:
+        logger.error(f"Error in scheduled_vaccine_reminder_job: {e}")
+    finally:
+        db.close()
+
+
 def setup_scheduler():
 
     global scheduler
@@ -2559,6 +2733,12 @@ def setup_scheduler():
     
     # Schedule Wednesday meetings checklist generation every Wednesday at 6:00 AM IST
     scheduler.add_job(create_wednesday_meeting_tasks, CronTrigger(day_of_week='wed', hour=6, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+
+    # Schedule Vaccine Approval Request to manager at 6:30 AM IST
+    scheduler.add_job(scheduled_vaccine_approval_request_job, CronTrigger(hour=6, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+
+    # Schedule Daily Vaccine & Medicine Reminder every day at 7:00 AM IST (only if manager approved at 6:30 AM)
+    scheduler.add_job(scheduled_vaccine_reminder_job, CronTrigger(hour=7, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
 
     # Schedule Daily Egg Godown report daily at 9:00 PM IST
     scheduler.add_job(scheduled_godown_report_job, CronTrigger(hour=21, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
@@ -2575,11 +2755,11 @@ def setup_scheduler():
     # Combined 10:00 PM Dispatcher: Daily Egg Summary PDF, Escalation Alert, and Daily Farm Report
     scheduler.add_job(send_all_10pm_daily_reports_job, CronTrigger(hour=22, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
-    # Schedule Daily Manager Escalation Report at 9:25 PM IST everyday
-    scheduler.add_job(manager_escalation_job, CronTrigger(hour=21, minute=25, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="manager_escalation_job")
+    # Schedule Daily Manager Escalation Report at 9:30 PM IST everyday
+    scheduler.add_job(manager_escalation_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="manager_escalation_job")
     
-    # Schedule Daily Manager Escalation Report (Company-wise) at 11:55 PM IST everyday
-    scheduler.add_job(company_wise_escalation_job, CronTrigger(hour=23, minute=55, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="company_wise_escalation_job")
+    # Schedule Daily Manager Escalation Report (Company-wise) at 11:59 PM IST everyday
+    scheduler.add_job(company_wise_escalation_job, CronTrigger(hour=23, minute=59, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="company_wise_escalation_job")
     
     # Schedule weekly report at 11:00 PM IST on Sunday
     scheduler.add_job(scheduled_weekly_report_job, CronTrigger(day_of_week='sun', hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)

@@ -266,35 +266,29 @@ def _calculate_tables(df, birds_map, default_egg_rate, default_feed_cost_ton):
 def build_whatsapp_summary(df: pd.DataFrame, range_type: str, start_date, end_date, birds_map, default_egg_rate, default_feed_cost_ton) -> str:
     if range_type == 'daily' or start_date == end_date:
         today_str = start_date.strftime("%d/%m/%Y")
-        title = f"📊 DAILY FARM SUMMARY – {today_str}"
+        title = f"📋 *DAILY FARM SUMMARY ({today_str})*"
     elif range_type == 'weekly':
-        title = f"📊 WEEKLY FARM SUMMARY – {start_date.strftime('%d/%m/%Y')} to {end_date.strftime('%d/%m/%Y')}"
+        title = f"📋 *WEEKLY FARM SUMMARY ({start_date.strftime('%d/%m/%Y')} - {end_date.strftime('%d/%m/%Y')})*"
     else:
-        title = f"📊 MONTHLY FARM SUMMARY – {start_date.strftime('%d/%m/%Y')} to {end_date.strftime('%d/%m/%Y')}"
+        title = f"📋 *MONTHLY FARM SUMMARY ({start_date.strftime('%d/%m/%Y')} - {end_date.strftime('%d/%m/%Y')})*"
 
     prod, feed, exp, common, pl = _calculate_tables(df, birds_map, default_egg_rate, default_feed_cost_ton)
 
-    lines = [title, "", "1. Production", ""]
-    lines.append("Shed| Birds| 1st Collection (Eggs)| 2nd Collection (Eggs)| Total Eggs Produced| Mortality| Expected Production (%)| Actual Production (%)| Avg. Egg Selling Price (Rs./Egg)| Production Value (Rs.)")
-    for r in prod: lines.append("| ".join(r).replace("**", ""))
+    lines = [title, ""]
     
-    lines.extend(["", "-"*100, "", "2. Feed Consumption", ""])
-    lines.append("Shed| Feed Consumed (MT)| Feed per Bird (g/Bird/Day)| Feed Cost/Ton (Rs.)| Total Feed Cost (Rs.)")
-    for r in feed: lines.append("| ".join(r).replace("**", ""))
-    
-    lines.extend(["", "-"*100, "", "3. Shed-Related Expenditure", ""])
-    lines.append("Shed| No. of Labourers Used| No. of Medicines Used| Final Cost (Rs.)| Daily Payender")
-    for r in exp: lines.append("| ".join(r).replace("**", ""))
-    
-    lines.extend(["", "-"*100, "", "4. Common Fuel and Common Expenditures", ""])
-    lines.append("Particular| Quantity| Amount (Rs.)")
-    for r in common: lines.append("| ".join(r).replace("**", ""))
-    
-    lines.extend(["", "-"*100, "", "5. Daily P&L Summary", ""])
-    lines.append("Particular| Amount (Rs.)")
-    for r in pl: lines.append("| ".join(r).replace("**", ""))
-    
+    # Financial Overview Summary
+    lines.append("💰 *Financial Overview*")
+    for r in pl:
+        if r[0] != "Particular":
+            name = r[0].replace("**", "")
+            val = r[1]
+            if val != "-":
+                lines.append(f"• {name}: *{val}*")
+    lines.append("")
+
     return "\n".join(lines)
+
+
 
 
 def generate_pdf(pdf_path: str, df: pd.DataFrame, range_type: str, start_date, end_date, birds_map, default_egg_rate, default_feed_cost_ton):

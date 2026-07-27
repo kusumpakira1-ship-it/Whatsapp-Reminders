@@ -165,10 +165,35 @@ class EggGodownInventory(Base):
 class WAHAEvent(Base):
     __tablename__ = "sunfra_waha_events"
     id = Column(Integer, primary_key=True, index=True)
-    event_type = Column(String(50), nullable=False) # e.g. 'disconnected', 'reconnected', 'stopped_restart', 'working'
+    event_type = Column(String(50), nullable=False) # E.g. 'disconnected', 'reconnected', 'stopped_restart', 'working'
     status = Column(String(50), nullable=False)
     details = Column(Text, nullable=True)
     timestamp = Column(DateTime, nullable=False, default=func.now())
+
+
+class Flock(Base):
+    __tablename__ = "sunfra_flocks"
+    id = Column(Integer, primary_key=True, index=True)
+    shed_name = Column(String(50), unique=True, index=True, nullable=False)
+    hatch_date = Column(Date, nullable=False)
+    initial_chicks = Column(Integer, nullable=False, default=0)
+    batch_id = Column(String(50), nullable=True)
+    status = Column(String(20), default='active')
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+
+class BookStandard(Base):
+    __tablename__ = "sunfra_book_standards"
+    id = Column(Integer, primary_key=True, index=True)
+    week = Column(Integer, nullable=False)
+    day = Column(Integer, unique=True, nullable=False)
+    vaccine = Column(Text, nullable=True)
+    expected_production_pct = Column(DECIMAL(5, 2), default=0.00)
+    expected_body_weight_g = Column(Integer, default=0)
+    expected_feed_g = Column(Integer, default=0)
+    created_at = Column(DateTime, default=func.now())
+
 
 
 

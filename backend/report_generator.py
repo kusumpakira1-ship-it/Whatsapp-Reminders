@@ -3,7 +3,7 @@ import re
 import pandas as pd
 from datetime import datetime, date, timedelta, timezone
 from database import SessionLocal
-from models import ProcessedData
+from models import ProcessedData, Flock, BookStandard
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -143,11 +143,155 @@ def generate_custom_report(range_type: str = 'daily'):
         if feed_mt > 0:
             default_feed_cost_ton = amt / feed_mt
 
+    # -------------------------------------------------------------
+    # Generate Comparative Insights for Daily Report
+    # -------------------------------------------------------------
+    comparative_insights = ""
+    if range_type == 'daily' or start_date == end_date:
+        try:
+            from sqlalchemy import func
+            
+            flocks = db.query(Flock).filter(Flock.status == 'active').all()
+            
+            # 1. Shed-Wise Mortality
+            mort_lines = ["💀 *Shed-Wise Mortality*", "```"]
+            total_mort = 0
+            
+            ordered_sheds = [f"Shead {i}" for i in range(1, 10)]
+            m_map = {}
+            for sname in ordered_sheds:
+                shed_norm = sname.replace('Shead', 'Shed').strip()
+                shed_alt = sname.replace('Shed', 'Shead').strip()
+                
+                mort_qty = float(db.query(func.sum(ProcessedData.quantity)).filter(
+                    ProcessedData.category == 'mortality',
+                    ProcessedData.shead_name.in_([shed_norm, shed_alt]),
+                    func.date(ProcessedData.processed_time) == start_date
+                ).scalar() or 0)
+                
+                short_name = sname.replace('Shead ', '')
+                m_map[short_name] = int(mort_qty)
+                total_mort += int(mort_qty)
+                
+            chick_whites_mort = float(db.query(func.sum(ProcessedData.quantity)).filter(
+                ProcessedData.category == 'mortality',
+                ProcessedData.shead_name == 'Chick Whites',
+                func.date(ProcessedData.processed_time) == start_date
+            ).scalar() or 0)
+            
+            chick_brownie_mort = float(db.query(func.sum(ProcessedData.quantity)).filter(
+                ProcessedData.category == 'mortality',
+                ProcessedData.shead_name == 'Chick Brownie',
+                func.date(ProcessedData.processed_time) == start_date
+            ).scalar() or 0)
+            
+            for i in range(1, 10):
+                mort_lines.append(f"{i}-{m_map.get(str(i), 0)}")
+                
+            mort_lines.append("Chick")
+            mort_lines.append(f"Whites; {int(chick_whites_mort)}")
+            mort_lines.append(f"Brownie; {int(chick_brownie_mort)}")
+            total_mort += int(chick_whites_mort) + int(chick_brownie_mort)
+            mort_lines.append(f"Totall mortality; {total_mort}")
+            mort_lines.append("```")
+            
+            comparative_insights += "\n".join(mort_lines) + "\n\n"
+            
+            # 2. Production (AP-BP)
+            prod_lines = ["🥚 *SED_AGE_PRODUCTION-AP-BP*", "```"]
+            for f in flocks:
+                if not f.shed_name.lower().startswith('shead') and not f.shed_name.lower().startswith('shed'):
+                    continue
+                    
+                days = (start_date - f.hatch_date).days
+                running_weeks = max(1, days // 7)
+                
+                shed_norm = f.shed_name.replace('Shead', 'Shed').strip()
+                shed_alt = f.shed_name.replace('Shed', 'Shead').strip()
+                
+                eggs_collected = float(db.query(func.sum(ProcessedData.quantity)).filter(
+                    ProcessedData.category.in_(['egg_collection_1', 'egg_collection_2', 'egg_collection', 'egg']),
+                    ProcessedData.shead_name.in_([shed_norm, shed_alt]),
+                    func.date(ProcessedData.processed_time) == start_date
+                ).scalar() or 0)
+                
+                trays = eggs_collected / 30.0
+                
+                mort_cum = float(db.query(func.sum(ProcessedData.quantity)).filter(
+                    ProcessedData.category == 'mortality',
+                    ProcessedData.shead_name.in_([shed_norm, shed_alt]),
+                    ProcessedData.processed_time >= f.hatch_date,
+                    ProcessedData.processed_time <= f"{start_date} 23:59:59"
+                ).scalar() or 0)
+                live_birds = max(0, f.initial_chicks - int(mort_cum))
+                
+                ap = (eggs_collected / live_birds * 100.0) if live_birds > 0 else 0.0
+                
+                standard = db.query(BookStandard).filter(BookStandard.week == running_weeks).first()
+                bp = float(standard.expected_production_pct) if standard else 0.0
+                
+                short_name = f.shed_name.replace('Shead ', '').replace('Shed ', '')
+                if trays > 0 or live_birds > 0:
+                    prod_lines.append(f"{short_name}._ {running_weeks}._ {trays:.2f}_{ap:.0f}%-{bp:.0f}%")
+                else:
+                    prod_lines.append(f"{short_name}_0")
+                    
+            prod_lines.append("```")
+            comparative_insights += "\n".join(prod_lines) + "\n\n"
+            
+            # 3. Birds Weight
+            weight_lines = ["⚖️ *Birds Weight Comparison*", "```"]
+            for f in flocks:
+                is_laying = f.shed_name.lower().startswith('shead') or f.shed_name.lower().startswith('shed')
+                is_chick = f.shed_name.lower().startswith('chick')
+                
+                if not is_laying and not is_chick:
+                    continue
+                    
+                days = (start_date - f.hatch_date).days
+                running_weeks = max(1, days // 7)
+                
+                shed_norm = f.shed_name.replace('Shead', 'Shed').strip()
+                shed_alt = f.shed_name.replace('Shed', 'Shead').strip()
+                
+                actual_wt = db.query(ProcessedData.quantity).filter(
+                    ProcessedData.category == 'hen_weight',
+                    ProcessedData.shead_name.in_([shed_norm, shed_alt]),
+                    func.date(ProcessedData.processed_time) == start_date
+                ).order_by(ProcessedData.processed_time.desc()).first()
+                
+                actual_wt_val = float(actual_wt[0]) if actual_wt else 0.0
+                
+                standard = db.query(BookStandard).filter(BookStandard.week == running_weeks).first()
+                book_wt_g = standard.expected_body_weight_g if standard else 0
+                
+                if actual_wt_val > 0 and book_wt_g > 0:
+                    actual_wt_g = actual_wt_val * 1000.0 if actual_wt_val < 10 else actual_wt_val
+                    diff = int(actual_wt_g - book_wt_g)
+                    sign = "🟢" if diff >= 0 else "🔴"
+                    
+                    weight_lines.append(
+                        f"{f.shed_name}: Actual: {actual_wt_g/1000.0:.3f}, Book: {book_wt_g/1000.0:.3f}, {abs(diff)} Gms {sign}"
+                    )
+                else:
+                    weight_lines.append(f"{f.shed_name}: No Weight Data")
+                    
+            weight_lines.append("```")
+            comparative_insights += "\n".join(weight_lines) + "\n"
+            
+        except Exception as comp_err:
+            print(f"Error compiling comparative insights: {comp_err}")
+
     db.close()
     summary_text = build_whatsapp_summary(df, range_type, start_date, end_date, birds_map, default_egg_rate, default_feed_cost_ton)
+    
+    if comparative_insights:
+        summary_text += comparative_insights
+
     generate_pdf(pdf_path, df, range_type, start_date, end_date, birds_map, default_egg_rate, default_feed_cost_ton)
 
     return pdf_path, summary_text
+
 
 
 def generate_daily_reports():

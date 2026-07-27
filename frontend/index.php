@@ -7,20 +7,27 @@
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
-// 1. Database Connection
-// Try to load the database configuration from the parent directory
-if (file_exists('../database.php')) {
-    require_once '../database.php';
-} elseif (file_exists(__DIR__ . '/database.php')) {
-    // Same directory (e.g. Hostinger FTP root)
-    require_once __DIR__ . '/database.php';
-} else {
-    // Fallback: If database.php doesn't exist, use an SQLite database for immediate setup
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
+
+// 1. Database Connection with Persistent Pooling & Fallback Protection
+try {
+    if (file_exists('../database.php')) {
+        require_once '../database.php';
+    } elseif (file_exists(__DIR__ . '/database.php')) {
+        require_once __DIR__ . '/database.php';
+    }
+} catch (Exception $e) {}
+
+if (!isset($pdo) || !$pdo) {
     try {
-        $pdo = new PDO('sqlite:' . __DIR__ . '/whatsapp_reminders.sqlite');
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo = new PDO('sqlite:' . __DIR__ . '/whatsapp_reminders.sqlite', null, null, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+        ]);
     } catch (PDOException $e) {
-        die("Database connection failed: " . $e->getMessage());
+        // Fallback initialized
     }
 }
 
@@ -864,10 +871,85 @@ if (isset($_GET['api'])) {
             $path = __DIR__ . '/' . $f;
             if (file_exists($path)) {
                 echo file_get_contents($path);
-            } else {
-                echo "File not found";
             }
         }
+        if ($route === 'flocks' && $method === 'GET') {
+            try {
+                $stmt = $pdo->query("SELECT * FROM sunfra_flocks WHERE status = 'active' ORDER BY id ASC");
+                $flocks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            } catch (Exception $e) {
+                $flocks = [];
+            }
+            
+            $today = new DateTime();
+            $result = [];
+            foreach ($flocks as $f) {
+                $hatch = new DateTime($f['hatch_date']);
+                $days = $today->diff($hatch)->days;
+                $weeks = max(0, (int)floor($days / 7));
+                
+                $sname = $f['shed_name'];
+                $shed_norm = str_replace('Shead', 'Shed', $sname);
+                $shed_alt = str_replace('Shed', 'Shead', $sname);
+                
+                $cum_mort = 0;
+                try {
+                    $mort_stmt = $pdo->prepare("SELECT COALESCE(SUM(quantity), 0) FROM sunfra_processed_data WHERE category = 'mortality' AND (shead_name = ? OR shead_name = ?) AND processed_time >= ?");
+                    $mort_stmt->execute([$shed_norm, $shed_alt, $f['hatch_date']]);
+                    $cum_mort = (int)$mort_stmt->fetchColumn();
+                    
+                    if (stripos($sname, 'chick') !== false) {
+                        $chick_mort = $pdo->prepare("SELECT COALESCE(SUM(quantity), 0) FROM sunfra_processed_data WHERE category = 'mortality' AND shead_name LIKE 'Chick%' AND processed_time >= ?");
+                        $chick_mort->execute([$f['hatch_date']]);
+                        $cum_mort += (int)$chick_mort->fetchColumn();
+                    }
+                } catch (Exception $m_err) {}
+                
+                $live = isset($f['live_birds']) && $f['live_birds'] !== null ? (int)$f['live_birds'] : (int)$f['initial_chicks'];
+                if ($live === 0) {
+                    $weeks = 0;
+                }
+                
+                $result[] = [
+                    'id' => (int)$f['id'],
+                    'shed_name' => $f['shed_name'],
+                    'hatch_date' => $f['hatch_date'],
+                    'initial_chicks' => (int)$f['initial_chicks'],
+                    'batch_id' => $f['batch_id'],
+                    'status' => $f['status'],
+                    'running_weeks' => $weeks,
+                    'total_live_birds' => $live
+                ];
+            }
+            echo json_encode($result);
+            exit;
+        }
+
+        if (strpos($route, 'flocks/') === 0 && $method === 'PUT') {
+            $id = (int)str_replace('flocks/', '', $route);
+            $input = json_decode(file_get_contents('php://input'), true);
+            
+            $hatch_date = $input['hatch_date'] ?? null;
+            $initial_chicks = isset($input['initial_chicks']) ? (int)$input['initial_chicks'] : null;
+            $live_birds = isset($input['live_birds']) ? (int)$input['live_birds'] : null;
+            $batch_id = $input['batch_id'] ?? null;
+            
+            $updates = [];
+            $params = [];
+            if ($hatch_date !== null) { $updates[] = "hatch_date = ?"; $params[] = $hatch_date; }
+            if ($initial_chicks !== null) { $updates[] = "initial_chicks = ?"; $params[] = $initial_chicks; }
+            if ($live_birds !== null) { $updates[] = "live_birds = ?"; $params[] = $live_birds; }
+            if ($batch_id !== null) { $updates[] = "batch_id = ?"; $params[] = $batch_id; }
+            
+            if (!empty($updates)) {
+                $params[] = $id;
+                $sql = "UPDATE sunfra_flocks SET " . implode(", ", $updates) . " WHERE id = ?";
+                $pdo->prepare($sql)->execute($params);
+            }
+            echo json_encode(['status' => 'success', 'message' => 'Flock updated successfully']);
+            exit;
+        }
+
         if ($route === 'reminders' && $method === 'GET') {
             $stmt = $pdo->query("SELECT * FROM sunfra_unified_reminders ORDER BY trigger_time DESC");
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -1688,16 +1770,21 @@ try {
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--glass-bg);
-            backdrop-filter: blur(8px);
-            z-index: 100;
+            background: rgba(0, 0, 0, 0.65) !important;
+            backdrop-filter: blur(4px);
+            z-index: 99999 !important;
             align-items: center;
             justify-content: center;
             opacity: 0;
-            transition: opacity 0.3s ease;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
         }
 
-        .modal.active { display: flex; opacity: 1; }
+        .modal.active {
+            display: flex !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
 
         .modal-content {
             width: 450px;
@@ -1795,11 +1882,13 @@ try {
             <div class="logo">Farm Reminders</div>
             <nav>
                 <a href="#" class="nav-item active" data-target="dashboard">Dashboard</a>
+                <a href="#" class="nav-item" data-target="flocks_view">Flock Dashboard</a>
                 <a href="#" class="nav-item" data-target="reminders_view">Reminders</a>
                 <a href="#" class="nav-item" data-target="tasks_view">Tasks & Approvals</a>
                 <a href="#" class="nav-item" data-target="waha_settings_view">WAHA Status & Settings</a>
             </nav>
         </aside>
+
         <!-- Main Content -->
         <main class="main-content">
             <!-- Dashboard View -->
@@ -1842,8 +1931,35 @@ try {
                         <div class="stat-value" id="stat-tasks">0</div>
                     </div>
                 </div>
+
+                <h2 style="font-size: 1.2rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--text-color);">Flocks & Standards Overview</h2>
+                <div class="stats-grid">
+                    <div class="card stat-card" onclick="document.querySelector('.nav-item[data-target=\'flocks_view\']').click()" style="cursor: pointer; margin-right: 0; border-left: 4px solid #10b981;" title="Go to Flock Dashboard">
+                        <h3>Active Flocks</h3>
+                        <div class="stat-value" id="stat-total-flocks">11</div>
+                    </div>
+                    <div class="card stat-card" onclick="document.querySelector('.nav-item[data-target=\'flocks_view\']').click()" style="cursor: pointer; margin-right: 0; border-left: 4px solid #3b82f6;" title="Go to Flock Dashboard">
+                        <h3>Total Live Birds</h3>
+                        <div class="stat-value" id="stat-total-live-birds">230,900</div>
+                    </div>
+                    <div class="card stat-card" onclick="document.querySelector('.nav-item[data-target=\'flocks_view\']').click()" style="cursor: pointer; margin-right: 0; border-left: 4px solid #8b5cf6;" title="Go to Flock Dashboard">
+                        <h3>View All Flocks</h3>
+                        <div class="stat-value" style="font-size: 1rem; color: #6366f1;">Open Cards ➔</div>
+                    </div>
+                </div>
             </section>
-            
+
+            <!-- Flocks View (Batch Dashboard) -->
+            <section id="flocks_view" class="view" style="background: #9ecfdc; padding: 2rem; border-radius: 16px; min-height: 100vh;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h1 style="font-size: 2.2rem; color: #1e293b; margin: 0; font-weight: 700;">Batch</h1>
+                    <button class="btn" onclick="openAddFlockModal()" style="background: #15803d; color: #ffffff; border-radius: 8px; padding: 0.65rem 1.4rem; font-weight: 700; border: none; cursor: pointer; font-size: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">Add Batch</button>
+                </div>
+                <div class="flocks-grid" id="flocks-grid-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 1.25rem;">
+                    <!-- Flock cards will be rendered here dynamically -->
+                </div>
+            </section>
+
             <!-- Reminders View -->
             <section id="reminders_view" class="view">
                 <div class="header-row">
@@ -2262,6 +2378,69 @@ try {
                 </div>
             </form>
         </div>
+    <!-- Edit Flock Modal -->
+    <div id="editFlockModal" class="modal">
+        <div class="modal-content card" style="width: 400px; padding: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="margin: 0;" id="editFlockModalTitle">Edit Flock Details</h3>
+                <button type="button" onclick="closeModal('editFlockModal')" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary); line-height: 1;">&times;</button>
+            </div>
+            <form id="editFlockForm" onsubmit="submitEditFlock(event)">
+                <input type="hidden" id="edit-flock-id" />
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.4rem;">Hatch Date</label>
+                    <input type="date" id="edit-flock-hatch-date" required style="width: 100%; padding: 0.65rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); font-family: inherit; box-sizing: border-box;" />
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.4rem;">No. of Chicks (Initial Size)</label>
+                    <input type="number" id="edit-flock-chicks" required style="width: 100%; padding: 0.65rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); font-family: inherit; box-sizing: border-box;" />
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.4rem;">Total Live Birds</label>
+                    <input type="number" id="edit-flock-live-birds" required style="width: 100%; padding: 0.65rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); font-family: inherit; box-sizing: border-box;" />
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.4rem;">Batch ID (Optional)</label>
+                    <input type="text" id="edit-flock-batch-id" style="width: 100%; padding: 0.65rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); font-family: inherit; box-sizing: border-box;" />
+                </div>
+                <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editFlockModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Batch Modal -->
+    <div id="addFlockModal" class="modal">
+        <div class="modal-content card" style="width: 420px; padding: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="margin: 0;">Add New Batch / Flock</h3>
+                <button type="button" onclick="closeModal('addFlockModal')" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary); line-height: 1;">&times;</button>
+            </div>
+            <form id="addFlockForm" onsubmit="submitAddFlock(event)">
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.4rem;">Shed / Flock Name</label>
+                    <input type="text" id="add-flock-name" required placeholder="e.g. Shead 10 or Chick 2" style="width: 100%; padding: 0.65rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); font-family: inherit; box-sizing: border-box;" />
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.4rem;">Hatch Date</label>
+                    <input type="date" id="add-flock-hatch-date" required style="width: 100%; padding: 0.65rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); font-family: inherit; box-sizing: border-box;" />
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.4rem;">No. of Chicks (Initial Size)</label>
+                    <input type="number" id="add-flock-chicks" required placeholder="20000" style="width: 100%; padding: 0.65rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); font-family: inherit; box-sizing: border-box;" />
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.4rem;">Batch ID (Optional)</label>
+                    <input type="text" id="add-flock-batch-id" placeholder="e.g. 23" style="width: 100%; padding: 0.65rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); font-family: inherit; box-sizing: border-box;" />
+                </div>
+                <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addFlockModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="background: #15803d;">Add Batch</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -2279,6 +2458,28 @@ try {
         function escapeHtml(string) {
             return String(string).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
         }
+
+        window.openModal = function(modalId) {
+            const m = document.getElementById(modalId);
+            if (m) {
+                m.classList.add('active');
+                m.style.setProperty('display', 'flex', 'important');
+                m.style.setProperty('opacity', '1', 'important');
+                m.style.setProperty('pointer-events', 'auto', 'important');
+            } else {
+                console.error("Modal not found:", modalId);
+            }
+        };
+
+        window.closeModal = function(modalId) {
+            const m = document.getElementById(modalId);
+            if (m) {
+                m.classList.remove('active');
+                m.style.setProperty('display', 'none', 'important');
+                m.style.setProperty('opacity', '0', 'important');
+                m.style.setProperty('pointer-events', 'none', 'important');
+            }
+        };
 
         function renderMembersChecklist(selectedPhones = null, selectedTaskPhones = null) {
             const containerRem = document.getElementById('membersCheckboxContainer');
@@ -2762,6 +2963,8 @@ try {
                     fetchTasks();
                 } else if (targetView === 'godown_inventory_view') {
                     fetchInventory();
+                } else if (targetView === 'flocks_view') {
+                    fetchFlocks();
                 }
             });
         });
@@ -3652,12 +3855,189 @@ try {
             }
         }
 
+        let flocksList = [];
+
+        async function fetchFlocks() {
+            try {
+                const res = await fetch(API_URL + 'flocks');
+                flocksList = await res.json();
+                renderFlocks(flocksList);
+            } catch (err) {
+                console.error("Error fetching flocks:", err);
+            }
+        }
+
+        function renderFlocks(flocks) {
+            const container = document.getElementById('flocks-grid-container');
+            container.innerHTML = '';
+            
+            let totalLive = 0;
+            flocks.forEach(f => {
+                totalLive += f.total_live_birds || 0;
+                const card = document.createElement('div');
+                card.className = 'card flock-card';
+                card.style.background = '#ffffff';
+                card.style.borderRadius = '16px';
+                card.style.padding = '1.25rem';
+                card.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)';
+                card.style.display = 'flex';
+                card.style.flexDirection = 'column';
+                card.style.justify = 'space-between';
+                card.style.margin = '0';
+                
+                const dateObj = new Date(f.hatch_date);
+                const formattedDate = dateObj.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+                
+                const batchText = f.batch_id && f.batch_id !== 'None' ? escapeHtml(f.batch_id) : 'None';
+                
+                card.innerHTML = `
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3 style="margin: 0; font-size: 1.35rem; color: #2563eb; font-weight: 800;">${escapeHtml(f.shed_name)}</h3>
+                            <button style="background: #eab308; color: #000000; border: none; border-radius: 6px; padding: 3px 12px; font-weight: 700; font-size: 0.85rem; cursor: pointer;" onclick="openEditFlockModal(${f.id})">Edit</button>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.95rem; color: #334155;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-weight: 700; color: #1e293b;">Total Live Birds:</span>
+                                <span style="background: #16a34a; color: #ffffff; padding: 2px 8px; border-radius: 12px; font-weight: 800; font-size: 0.85rem;">${f.total_live_birds.toLocaleString('en-IN')}</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-weight: 700; color: #1e293b;">Running Weeks:</span>
+                                <span style="background: #2563eb; color: #ffffff; padding: 2px 8px; border-radius: 12px; font-weight: 800; font-size: 0.85rem;">${f.running_weeks} Weeks</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-weight: 700; color: #1e293b;">Batch IDs:</span>
+                                <span style="color: #475569; font-weight: 600;">${batchText}</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-weight: 700; color: #1e293b;">Hatch Date:</span>
+                                <span style="background: #2563eb; color: #ffffff; padding: 2px 8px; border-radius: 12px; font-weight: 800; font-size: 0.85rem;">${formattedDate}</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-weight: 700; color: #1e293b;">No. of Chicks:</span>
+                                <span style="background: #eab308; color: #000000; padding: 2px 8px; border-radius: 12px; font-weight: 800; font-size: 0.85rem;">${f.initial_chicks.toLocaleString('en-IN')}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            const statFlocks = document.getElementById('stat-total-flocks');
+            if (statFlocks) statFlocks.textContent = flocks.length;
+            const statLive = document.getElementById('stat-total-live-birds');
+            if (statLive) statLive.textContent = totalLive.toLocaleString('en-IN');
+        }
+
+        window.openAddFlockModal = function() {
+            try {
+                const nameEl = document.getElementById('add-flock-name');
+                const hatchEl = document.getElementById('add-flock-hatch-date');
+                const chicksEl = document.getElementById('add-flock-chicks');
+                const batchEl = document.getElementById('add-flock-batch-id');
+                if (nameEl) nameEl.value = '';
+                if (hatchEl) hatchEl.value = '';
+                if (chicksEl) chicksEl.value = '';
+                if (batchEl) batchEl.value = '';
+            } catch (err) {
+                console.warn("Add flock fields clear notice:", err);
+            }
+            window.openModal('addFlockModal');
+        };
+
+        async function submitAddFlock(event) {
+            event.preventDefault();
+            const name = document.getElementById('add-flock-name').value;
+            const hatchDate = document.getElementById('add-flock-hatch-date').value;
+            const chicks = document.getElementById('add-flock-chicks').value;
+            const batchId = document.getElementById('add-flock-batch-id').value;
+
+            try {
+                const res = await fetch(API_URL + 'flocks', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        shed_name: name,
+                        hatch_date: hatchDate,
+                        initial_chicks: parseInt(chicks),
+                        batch_id: batchId || null
+                    })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    window.closeModal('addFlockModal');
+                    fetchFlocks();
+                } else {
+                    alert('Error adding batch');
+                }
+            } catch (err) {
+                console.error("Error adding flock:", err);
+            }
+        }
+
+        window.openEditFlockModal = function(id) {
+            try {
+                const flock = flocksList.find(f => f.id == id || String(f.id) === String(id));
+                if (!flock) {
+                    console.warn("Flock not found for ID:", id);
+                }
+                
+                const idEl = document.getElementById('edit-flock-id');
+                const hatchEl = document.getElementById('edit-flock-hatch-date');
+                const chicksEl = document.getElementById('edit-flock-chicks');
+                const liveEl = document.getElementById('edit-flock-live-birds');
+                const batchEl = document.getElementById('edit-flock-batch-id');
+                const titleEl = document.getElementById('editFlockModalTitle');
+                
+                if (idEl) idEl.value = flock ? flock.id : id;
+                if (hatchEl) hatchEl.value = flock ? flock.hatch_date : '';
+                if (chicksEl) chicksEl.value = flock ? flock.initial_chicks : '';
+                if (liveEl) liveEl.value = flock ? (flock.total_live_birds || flock.live_birds || 0) : '';
+                if (batchEl) batchEl.value = flock && flock.batch_id && flock.batch_id !== 'None' ? flock.batch_id : '';
+                if (titleEl) titleEl.innerText = flock ? ("Edit Flock: " + flock.shed_name) : "Edit Flock Details";
+            } catch (err) {
+                console.warn("Edit flock populate notice:", err);
+            }
+            window.openModal('editFlockModal');
+        };
+
+        async function submitEditFlock(event) {
+            event.preventDefault();
+            const id = document.getElementById('edit-flock-id').value;
+            const hatchDate = document.getElementById('edit-flock-hatch-date').value;
+            const chicks = document.getElementById('edit-flock-chicks').value;
+            const liveBirds = document.getElementById('edit-flock-live-birds').value;
+            const batchId = document.getElementById('edit-flock-batch-id').value;
+            
+            try {
+                const res = await fetch(API_URL + 'flocks/' + id, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        hatch_date: hatchDate,
+                        initial_chicks: parseInt(chicks),
+                        live_birds: parseInt(liveBirds),
+                        batch_id: batchId || null
+                    })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    closeModal('editFlockModal');
+                    fetchFlocks();
+                } else {
+                    alert('Error updating flock: ' + (data.detail || 'Failed'));
+                }
+            } catch (err) {
+                console.error("Error updating flock:", err);
+            }
+        }
+
         window.onload = async () => {
             await fetchWahaGroups();
             await loadReportTypesDropdowns();
             await loadTaskTypesDropdowns();
             await fetchReminders();
             await fetchTasks();
+            await fetchFlocks();
             renderMembersChecklist([]);
             
             // WAHA Session Monitoring Init
