@@ -995,6 +995,8 @@ def poll_and_execute_unified_reminders():
             func.date(RawMessage.timestamp) == today
         ).all()
         
+        msg_jids = {w.message_id: w.group_id for w in db.query(WhatsAppMessage).filter(func.date(WhatsAppMessage.timestamp) == today).all()}
+        
         groups = db.query(Group).all()
         group_names_by_id = {g.whatsapp_group_id: g.name for g in groups}
         
@@ -1131,27 +1133,26 @@ def poll_and_execute_unified_reminders():
                         group_name = group_names_by_id.get(r.whatsapp_group_id)
                         for raw_msg in raw_messages:
                             raw_text_lower = str(raw_msg.raw_text or '').lower()
-                            alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
-                            match_sender_raw = clean_phone in str(raw_msg.sender) or alt_phone in str(raw_msg.sender)
-                            match_group_raw = (
-                                r.whatsapp_group_id and group_name
-                                and raw_msg.group_name
-                                and str(raw_msg.group_name).lower() == group_name.lower()
-                            )
-                            match_name = False
-                            if not match_sender_raw and r.person_name and raw_msg.sender:
-                                import difflib
-                                sender_name_part = clean_name_string(raw_msg.sender.split(' (')[0])
-                                t_names = [clean_name_string(n) for n in r.person_name.split(',')]
-                                for t_name in t_names:
-                                    if len(sender_name_part) >= 3 and len(t_name) >= 3:
-                                        ratio = difflib.SequenceMatcher(None, sender_name_part, t_name).ratio()
-                                        if ratio > 0.75 or sender_name_part in t_name or t_name in sender_name_part:
-                                            match_name = True
-                                            break
-                            
-                            # Strict match: Group match for group reminders, assigned person match for personal reminders
-                            valid_match = (r.whatsapp_group_id and match_group_raw) or (not r.whatsapp_group_id and (match_sender_raw or match_name))
+                            clean_raw_jid = msg_jids.get(raw_msg.message_id, '').replace('@g.us', '').strip()
+                            clean_target_jid = r.whatsapp_group_id.replace('@g.us', '').strip() if r.whatsapp_group_id else ''
+
+                            if clean_target_jid:
+                                valid_match = (clean_raw_jid == clean_target_jid)
+                            else:
+                                alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
+                                match_sender_raw = clean_phone in str(raw_msg.sender) or alt_phone in str(raw_msg.sender)
+                                match_name = False
+                                if not match_sender_raw and r.person_name and raw_msg.sender:
+                                    import difflib
+                                    sender_name_part = clean_name_string(raw_msg.sender.split(' (')[0])
+                                    t_names = [clean_name_string(n) for n in r.person_name.split(',')]
+                                    for t_name in t_names:
+                                        if len(sender_name_part) >= 3 and len(t_name) >= 3:
+                                            ratio = difflib.SequenceMatcher(None, sender_name_part, t_name).ratio()
+                                            if ratio > 0.75 or sender_name_part in t_name or t_name in sender_name_part:
+                                                match_name = True
+                                                break
+                                valid_match = match_sender_raw or match_name
                             
                             if valid_match:
                                 if "egg pricing" in report.lower():
@@ -1197,7 +1198,10 @@ def poll_and_execute_unified_reminders():
                                             pass
                                         break
                                 else:
-                                    if any(kw.lower() in raw_text_lower for kw in raw_keywords):
+                                    is_stock_website = any(w in raw_text_lower for w in ["website update", "website updates", "stock update", "stock updates", "stock/website"])
+                                    if is_stock_website and "stock" not in report.lower() and "website" not in report.lower():
+                                        pass
+                                    elif any(kw.lower() in raw_text_lower for kw in raw_keywords):
                                         submitted = True
                                         logger.info(f"Raw message keyword match for '{report}' from {raw_msg.sender} — skipping reminder.")
                                         # Always prioritize the assigned whatsapp_group_id if specified!
@@ -1965,18 +1969,13 @@ async def manager_escalation_job():
                 is_group_level = (r["person_phone"] == '1234567890' or 'team' in r["person_name"].lower())
                 
                 is_match = False
-                if is_group_level:
-                    is_match = (clean_target_jid_stripped and clean_raw_jid == clean_target_jid_stripped)
+                if clean_target_jid_stripped:
+                    is_match = (clean_raw_jid == clean_target_jid_stripped)
                 else:
                     sender_matched = match_sender_raw or match_name or match_waha_sender_raw
                     if not sender_matched and r["person_name"] and 'mahalakshmi' in r["person_name"].lower() and 'mahalakshmi' in str(raw_msg.sender).lower():
                         sender_matched = True
-                        
-                    if sender_matched:
-                        if not clean_raw_jid:
-                            is_match = True
-                        elif clean_target_jid_stripped and clean_raw_jid == clean_target_jid_stripped:
-                            is_match = True
+                    is_match = sender_matched
                             
                 if is_match:
                     msgs_today.append(raw_msg)
@@ -2033,9 +2032,11 @@ async def manager_escalation_job():
                         submitted = True
                         break
                 elif is_update_report:
-                    if any(kw in text_lower for kw in update_keywords):
-                        submitted = True
-                        break
+                    is_stock_website = any(w in text_lower for w in ["website update", "website updates", "stock update", "stock updates", "stock/website"])
+                    if not (is_stock_website and "stock" not in r["report_types"].lower() and "website" not in r["report_types"].lower()):
+                        if any(kw in text_lower for kw in update_keywords):
+                            submitted = True
+                            break
                 else:
                     if any(kw in text_lower for kw in report_keywords):
                         submitted = True
@@ -2312,18 +2313,13 @@ async def company_wise_escalation_job():
                 is_group_level = (r["person_phone"] == '1234567890' or 'team' in r["person_name"].lower())
                 
                 is_match = False
-                if is_group_level:
-                    is_match = (clean_target_jid_stripped and clean_raw_jid == clean_target_jid_stripped)
+                if clean_target_jid_stripped:
+                    is_match = (clean_raw_jid == clean_target_jid_stripped)
                 else:
                     sender_matched = match_sender_raw or match_name or match_waha_sender_raw
                     if not sender_matched and r["person_name"] and 'mahalakshmi' in r["person_name"].lower() and 'mahalakshmi' in str(raw_msg.sender).lower():
                         sender_matched = True
-                        
-                    if sender_matched:
-                        if not clean_raw_jid:
-                            is_match = True
-                        elif clean_target_jid_stripped and clean_raw_jid == clean_target_jid_stripped:
-                            is_match = True
+                    is_match = sender_matched
                             
                 if is_match:
                     msgs_today.append(raw_msg)
@@ -2380,9 +2376,11 @@ async def company_wise_escalation_job():
                         submitted = True
                         break
                 elif is_update_report:
-                    if any(kw in text_lower for kw in update_keywords):
-                        submitted = True
-                        break
+                    is_stock_website = any(w in text_lower for w in ["website update", "website updates", "stock update", "stock updates", "stock/website"])
+                    if not (is_stock_website and "stock" not in r["report_types"].lower() and "website" not in r["report_types"].lower()):
+                        if any(kw in text_lower for kw in update_keywords):
+                            submitted = True
+                            break
                 else:
                     if any(kw in text_lower for kw in report_keywords):
                         submitted = True

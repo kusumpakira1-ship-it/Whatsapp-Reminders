@@ -218,18 +218,13 @@ try:
             is_group_level = (r["person_phone"] == '1234567890' or 'team' in r["person_name"].lower())
             
             is_match = False
-            if is_group_level:
-                is_match = (clean_target_jid_stripped and clean_raw_jid == clean_target_jid_stripped)
+            if clean_target_jid_stripped:
+                is_match = (clean_raw_jid == clean_target_jid_stripped)
             else:
                 sender_matched = match_sender_raw or match_name or match_waha_sender_raw
                 if not sender_matched and r["person_name"] and 'mahalakshmi' in r["person_name"].lower() and 'mahalakshmi' in str(raw_msg.sender).lower():
                     sender_matched = True
-                    
-                if sender_matched:
-                    if not clean_raw_jid:
-                        is_match = True
-                    elif clean_target_jid_stripped and clean_raw_jid == clean_target_jid_stripped:
-                        is_match = True
+                is_match = sender_matched
                         
             if is_match:
                 msgs_today.append(raw_msg)
@@ -286,9 +281,11 @@ try:
                     submitted = True
                     break
             elif is_update_report:
-                if any(kw in text_lower for kw in update_keywords):
-                    submitted = True
-                    break
+                is_stock_website = any(w in text_lower for w in ["website update", "website updates", "stock update", "stock updates", "stock/website"])
+                if not (is_stock_website and "stock" not in r["report_types"].lower() and "website" not in r["report_types"].lower()):
+                    if any(kw in text_lower for kw in update_keywords):
+                        submitted = True
+                        break
             else:
                 if any(kw in text_lower for kw in report_keywords):
                     submitted = True
