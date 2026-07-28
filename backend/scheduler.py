@@ -9,7 +9,7 @@ from config import settings
 from apscheduler.triggers.date import DateTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 from database import SessionLocal
-from models import ReportRecipient, Group, Employee, ProcessedData, RawMessage, SystemSetting, CustomAlarm, UnifiedReminder, WAHAEvent, Task, EggGodownInventory, WhatsAppMessage, ReminderLog
+from models import ReportRecipient, Group, Employee, ProcessedData, RawMessage, SystemSetting, CustomAlarm, UnifiedReminder, WAHAEvent, Task, EggGodownInventory, WhatsAppMessage, ReminderLog, Flock, BookStandard
 from sqlalchemy import func
 
 logger = logging.getLogger(__name__)
@@ -61,7 +61,26 @@ async def _send_reports_to_all(pdf_path, summary_text):
         if summary_text:
             send_waha_message(phone, summary_text)
         if pdf_path:
-            send_waha_file(phone, pdf_path, caption=f"PDF Report - {pdf_path.split('/')[-1]}")
+            pdf_paths = [pdf_path] if isinstance(pdf_path, str) else pdf_path
+            for path in pdf_paths:
+                caption = "Operations Report" if "operations" in path.lower() else "Financial Report" if "financial" in path.lower() else "PDF Report"
+                fn = path.split('/')[-1] if '/' in path else path.split('\\')[-1]
+                send_waha_file(phone, path, caption=f"{caption} - {fn}")
+
+    # Explicitly ensure the Farm Operations PDF is sent to the 2 admins
+    admin_phones = ["917259510983@c.us", "916364817749@c.us"]
+    clean_phones = {p.split('@')[0] for p in phones}
+    if pdf_path:
+        pdf_paths = [pdf_path] if isinstance(pdf_path, str) else pdf_path
+        for path in pdf_paths:
+            if "operations" in path.lower():
+                for admin_phone in admin_phones:
+                    admin_number = admin_phone.split('@')[0]
+                    if admin_number not in clean_phones:
+                        caption = "Operations Report"
+                        fn = path.split('/')[-1] if '/' in path else path.split('\\')[-1]
+                        logger.info(f"Sending operations PDF to admin {admin_phone}")
+                        send_waha_file(admin_phone, path, caption=f"{caption} - {fn}")
 
 async def scheduled_report_job():
     logger.info("Starting scheduled 10 PM daily report generation...")
@@ -73,7 +92,7 @@ async def scheduled_godown_report_job():
     try:
         from report_generator_godown import generate_godown_report
         pdf_path, summary_text = generate_godown_report()
-        admin_phones = ["917259510983", "919346763549"]
+        admin_phones = ["917259510983", "916364817749"]
         for phone in admin_phones:
             logger.info(f"Sending daily egg godown summary to {phone}")
             send_waha_message(phone, summary_text)
@@ -1155,15 +1174,45 @@ def poll_and_execute_unified_reminders():
                                 valid_match = match_sender_raw or match_name
                             
                             if valid_match:
+                                # Overrides for Hyperscale and P&L groups
+                                is_hyperscale = clean_target_jid and "120363428417403024" in clean_target_jid
+                                is_p_and_l = clean_target_jid and "120363427856964756" in clean_target_jid
+                                if is_hyperscale:
+                                    has_today = "today" in raw_text_lower
+                                    has_photo = getattr(raw_msg, 'message_type', '') == 'image' or getattr(raw_msg, 'media_path', None) is not None
+                                    has_standard = any(kw.lower() in raw_text_lower for kw in raw_keywords)
+                                    if has_today or has_photo or has_standard:
+                                        submitted = True
+                                        logger.info(f"Hyperscale override raw match for '{report}' from {raw_msg.sender}.")
+                                        break
+                                elif is_p_and_l:
+                                    has_photo = getattr(raw_msg, 'message_type', '') == 'image' or getattr(raw_msg, 'media_path', None) is not None
+                                    has_spec_phrases = any(phrase in raw_text_lower for phrase in ["report submitted", "submitted profit summary", "profit summary"])
+                                    has_standard = any(kw.lower() in raw_text_lower for kw in raw_keywords)
+                                    if has_photo or has_spec_phrases or has_standard:
+                                        submitted = True
+                                        logger.info(f"P&L override raw match for '{report}' from {raw_msg.sender}.")
+                                        break
+
                                 if "egg pricing" in report.lower():
                                     time_keyword = "morning" if "morning" in report.lower() else "afternoon" if "afternoon" in report.lower() else "evening" if "evening" in report.lower() else None
                                     has_price_number = bool(re.search(r'\d{3}', raw_text_lower))
                                     is_time_match = False
-                                    if time_keyword == 'morning' and (raw_msg.timestamp.hour < 12 or 'morning' in raw_text_lower or '7:' in raw_text_lower or '8:' in raw_text_lower or '9:' in raw_text_lower or '10:' in raw_text_lower or 'veh kol' in raw_text_lower) and 'ppr rate' not in raw_text_lower and 'closing' not in raw_text_lower:
+                                    
+                                    # Extract hour from text if mentioned in the format like '8:44' or '13:20'
+                                    raw_msg_hour = raw_msg.timestamp.hour
+                                    match_time = re.search(r'\b(\d{1,2}):(\d{2})\b', raw_text_lower)
+                                    if match_time:
+                                        try:
+                                            raw_msg_hour = int(match_time.group(1))
+                                        except Exception:
+                                            pass
+                                            
+                                    if time_keyword == 'morning' and (raw_msg_hour < 12 or 'morning' in raw_text_lower or 'veh kol' in raw_text_lower) and 'ppr rate' not in raw_text_lower and 'closing' not in raw_text_lower:
                                         is_time_match = True
-                                    elif time_keyword == 'afternoon' and (12 <= raw_msg.timestamp.hour < 17 or 'afternoon' in raw_text_lower or 'ppr rate' in raw_text_lower or '12:' in raw_text_lower or '13:' in raw_text_lower or '14:' in raw_text_lower) and 'closing' not in raw_text_lower:
+                                    elif time_keyword == 'afternoon' and (12 <= raw_msg_hour < 17 or 'afternoon' in raw_text_lower or 'ppr rate' in raw_text_lower) and 'closing' not in raw_text_lower:
                                         is_time_match = True
-                                    elif time_keyword == 'evening' and (raw_msg.timestamp.hour >= 17 or 'evening' in raw_text_lower or 'closing' in raw_text_lower or '18:' in raw_text_lower or '19:' in raw_text_lower):
+                                    elif time_keyword == 'evening' and (raw_msg_hour >= 17 or 'evening' in raw_text_lower or 'closing' in raw_text_lower or '18:' in raw_text_lower or '19:' in raw_text_lower):
                                         is_time_match = True
 
                                     if is_time_match and has_price_number and any(w in raw_text_lower for w in ["egg", "price", "pricing", "ppr rate", "closing", "veh kol"]):
@@ -1751,10 +1800,17 @@ async def poll_and_remind_tasks_job():
                     else:
                         is_feed_formula = t.task_type and ('approval' in t.task_type.lower() or 'feed formula' in t.task_name.lower())
                         if is_feed_formula:
+                            target_shed = "Unknown"
+                            if " - " in t.task_name:
+                                parts = t.task_name.split(" - ")
+                                if len(parts) > 1:
+                                    subparts = parts[1].split(" to ")
+                                    target_shed = subparts[0].strip()
                             msg = (
                                 f"⚠️ *Task Overdue Alert*\n\n"
                                 f"Hi Team,\n"
                                 f"The deadline for task *\"{t.task_name}\"* has passed.\n\n"
+                                f"Target Shed/Flock: *{target_shed}*\n\n"
                                 f"Please complete this work and reply to this message with *\"updated\"* & *\"approved\"* once finished."
                             )
                         else:
@@ -2018,11 +2074,20 @@ async def manager_escalation_job():
                     has_price_number = bool(re.search(r'\d{3}', text_lower))
                     is_time_match = False
                     
-                    if time_keyword == 'morning' and (msg_hour < 12 or 'morning' in text_lower or '7:' in text_lower or '8:' in text_lower or '9:' in text_lower or '10:' in text_lower or 'veh kol' in text_lower) and 'ppr rate' not in text_lower and 'closing' not in text_lower:
+                    # Extract hour from text if mentioned in the format like '8:44' or '13:20'
+                    msg_hour_to_use = msg_hour
+                    match_time = re.search(r'\b(\d{1,2}):(\d{2})\b', text_lower)
+                    if match_time:
+                        try:
+                            msg_hour_to_use = int(match_time.group(1))
+                        except Exception:
+                            pass
+                            
+                    if time_keyword == 'morning' and (msg_hour_to_use < 12 or 'morning' in text_lower or 'veh kol' in text_lower) and 'ppr rate' not in text_lower and 'closing' not in text_lower:
                         is_time_match = True
-                    elif time_keyword == 'afternoon' and (12 <= msg_hour < 17 or 'afternoon' in text_lower or 'ppr rate' in text_lower or '12:' in text_lower or '13:' in text_lower or '14:' in text_lower) and 'closing' not in text_lower:
+                    elif time_keyword == 'afternoon' and (12 <= msg_hour_to_use < 17 or 'afternoon' in text_lower or 'ppr rate' in text_lower) and 'closing' not in text_lower:
                         is_time_match = True
-                    elif time_keyword == 'evening' and (msg_hour >= 17 or 'evening' in text_lower or 'closing' in text_lower or '18:' in text_lower or '19:' in text_lower):
+                    elif time_keyword == 'evening' and (msg_hour_to_use >= 17 or 'evening' in text_lower or 'closing' in text_lower or '18:' in text_lower or '19:' in text_lower):
                         is_time_match = True
 
                     if is_time_match and has_price_number and any(w in text_lower for w in ["egg", "price", "pricing", "ppr rate", "closing", "veh kol", "papaak"]):
@@ -2362,11 +2427,20 @@ async def company_wise_escalation_job():
                     has_price_number = bool(re.search(r'\d{3}', text_lower))
                     is_time_match = False
                     
-                    if time_keyword == 'morning' and (msg_hour < 12 or 'morning' in text_lower or '7:' in text_lower or '8:' in text_lower or '9:' in text_lower or '10:' in text_lower or 'veh kol' in text_lower) and 'ppr rate' not in text_lower and 'closing' not in text_lower:
+                    # Extract hour from text if mentioned in the format like '8:44' or '13:20'
+                    msg_hour_to_use = msg_hour
+                    match_time = re.search(r'\b(\d{1,2}):(\d{2})\b', text_lower)
+                    if match_time:
+                        try:
+                            msg_hour_to_use = int(match_time.group(1))
+                        except Exception:
+                            pass
+                            
+                    if time_keyword == 'morning' and (msg_hour_to_use < 12 or 'morning' in text_lower or 'veh kol' in text_lower) and 'ppr rate' not in text_lower and 'closing' not in text_lower:
                         is_time_match = True
-                    elif time_keyword == 'afternoon' and (12 <= msg_hour < 17 or 'afternoon' in text_lower or 'ppr rate' in text_lower or '12:' in text_lower or '13:' in text_lower or '14:' in text_lower) and 'closing' not in text_lower:
+                    elif time_keyword == 'afternoon' and (12 <= msg_hour_to_use < 17 or 'afternoon' in text_lower or 'ppr rate' in text_lower) and 'closing' not in text_lower:
                         is_time_match = True
-                    elif time_keyword == 'evening' and (msg_hour >= 17 or 'evening' in text_lower or 'closing' in text_lower or '18:' in text_lower or '19:' in text_lower):
+                    elif time_keyword == 'evening' and (msg_hour_to_use >= 17 or 'evening' in text_lower or 'closing' in text_lower or '18:' in text_lower or '19:' in text_lower):
                         is_time_match = True
 
                     if is_time_match and has_price_number and any(w in text_lower for w in ["egg", "price", "pricing", "ppr rate", "closing", "veh kol", "papaak"]):
@@ -2721,12 +2795,171 @@ async def scheduled_vaccine_reminder_job():
         db.close()
 
 
+async def check_feed_change_transitions_job():
+    logger.info("Starting scheduled feed change transitions check...")
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    today = datetime.now(IST).date()
+    now_ist = datetime.now(IST).replace(tzinfo=None)
+
+    # GM: week 9, PLM: week 16, LM1: week 19, LM2: week 41, LM3: week 71
+    TRANSITIONS = {
+        9: ("GM (9-15 W)", "GM", """Sunfra Poultry Farm feed formulations:
+GM (9-15 W)
+- Maize: 500
+- B.Rice: 70
+- DORB: 130
+- SOYA: 210
+- DDGS: 25
+- Rapeseed: 25
+- Calcite: 25
+- Stone grit: 0
+- DCP: 10
+- Lysine: 1.3
+- Methionine: 1.3
+- Salt: 3.5
+- TOXFIN 300: 0.5
+- SalCURB: 0.5
+- Medicine: 5
+------------------
+Total: 1007.1"""),
+        16: ("PLM (16-18 W)", "PLM", """Sunfra Poultry Farm feed formulations:
+PLM (16-18 W)
+- Maize: 480
+- B.Rice: 80
+- DORB: 120
+- SOYA: 180
+- DDGS: 30
+- Rapeseed: 30
+- Calcite: 25
+- Stone grit: 40
+- DCP: 10
+- Lysine: 1
+- Methionine: 1.3
+- Salt: 4
+- TOXFIN 300: 0.5
+- SalCURB: 0.5
+- Medicine: 5
+------------------
+Total: 1007.3"""),
+        19: ("LM1 (19-40 W)", "LM1", """Sunfra Poultry Farm feed formulations:
+LM1 (19-40 W)
+- Maize: 400
+- B.Rice: 150
+- DORB: 60
+- SOYA: 180
+- DDGS: 50
+- Rapeseed: 30
+- Calcite: 25
+- Stone grit: 90
+- DCP: 9
+- Lysine: 1
+- Methionine: 1.5
+- Salt: 4
+- TOXFIN 300: 0.5
+- SalCURB: 0.5
+- Medicine: 5
+------------------
+Total: 1006.5"""),
+        41: ("LM2 (41-70 W)", "LM2", """Sunfra Poultry Farm feed formulations:
+LM2 (41-70 W)
+- Maize: 350
+- B.Rice: 200
+- DORB: 80
+- SOYA: 155
+- DDGS: 50
+- Rapeseed: 30
+- Calcite: 25
+- Stone grit: 100
+- DCP: 8
+- Lysine: 0.8
+- Methionine: 0.5
+- Salt: 4
+- TOXFIN 300: 0.5
+- SalCURB: 0.5
+- Medicine: 5
+------------------
+Total: 1009.3"""),
+        71: ("LM3 (Above 70 W)", "LM3", """Sunfra Poultry Farm feed formulations:
+LM3 (Above 70 W)
+- Maize: 350
+- B.Rice: 200 (updated: 250)
+- DORB: 110
+- SOYA: 125
+- DDGS: 50
+- Rapeseed: 30
+- Calcite: 25
+- Stone grit: 105
+- DCP: 7
+- Lysine: 0.7
+- Methionine: 0
+- Salt: 4
+- TOXFIN 300: 0.5
+- SalCURB: 0.5
+- Medicine: 5
+------------------
+Total: 1012.7 (updated: 1062.7)""")
+    }
+
+    db = SessionLocal()
+    try:
+        flocks = db.query(Flock).filter(Flock.status == 'active').all()
+        for f in flocks:
+            if not f.hatch_date:
+                continue
+            age_days = (today - f.hatch_date).days + 1
+            if age_days < 1:
+                continue
+            
+            std = db.query(BookStandard).filter(BookStandard.day == age_days).first()
+            running_weeks = int(std.week) if std and std.week is not None else (age_days // 7 if age_days else 0)
+            
+            if running_weeks in TRANSITIONS:
+                full_name, stage_code, formula_text = TRANSITIONS[running_weeks]
+                task_name = f"Feed Formula - {f.shed_name} to {stage_code} (Week {running_weeks})"
+                
+                # Check if task already exists
+                existing = db.query(Task).filter(Task.task_name == task_name).first()
+                if not existing:
+                    logger.info(f"Transition detected: {f.shed_name} reached week {running_weeks} ({stage_code}). Creating task and sending approval request...")
+                    
+                    t = Task(
+                        task_name=task_name,
+                        task_type="approval",
+                        status="pending_approval",
+                        assigned_person_name="Team",
+                        assigned_person_phone="1234567890",
+                        approver_phone="917259510983,916364817749",
+                        due_time=now_ist.replace(hour=21, minute=30, second=0, microsecond=0),
+                        completion_keywords="approve,approved,send,yes",
+                        completion_details=formula_text
+                    )
+                    db.add(t)
+                    db.commit()
+                    
+                    approval_msg = (
+                        f"🔔 *Feed Change Approval Request* 🔔\n\n"
+                        f"Shed *{f.shed_name}* has reached **Week {running_weeks}**.\n"
+                        f"It is time to transition to the **{full_name}** feed stage.\n\n"
+                        f"Please reply with *\"approve\"* or *\"send\"* to dispatch this reminder to the Feed Formula group."
+                    )
+                    send_waha_message("917259510983@c.us", approval_msg)
+                    send_waha_message("916364817749@c.us", approval_msg)
+    except Exception as e:
+        logger.error(f"Error in check_feed_change_transitions_job: {e}")
+    finally:
+        db.close()
+
+
 def setup_scheduler():
 
     global scheduler
     
     # Schedule Health Monitor every 1 minute
     scheduler.add_job(health_monitor_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60)
+    
+    # Schedule Feed stage transition check daily at 8:00 AM IST
+    scheduler.add_job(check_feed_change_transitions_job, CronTrigger(hour=8, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
     # Schedule Task Overdue Checker & Nagging alert every 1 minute
     scheduler.add_job(poll_and_remind_tasks_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60)
@@ -2749,9 +2982,7 @@ def setup_scheduler():
     # Schedule media/report cleanup daily at 12:05 AM IST
     scheduler.add_job(cleanup_old_files_job, CronTrigger(hour=0, minute=5, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
-    # Schedule 6:00 PM data entry reminders everyday
-    scheduler.add_job(scheduled_reminder_job, CronTrigger(hour=18, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
-    
+
     # Combined 10:00 PM Dispatcher: Daily Egg Summary PDF, Escalation Alert, and Daily Farm Report
     scheduler.add_job(send_all_10pm_daily_reports_job, CronTrigger(hour=22, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     

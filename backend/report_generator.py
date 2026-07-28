@@ -9,7 +9,7 @@ from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Paragraph, HRFlowable
-from report_formatter import build_whatsapp_summary, generate_pdf
+from report_formatter import build_whatsapp_summary, generate_pdf, generate_operations_pdf
 
 IST = timezone(timedelta(hours=5, minutes=30))
 
@@ -288,9 +288,14 @@ def generate_custom_report(range_type: str = 'daily'):
     if comparative_insights:
         summary_text += comparative_insights
 
-    generate_pdf(pdf_path, df, range_type, start_date, end_date, birds_map, default_egg_rate, default_feed_cost_ton)
-
-    return pdf_path, summary_text
+    if range_type == 'daily' or start_date == end_date:
+        ops_pdf_path = pdf_path.replace('.pdf', '_operations.pdf')
+        generate_operations_pdf(ops_pdf_path, df, range_type, start_date, end_date, birds_map)
+        generate_pdf(pdf_path, df, range_type, start_date, end_date, birds_map, default_egg_rate, default_feed_cost_ton)
+        return [ops_pdf_path, pdf_path], summary_text
+    else:
+        generate_pdf(pdf_path, df, range_type, start_date, end_date, birds_map, default_egg_rate, default_feed_cost_ton)
+        return pdf_path, summary_text
 
 
 

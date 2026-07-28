@@ -22,6 +22,113 @@ logger = logging.getLogger(__name__)
 # Create tables in the remote database (if they don't exist)
 Base.metadata.create_all(bind=engine)
 
+def get_formula_text_by_task_name(task_name: str) -> str:
+    import re
+    match = re.search(r'\(Week\s+(\d+)\)', task_name)
+    if match:
+        week = int(match.group(1))
+        if week == 9:
+            return """Sunfra Poultry Farm feed formulations:
+GM (9-15 W)
+- Maize: 500
+- B.Rice: 70
+- DORB: 130
+- SOYA: 210
+- DDGS: 25
+- Rapeseed: 25
+- Calcite: 25
+- Stone grit: 0
+- DCP: 10
+- Lysine: 1.3
+- Methionine: 1.3
+- Salt: 3.5
+- TOXFIN 300: 0.5
+- SalCURB: 0.5
+- Medicine: 5
+------------------
+Total: 1007.1"""
+        elif week == 16:
+            return """Sunfra Poultry Farm feed formulations:
+PLM (16-18 W)
+- Maize: 480
+- B.Rice: 80
+- DORB: 120
+- SOYA: 180
+- DDGS: 30
+- Rapeseed: 30
+- Calcite: 25
+- Stone grit: 40
+- DCP: 10
+- Lysine: 1
+- Methionine: 1.3
+- Salt: 4
+- TOXFIN 300: 0.5
+- SalCURB: 0.5
+- Medicine: 5
+------------------
+Total: 1007.3"""
+        elif week == 19:
+            return """Sunfra Poultry Farm feed formulations:
+LM1 (19-40 W)
+- Maize: 400
+- B.Rice: 150
+- DORB: 60
+- SOYA: 180
+- DDGS: 50
+- Rapeseed: 30
+- Calcite: 25
+- Stone grit: 90
+- DCP: 9
+- Lysine: 1
+- Methionine: 1.5
+- Salt: 4
+- TOXFIN 300: 0.5
+- SalCURB: 0.5
+- Medicine: 5
+------------------
+Total: 1006.5"""
+        elif week == 41:
+            return """Sunfra Poultry Farm feed formulations:
+LM2 (41-70 W)
+- Maize: 350
+- B.Rice: 200
+- DORB: 80
+- SOYA: 155
+- DDGS: 50
+- Rapeseed: 30
+- Calcite: 25
+- Stone grit: 100
+- DCP: 8
+- Lysine: 0.8
+- Methionine: 0.5
+- Salt: 4
+- TOXFIN 300: 0.5
+- SalCURB: 0.5
+- Medicine: 5
+------------------
+Total: 1009.3"""
+        elif week == 71:
+            return """Sunfra Poultry Farm feed formulations:
+LM3 (Above 70 W)
+- Maize: 350
+- B.Rice: 200 (updated: 250)
+- DORB: 110
+- SOYA: 125
+- DDGS: 50
+- Rapeseed: 30
+- Calcite: 25
+- Stone grit: 105
+- DCP: 7
+- Lysine: 0.7
+- Methionine: 0
+- Salt: 4
+- TOXFIN 300: 0.5
+- SalCURB: 0.5
+- Medicine: 5
+------------------
+Total: 1012.7 (updated: 1062.7)"""
+    return ""
+
 def _seed_default_settings():
     """Seed default alert phone/email if not already configured."""
     db = SessionLocal()
@@ -316,16 +423,61 @@ def process_message_background(
  
             # Check Rule 1: Approval confirmation logic
             if t.status == 'pending_approval' and t.approver_phone:
-                # Only the approver can approve this task!
-                clean_approver = "".join(filter(str.isdigit, t.approver_phone))
-                if clean_approver in clean_sender_phone or clean_sender_phone in clean_approver:
-                    if "approve" in text_lower:
+                approvers = [p.strip() for p in t.approver_phone.split(',') if p.strip()]
+                is_approver_match = False
+                for app_phone in approvers:
+                    clean_app = "".join(filter(str.isdigit, app_phone))
+                    if clean_app in clean_sender_phone or clean_sender_phone in clean_app:
+                        is_approver_match = True
+                        break
+                        
+                if is_approver_match:
+                    if any(w in text_lower for w in ["approve", "approved", "send", "yes"]):
+                        formula_text = t.completion_details or get_formula_text_by_task_name(t.task_name)
                         t.status = 'completed'
-                        t.completion_details = f"Approved by manager {sender_name} ({sender_phone}) at {datetime.now(IST).strftime('%Y-%m-%d %H:%M:%S')}"
+                        t.completion_details = f"Approved by manager {sender_name} ({sender_phone}) at {datetime.now(IST).strftime('%Y-%m-%d %H:%M:%S')}\n\nOriginal Formula:\n{formula_text}"
                         db.commit()
                         logger.info(f"Task ID {t.id} ('{t.task_name}') approved by {sender_phone}.")
                         
                         approver_name = sender_name or "Manager"
+                        
+                        # Dispatch feed formula update if it's a Feed Formula task
+                        if "feed formula" in t.task_name.lower():
+                            target_shed = "Unknown"
+                            stage_name = "Unknown"
+                            running_weeks = "Unknown"
+                            import re
+                            if " - " in t.task_name:
+                                parts = t.task_name.split(" - ")
+                                if len(parts) > 1:
+                                    subparts = parts[1].split(" to ")
+                                    target_shed = subparts[0].strip()
+                                    if len(subparts) > 1:
+                                        rest = subparts[1].split(" (")
+                                        stage_name = rest[0].strip()
+                            
+                            match = re.search(r'\(Week\s+(\d+)\)', t.task_name)
+                            if match:
+                                running_weeks = match.group(1)
+                                
+                            # Search dynamically for Feed Formula or Feed Plant group
+                            group_jid = "120363410607412989@g.us"
+                            group_obj = db.query(Group).filter(Group.name.ilike('%feed formula%')).first()
+                            if not group_obj:
+                                group_obj = db.query(Group).filter(Group.name.ilike('%feed plant%')).first()
+                            if group_obj:
+                                group_jid = group_obj.whatsapp_group_id
+                                if not group_jid.endswith('@g.us') and not group_jid.endswith('@c.us'):
+                                    group_jid += '@g.us'
+                            
+                            feed_plant_msg = (
+                                f"📢 *Feed Formula Update Reminder* 📢\n\n"
+                                f"Hi Team,\n"
+                                f"Shed/Flock *{target_shed}* has reached **Week {running_weeks}**.\n"
+                                f"Please update the feed formula to **{stage_name}** immediately."
+                            )
+                            send_waha_message(group_jid, feed_plant_msg)
+                        
                         target_chat = t.whatsapp_group_id if t.whatsapp_group_id else sender
                         if target_chat:
                             if not target_chat.endswith('@g.us') and not target_chat.endswith('@c.us') and not target_chat.endswith('@lid'):

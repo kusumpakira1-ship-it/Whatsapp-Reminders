@@ -4,7 +4,9 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, HRFlowable
+from database import SessionLocal
+from models import BookStandard, Flock
 
 FIXED_SHEDS = [
     "Shed 1", "Shed 2", "Shed 3", "Shed 4",
@@ -32,12 +34,18 @@ def _calculate_tables(df, birds_map, default_egg_rate, default_feed_cost_ton):
                         expanded_rows.append(new_row)
                     continue
             
-            # 2. Extract digits for single sheds
-            numbers = re.findall(r'\d+', name)
-            if numbers:
-                row['shead_name'] = f"Shed {numbers[0]}"
-            elif name.lower() in ['nan', 'unknown', 'none', 'null', '']:
-                row['shead_name'] = ''
+            name_lower = name.lower()
+            if 'chick' in name_lower:
+                row['shead_name'] = 'Chick'
+            elif 'grower' in name_lower:
+                row['shead_name'] = 'Grower'
+            else:
+                # 2. Extract digits for single sheds
+                numbers = re.findall(r'\d+', name)
+                if numbers:
+                    row['shead_name'] = f"Shed {numbers[0]}"
+                elif name_lower in ['nan', 'unknown', 'none', 'null', '']:
+                    row['shead_name'] = ''
                 
             expanded_rows.append(row)
             
@@ -109,12 +117,25 @@ def _calculate_tables(df, birds_map, default_egg_rate, default_feed_cost_ton):
             
             actual_pct = (total_shed_eggs / birds * 100) if birds > 0 else 0.0
             
+            # Look up expected production % from BookStandard (uses flock age from birds_map or flock DB)
+            expected_pct_str = "N/A"
+            if birds > 0 and birds_map.get(shed + "_age_days"):
+                age_days = birds_map.get(shed + "_age_days", 0)
+                try:
+                    _db = SessionLocal()
+                    std = _db.query(BookStandard).filter(BookStandard.day == age_days).first()
+                    if std and std.expected_production_pct is not None:
+                        expected_pct_str = f"{float(std.expected_production_pct):.1f}%"
+                    _db.close()
+                except Exception:
+                    pass
+            
             prod_rows.append([
                 shed, f"{birds:,}" if birds > 0 else "-",
                 f"{c1:,.0f}" if c1 > 0 else "-", f"{c2:,.0f}" if c2 > 0 else "-",
                 f"{total_shed_eggs:,.0f}" if total_shed_eggs > 0 else "-",
                 f"{int(mortality)}" if mortality > 0 else "-",
-                "95.0%", f"{actual_pct:.1f}%", f"Rs. {rate:.2f}", f"Rs. {prod_val:,.2f}"
+                expected_pct_str, f"{actual_pct:.1f}%", f"Rs. {rate:.2f}", f"Rs. {prod_val:,.2f}"
             ])
         else:
             prod_rows.append([shed, "-", "-", "-", "-", "-", "-", "-", "-", "-"])
@@ -291,47 +312,274 @@ def build_whatsapp_summary(df: pd.DataFrame, range_type: str, start_date, end_da
 
 
 
-def generate_pdf(pdf_path: str, df: pd.DataFrame, range_type: str, start_date, end_date, birds_map, default_egg_rate, default_feed_cost_ton):
-    if range_type == 'daily' or start_date == end_date:
-        today_str = start_date.strftime("%d/%m/%Y")
-        title_str = f"📊 DAILY FARM SUMMARY – {today_str}"
-    else:
-        title_str = f"📊 FARM SUMMARY – {start_date.strftime('%d/%m/%Y')} to {end_date.strftime('%d/%m/%Y')}"
+def _get_book_standards_map(birds_map):
+    """Returns {shed_name: {'age_days': int, 'expected_pct': float|None, 'book_weight_g': float|None}}"""
+    result = {}
+    try:
+        db = SessionLocal()
+        flocks = db.query(Flock).filter(Flock.status == 'active').all()
+        from datetime import date, timedelta
+        today = date.today()
+        for flock in flocks:
+            shed_key = flock.shed_name.strip() if flock.shed_name else ''
+            # Normalize shed name to match FIXED_SHEDS format
+            shed_key_lower = shed_key.lower()
+            if 'chick' in shed_key_lower:
+                normalized = 'Chick'
+            elif 'grower' in shed_key_lower:
+                normalized = 'Grower'
+            else:
+                import re as _re
+                nums = _re.findall(r'\d+', shed_key)
+                if nums:
+                    normalized = f"Shed {nums[0]}"
+                else:
+                    normalized = shed_key
 
-    doc = SimpleDocTemplate(pdf_path, pagesize=A4, rightMargin=0.3*inch, leftMargin=0.3*inch, topMargin=0.3*inch, bottomMargin=0.3*inch)
+            if flock.hatch_date:
+                age_days = (today - flock.hatch_date).days + 1
+            else:
+                age_days = 0
+
+            std = db.query(BookStandard).filter(BookStandard.day == age_days).first()
+            expected_pct = float(std.expected_production_pct) if std and std.expected_production_pct is not None else None
+            book_weight_g = float(std.expected_body_weight_g) if std and std.expected_body_weight_g is not None else None
+            book_week = int(std.week) if std and std.week is not None else (age_days // 7 if age_days else 0)
+
+            result[normalized] = {
+                'age_days': age_days,
+                'book_week': book_week,
+                'expected_pct': expected_pct,
+                'book_weight_g': book_weight_g,
+                'flock_name': shed_key
+            }
+        db.close()
+    except Exception as e:
+        pass
+    return result
+
+
+def _make_doc_and_helpers(pdf_path, title_str):
+    """Creates a ReportLab doc + shared styles + draw_table helper. Returns (doc, story, draw_table)."""
+    doc = SimpleDocTemplate(pdf_path, pagesize=A4,
+                            rightMargin=0.35*inch, leftMargin=0.35*inch,
+                            topMargin=0.35*inch, bottomMargin=0.35*inch)
     styles = getSampleStyleSheet()
     story = []
-    
-    h1 = ParagraphStyle('H1', parent=styles['Heading1'], fontSize=14, spaceAfter=8, textColor=colors.HexColor('#1b4332'), alignment=1)
-    h2 = ParagraphStyle('H2', parent=styles['Heading2'], fontSize=11, spaceAfter=4, textColor=colors.HexColor('#2d6a4f'), spaceBefore=8)
-    
-    story.append(Paragraph(title_str, h1))
-    
-    prod, feed, exp, common, pl = _calculate_tables(df, birds_map, default_egg_rate, default_feed_cost_ton)
-    
-    def strip_markdown(s): return s.replace("**", "")
+    GREEN_DARK  = colors.HexColor('#1b4332')
+    GREEN_MID   = colors.HexColor('#2d6a4f')
+    GREEN_LIGHT = colors.HexColor('#d8f3dc')
+    GREY_ROW    = colors.HexColor('#f8f9fa')
 
-    def _draw_table(title, headers, rows, col_widths=None):
+    h1 = ParagraphStyle('H1', parent=styles['Heading1'], fontSize=15, spaceAfter=6,
+                         textColor=GREEN_DARK, alignment=1, fontName='Helvetica-Bold')
+    h2 = ParagraphStyle('H2', parent=styles['Heading2'], fontSize=10, spaceAfter=3,
+                         textColor=GREEN_MID, spaceBefore=10, fontName='Helvetica-Bold')
+
+    story.append(Paragraph(title_str, h1))
+    story.append(HRFlowable(width="100%", thickness=1.5, color=GREEN_MID, spaceAfter=8))
+
+    def draw_table(title, headers, rows, col_widths=None, highlight_last=True):
         story.append(Paragraph(title, h2))
-        data = [headers] + [[strip_markdown(str(c)) for c in row] for row in rows]
-        tbl = Table(data, colWidths=col_widths, repeatRows=1)
-        tbl.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2d6a4f')),
+        def strip_md(s):
+            if isinstance(s, Paragraph):
+                return s
+            return str(s).replace("**", "")
+        data = [headers] + [[strip_md(c) for c in row] for row in rows]
+        tbl_style = [
+            ('BACKGROUND', (0, 0), (-1, 0), GREEN_DARK),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, -1), 6.5 if len(headers) > 6 else 8),
-            ('GRID', (0, 0), (-1, -1), 0.3, colors.HexColor('#cccccc')),
-            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f0fff4')]),
-            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-            ('ALIGN', (1, 0), (-1, -1), 'RIGHT'),
-        ]))
+            ('FONTSIZE', (0, 0), (-1, 0), 8),
+            ('FONTSIZE', (0, 1), (-1, -1), 7.5),
+            ('GRID', (0, 0), (-1, -1), 0.25, colors.HexColor('#cccccc')),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+            ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, GREY_ROW]),
+        ]
+        if highlight_last and len(data) > 1:
+            tbl_style += [
+                ('BACKGROUND', (0, -1), (-1, -1), GREEN_LIGHT),
+                ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+            ]
+        tbl = Table(data, colWidths=col_widths, repeatRows=1)
+        tbl.setStyle(TableStyle(tbl_style))
         story.append(tbl)
-        story.append(Spacer(1, 0.1*inch))
+        story.append(Spacer(1, 0.12*inch))
 
-    _draw_table("1. Production", ["Shed", "Birds", "1st Coll.", "2nd Coll.", "Total Eggs", "Mortality", "Expected %", "Actual %", "Egg Price", "Prod. Value"], prod)
-    _draw_table("2. Feed Consumption", ["Shed", "Feed Consumed (MT)", "Feed/Bird (g/Day)", "Feed Cost/Ton", "Total Feed Cost"], feed)
-    _draw_table("3. Shed-Related Expenditure", ["Shed", "Labourers", "Medicines", "Final Cost", "Daily Payender"], exp)
-    _draw_table("4. Common Expenditures", ["Particular", "Quantity", "Amount"], common)
-    _draw_table("5. Daily P&L Summary", ["Particular", "Amount"], pl, col_widths=[3*inch, 2*inch])
+    return doc, story, draw_table
+
+
+def generate_operations_pdf(pdf_path: str, df: pd.DataFrame, range_type: str, start_date, end_date, birds_map):
+    """PDF 1: Shed-Wise Mortality | Age & Production (Trays, Actual% vs Expected%) | Weight Comparison"""
+    if range_type == 'daily' or start_date == end_date:
+        title_str = f"DAILY FARM OPERATIONS REPORT - {start_date.strftime('%d/%m/%Y')}"
+    else:
+        title_str = f"FARM OPERATIONS REPORT - {start_date.strftime('%d/%m/%Y')} to {end_date.strftime('%d/%m/%Y')}"
+
+    doc, story, draw_table = _make_doc_and_helpers(pdf_path, title_str)
+    book_map = _get_book_standards_map(birds_map)
+    
+    styles = getSampleStyleSheet()
+    cell_style = ParagraphStyle(
+        'TableCellStyle',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=7.5,
+        alignment=1, # Center
+        textColor=colors.black,
+        leading=9
+    )
+
+    # ─── SECTION 1: Shed-Wise Mortality ─────────────────────────────────────────
+    mort_headers = ["Shed", "Age (Days)", "Age (Weeks)", "Mortality Today"]
+    mort_rows = []
+    for shed in FIXED_SHEDS:
+        mort_df = df[(df['shead_name'] == shed) & (df['category'] == 'mortality')] if not df.empty else pd.DataFrame()
+        mortality = int(sum(float(r['quantity'] or 0) for _, r in mort_df.iterrows()))
+        info = book_map.get(shed, {})
+        age_days = info.get('age_days', 0)
+        age_weeks = info.get('book_week', 0)
+        mort_rows.append([shed,
+            str(age_days) if age_days else "-",
+            str(age_weeks) if age_weeks else "-",
+            str(mortality) if mortality else "0"])
+    total_mort = sum(int(r[3]) for r in mort_rows if r[3].isdigit())
+    mort_rows.append(["Total", "-", "-", str(total_mort)])
+    draw_table("1. Shed-Wise Mortality", mort_headers, mort_rows,
+               col_widths=[1.6*inch, 1.6*inch, 1.6*inch, 2.2*inch])
+
+    # ─── SECTION 2: Age & Production ────────────────────────────────────────────
+    prod_headers = ["Shed", "Age\n(Days)", "Age\n(Weeks)", "Eggs\n(Nos.)",
+                    "Trays\n(30 eggs)", "Actual\nProd %", "Expected\nProd %", "Diff\n(%pts)", "Mortality"]
+    prod2_rows = []
+    for shed in FIXED_SHEDS:
+        is_grower_chick = shed in ["Grower", "Chick"]
+        birds = birds_map.get(shed, 0)
+        info = book_map.get(shed, {})
+        age_days = info.get('age_days', 0)
+        age_weeks = info.get('book_week', 0)
+        expected_pct = info.get('expected_pct')
+        for _, row in (df[(df['shead_name'] == shed) & (df['category'] == 'production')] if not df.empty else pd.DataFrame()).iterrows():
+            qty = float(row['quantity'] or 0)
+            if qty > 1000:
+                birds = int(qty)
+                break
+        mort_df = df[(df['shead_name'] == shed) & (df['category'] == 'mortality')] if not df.empty else pd.DataFrame()
+        mortality = int(sum(float(r['quantity'] or 0) for _, r in mort_df.iterrows()))
+        shed_eggs_df = df[(df['shead_name'] == shed) & (df['category'].isin(
+            ['egg_collection_1', 'egg_collection_2', 'egg_collection', 'egg']))] if not df.empty else pd.DataFrame()
+        total_eggs = 0
+        for _, row in shed_eggs_df.iterrows():
+            qty = float(row['quantity'] or 0)
+            unit = str(row['unit'] or '').lower()
+            total_eggs += qty * 30 if 'tray' in unit else qty
+        trays = total_eggs / 30 if total_eggs > 0 else 0
+        actual_pct = (total_eggs / birds * 100) if birds > 0 and total_eggs > 0 else 0.0
+        if is_grower_chick:
+            prod2_rows.append([shed, str(age_days) if age_days else "-", str(age_weeks) if age_weeks else "-",
+                                "N/A", "N/A", "N/A", "N/A", "N/A", str(mortality) if mortality else "0"])
+            continue
+        exp_str = f"{expected_pct:.1f}%" if expected_pct is not None else "N/A"
+        if expected_pct is not None and actual_pct > 0:
+            diff = actual_pct - expected_pct
+            if diff >= 0:
+                diff_str = Paragraph(f'<font color="#2d6a4f"><b>+{diff:.1f}%</b></font>', cell_style)
+            else:
+                diff_str = Paragraph(f'<font color="#b7094c"><b>{diff:.1f}%</b></font>', cell_style)
+        else:
+            diff_str = "N/A"
+        prod2_rows.append([
+            shed, str(age_days) if age_days else "-", str(age_weeks) if age_weeks else "-",
+            f"{int(total_eggs):,}" if total_eggs else "0",
+            f"{trays:.1f}" if trays else "0",
+            f"{actual_pct:.1f}%" if actual_pct else "0.0%",
+            exp_str, diff_str, str(mortality) if mortality else "0"
+        ])
+    draw_table("2. Age & Production (Eggs / Trays vs Book Standard)",
+               prod_headers, prod2_rows,
+               col_widths=[0.9*inch, 0.7*inch, 0.7*inch, 0.8*inch, 0.8*inch,
+                           0.8*inch, 0.85*inch, 0.7*inch, 0.7*inch])
+
+    # ─── SECTION 3: Birds Weight Comparison ─────────────────────────────────────
+    wt_headers = ["Shed", "Age\n(Days)", "Age\n(Weeks)", "Actual Weight\n(Kg)",
+                  "Book Weight\n(g)", "Book Weight\n(Kg)", "Difference\n(g)", "Status"]
+    wt_rows = []
+    for shed in FIXED_SHEDS:
+        birds = birds_map.get(shed, 0)
+        info = book_map.get(shed, {})
+        age_days = info.get('age_days', 0)
+        age_weeks = info.get('book_week', 0)
+        book_wt_g = info.get('book_weight_g')
+        wt_df = df[(df['shead_name'] == shed) & (df['category'].isin(
+            ['weight', 'body_weight', 'bird_weight', 'avg_weight']))] if not df.empty else pd.DataFrame()
+        actual_wt_kg = None
+        for _, row in wt_df.iterrows():
+            qty = float(row['quantity'] or 0)
+            if qty > 0:
+                unit = str(row['unit'] or '').lower()
+                actual_wt_kg = qty / 1000.0 if ('g' in unit and 'kg' not in unit) else qty
+                break
+        for _, row in (df[(df['shead_name'] == shed) & (df['category'] == 'production')] if not df.empty else pd.DataFrame()).iterrows():
+            qty = float(row['quantity'] or 0)
+            if qty > 1000:
+                birds = int(qty)
+                break
+        if actual_wt_kg is None and book_wt_g is None:
+            wt_rows.append([shed, str(age_days) if age_days else "-", str(age_weeks) if age_weeks else "-",
+                            "No Data", "No Data", "No Data", "No Data", "-"])
+            continue
+        actual_str = f"{actual_wt_kg:.3f}" if actual_wt_kg is not None else "No Data"
+        book_g_str = f"{int(book_wt_g)}" if book_wt_g is not None else "No Data"
+        book_kg_str = f"{book_wt_g/1000:.3f}" if book_wt_g is not None else "No Data"
+        if actual_wt_kg is not None and book_wt_g is not None:
+            actual_g = actual_wt_kg * 1000
+            diff_g = actual_g - book_wt_g
+            if diff_g >= 0:
+                diff_str = Paragraph(f'<font color="#2d6a4f"><b>+{diff_g:.0f} g</b></font>', cell_style)
+                status = Paragraph('<font color="#2d6a4f"><b>Above</b></font>', cell_style)
+            else:
+                diff_str = Paragraph(f'<font color="#b7094c"><b>{diff_g:.0f} g</b></font>', cell_style)
+                status = Paragraph('<font color="#b7094c"><b>Below</b></font>', cell_style)
+        else:
+            diff_str = "N/A"
+            status = "N/A"
+        wt_rows.append([shed, str(age_days) if age_days else "-", str(age_weeks) if age_weeks else "-",
+                        actual_str, book_g_str, book_kg_str, diff_str, status])
+    draw_table("3. Birds Weight Comparison (Actual vs Book Standard)",
+               wt_headers, wt_rows,
+               col_widths=[0.9*inch, 0.75*inch, 0.75*inch, 1.0*inch, 0.9*inch,
+                           0.9*inch, 0.95*inch, 0.8*inch])
 
     doc.build(story)
+
+
+def generate_pdf(pdf_path: str, df: pd.DataFrame, range_type: str, start_date, end_date, birds_map, default_egg_rate, default_feed_cost_ton):
+    if range_type == 'daily' or start_date == end_date:
+        title_str = f"DAILY FARM FINANCIAL REPORT - {start_date.strftime('%d/%m/%Y')}"
+    else:
+        title_str = f"FARM FINANCIAL REPORT - {start_date.strftime('%d/%m/%Y')} to {end_date.strftime('%d/%m/%Y')}"
+
+    doc, story, draw_table = _make_doc_and_helpers(pdf_path, title_str)
+    prod, feed, exp, common, pl = _calculate_tables(df, birds_map, default_egg_rate, default_feed_cost_ton)
+
+    draw_table("1. Full Production & Financial Overview",
+               ["Shed", "Birds", "1st Coll.", "2nd Coll.", "Total Eggs", "Mortality",
+                "Expected %", "Actual %", "Egg Price", "Prod. Value"],
+               prod)
+    draw_table("2. Feed Consumption",
+               ["Shed", "Feed Consumed (MT)", "Feed/Bird (g/Day)", "Feed Cost/Ton", "Total Feed Cost"],
+               feed)
+    draw_table("3. Shed-Related Expenditure",
+               ["Shed", "Labourers", "Medicines", "Final Cost", "Daily Payender"],
+               exp)
+    draw_table("4. Common Expenditures",
+               ["Particular", "Quantity", "Amount"],
+               common)
+    draw_table("5. Daily P&L Summary",
+               ["Particular", "Amount"],
+               pl, col_widths=[3.5*inch, 2.5*inch])
+
+    doc.build(story)
+

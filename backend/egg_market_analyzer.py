@@ -519,11 +519,12 @@ def send_daily_egg_market_pdf_job():
         
         generate_egg_market_pdf(analysis, pdf_path, date_str)
         
-        target_phone = "917975209680@c.us"
+        target_phones = ["917975209680@c.us", "917259510983@c.us", "916364817749@c.us"]
         caption = f"📊 *Egg Price & Market Analysis Report*\nDate: {date_str}"
         
-        logger.info(f"Sending Egg Market Analysis PDF to {target_phone}")
-        send_waha_file(target_phone, pdf_path, caption=caption)
+        for target_phone in target_phones:
+            logger.info(f"Sending Egg Market Analysis PDF to {target_phone}")
+            send_waha_file(target_phone, pdf_path, caption=caption)
         
     except Exception as e:
         logger.error(f"Error in send_daily_egg_market_pdf_job: {e}")
