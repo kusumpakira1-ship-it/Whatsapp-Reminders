@@ -14,16 +14,23 @@ $options = [
     PDO::ATTR_PERSISTENT         => true, // REUSE OPEN CONNECTIONS TO PREVENT 500 MAX CONNECTIONS PER HOUR LIMIT
 ];
 
+$pdo = null;
 try {
     $pdo = new PDO($dsn, $user, $pass, $options);
 } catch (\PDOException $e) {
-    // If MySQL hourly connection quota (1226) or server fails, fallback gracefully to SQLite
-    try {
-        $sqlite_path = __DIR__ . '/whatsapp_reminders.sqlite';
-        $pdo = new PDO('sqlite:' . $sqlite_path);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    } catch (\PDOException $sqle) {
-        // Fallback initialized
+    // If MySQL hourly connection quota (1226) or connection fails, fallback seamlessly to SQLite
+    $sqlite_paths = [
+        __DIR__ . '/whatsapp_reminders.sqlite',
+        __DIR__ . '/frontend/whatsapp_reminders.sqlite',
+        dirname(__DIR__) . '/whatsapp_reminders.sqlite'
+    ];
+    foreach ($sqlite_paths as $spath) {
+        try {
+            $pdo = new PDO('sqlite:' . $spath);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            break;
+        } catch (\PDOException $sqle) {}
     }
 }
+

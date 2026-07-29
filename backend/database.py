@@ -23,21 +23,24 @@ import logging
 logger = logging.getLogger(__name__)
 
 def get_db():
-    retries = 3
-    delay = 2
-    for attempt in range(retries):
+    try:
+        db = SessionLocal()
+        db.execute(text("SELECT 1"))
+        yield db
+    except Exception as e:
+        logger.warning(f"MySQL connection issue ({e}). Trying SQLite fallback...")
         try:
-            db = SessionLocal()
-            # Run a dummy query to verify connection is healthy (pre-ping check)
-            db.execute(text("SELECT 1"))
+            sqlite_engine = create_engine("sqlite:///whatsapp_reminders.sqlite")
+            SqliteSession = sessionmaker(autocommit=False, autoflush=False, bind=sqlite_engine)
+            db = SqliteSession()
             yield db
+        except Exception as sqle:
+            logger.error(f"SQLite fallback failed: {sqle}")
+            raise e
+    finally:
+        try:
             db.close()
-            return
-        except Exception as e:
-            if attempt < retries - 1:
-                logger.warning(f"Database connection failed (attempt {attempt+1}/{retries}): {e}. Retrying in {delay}s...")
-                time.sleep(delay)
-            else:
-                logger.error(f"Database connection failed after {retries} attempts: {e}")
-                raise
+        except Exception:
+            pass
+
 
