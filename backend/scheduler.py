@@ -2064,12 +2064,14 @@ async def manager_escalation_job():
                 "today, i worked", "today i worked", "today's work", "today work",
                 "today's work report", "today work report", "work day report",
                 "daily report", "daily reports", "work done", "tasks completed",
-                "task completed", "tasks done", "task done", "today's update", "today update"
+                "task completed", "tasks done", "task done", "today's update", "today update",
+                "profit summary", "profit update", "p&l summary", "p&l update", "summary"
             ]
             is_egg_pricing = "egg pricing" in r["report_types"].lower()
             is_ca_statement = "ca statement" in r["report_types"].lower() or "ca" in r["report_types"].lower()
             is_rule_book = "rule book" in r["report_types"].lower() or "rule" in r["report_types"].lower()
-            is_update_report = any(w in r["report_types"].lower() for w in ["update", "eod", "daily report", "work"]) and not is_egg_pricing and not is_rule_book
+            is_profit_report = any(w in r["report_types"].lower() for w in ["profit", "p&l", "p and l", "p/l", "loss"])
+            is_update_report = any(w in r["report_types"].lower() for w in ["update", "eod", "daily report", "work"]) and not is_egg_pricing and not is_rule_book and not is_profit_report
             
             report_keywords = []
             for comma_part in r["report_types"].split(","):
@@ -2106,6 +2108,11 @@ async def manager_escalation_job():
                         is_time_match = True
 
                     if is_time_match and has_price_number and any(w in text_lower for w in ["egg", "price", "pricing", "ppr rate", "closing", "veh kol", "papaak"]):
+                        submitted = True
+                        break
+                elif is_profit_report:
+                    profit_kws = ["profit", "p&l", "p and l", "p/l", "loss", "profit summary", "p&l summary", "summary", "profit update", "p&l report", "p&l statement"]
+                    if any(kw in text_lower for kw in profit_kws):
                         submitted = True
                         break
                 elif is_ca_statement:
@@ -2417,12 +2424,14 @@ async def company_wise_escalation_job():
                 "today, i worked", "today i worked", "today's work", "today work",
                 "today's work report", "today work report", "work day report",
                 "daily report", "daily reports", "work done", "tasks completed",
-                "task completed", "tasks done", "task done", "today's update", "today update"
+                "task completed", "tasks done", "task done", "today's update", "today update",
+                "profit summary", "profit update", "p&l summary", "p&l update", "summary"
             ]
             is_egg_pricing = "egg pricing" in r["report_types"].lower()
             is_ca_statement = "ca statement" in r["report_types"].lower() or "ca" in r["report_types"].lower()
             is_rule_book = "rule book" in r["report_types"].lower() or "rule" in r["report_types"].lower()
-            is_update_report = any(w in r["report_types"].lower() for w in ["update", "eod", "daily report", "work"]) and not is_egg_pricing and not is_rule_book
+            is_profit_report = any(w in r["report_types"].lower() for w in ["profit", "p&l", "p and l", "p/l", "loss"])
+            is_update_report = any(w in r["report_types"].lower() for w in ["update", "eod", "daily report", "work"]) and not is_egg_pricing and not is_rule_book and not is_profit_report
             
             report_keywords = []
             for comma_part in r["report_types"].split(","):
@@ -2459,6 +2468,11 @@ async def company_wise_escalation_job():
                         is_time_match = True
 
                     if is_time_match and has_price_number and any(w in text_lower for w in ["egg", "price", "pricing", "ppr rate", "closing", "veh kol", "papaak"]):
+                        submitted = True
+                        break
+                elif is_profit_report:
+                    profit_kws = ["profit", "p&l", "p and l", "p/l", "loss", "profit summary", "p&l summary", "summary", "profit update", "p&l report", "p&l statement"]
+                    if any(kw in text_lower for kw in profit_kws):
                         submitted = True
                         break
                 elif is_ca_statement:

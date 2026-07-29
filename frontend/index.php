@@ -565,9 +565,9 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
             'sale'       => ['sales report', 'daily sales', 'total sales', 'dispatch report', 'sales update'],
             'expense'    => ['expense report', 'daily expense', 'expenditure report', 'payment report'],
             'expenditure'=> ['expense report', 'daily expense', 'expenditure report', 'payment report'],
-            'profit'     => ['p&l report', 'p&l statement', 'profit loss', 'p and l update'],
-            'p&l'        => ['p&l report', 'p&l statement', 'profit loss', 'p and l update'],
-            'p and l'    => ['p&l report', 'p&l statement', 'profit loss', 'p and l update'],
+            'profit'     => ['p&l report', 'p&l statement', 'profit loss', 'p and l update', 'profit summary', 'profit', 'p&l', 'p and l', 'p/l', 'summary'],
+            'p&l'        => ['p&l report', 'p&l statement', 'profit loss', 'p and l update', 'profit summary', 'profit', 'p&l', 'p and l', 'p/l', 'summary'],
+            'p and l'    => ['p&l report', 'p&l statement', 'profit loss', 'p and l update', 'profit summary', 'profit', 'p&l', 'p and l', 'p/l', 'summary'],
             'rule book'  => ['rule book', 'rule', 'rules', 'point', 'points', 'policy', 'guideline', 'godown rule', 'farm rule', 'addition', 'update', 'updates'],
         ];
         
