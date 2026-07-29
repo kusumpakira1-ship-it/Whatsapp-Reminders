@@ -247,8 +247,8 @@ try {
     $last_reset = $chk->fetchColumn();
 
     if ($last_reset !== $today_ist) {
-        // Run the reset
-        $stmt = $pdo->query("SELECT id, trigger_time, frequency FROM sunfra_unified_reminders WHERE status IN ('sent','skipped') AND (frequency IS NULL OR frequency != 'once')");
+        // Run the reset for reminders
+        $stmt = $pdo->query("SELECT id, trigger_time, frequency FROM sunfra_unified_reminders WHERE (frequency IS NULL OR frequency != 'once')");
         $overdue = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $now_utc = new DateTime();
         foreach ($overdue as $r) {
@@ -265,6 +265,26 @@ try {
             if ($advanced) {
                 $upd = $pdo->prepare("UPDATE sunfra_unified_reminders SET trigger_time = ?, status = 'pending' WHERE id = ?");
                 $upd->execute([$dt->format('Y-m-d H:i:s'), $r['id']]);
+            }
+        }
+
+        // Run the reset for tasks
+        $t_stmt = $pdo->query("SELECT id, due_time, frequency FROM sunfra_tasks WHERE (frequency IS NULL OR frequency != 'once')");
+        $t_overdue = $t_stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($t_overdue as $t) {
+            $freq = strtolower($t['frequency'] ?? 'daily');
+            $dt = new DateTime($t['due_time']);
+            $advanced = false;
+            while ($dt <= $now_utc) {
+                if ($freq === 'weekly')       { $dt->modify('+7 days'); }
+                elseif ($freq === 'monthly')  { $dt->modify('+1 month'); }
+                elseif ($freq === 'yearly')   { $dt->modify('+1 year'); }
+                else                          { $dt->modify('+1 day'); } // daily default
+                $advanced = true;
+            }
+            if ($advanced) {
+                $upd = $pdo->prepare("UPDATE sunfra_tasks SET due_time = ?, status = 'pending', completion_details = REPLACE(completion_details, '[OVERDUE_ALERT_AT:', '[OLD_ALERT:') WHERE id = ?");
+                $upd->execute([$dt->format('Y-m-d H:i:s'), $t['id']]);
             }
         }
         // Mark today's reset as done

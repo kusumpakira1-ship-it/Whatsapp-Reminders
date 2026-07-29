@@ -1510,10 +1510,11 @@ def poll_live_alarms():
 
 def midnight_reset_job():
     """Runs at 00:00 IST every night.
-    Advances trigger_time for sent recurring reminders and tasks to the next occurrence
-    and resets their status to 'pending'.
+    Advances trigger_time for recurring reminders and tasks (whether completed or overdue)
+    to the next occurrence and resets their status to 'pending'.
     """
     from datetime import datetime, timezone, timedelta
+    import re
     IST = timezone(timedelta(hours=5, minutes=30))
     now_ist = datetime.now(IST).replace(tzinfo=None)
     logger.info(f"Running midnight reset job at {now_ist}")
@@ -1521,31 +1522,36 @@ def midnight_reset_job():
     db = SessionLocal()
     try:
         # 1. Reset reminders
-        sent_recurring = db.query(UnifiedReminder).filter(
-            UnifiedReminder.status.in_(['sent', 'skipped']),
+        recurring_reminders = db.query(UnifiedReminder).filter(
+            UnifiedReminder.frequency.isnot(None),
             UnifiedReminder.frequency != 'once'
         ).all()
 
         reset_count = 0
-        for r in sent_recurring:
-            freq = str(r.frequency).lower()
-            r.trigger_time = get_next_occurrence(r.trigger_time, freq)
-            r.status = 'pending'
-            reset_count += 1
-            logger.info(f"Midnight reset reminder: {r.person_name} → next trigger: {r.trigger_time} (freq: {freq})")
+        for r in recurring_reminders:
+            if r.status in ['sent', 'skipped'] or r.trigger_time <= now_ist:
+                freq = str(r.frequency).lower()
+                r.trigger_time = get_next_occurrence(r.trigger_time, freq)
+                r.status = 'pending'
+                reset_count += 1
+                logger.info(f"Midnight reset reminder: {r.person_name} → next trigger: {r.trigger_time} (freq: {freq})")
 
-        # 2. Reset tasks
-        completed_tasks = db.query(Task).filter(
-            Task.status == 'completed',
+        # 2. Reset tasks (including completed and overdue tasks)
+        recurring_tasks = db.query(Task).filter(
+            Task.frequency.isnot(None),
             Task.frequency != 'once'
         ).all()
 
-        for t in completed_tasks:
-            freq = str(t.frequency).lower()
-            t.due_time = get_next_occurrence(t.due_time, freq)
-            t.status = 'pending'
-            reset_count += 1
-            logger.info(f"Midnight reset task: {t.task_name} → next trigger: {t.due_time} (freq: {freq})")
+        for t in recurring_tasks:
+            if t.status in ['completed', 'overdue'] or t.due_time <= now_ist:
+                freq = str(t.frequency).lower()
+                t.due_time = get_next_occurrence(t.due_time, freq)
+                t.status = 'pending'
+                # Strip previous overdue alert markers so task can alert fresh on its new due time
+                if t.completion_details and '[OVERDUE_ALERT_AT:' in t.completion_details:
+                    t.completion_details = re.sub(r'\[OVERDUE_ALERT_AT:[^\]]+\]', '', t.completion_details)
+                reset_count += 1
+                logger.info(f"Midnight reset task: {t.task_name} → next due: {t.due_time} (freq: {freq})")
 
         db.commit()
         logger.info(f"Midnight reset complete: {reset_count} items reset to pending.")
