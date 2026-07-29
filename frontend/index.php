@@ -858,6 +858,66 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
     ];
 }
 
+function get_all_sunfra_groups($pdo) {
+    $groups_map = [];
+    
+    // 1. Fetch from database sunfra_groups table (Primary)
+    try {
+        $stmt = $pdo->query("SELECT id, name, whatsapp_group_id FROM sunfra_groups");
+        $db_groups = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($db_groups as $g) {
+            $name = trim($g['name'] ?? '');
+            $wa_id = trim($g['whatsapp_group_id'] ?? '');
+            if ($name && $wa_id) {
+                $clean_id = str_replace('@g.us', '', $wa_id);
+                $entry = ['id' => $wa_id, 'name' => $name, 'db_id' => $g['id']];
+                $groups_map[$wa_id] = $entry;
+                $groups_map[$clean_id] = $entry;
+                $groups_map[$clean_id . '@g.us'] = $entry;
+            }
+        }
+    } catch (Exception $e) {}
+
+    // 2. Fetch from waha_groups.json file (Secondary backup)
+    $waha_file = __DIR__ . '/waha_groups.json';
+    if (file_exists($waha_file)) {
+        $json_groups = json_decode(file_get_contents($waha_file), true)['groups'] ?? [];
+        foreach ($json_groups as $g) {
+            $wa_id = trim($g['id'] ?? '');
+            $name = trim($g['name'] ?? '');
+            if ($wa_id && $name) {
+                $clean_id = str_replace('@g.us', '', $wa_id);
+                if (!isset($groups_map[$wa_id]) && !isset($groups_map[$clean_id])) {
+                    $entry = ['id' => $wa_id, 'name' => $name];
+                    $groups_map[$wa_id] = $entry;
+                    $groups_map[$clean_id] = $entry;
+                    $groups_map[$clean_id . '@g.us'] = $entry;
+                }
+            }
+        }
+    }
+    
+    return $groups_map;
+}
+
+function get_group_display_name($group_id, $groups_map) {
+    if (empty($group_id)) {
+        return 'No Group / Private Only';
+    }
+    $gid = trim($group_id);
+    $clean_gid = str_replace('@g.us', '', $gid);
+    $gid_with_suffix = $clean_gid . '@g.us';
+
+    if (isset($groups_map[$gid])) {
+        return $groups_map[$gid]['name'];
+    } elseif (isset($groups_map[$clean_gid])) {
+        return $groups_map[$clean_gid]['name'];
+    } elseif (isset($groups_map[$gid_with_suffix])) {
+        return $groups_map[$gid_with_suffix]['name'];
+    }
+    return $gid;
+}
+
 // 5. Simple REST API Router
 if (isset($_GET['api'])) {
     header("Content-Type: application/json");
@@ -954,8 +1014,8 @@ if (isset($_GET['api'])) {
             $stmt = $pdo->query("SELECT * FROM sunfra_unified_reminders ORDER BY trigger_time DESC");
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
-            $waha_file = __DIR__ . '/waha_groups.json';
-            $waha_groups = file_exists($waha_file) ? json_decode(file_get_contents($waha_file), true)['groups'] ?? [] : [];
+            $groups_map = get_all_sunfra_groups($pdo);
+            $waha_groups = array_values($groups_map);
             
             // Fetch today's submissions and raw messages for verification
             $IST_OFFSET = 5.5 * 3600;
@@ -1014,15 +1074,7 @@ if (isset($_GET['api'])) {
             
             foreach ($rows as &$row) {
                 $row['whatsapp_id'] = preg_match('/^\d{10}$/', $row['person_phone']) ? "91{$row['person_phone']}@c.us" : "{$row['person_phone']}@c.us";
-                $row['group_name'] = 'No Group / Private Only';
-                if ($row['whatsapp_group_id']) {
-                    foreach ($waha_groups as $g) {
-                        if ($g['id'] === $row['whatsapp_group_id']) {
-                            $row['group_name'] = $g['name'];
-                            break;
-                        }
-                    }
-                }
+                $row['group_name'] = get_group_display_name($row['whatsapp_group_id'], $groups_map);
                 
                 // Verify submission dynamically
                 $verification = verify_reminder_submission($row, $submissions, $raw_messages, $waha_groups, $sent_logs);
@@ -1204,19 +1256,10 @@ if (isset($_GET['api'])) {
             $stmt = $pdo->query("SELECT * FROM sunfra_tasks ORDER BY due_time DESC");
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
-            $waha_file = __DIR__ . '/waha_groups.json';
-            $waha_groups = file_exists($waha_file) ? json_decode(file_get_contents($waha_file), true)['groups'] ?? [] : [];
+            $groups_map = get_all_sunfra_groups($pdo);
             
             foreach ($rows as &$row) {
-                $row['group_name'] = 'No Group / Private Only';
-                if ($row['whatsapp_group_id']) {
-                    foreach ($waha_groups as $g) {
-                        if ($g['id'] === $row['whatsapp_group_id']) {
-                            $row['group_name'] = $g['name'];
-                            break;
-                        }
-                    }
-                }
+                $row['group_name'] = get_group_display_name($row['whatsapp_group_id'], $groups_map);
             }
             echo json_encode($rows);
         }
@@ -1450,14 +1493,22 @@ if (isset($_GET['api'])) {
             echo json_encode(['success' => true]);
         }
         elseif ($route === 'waha/groups' && $method === 'GET') {
-            $file = __DIR__ . '/waha_groups.json';
             $hidden_file = __DIR__ . '/hidden_groups.json';
-            $groups_data = file_exists($file) ? json_decode(file_get_contents($file), true) : ['groups' => []];
             $hidden_data = file_exists($hidden_file) ? json_decode(file_get_contents($hidden_file), true) : [];
+            
+            $groups_map = get_all_sunfra_groups($pdo);
+            $unique_groups = [];
+            $seen_ids = [];
+            foreach ($groups_map as $g) {
+                if (!in_array($g['id'], $seen_ids)) {
+                    $seen_ids[] = $g['id'];
+                    $unique_groups[] = $g;
+                }
+            }
             
             echo json_encode([
                 'status' => 'success',
-                'groups' => $groups_data['groups'] ?? [],
+                'groups' => $unique_groups,
                 'hidden_groups' => $hidden_data
             ]);
         }
@@ -3079,7 +3130,7 @@ try {
                     <td>
                         <div style="display:flex; gap:0.25rem; flex-wrap:wrap;">
                             <button class="btn btn-secondary" onclick="editReminder(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Edit</button> 
-                            ${r.status === 'pending' ? `<button class="btn btn-primary" onclick="markReminderDone(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Done</button>` : ''}
+                            ${r.status !== 'sent' && r.status !== 'skipped' ? `<button class="btn btn-primary" onclick="markReminderDone(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Done</button>` : ''}
                             <button class="btn btn-danger" onclick="deleteReminder(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Delete</button>
                             ${r.verification_details ? '<button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; margin: 0;" onclick="showReminderDetails(' + r.id + ')">Details</button>' : ''}
                         </div>
