@@ -1442,10 +1442,25 @@ def sync_groups_to_live():
             data = response.json()
             if isinstance(data, list):
                 for g in data:
-                    groups.append({"id": g.get("id"), "name": g.get("subject") or g.get("name")})
+                    gid = g.get("id")
+                    name = g.get("subject") or g.get("name")
+                    if name:
+                        if isinstance(gid, dict):
+                            ser = gid.get("_serialized")
+                            usr = gid.get("user")
+                            if ser: groups.append({"id": ser, "name": name})
+                            if usr and usr != ser: groups.append({"id": usr, "name": name})
+                        elif isinstance(gid, str):
+                            groups.append({"id": gid, "name": name})
+                            if "@g.us" in gid:
+                                groups.append({"id": gid.replace("@g.us", ""), "name": name})
             elif isinstance(data, dict):
                 for k, v in data.items():
-                    groups.append({"id": k, "name": v.get("subject") or v.get("name")})
+                    name = v.get("subject") or v.get("name") if isinstance(v, dict) else str(v)
+                    if name:
+                        groups.append({"id": str(k), "name": name})
+                        if "@g.us" in str(k):
+                            groups.append({"id": str(k).replace("@g.us", ""), "name": name})
             
             payload = {"status": "success", "groups": groups}
             sync_resp = requests.post("https://sunfragroup.com/kusum/Whatsapp_Rem/index.php?api=waha/groups/sync", json=payload, timeout=10)
