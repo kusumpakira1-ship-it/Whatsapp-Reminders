@@ -32,7 +32,6 @@ scheduler = AsyncIOScheduler()
 def _get_recipient_list():
     import os
     db = SessionLocal()
-    phones = []
     try:
         recipients = db.query(ReportRecipient).filter(ReportRecipient.is_active == True).all()
         phones = [r.phone_number for r in recipients]
@@ -42,16 +41,14 @@ def _get_recipient_list():
     finally:
         db.close()
 
-    # Always include all 3 key manager numbers
-    default_managers = [
-        "917259510983@c.us",
-        "917204021105@c.us",
-        "918985779911@c.us"
-    ]
-    for mgr in default_managers:
-        if mgr not in phones:
-            phones.append(mgr)
-
+    # Append Manager Phone from config
+    manager_phone = settings.MANAGER_PHONE
+    if manager_phone:
+        manager_jid = manager_phone
+        if not manager_jid.endswith('@c.us') and not manager_jid.endswith('@g.us') and not manager_jid.endswith('@lid'):
+            manager_jid += '@c.us'
+        if manager_jid not in phones:
+            phones.append(manager_jid)
     return phones
 
 async def _send_reports_to_all(pdf_path, summary_text):
@@ -2840,8 +2837,27 @@ async def check_feed_change_transitions_job():
     today = datetime.now(IST).date()
     now_ist = datetime.now(IST).replace(tzinfo=None)
 
-    # GM: week 9, PLM: week 16, LM1: week 19, LM2: week 41, LM3: week 71
+    # CM: week 4, GM: week 9, PLM: week 16, LM1: week 19, LM2: week 41, LM3: week 71
     TRANSITIONS = {
+        4: ("CM (4-8 W)", "CM", """Sunfra Poultry Farm feed formulations:
+CM (4-8 W)
+- Maize: 550
+- B.Rice: 70
+- DORB: 40
+- SOYA: 285
+- DDGS: 25
+- Rapeseed: 0
+- Calcite: 20
+- Stone grit: 0
+- DCP: 11
+- Lysine: 1.5
+- Methionine: 1.5
+- Salt: 3.5
+- TOXFIN 300: 0.5
+- SalCURB: 0.5
+- Medicine: 5
+------------------
+Total: 1013.5"""),
         9: ("GM (9-15 W)", "GM", """Sunfra Poultry Farm feed formulations:
 GM (9-15 W)
 - Maize: 500
@@ -2921,7 +2937,7 @@ Total: 1009.3"""),
         71: ("LM3 (Above 70 W)", "LM3", """Sunfra Poultry Farm feed formulations:
 LM3 (Above 70 W)
 - Maize: 350
-- B.Rice: 200 (updated: 250)
+- B.Rice: 250
 - DORB: 110
 - SOYA: 125
 - DDGS: 50
@@ -2936,7 +2952,7 @@ LM3 (Above 70 W)
 - SalCURB: 0.5
 - Medicine: 5
 ------------------
-Total: 1012.7 (updated: 1062.7)""")
+Total: 1062.7""")
     }
 
     db = SessionLocal()

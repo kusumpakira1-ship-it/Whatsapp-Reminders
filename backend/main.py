@@ -27,7 +27,27 @@ def get_formula_text_by_task_name(task_name: str) -> str:
     match = re.search(r'\(Week\s+(\d+)\)', task_name)
     if match:
         week = int(match.group(1))
-        if week == 9:
+        if week == 4:
+            return """Sunfra Poultry Farm feed formulations:
+CM (4-8 W)
+- Maize: 550
+- B.Rice: 70
+- DORB: 40
+- SOYA: 285
+- DDGS: 25
+- Rapeseed: 0
+- Calcite: 20
+- Stone grit: 0
+- DCP: 11
+- Lysine: 1.5
+- Methionine: 1.5
+- Salt: 3.5
+- TOXFIN 300: 0.5
+- SalCURB: 0.5
+- Medicine: 5
+------------------
+Total: 1013.5"""
+        elif week == 9:
             return """Sunfra Poultry Farm feed formulations:
 GM (9-15 W)
 - Maize: 500
@@ -111,7 +131,7 @@ Total: 1009.3"""
             return """Sunfra Poultry Farm feed formulations:
 LM3 (Above 70 W)
 - Maize: 350
-- B.Rice: 200 (updated: 250)
+- B.Rice: 250
 - DORB: 110
 - SOYA: 125
 - DDGS: 50
@@ -126,7 +146,7 @@ LM3 (Above 70 W)
 - SalCURB: 0.5
 - Medicine: 5
 ------------------
-Total: 1012.7 (updated: 1062.7)"""
+Total: 1062.7"""
     return ""
 
 def _seed_default_settings():
@@ -471,10 +491,11 @@ def process_message_background(
                                     group_jid += '@g.us'
                             
                             feed_plant_msg = (
-                                f"📢 *Feed Formula Update Reminder* 📢\n\n"
+                                f"📢 *Feed Formula Update* 📢\n\n"
                                 f"Hi Team,\n"
-                                f"Shed/Flock *{target_shed}* has reached **Week {running_weeks}**.\n"
-                                f"Please update the feed formula to **{stage_name}** immediately."
+                                f"Shed *{target_shed}* has reached **Week {running_weeks}**.\n"
+                                f"Approved by *{approver_name}*.\n\n"
+                                f"{formula_text}"
                             )
                             send_waha_message(group_jid, feed_plant_msg)
                         
