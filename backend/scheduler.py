@@ -177,13 +177,25 @@ def get_all_waha_groups_map() -> dict:
             data = response.json()
             if isinstance(data, list):
                 for g in data:
-                    jid = g.get("id")
-                    if jid:
-                        waha_groups_map[jid] = g.get("subject") or g.get("name")
+                    jid_val = g.get("id")
+                    if isinstance(jid_val, dict):
+                        jid_str = jid_val.get("_serialized") or str(jid_val)
+                    else:
+                        jid_str = str(jid_val) if jid_val else ""
+                    if jid_str:
+                        waha_groups_map[jid_str] = g.get("subject") or g.get("name") or jid_str
             elif isinstance(data, dict):
                 for k, v in data.items():
-                    if k:
-                        waha_groups_map[k] = v.get("subject") or v.get("name")
+                    if isinstance(k, dict):
+                        k_str = k.get("_serialized") or str(k)
+                    else:
+                        k_str = str(k) if k else ""
+                    if isinstance(v, dict):
+                        v_str = v.get("subject") or v.get("name") or k_str
+                    else:
+                        v_str = str(v)
+                    if k_str:
+                        waha_groups_map[k_str] = v_str
     except Exception as e:
         logger.error(f"Failed to fetch groups from WAHA in helper: {e}")
     return waha_groups_map
