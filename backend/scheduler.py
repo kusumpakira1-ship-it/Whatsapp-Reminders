@@ -1107,6 +1107,8 @@ def poll_and_execute_unified_reminders():
                      ]
 
                     for sub in submissions:
+                        if sub.category == 'unknown' or 'failed' in str(sub.notes or '').lower():
+                            continue
                         alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
                         match_sender = clean_phone in str(sub.sender) or alt_phone in str(sub.sender)
                         group_name = group_names_by_id.get(r.whatsapp_group_id)
@@ -1186,6 +1188,8 @@ def poll_and_execute_unified_reminders():
                                 valid_match = match_sender_raw or match_name
                             
                             if valid_match:
+                                if "yesterday" in raw_text_lower:
+                                    continue
                                 # Overrides for Hyperscale and P&L groups
                                 is_hyperscale = clean_target_jid and "120363428417403024" in clean_target_jid
                                 is_p_and_l = clean_target_jid and "120363427856964756" in clean_target_jid
@@ -2212,6 +2216,8 @@ async def manager_escalation_job():
                         processed_today.append(p)
 
                 for p in processed_today:
+                    if p.category == 'unknown' or 'failed' in str(p.notes or '').lower():
+                        continue
                     p_cat = (p.category or "").lower()
                     p_notes = (p.notes or "").lower()
                     if is_egg_pricing:
