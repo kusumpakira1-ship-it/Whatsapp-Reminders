@@ -480,12 +480,10 @@ def process_message_background(
                             if match:
                                 running_weeks = match.group(1)
                                 
-                            # Search dynamically for Feed Formula or Feed Plant group
+                            # Target ONLY the Feed Formula WhatsApp group
                             group_jid = "120363410607412989@g.us"
                             group_obj = db.query(Group).filter(Group.name.ilike('%feed formula%')).first()
-                            if not group_obj:
-                                group_obj = db.query(Group).filter(Group.name.ilike('%feed plant%')).first()
-                            if group_obj:
+                            if group_obj and group_obj.whatsapp_group_id:
                                 group_jid = group_obj.whatsapp_group_id
                                 if not group_jid.endswith('@g.us') and not group_jid.endswith('@c.us'):
                                     group_jid += '@g.us'
