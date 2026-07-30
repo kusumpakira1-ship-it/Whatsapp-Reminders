@@ -244,8 +244,175 @@ def _call_ai(prompt: str, images: list = None, is_vision: bool = False, document
         print("Using Ollama API for processing...")
         return _call_ollama(prompt, images, is_vision)
 
+def parse_farm_text(text: str) -> list:
+    """Parses farm operational text messages (Mortality, Production/Trays, Bird Weights)."""
+    if not text:
+        return []
+        
+    text_lower = text.lower()
+    records = []
+
+    # 1. Mortality Parsing
+    if any(k in text_lower for k in ['mortality', 'motality', 'chick', 'whites', 'brownie', 'wisemortality']) or re.search(r'\b(?:shed|shead|sed)\b.*?(?:mortality|motality)', text_lower) or re.search(r'^\d{1,2}[\s:\-_]+\d+', text, re.MULTILINE):
+        lines = text.splitlines()
+        for line in lines:
+            line_str = line.strip()
+            if not line_str or 'totall' in line_str.lower() or 'wisemortality' in line_str.lower():
+                continue
+                
+            # Single-line mortality pattern e.g. "Shead1 10 mortality", "Shed 7 mortality 8", "4th Shead mortality 2", "Sed 6 3 motality"
+            m_single_mort = re.search(r'(?:(?:shed|shead|sed)\s*(\d+)|(\d+)(?:st|nd|rd|th)?\s*(?:shed|shead|sed)).*?(?:mortality|motality)\s*(\d+)?', line_str, re.IGNORECASE)
+            if m_single_mort:
+                shed_num = m_single_mort.group(1) or m_single_mort.group(2)
+                nums = re.findall(r'\d+', line_str)
+                qty = 0
+                if len(nums) >= 2:
+                    qty = int(nums[1]) if nums[0] == shed_num else int(nums[0])
+                elif m_single_mort.group(3):
+                    qty = int(m_single_mort.group(3))
+                if shed_num and qty >= 0:
+                    records.append({
+                        'shead_name': f'Shed {shed_num}',
+                        'category': 'mortality',
+                        'quantity': qty,
+                        'unit': 'birds',
+                        'notes': line_str,
+                        'confidence_score': 1.0
+                    })
+                    continue
+
+            # Multi-line Shed mortality e.g. "1-5", "1- 5", "1 - 5"
+            m_shed = re.match(r'^(?:shed|shead|sed)?\s*(\d{1,2})[\s:\-_]+(\d+)\s*$', line_str, re.IGNORECASE)
+            if m_shed:
+                shed_num = m_shed.group(1)
+                qty = int(m_shed.group(2))
+                records.append({
+                    'shead_name': f'Shed {shed_num}',
+                    'category': 'mortality',
+                    'quantity': qty,
+                    'unit': 'birds',
+                    'notes': line_str,
+                    'confidence_score': 1.0
+                })
+                continue
+
+            # Chick Whites mortality e.g. "Whites:2", "Whites - 2", "Chick Whites: 2"
+            m_whites = re.search(r'(?:chick\s+)?whites?[\s:\-_]+(\d+)', line_str, re.IGNORECASE)
+            if m_whites:
+                qty = int(m_whites.group(1))
+                records.append({
+                    'shead_name': 'Chick Whites',
+                    'category': 'mortality',
+                    'quantity': qty,
+                    'unit': 'birds',
+                    'notes': line_str,
+                    'confidence_score': 1.0
+                })
+                continue
+
+            # Chick Brownie mortality e.g. "Brownie: 0", "Chick Brownie: 0"
+            m_brownie = re.search(r'(?:chick\s+)?brownies?[\s:\-_]+(\d+)', line_str, re.IGNORECASE)
+            if m_brownie:
+                qty = int(m_brownie.group(1))
+                records.append({
+                    'shead_name': 'Chick Brownie',
+                    'category': 'mortality',
+                    'quantity': qty,
+                    'unit': 'birds',
+                    'notes': line_str,
+                    'confidence_score': 1.0
+                })
+                continue
+
+    # 2. Production / Trays Parsing
+    if any(k in text_lower for k in ['sed_age_production', 'production', 'trays', 'trays of production']):
+        lines = text.splitlines()
+        for line in lines:
+            line_str = line.strip()
+            if not line_str or 'sed_age_production' in line_str.lower():
+                continue
+                
+            m = re.match(r'^(?:shed|shead|sed)?\s*(\d+)[\._\s]+(?:(\d+)(?:th\s*week)?)?[\._\s]*(\d+\.?\d*)?', line_str, re.IGNORECASE)
+            if m:
+                shed_num = m.group(1)
+                trays_val_str = m.group(3)
+                if trays_val_str:
+                    try:
+                        if '.' in trays_val_str:
+                            parts = trays_val_str.split('.', 1)
+                            trays = int(parts[0])
+                            eggs = int(parts[1]) if parts[1].isdigit() else 0
+                        else:
+                            trays = int(trays_val_str)
+                            eggs = 0
+                        total_eggs = trays * 30 + eggs
+                        records.append({
+                            'shead_name': f'Shed {shed_num}',
+                            'category': 'egg_collection_1',
+                            'quantity': total_eggs,
+                            'unit': 'eggs',
+                            'notes': f'{trays} trays {eggs} eggs',
+                            'confidence_score': 1.0
+                        })
+                    except ValueError:
+                        pass
+
+            m_single = re.search(r'(\d+)\s*trays?.*?(?:(\d+)(?:st|nd|rd|th)?\s*(?:shed|shead|sed))', line_str, re.IGNORECASE)
+            if m_single:
+                trays = int(m_single.group(1))
+                shed_num = m_single.group(2)
+                records.append({
+                    'shead_name': f'Shed {shed_num}',
+                    'category': 'egg_collection_1',
+                    'quantity': trays * 30,
+                    'unit': 'eggs',
+                    'notes': line_str,
+                    'confidence_score': 1.0
+                })
+
+    # 3. Birds Weight Parsing
+    if 'birds weight' in text_lower or 'actual:' in text_lower or 'actual;' in text_lower:
+        blocks = re.split(r'\n(?=(?:shead|shed)\b)', text, flags=re.IGNORECASE)
+        for block in blocks:
+            block_str = block.strip()
+            if not block_str:
+                continue
+            m_shed = re.search(r'(?:shead|shed)\s*(?:chick\s*:\s*|chick\s+)?([a-z0-9\s;:]+)[:;\n]', block_str, re.IGNORECASE)
+            m_act = re.search(r'actual[:;\s]+(\d+\.?\d*)', block_str, re.IGNORECASE)
+            if m_shed and m_act:
+                raw_shed = m_shed.group(1).strip()
+                if raw_shed.isdigit():
+                    shed_name = f"Shed {raw_shed}"
+                elif 'white' in raw_shed.lower():
+                    shed_name = "Chick Whites"
+                elif 'brown' in raw_shed.lower():
+                    shed_name = "Chick Brownie"
+                elif 'grower' in raw_shed.lower():
+                    shed_name = "Grower"
+                else:
+                    nums = re.findall(r'\d+', raw_shed)
+                    shed_name = f"Shed {nums[0]}" if nums else raw_shed
+
+                act_wt = float(m_act.group(1))
+                act_wt_kg = act_wt / 1000.0 if act_wt > 50 else act_wt
+                records.append({
+                    'shead_name': shed_name,
+                    'category': 'hen_weight',
+                    'quantity': act_wt_kg,
+                    'unit': 'kg',
+                    'notes': block_str.replace('\n', ' '),
+                    'confidence_score': 1.0
+                })
+
+    return records
+
+
 def process_text(text: str) -> dict:
-    """Processes plain text using the configured AI provider."""
+    """Processes plain text using farm regex parser first, then AI provider if unparsed."""
+    parsed_records = parse_farm_text(text)
+    if parsed_records:
+        return parsed_records
+
     prompt = f"Extract data from this message:\n{text}"
     result = _call_ai(prompt)
     
