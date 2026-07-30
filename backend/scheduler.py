@@ -2030,9 +2030,10 @@ async def manager_escalation_job():
                 alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
                 
                 match_sender_raw = clean_phone in str(raw_msg.sender) or alt_phone in str(raw_msg.sender)
+                clean_target_jid_stripped = clean_group_jid.replace('@g.us', '').strip() if clean_group_jid else ''
                 match_group_raw = False
                 if clean_group_jid:
-                    grp_obj = db.query(Group).filter(Group.whatsapp_group_id.like(f"%{clean_target_jid_stripped}%")).first()
+                    grp_obj = db.query(Group).filter(Group.whatsapp_group_id.like(f"%{clean_target_jid_stripped}%")).first() if clean_target_jid_stripped else None
                     group_name = waha_groups_map.get(clean_group_jid) or (grp_obj.name if grp_obj else "")
                     match_group_raw = (
                         raw_msg.group_name
@@ -2400,9 +2401,10 @@ async def company_wise_escalation_job():
                 alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
                 
                 match_sender_raw = clean_phone in str(raw_msg.sender) or alt_phone in str(raw_msg.sender)
+                clean_target_jid_stripped = clean_group_jid.replace('@g.us', '').strip() if clean_group_jid else ''
                 match_group_raw = False
                 if clean_group_jid:
-                    grp_obj = db.query(Group).filter(Group.whatsapp_group_id.like(f"%{clean_target_jid_stripped}%")).first()
+                    grp_obj = db.query(Group).filter(Group.whatsapp_group_id.like(f"%{clean_target_jid_stripped}%")).first() if clean_target_jid_stripped else None
                     group_name = waha_groups_map.get(clean_group_jid) or (grp_obj.name if grp_obj else "")
                     match_group_raw = (
                         raw_msg.group_name
