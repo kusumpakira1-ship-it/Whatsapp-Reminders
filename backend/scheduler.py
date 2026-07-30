@@ -32,6 +32,7 @@ scheduler = AsyncIOScheduler()
 def _get_recipient_list():
     import os
     db = SessionLocal()
+    phones = []
     try:
         recipients = db.query(ReportRecipient).filter(ReportRecipient.is_active == True).all()
         phones = [r.phone_number for r in recipients]
@@ -41,14 +42,16 @@ def _get_recipient_list():
     finally:
         db.close()
 
-    # Append Manager Phone from config
-    manager_phone = settings.MANAGER_PHONE
-    if manager_phone:
-        manager_jid = manager_phone
-        if not manager_jid.endswith('@c.us') and not manager_jid.endswith('@g.us') and not manager_jid.endswith('@lid'):
-            manager_jid += '@c.us'
-        if manager_jid not in phones:
-            phones.append(manager_jid)
+    # Always include all 3 key manager numbers
+    default_managers = [
+        "917259510983@c.us",
+        "917204021105@c.us",
+        "918985779911@c.us"
+    ]
+    for mgr in default_managers:
+        if mgr not in phones:
+            phones.append(mgr)
+
     return phones
 
 async def _send_reports_to_all(pdf_path, summary_text):

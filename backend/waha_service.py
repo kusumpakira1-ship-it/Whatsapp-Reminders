@@ -45,11 +45,14 @@ def send_waha_file(chat_id: str, file_path: str, caption: str = "", session: str
         headers["X-Api-Key"] = api_key
         
     try:
-        # Hostinger/Docker backend URL (accessible by waha container)
-        # file_path is like /app/media/reports/report.pdf
-        # Since we mounted /media to /app/media in fastapi, the url is /media/...
-        relative_path = file_path.replace('/app/', '')
-        file_url = f"http://fastapi_backend:8000/{relative_path}"
+        filename = os.path.basename(file_path)
+        # Handle both Windows and Linux paths to format static media URL: http://fastapi-backend.com:8000/media/...
+        if 'media' in file_path:
+            media_rel = 'media/' + file_path.split('media')[-1].lstrip('/\\').replace('\\', '/')
+        else:
+            media_rel = f"media/reports/{filename}"
+            
+        file_url = f"http://fastapi-backend.com:8000/{media_rel}"
         
         mimetype = "application/pdf" if file_path.endswith('.pdf') else "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         
@@ -57,7 +60,7 @@ def send_waha_file(chat_id: str, file_path: str, caption: str = "", session: str
             "chatId": chat_id,
             "file": {
                 "mimetype": mimetype,
-                "filename": os.path.basename(file_path),
+                "filename": filename,
                 "url": file_url
             },
             "caption": caption,
