@@ -1201,7 +1201,8 @@ def poll_and_execute_unified_reminders():
                                     has_photo = getattr(raw_msg, 'message_type', '') == 'image' or getattr(raw_msg, 'media_path', None) is not None
                                     has_spec_phrases = any(phrase in raw_text_lower for phrase in ["report submitted", "submitted profit summary", "profit summary"])
                                     has_standard = any(kw.lower() in raw_text_lower for kw in raw_keywords)
-                                    if has_photo or has_spec_phrases or has_standard:
+                                    is_for_yesterday = "yesterday" in raw_text_lower
+                                    if (has_photo or has_spec_phrases or has_standard) and not is_for_yesterday:
                                         submitted = True
                                         logger.info(f"P&L override raw match for '{report}' from {raw_msg.sender}.")
                                         break
@@ -2130,7 +2131,7 @@ async def manager_escalation_job():
                         break
                 elif is_profit_report:
                     profit_kws = ["profit", "p&l", "p and l", "p/l", "loss", "profit summary", "p&l summary", "summary", "profit update", "p&l report", "p&l statement"]
-                    if any(kw in text_lower for kw in profit_kws):
+                    if any(kw in text_lower for kw in profit_kws) and "yesterday" not in text_lower:
                         submitted = True
                         break
                 elif is_ca_statement:
@@ -2490,7 +2491,7 @@ async def company_wise_escalation_job():
                         break
                 elif is_profit_report:
                     profit_kws = ["profit", "p&l", "p and l", "p/l", "loss", "profit summary", "p&l summary", "summary", "profit update", "p&l report", "p&l statement"]
-                    if any(kw in text_lower for kw in profit_kws):
+                    if any(kw in text_lower for kw in profit_kws) and "yesterday" not in text_lower:
                         submitted = True
                         break
                 elif is_ca_statement:
