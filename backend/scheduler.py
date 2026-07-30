@@ -2032,11 +2032,12 @@ async def manager_escalation_job():
                 match_sender_raw = clean_phone in str(raw_msg.sender) or alt_phone in str(raw_msg.sender)
                 match_group_raw = False
                 if clean_group_jid:
-                    group_name = waha_groups_map.get(clean_group_jid)
+                    grp_obj = db.query(Group).filter(Group.whatsapp_group_id.like(f"%{clean_target_jid_stripped}%")).first()
+                    group_name = waha_groups_map.get(clean_group_jid) or (grp_obj.name if grp_obj else "")
                     match_group_raw = (
                         raw_msg.group_name
                         and group_name
-                        and str(raw_msg.group_name).lower() in str(group_name).lower()
+                        and (str(raw_msg.group_name).lower() in str(group_name).lower() or str(group_name).lower() in str(raw_msg.group_name).lower())
                     )
                 
                 match_name = False
@@ -2060,18 +2061,27 @@ async def manager_escalation_job():
                                 
                 raw_msg_jid = msg_jids.get(raw_msg.message_id) or ''
                 clean_raw_jid = raw_msg_jid.replace('@g.us', '').strip()
-                clean_target_jid_stripped = clean_group_jid.replace('@g.us', '').strip() if clean_group_jid else ''
                 
-                is_group_level = (r["person_phone"] == '1234567890' or 'team' in r["person_name"].lower())
-                
+                keyword_group_match = False
+                if raw_msg.group_name and r["report_types"]:
+                    gn_lower = raw_msg.group_name.lower()
+                    rt_lower = r["report_types"].lower()
+                    if ("egg pricing" in gn_lower and "egg pricing" in rt_lower) or \
+                       ("rule book" in gn_lower and "rule" in rt_lower) or \
+                       ("raw material" in gn_lower and ("stock" in rt_lower or "website" in rt_lower)) or \
+                       ("p&l" in gn_lower and ("p&l" in rt_lower or "profit" in rt_lower)) or \
+                       ("hyperscale" in gn_lower and "hyperscale" in rt_lower) or \
+                       ("jataayu" in gn_lower and "jataayu" in rt_lower):
+                        keyword_group_match = True
+
                 is_match = False
                 if clean_target_jid_stripped:
-                    is_match = (clean_raw_jid == clean_target_jid_stripped)
+                    is_match = (clean_raw_jid and clean_raw_jid == clean_target_jid_stripped) or match_group_raw or keyword_group_match
                 else:
                     sender_matched = match_sender_raw or match_name or match_waha_sender_raw
                     if not sender_matched and r["person_name"] and 'mahalakshmi' in r["person_name"].lower() and 'mahalakshmi' in str(raw_msg.sender).lower():
                         sender_matched = True
-                    is_match = sender_matched
+                    is_match = sender_matched or keyword_group_match
                             
                 if is_match:
                     msgs_today.append(raw_msg)
@@ -2139,8 +2149,8 @@ async def manager_escalation_job():
                         submitted = True
                         break
                 elif is_rule_book:
-                    rule_kws = ["rule book", "rule", "rules", "point", "points", "policy", "guideline", "godown rule", "farm rule", "addition"]
-                    if any(kw in text_lower for kw in rule_kws):
+                    rule_kws = ["rule book", "rules book", "rule", "rules", "point", "points", "policy", "guideline", "godown rule", "farm rule", "addition"]
+                    if any(kw in text_lower for kw in rule_kws) or any(any(kw in (m_raw.raw_text or "").lower() for kw in ["rule book", "rules book"]) for m_raw in raw_messages_today):
                         submitted = True
                         break
                 elif is_update_report:
@@ -2392,11 +2402,12 @@ async def company_wise_escalation_job():
                 match_sender_raw = clean_phone in str(raw_msg.sender) or alt_phone in str(raw_msg.sender)
                 match_group_raw = False
                 if clean_group_jid:
-                    group_name = waha_groups_map.get(clean_group_jid)
+                    grp_obj = db.query(Group).filter(Group.whatsapp_group_id.like(f"%{clean_target_jid_stripped}%")).first()
+                    group_name = waha_groups_map.get(clean_group_jid) or (grp_obj.name if grp_obj else "")
                     match_group_raw = (
                         raw_msg.group_name
                         and group_name
-                        and str(raw_msg.group_name).lower() in str(group_name).lower()
+                        and (str(raw_msg.group_name).lower() in str(group_name).lower() or str(group_name).lower() in str(raw_msg.group_name).lower())
                     )
                 
                 match_name = False
@@ -2420,18 +2431,27 @@ async def company_wise_escalation_job():
                                 
                 raw_msg_jid = msg_jids.get(raw_msg.message_id) or ''
                 clean_raw_jid = raw_msg_jid.replace('@g.us', '').strip()
-                clean_target_jid_stripped = clean_group_jid.replace('@g.us', '').strip() if clean_group_jid else ''
                 
-                is_group_level = (r["person_phone"] == '1234567890' or 'team' in r["person_name"].lower())
-                
+                keyword_group_match = False
+                if raw_msg.group_name and r["report_types"]:
+                    gn_lower = raw_msg.group_name.lower()
+                    rt_lower = r["report_types"].lower()
+                    if ("egg pricing" in gn_lower and "egg pricing" in rt_lower) or \
+                       ("rule book" in gn_lower and "rule" in rt_lower) or \
+                       ("raw material" in gn_lower and ("stock" in rt_lower or "website" in rt_lower)) or \
+                       ("p&l" in gn_lower and ("p&l" in rt_lower or "profit" in rt_lower)) or \
+                       ("hyperscale" in gn_lower and "hyperscale" in rt_lower) or \
+                       ("jataayu" in gn_lower and "jataayu" in rt_lower):
+                        keyword_group_match = True
+
                 is_match = False
                 if clean_target_jid_stripped:
-                    is_match = (clean_raw_jid == clean_target_jid_stripped)
+                    is_match = (clean_raw_jid and clean_raw_jid == clean_target_jid_stripped) or match_group_raw or keyword_group_match
                 else:
                     sender_matched = match_sender_raw or match_name or match_waha_sender_raw
                     if not sender_matched and r["person_name"] and 'mahalakshmi' in r["person_name"].lower() and 'mahalakshmi' in str(raw_msg.sender).lower():
                         sender_matched = True
-                    is_match = sender_matched
+                    is_match = sender_matched or keyword_group_match
                             
                 if is_match:
                     msgs_today.append(raw_msg)
@@ -2481,12 +2501,12 @@ async def company_wise_escalation_job():
                             
                     if time_keyword == 'morning' and (msg_hour_to_use < 12 or 'morning' in text_lower or 'veh kol' in text_lower) and 'ppr rate' not in text_lower and 'closing' not in text_lower:
                         is_time_match = True
-                    elif time_keyword == 'afternoon' and (12 <= msg_hour_to_use < 17 or 'afternoon' in text_lower or 'ppr rate' in text_lower) and 'closing' not in text_lower:
+                    elif time_keyword == 'afternoon' and (12 <= msg_hour_to_use < 17 or 'afternoon' in text_lower or 'ppr rate' in text_lower or 'paper rate' in text_lower) and 'closing' not in text_lower:
                         is_time_match = True
                     elif time_keyword == 'evening' and (msg_hour_to_use >= 17 or 'evening' in text_lower or 'closing' in text_lower or '18:' in text_lower or '19:' in text_lower):
                         is_time_match = True
 
-                    if is_time_match and has_price_number and any(w in text_lower for w in ["egg", "price", "pricing", "ppr rate", "closing", "veh kol", "papaak"]):
+                    if is_time_match and has_price_number and any(w in text_lower for w in ["egg", "price", "pricing", "ppr rate", "paper rate", "closing", "veh kol", "papaak"]):
                         submitted = True
                         break
                 elif is_profit_report:
@@ -2499,14 +2519,14 @@ async def company_wise_escalation_job():
                         submitted = True
                         break
                 elif is_rule_book:
-                    rule_kws = ["rule book", "rule", "rules", "point", "points", "policy", "guideline", "godown rule", "farm rule", "addition"]
-                    if any(kw in text_lower for kw in rule_kws):
+                    rule_kws = ["rule book", "rules book", "rule", "rules", "point", "points", "policy", "guideline", "godown rule", "farm rule", "addition"]
+                    if any(kw in text_lower for kw in rule_kws) or any(any(kw in (m_raw.raw_text or "").lower() for kw in ["rule book", "rules book"]) for m_raw in raw_messages_today):
                         submitted = True
                         break
                 elif is_update_report:
-                    is_stock_website = any(w in text_lower for w in ["website update", "website updates", "stock update", "stock updates", "stock/website"])
+                    is_stock_website = any(w in text_lower for w in ["website update", "website updates", "stock update", "stock updates", "stock/website", "feed materials to shed"])
                     if not (is_stock_website and "stock" not in r["report_types"].lower() and "website" not in r["report_types"].lower()):
-                        if any(kw in text_lower for kw in update_keywords):
+                        if any(kw in text_lower for kw in update_keywords) or is_stock_website:
                             submitted = True
                             break
                 else:
