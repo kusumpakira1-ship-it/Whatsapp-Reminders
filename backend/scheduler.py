@@ -3015,6 +3015,12 @@ def setup_scheduler():
     # Schedule Feed stage transition check daily at 8:00 AM IST
     scheduler.add_job(check_feed_change_transitions_job, CronTrigger(hour=8, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
+    # Schedule Unified Reminders Poller every 1 minute
+    scheduler.add_job(poll_and_execute_unified_reminders, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="poll_unified_reminders_job")
+
+    # Schedule Custom Alarms Poller every 1 minute
+    scheduler.add_job(poll_live_alarms, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="poll_live_alarms_job")
+
     # Schedule Task Overdue Checker & Nagging alert every 1 minute
     scheduler.add_job(poll_and_remind_tasks_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60)
     
