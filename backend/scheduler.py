@@ -1774,8 +1774,6 @@ async def poll_and_remind_tasks_job():
             
             should_remind = False
             if interval_min > 0:
-                # Use last-alert tracking via completion_details timestamp comment
-                # Check if we've already alerted within this interval window
                 last_alert_marker = f"[OVERDUE_ALERT_AT:"
                 already_alerted_recently = False
                 if t.completion_details and last_alert_marker in t.completion_details:
@@ -1793,17 +1791,16 @@ async def poll_and_remind_tasks_job():
                 
                 if not already_alerted_recently:
                     should_remind = True
-                    # Record this alert time
+                    base_details = re.sub(r'\[OVERDUE_ALERT_AT:[^\]]+\]', '', t.completion_details or '')
                     marker = f"{last_alert_marker}{now_ist.isoformat()}]"
-                    t.completion_details = (t.completion_details or '') + marker
+                    t.completion_details = base_details + marker
                     db.commit()
             else:
-                # NAG ONCE only: send only if first alert (no previous marker)
-                last_alert_marker = f"[OVERDUE_ALERT_AT:"
-                if not (t.completion_details and last_alert_marker in t.completion_details):
+                # Send ONCE ONLY when task becomes overdue
+                alert_sent_marker = "[OVERDUE_ALERT_SENT]"
+                if not (t.completion_details and alert_sent_marker in t.completion_details):
                     should_remind = True
-                    marker = f"{last_alert_marker}{now_ist.isoformat()}]"
-                    t.completion_details = (t.completion_details or '') + marker
+                    t.completion_details = (t.completion_details or '') + alert_sent_marker
                     db.commit()
 
             if should_remind:
@@ -2874,8 +2871,8 @@ async def check_feed_change_transitions_job():
 
     # CM: week 4, GM: week 9, PLM: week 16, LM1: week 19, LM2: week 41, LM3: week 71
     TRANSITIONS = {
-        4: ("CM (4-8 W)", "CM", """Sunfra Poultry Farm feed formulations:
-CM (4-8 W)
+        4: ("CM (1-8 W)", "CM", """Sunfra Poultry Farm feed formulations:
+CM (1-8 W)
 - Maize: 550
 - B.Rice: 70
 - DORB: 40
@@ -2999,9 +2996,13 @@ Total: 1062.7""")
             age_days = (today - f.hatch_date).days + 1
             if age_days < 1:
                 continue
-            
             std = db.query(BookStandard).filter(BookStandard.day == age_days).first()
             running_weeks = int(std.week) if std and std.week is not None else (age_days // 7 if age_days else 0)
+            
+            # Update DB columns for running_days and running_weeks
+            f.running_days = max(0, age_days)
+            f.running_weeks = max(0, running_weeks)
+            db.commit()
             
             if running_weeks in TRANSITIONS:
                 full_name, stage_code, formula_text = TRANSITIONS[running_weeks]
@@ -3050,14 +3051,8 @@ def setup_scheduler():
     # Schedule Feed stage transition check daily at 8:00 AM IST
     scheduler.add_job(check_feed_change_transitions_job, CronTrigger(hour=8, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
-    # Schedule Unified Reminders Poller every 1 minute
-    scheduler.add_job(poll_and_execute_unified_reminders, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="poll_unified_reminders_job")
-
-    # Schedule Custom Alarms Poller every 1 minute
-    scheduler.add_job(poll_live_alarms, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="poll_live_alarms_job")
-
     # Schedule Task Overdue Checker & Nagging alert every 1 minute
-    scheduler.add_job(poll_and_remind_tasks_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60)
+    scheduler.add_job(poll_and_remind_tasks_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="poll_tasks_job")
     
     # Schedule Wednesday meetings checklist generation every Wednesday at 6:00 AM IST
     scheduler.add_job(create_wednesday_meeting_tasks, CronTrigger(day_of_week='wed', hour=6, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
@@ -3077,7 +3072,6 @@ def setup_scheduler():
     # Schedule media/report cleanup daily at 12:05 AM IST
     scheduler.add_job(cleanup_old_files_job, CronTrigger(hour=0, minute=5, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
-
     # Combined 10:00 PM Dispatcher: Daily Egg Summary PDF, Escalation Alert, and Daily Farm Report
     scheduler.add_job(send_all_10pm_daily_reports_job, CronTrigger(hour=22, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
@@ -3101,13 +3095,13 @@ def setup_scheduler():
         logger.info("USE_N8N is enabled. Live Alarms, Group Sync, and Unified Reminders are delegated to n8n.")
     else:
         # Schedule live alarms polling every 1 minute
-        scheduler.add_job(poll_live_alarms, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=300)
+        scheduler.add_job(poll_live_alarms, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="poll_live_alarms_job")
         
         # Schedule group syncing to live PHP server every 5 minutes
-        scheduler.add_job(sync_groups_to_live, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300)
+        scheduler.add_job(sync_groups_to_live, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="sync_groups_job")
         
         # Schedule database polling for unified reminders every 1 minute
-        scheduler.add_job(poll_and_execute_unified_reminders, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=300)
+        scheduler.add_job(poll_and_execute_unified_reminders, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="poll_unified_reminders_job")
         
     scheduler.start()
     logger.info("APScheduler started.")

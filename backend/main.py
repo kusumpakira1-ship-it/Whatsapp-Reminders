@@ -29,7 +29,7 @@ def get_formula_text_by_task_name(task_name: str) -> str:
         week = int(match.group(1))
         if week == 4:
             return """Sunfra Poultry Farm feed formulations:
-CM (4-8 W)
+CM (1-8 W)
 - Maize: 550
 - B.Rice: 70
 - DORB: 40
@@ -1184,6 +1184,7 @@ def get_flocks():
                 
             total_live = max(0, f.initial_chicks - int(mortality_sum))
             
+            running_days = max(0, days + 1)
             result.append({
                 "id": f.id,
                 "shed_name": f.shed_name,
@@ -1191,6 +1192,7 @@ def get_flocks():
                 "initial_chicks": f.initial_chicks,
                 "batch_id": f.batch_id,
                 "status": f.status,
+                "running_days": running_days,
                 "running_weeks": running_weeks,
                 "total_live_birds": total_live
             })
