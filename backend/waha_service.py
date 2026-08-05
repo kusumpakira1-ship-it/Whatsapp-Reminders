@@ -2,8 +2,15 @@ import os
 import requests
 from config import settings
 
+BLOCKED_PHONES = ['9346763549', '919346763549']
+
 def send_waha_message(chat_id: str, text: str, session: str = None, mentions: list = None) -> bool:
     """Send a text message via WAHA."""
+    clean_chat = "".join(filter(str.isdigit, str(chat_id or '')))
+    if any(b in clean_chat for b in BLOCKED_PHONES):
+        print(f"Blocked message sending to {chat_id} per user directive.")
+        return False
+
     if not chat_id.endswith('@c.us') and not chat_id.endswith('@g.us') and not chat_id.endswith('@lid'):
         chat_id += '@c.us'
 
@@ -31,8 +38,11 @@ def send_waha_message(chat_id: str, text: str, session: str = None, mentions: li
         return False
 
 def send_waha_file(chat_id: str, file_path: str, caption: str = "", session: str = None) -> bool:
-    """Send a file (PDF/Excel) via WAHA using multiform-data or file URL depending on WAHA config.
-    WAHA Core supports sending files by URL or uploading them."""
+    """Send a file (PDF/Image/Excel) via WAHA using http URL from mounted static media endpoint."""
+    clean_chat = "".join(filter(str.isdigit, str(chat_id or '')))
+    if any(b in clean_chat for b in BLOCKED_PHONES):
+        print(f"Blocked file sending to {chat_id} per user directive.")
+        return False
     
     if not chat_id.endswith('@c.us') and not chat_id.endswith('@g.us') and not chat_id.endswith('@lid'):
         chat_id += '@c.us'
@@ -45,14 +55,29 @@ def send_waha_file(chat_id: str, file_path: str, caption: str = "", session: str
         headers["X-Api-Key"] = api_key
         
     try:
-        # Hostinger/Docker backend URL (accessible by waha container)
-        # file_path is like /app/media/reports/report.pdf
-        # Since we mounted /media to /app/media in fastapi, the url is /media/...
+        # Ensure file is saved in /app/media/
+        if not file_path.startswith('/app/media/'):
+            filename = os.path.basename(file_path)
+            media_dest = os.path.join('/app/media/reports', filename)
+            os.makedirs('/app/media/reports', exist_ok=True)
+            import shutil
+            shutil.copyfile(file_path, media_dest)
+            file_path = media_dest
+
         relative_path = file_path.replace('/app/', '')
         file_url = f"http://fastapi_backend:8000/{relative_path}"
         
-        mimetype = "application/pdf" if file_path.endswith('.pdf') else "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        
+        mimetype = "application/pdf"
+        ext = os.path.splitext(file_path)[1].lower()
+        if ext in ['.png', '.jpg', '.jpeg']:
+            mimetype = f"image/{ext.replace('.', '')}"
+            if mimetype == "image/jpg":
+                mimetype = "image/jpeg"
+        elif ext in ['.xlsx', '.xls']:
+            mimetype = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        elif ext == '.pdf':
+            mimetype = "application/pdf"
+
         payload = {
             "chatId": chat_id,
             "file": {
@@ -64,7 +89,7 @@ def send_waha_file(chat_id: str, file_path: str, caption: str = "", session: str
             "session": session if session else settings.WAHA_SESSION
         }
         
-        response = requests.post(url, json=payload, headers=headers, timeout=30)
+        response = requests.post(url, json=payload, headers=headers, timeout=60)
         if response.status_code not in (200, 201):
             print(f"WAHA sendFile failed: {response.status_code} - {response.text}")
         return response.status_code in (200, 201)

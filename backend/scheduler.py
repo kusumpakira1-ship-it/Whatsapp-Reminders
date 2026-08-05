@@ -383,7 +383,7 @@ async def group_submission_audit_job():
             )
             
             # Send notification to the 2 admin numbers
-            admin_phones = ["917259510983", "919346763549"]
+            admin_phones = ["917259510983", "916364817749"]
             for admin in admin_phones:
                 logger.info(f"Sending group submission audit alert to admin: {admin}")
                 send_waha_message(admin, audit_msg)
@@ -1310,8 +1310,10 @@ def poll_and_execute_unified_reminders():
                         "Thank you! 🌱"
                     )
                     
-                    logger.info(f"Sending private reminder to {p['name']} ({p['jid']})")
-                    send_waha_message(p['jid'], private_msg)
+                    clean_p_num = "".join(filter(str.isdigit, str(p['jid'] or '')))
+                    if clean_p_num and not any(d in clean_p_num for d in ['1234567890', '0000000000', '12345']) and len(clean_p_num) >= 10:
+                        logger.info(f"Sending private reminder to {p['name']} ({p['jid']})")
+                        send_waha_message(p['jid'], private_msg)
                 
                 # 2. Send single group reminder mentioning all pending assignees
                 if r.whatsapp_group_id:
@@ -1560,8 +1562,9 @@ def midnight_reset_job():
                 freq = str(t.frequency).lower()
                 t.due_time = get_next_occurrence(t.due_time, freq)
                 t.status = 'pending'
-                # Strip previous overdue alert markers so task can alert fresh on its new due time
-                if t.completion_details and '[OVERDUE_ALERT_AT:' in t.completion_details:
+                # Strip previous due reminder and overdue alert markers so task can alert fresh on its new due time
+                if t.completion_details:
+                    t.completion_details = t.completion_details.replace('[DUE_REMINDER_SENT]', '').replace('[OVERDUE_ALERT_SENT]', '')
                     t.completion_details = re.sub(r'\[OVERDUE_ALERT_AT:[^\]]+\]', '', t.completion_details)
                 reset_count += 1
                 logger.info(f"Midnight reset task: {t.task_name} → next due: {t.due_time} (freq: {freq})")
@@ -1587,7 +1590,7 @@ def get_interval_minutes(interval):
     return 0
 
 
-async def poll_and_remind_tasks_job():
+def poll_and_remind_tasks_job():
     """Polls database for overdue/pending tasks and sends alerts/reminders with custom nagging intervals."""
     logger.info("Polling database for pending/overdue tasks...")
     from datetime import datetime, timezone, timedelta
@@ -1854,6 +1857,7 @@ async def poll_and_remind_tasks_job():
                     logger.info(f"Sending overdue task alert to {target} for '{t.task_name}'")
                     send_waha_message(target, msg)
     except Exception as e:
+        db.rollback()
         logger.error(f"Error in poll_and_remind_tasks_job: {e}")
     finally:
         db.close()
@@ -1904,9 +1908,9 @@ async def create_wednesday_meeting_tasks():
 
 # Recipients for both escalation reports
 ESCALATION_REPORT_PHONES = [
-    "917259510983@c.us",  # Manager 1
-    "917204021105@c.us",  # Manager 2
-    "918985779911@c.us",  # Manager 3
+    "917259510983@c.us",  # Kusum
+    "918985779911@c.us",  # Nani
+    "917204021105@c.us",  # Prasad
 ]
 
 async def manager_escalation_job():
@@ -2000,6 +2004,15 @@ async def manager_escalation_job():
                 "status": r.status
             })
         
+        # Pre-load all Group records into memory to avoid repeated DB queries inside loops
+        all_groups = db.query(Group).all()
+        group_db_map = {}
+        for g in all_groups:
+            if g.whatsapp_group_id:
+                clean_g_jid = g.whatsapp_group_id.replace('@g.us', '').strip()
+                group_db_map[clean_g_jid] = g.name
+                group_db_map[g.whatsapp_group_id] = g.name
+
         not_submitted_reports = []
         submitted_reports = []
         for r in reminders_to_check:
@@ -2009,14 +2022,8 @@ async def manager_escalation_job():
                 clean_group_jid = r["whatsapp_group_id"]
                 if not clean_group_jid.endswith('@g.us'):
                     clean_group_jid += '@g.us'
-                if clean_group_jid in waha_groups_map:
-                    group_name_display = waha_groups_map[clean_group_jid]
-                else:
-                    group = db.query(Group).filter(Group.whatsapp_group_id == clean_group_jid).first()
-                    if group:
-                        group_name_display = group.name
-                    else:
-                        group_name_display = clean_group_jid
+                clean_target_jid_stripped = clean_group_jid.replace('@g.us', '').strip()
+                group_name_display = waha_groups_map.get(clean_group_jid) or group_db_map.get(clean_group_jid) or group_db_map.get(clean_target_jid_stripped) or clean_group_jid
             
             # Filter raw messages today for this assignee/group
             msgs_today = []
@@ -2030,8 +2037,7 @@ async def manager_escalation_job():
                 clean_target_jid_stripped = clean_group_jid.replace('@g.us', '').strip() if clean_group_jid else ''
                 match_group_raw = False
                 if clean_group_jid:
-                    grp_obj = db.query(Group).filter(Group.whatsapp_group_id.like(f"%{clean_target_jid_stripped}%")).first() if clean_target_jid_stripped else None
-                    group_name = waha_groups_map.get(clean_group_jid) or (grp_obj.name if grp_obj else "")
+                    group_name = waha_groups_map.get(clean_group_jid) or group_db_map.get(clean_group_jid) or group_db_map.get(clean_target_jid_stripped, "")
                     match_group_raw = (
                         raw_msg.group_name
                         and group_name
@@ -2373,6 +2379,15 @@ async def company_wise_escalation_job():
                 "status": r.status
             })
             
+        # Pre-load all Group records into memory to avoid repeated DB queries inside loops
+        all_groups = db.query(Group).all()
+        group_db_map = {}
+        for g in all_groups:
+            if g.whatsapp_group_id:
+                clean_g_jid = g.whatsapp_group_id.replace('@g.us', '').strip()
+                group_db_map[clean_g_jid] = g.name
+                group_db_map[g.whatsapp_group_id] = g.name
+
         for r in reminders_to_check:
             clean_group_jid = None
             group_name_display = None
@@ -2380,14 +2395,8 @@ async def company_wise_escalation_job():
                 clean_group_jid = r["whatsapp_group_id"]
                 if not clean_group_jid.endswith('@g.us'):
                     clean_group_jid += '@g.us'
-                if clean_group_jid in waha_groups_map:
-                    group_name_display = waha_groups_map[clean_group_jid]
-                else:
-                    group = db.query(Group).filter(Group.whatsapp_group_id == clean_group_jid).first()
-                    if group:
-                        group_name_display = group.name
-                    else:
-                        group_name_display = clean_group_jid
+                clean_target_jid_stripped = clean_group_jid.replace('@g.us', '').strip()
+                group_name_display = waha_groups_map.get(clean_group_jid) or group_db_map.get(clean_group_jid) or group_db_map.get(clean_target_jid_stripped) or clean_group_jid
             
             # Filter raw messages today for this assignee/group
             msgs_today = []
@@ -2401,8 +2410,7 @@ async def company_wise_escalation_job():
                 clean_target_jid_stripped = clean_group_jid.replace('@g.us', '').strip() if clean_group_jid else ''
                 match_group_raw = False
                 if clean_group_jid:
-                    grp_obj = db.query(Group).filter(Group.whatsapp_group_id.like(f"%{clean_target_jid_stripped}%")).first() if clean_target_jid_stripped else None
-                    group_name = waha_groups_map.get(clean_group_jid) or (grp_obj.name if grp_obj else "")
+                    group_name = waha_groups_map.get(clean_group_jid) or group_db_map.get(clean_group_jid) or group_db_map.get(clean_target_jid_stripped, "")
                     match_group_raw = (
                         raw_msg.group_name
                         and group_name
@@ -2661,7 +2669,7 @@ def scheduled_godown_report_job():
     try:
         from report_generator_godown import generate_godown_report
         pdf_path, summary_text = generate_godown_report()
-        admin_phones = ["917975209680", "917259510983", "919346763549"]
+        admin_phones = ["917259510983", "916364817749"]
         for phone in admin_phones:
             logger.info(f"Sending daily egg godown summary to {phone}")
             send_waha_message(phone, summary_text)
@@ -3004,6 +3012,41 @@ Total: 1062.7""")
             f.running_weeks = max(0, running_weeks)
             db.commit()
             
+            # Check Vaccine schedule for exact running_days from BookStandard
+            if std and std.vaccine:
+                v_text = str(std.vaccine).strip()
+                is_valid_vaccine = any(k in v_text.lower() for k in [
+                    'vaccine', 'nd', 'ibd', 'coryza', 'pox', 'killed', 'live', 
+                    'mareks', 'losata', 'lasata', 'vvnd', 'deworming', 'hvt', 'ma5', 'cox', 'debeaking'
+                ])
+                if is_valid_vaccine:
+                    v_task_name = f"Vaccine - {f.shed_name}: {v_text} (Day {age_days})"
+                    existing_v = db.query(Task).filter(Task.task_name == v_task_name).first()
+                    if not existing_v:
+                        logger.info(f"Vaccine detected for {f.shed_name} on Day {age_days}: {v_text}. Creating task and sending approval request...")
+                        v_task = Task(
+                            task_name=v_task_name,
+                            task_type="vaccine",
+                            status="pending_approval",
+                            assigned_person_name="Vaccine Team",
+                            assigned_person_phone="1234567890",
+                            whatsapp_group_id="120363411507945065@g.us",
+                            approver_phone="917259510983,916364817749",
+                            due_time=now_ist.replace(hour=9, minute=0, second=0, microsecond=0),
+                            completion_keywords="approve,approved,send,yes"
+                        )
+                        db.add(v_task)
+                        db.commit()
+                        
+                        v_approval_msg = (
+                            f"💉 *Vaccine Approval Needed*\n\n"
+                            f"*Task:* {v_task_name}\n"
+                            f"*Status:* Pending Approval 🟡\n\n"
+                            f"Please reply with \"send\" to approve and confirm."
+                        )
+                        send_waha_message("917259510983@c.us", v_approval_msg)
+                        send_waha_message("916364817749@c.us", v_approval_msg)
+
             if running_weeks in TRANSITIONS:
                 full_name, stage_code, formula_text = TRANSITIONS[running_weeks]
                 task_name = f"Feed Formula - {f.shed_name} to {stage_code} (Week {running_weeks})"
@@ -3028,10 +3071,10 @@ Total: 1062.7""")
                     db.commit()
                     
                     approval_msg = (
-                        f"🔔 *Feed Change Approval Request* 🔔\n\n"
-                        f"Shed *{f.shed_name}* has reached **Week {running_weeks}**.\n"
-                        f"It is time to transition to the **{full_name}** feed stage.\n\n"
-                        f"Please reply with *\"approve\"* or *\"send\"* to dispatch this reminder to the Feed Formula group."
+                        f"🔔 *Feed Formula Approval Needed*\n\n"
+                        f"*Task:* {task_name}\n"
+                        f"*Status:* Pending Approval 🟡\n\n"
+                        f"Please reply with \"send\" to approve and confirm."
                     )
                     send_waha_message("917259510983@c.us", approval_msg)
                     send_waha_message("916364817749@c.us", approval_msg)
@@ -3041,6 +3084,61 @@ Total: 1062.7""")
         db.close()
 
 
+def send_monday_weekly_feed_reminder_job():
+    logger.info("Executing Monday weekly feed formula update reminder...")
+    db = SessionLocal()
+    try:
+        group_jid = "120363410607412989@g.us"
+        reminder_msg = (
+            "⏰ *Weekly Feed Formula Update Reminder*\n\n"
+            "Hi Team,\n"
+            "Please review and update the weekly Feed Formula for all sheds today (Monday) and reply to this message with \"updated\" once finished."
+        )
+        send_waha_message(group_jid, reminder_msg)
+        
+        # Ensure Task #24 exists and is set to pending waiting for team update
+        t24 = db.query(Task).filter(Task.task_name == "Feed Formula (Requires Approval)").first()
+        if not t24:
+            t24 = Task(
+                task_name="Feed Formula (Requires Approval)",
+                task_type="Feed Formula (Requires Approval)",
+                assigned_person_name="Team",
+                assigned_person_phone="1234567890",
+                whatsapp_group_id="120363410607412989@g.us",
+                approver_phone="7204041105",
+                frequency="weekly",
+                status="pending",
+                completion_keywords="updated,completed,done"
+            )
+            db.add(t24)
+        else:
+            t24.status = "pending"
+            t24.approver_phone = "7204041105"
+        db.commit()
+        logger.info("Monday weekly feed formula reminder dispatched and Task #24 reset to pending.")
+    except Exception as e:
+        logger.error(f"Error in send_monday_weekly_feed_reminder_job: {e}")
+    finally:
+        db.close()
+
+
+def scheduled_zoho_reconciliation_job():
+    logger.info("Executing scheduled Zoho Books reconciliation report job...")
+    try:
+        from zoho_reconciliation import generate_and_send_zoho_reconciliation_report
+        generate_and_send_zoho_reconciliation_report("917259510983")
+    except Exception as e:
+        logger.error(f"Error in scheduled_zoho_reconciliation_job: {e}")
+
+async def scheduled_sunfra_pandl_job():
+    logger.info("Starting 9:29 PM Sunfra P&L Report generation...")
+    try:
+        from sunfra_pandl_report import generate_and_send_sunfra_pandl_report
+        generate_and_send_sunfra_pandl_report("917259510983@c.us")
+    except Exception as e:
+        logger.error(f"Error in scheduled_sunfra_pandl_job: {e}")
+
+
 def setup_scheduler():
 
     global scheduler
@@ -3048,6 +3146,15 @@ def setup_scheduler():
     # Schedule Health Monitor every 1 minute
     scheduler.add_job(health_monitor_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60)
     
+    # Schedule Daily Zoho Reconciliation Report at 11:00 PM IST daily
+    scheduler.add_job(scheduled_zoho_reconciliation_job, CronTrigger(hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+
+    # Schedule Daily Sunfra P&L PDF report at 9:29 PM IST daily
+    scheduler.add_job(scheduled_sunfra_pandl_job, CronTrigger(hour=21, minute=29, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    
+    # Schedule Monday Weekly Feed Formula update reminder at 8:00 AM IST on Mondays
+    scheduler.add_job(send_monday_weekly_feed_reminder_job, CronTrigger(day_of_week='mon', hour=8, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+
     # Schedule Feed stage transition check daily at 8:00 AM IST
     scheduler.add_job(check_feed_change_transitions_job, CronTrigger(hour=8, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     

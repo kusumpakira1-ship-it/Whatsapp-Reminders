@@ -10,9 +10,9 @@ DATABASE_URL = f"mysql+pymysql://{settings.DB_USER}:{encoded_password}@{settings
 engine = create_engine(
     DATABASE_URL, 
     pool_pre_ping=True, 
-    pool_recycle=3600, 
-    pool_size=1, 
-    max_overflow=0
+    pool_recycle=180, 
+    pool_size=3, 
+    max_overflow=2
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

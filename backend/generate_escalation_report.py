@@ -119,12 +119,19 @@ try:
                 if not assignee or assignee.lower() == 'team':
                     assignee = t.assigned_person_name or t.assigned_person_phone or "Unknown"
                 
-            status_text = "Completed" if t.status == 'completed' else "Not Completed"
-            status_emoji = "✅" if t.status == 'completed' else "❌"
+            if t.status == 'completed':
+                status_text = "Completed"
+                status_emoji = "✅"
+            elif t.status == 'pending_update':
+                status_text = "Approved (Pending Farm Update)"
+                status_emoji = "🟡"
+            else:
+                status_text = "Not Completed"
+                status_emoji = "❌"
             line = f"- {status_emoji} {assignee}: *{t.task_name}* - {status_text}"
             
             comp = get_company_category(assignee)
-            companies[comp]["tasks"].append((t.status == 'completed', line))
+            companies[comp]["tasks"].append((t.status in ('completed', 'pending_update'), line))
     
     # 2. Fetch today's scheduled and overdue reminders
     if len(sys.argv) > 1:

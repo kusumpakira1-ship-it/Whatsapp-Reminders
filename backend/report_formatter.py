@@ -52,7 +52,7 @@ def _calculate_tables(df, birds_map, default_egg_rate, default_feed_cost_ton):
         df = pd.DataFrame(expanded_rows)
     
     sales_df = df[df['category'] == 'sales'] if not df.empty else pd.DataFrame()
-    rates_by_shed = {}
+    rates_by_shed = {} 
     for _, row in sales_df.iterrows():
         s = row['shead_name']
         qty = float(row['quantity']) if row['quantity'] else 0
@@ -285,27 +285,99 @@ def _calculate_tables(df, birds_map, default_egg_rate, default_feed_cost_ton):
 
 
 def build_whatsapp_summary(df: pd.DataFrame, range_type: str, start_date, end_date, birds_map, default_egg_rate, default_feed_cost_ton) -> str:
-    if range_type == 'daily' or start_date == end_date:
-        today_str = start_date.strftime("%d/%m/%Y")
-        title = f"📋 *DAILY FARM SUMMARY ({today_str})*"
-    elif range_type == 'weekly':
-        title = f"📋 *WEEKLY FARM SUMMARY ({start_date.strftime('%d/%m/%Y')} - {end_date.strftime('%d/%m/%Y')})*"
-    else:
-        title = f"📋 *MONTHLY FARM SUMMARY ({start_date.strftime('%d/%m/%Y')} - {end_date.strftime('%d/%m/%Y')})*"
+    import re
+    def _norm_shead(name):
+        n = str(name or '').strip().lower()
+        if 'chick' in n: return 'Chick'
+        if 'grower' in n: return 'Grower'
+        nums = re.findall(r'\d+', n)
+        if nums: return f"Shed {nums[0]}"
+        return name
 
-    prod, feed, exp, common, pl = _calculate_tables(df, birds_map, default_egg_rate, default_feed_cost_ton)
+    if not df.empty:
+        df = df.copy()
+        df['shead_name'] = df['shead_name'].apply(_norm_shead)
 
-    lines = [title, ""]
-    
-    # Financial Overview Summary
-    lines.append("💰 *Financial Overview*")
-    for r in pl:
-        if r[0] != "Particular":
-            name = r[0].replace("**", "")
-            val = r[1]
-            if val != "-":
-                lines.append(f"• {name}: *{val}*")
+    today_str = start_date.strftime("%d/%m/%Y")
+    lines = [f"📋 *DAILY FARM SUMMARY ({today_str})*", ""]
+
+    book_map = _get_book_standards_map(birds_map)
+    FIXED_SHEDS = ["Shed 1", "Shed 2", "Shed 3", "Shed 4", "Shed 5", "Shed 6", "Shed 7", "Shed 8", "Shed 9", "Grower", "Chick"]
+
+    # 1. Shed-Wise Mortality Section
+    lines.append("💀 *Shed-Wise Mortality*")
+    lines.append("```")
+    tot_mort = 0
+    for s in ["Shed 1", "Shed 2", "Shed 3", "Shed 4", "Shed 5", "Shed 6", "Shed 7", "Shed 8", "Shed 9"]:
+        mort_df = df[(df['shead_name'] == s) & (df['category'] == 'mortality')] if not df.empty else pd.DataFrame()
+        m = int(max([float(r['quantity'] or 0) for _, r in mort_df.iterrows()], default=0))
+        tot_mort += m
+        num = re.findall(r'\d+', s)[0]
+        lines.append(f"{num}-{m}")
+
+    chick_w_df = df[(df['shead_name'].str.lower().str.contains('whites', na=False)) & (df['category'] == 'mortality')] if not df.empty else pd.DataFrame()
+    chick_w_m = int(max([float(r['quantity'] or 0) for _, r in chick_w_df.iterrows()], default=0))
+    chick_b_df = df[(df['shead_name'].str.lower().str.contains('brownie', na=False)) & (df['category'] == 'mortality')] if not df.empty else pd.DataFrame()
+    chick_b_m = int(max([float(r['quantity'] or 0) for _, r in chick_b_df.iterrows()], default=0))
+    tot_mort += (chick_w_m + chick_b_m)
+
+    lines.append("Chick")
+    lines.append(f"Whites; {chick_w_m}")
+    lines.append(f"Brownie; {chick_b_m}")
+    lines.append(f"Totall mortality; {tot_mort}")
+    lines.append("```")
     lines.append("")
+
+    # 2. Production Section: SED_AGE_PRODUCTION-AP-BP
+    lines.append("🥚 *SED_AGE_PRODUCTION-AP-BP*")
+    lines.append("```")
+    for s in ["Shed 1", "Shed 2", "Shed 3", "Shed 4", "Shed 5", "Shed 6", "Shed 7", "Shed 8"]:
+        num = re.findall(r'\d+', s)[0]
+        info = book_map.get(s, {})
+        age_weeks = info.get('book_week', 0)
+        expected_pct = info.get('expected_pct')
+        birds = birds_map.get(s, 0)
+        shed_eggs_df = df[(df['shead_name'] == s) & (df['category'].isin(
+            ['egg_collection_1', 'egg_collection_2', 'egg_collection_3', 'egg_collection', 'egg']))] if not df.empty else pd.DataFrame()
+        total_eggs = 0
+        for _, row in shed_eggs_df.iterrows():
+            qty = float(row['quantity'] or 0)
+            unit = str(row['unit'] or '').lower()
+            total_eggs += qty * 30 if 'tray' in unit else qty
+        trays = total_eggs / 30.0
+        actual_pct = (total_eggs / birds * 100.0) if birds > 0 and total_eggs > 0 else 0.0
+        exp_str = f"{int(expected_pct)}%" if expected_pct is not None else "0%"
+        act_str = f"{int(actual_pct)}%"
+        lines.append(f"{num}._ {age_weeks}._ {trays:.2f}_{act_str}-{exp_str}")
+    lines.append("```")
+    lines.append("")
+
+    # 3. Birds Weight Comparison Section
+    lines.append("⚖️ *Birds Weight Comparison*")
+    lines.append("```")
+    for s in FIXED_SHEDS:
+        info = book_map.get(s, {})
+        book_wt_g = info.get('book_weight_g')
+        wt_df = df[(df['shead_name'] == s) & (df['category'].isin(
+            ['weight', 'body_weight', 'bird_weight', 'avg_weight', 'hen_weight']))] if not df.empty else pd.DataFrame()
+        actual_wt_kg = None
+        for _, row in wt_df.iterrows():
+            qty = float(row['quantity'] or 0)
+            if qty > 0:
+                unit = str(row['unit'] or '').lower()
+                actual_wt_kg = qty / 1000.0 if (qty > 50 or ('g' in unit and 'kg' not in unit)) else qty
+                break
+        if actual_wt_kg is not None and book_wt_g is not None:
+            actual_g = actual_wt_kg * 1000.0
+            diff_g = actual_g - book_wt_g
+            symbol = "🟢" if diff_g >= 0 else "🔴"
+            sign = "+" if diff_g >= 0 else ""
+            lines.append(f"{s}: {actual_wt_kg:.3f} kg (Book: {book_wt_g/1000.0:.3f} kg) {symbol} {sign}{diff_g:.0f}g")
+        elif actual_wt_kg is not None:
+            lines.append(f"{s}: {actual_wt_kg:.3f} kg (No Book Standard)")
+        else:
+            lines.append(f"{s}: No Weight Data")
+    lines.append("```")
 
     return "\n".join(lines)
 
@@ -432,12 +504,24 @@ def generate_operations_pdf(pdf_path: str, df: pd.DataFrame, range_type: str, st
         leading=9
     )
 
+    if not df.empty:
+        import re
+        def _norm_shead(name):
+            n = str(name or '').strip().lower()
+            if 'chick' in n: return 'Chick'
+            if 'grower' in n: return 'Grower'
+            nums = re.findall(r'\d+', n)
+            if nums: return f"Shed {nums[0]}"
+            return name
+        df = df.copy()
+        df['shead_name'] = df['shead_name'].apply(_norm_shead)
+
     # ─── SECTION 1: Shed-Wise Mortality ─────────────────────────────────────────
     mort_headers = ["Shed", "Age (Days)", "Age (Weeks)", "Mortality Today"]
     mort_rows = []
     for shed in FIXED_SHEDS:
         mort_df = df[(df['shead_name'] == shed) & (df['category'] == 'mortality')] if not df.empty else pd.DataFrame()
-        mortality = int(sum(float(r['quantity'] or 0) for _, r in mort_df.iterrows()))
+        mortality = int(max([float(r['quantity'] or 0) for _, r in mort_df.iterrows()], default=0))
         info = book_map.get(shed, {})
         age_days = info.get('age_days', 0)
         age_weeks = info.get('book_week', 0)
@@ -452,7 +536,7 @@ def generate_operations_pdf(pdf_path: str, df: pd.DataFrame, range_type: str, st
 
     # ─── SECTION 2: Age & Production ────────────────────────────────────────────
     prod_headers = ["Shed", "Age\n(Days)", "Age\n(Weeks)", "Eggs\n(Nos.)",
-                    "Trays\n(30 eggs)", "Actual\nProd %", "Expected\nProd %", "Diff\n(%pts)", "Mortality"]
+                    "Trays\n(30 eggs)", "Actual\nProd %", "Expected\nProd %", "Diff\n(%pts)"]
     prod2_rows = []
     for shed in FIXED_SHEDS:
         is_grower_chick = shed in ["Grower", "Chick"]
@@ -466,10 +550,8 @@ def generate_operations_pdf(pdf_path: str, df: pd.DataFrame, range_type: str, st
             if qty > 1000:
                 birds = int(qty)
                 break
-        mort_df = df[(df['shead_name'] == shed) & (df['category'] == 'mortality')] if not df.empty else pd.DataFrame()
-        mortality = int(sum(float(r['quantity'] or 0) for _, r in mort_df.iterrows()))
         shed_eggs_df = df[(df['shead_name'] == shed) & (df['category'].isin(
-            ['egg_collection_1', 'egg_collection_2', 'egg_collection', 'egg']))] if not df.empty else pd.DataFrame()
+            ['egg_collection_1', 'egg_collection_2', 'egg_collection_3', 'egg_collection', 'egg']))] if not df.empty else pd.DataFrame()
         total_eggs = 0
         for _, row in shed_eggs_df.iterrows():
             qty = float(row['quantity'] or 0)
@@ -479,7 +561,7 @@ def generate_operations_pdf(pdf_path: str, df: pd.DataFrame, range_type: str, st
         actual_pct = (total_eggs / birds * 100) if birds > 0 and total_eggs > 0 else 0.0
         if is_grower_chick:
             prod2_rows.append([shed, str(age_days) if age_days else "-", str(age_weeks) if age_weeks else "-",
-                                "N/A", "N/A", "N/A", "N/A", "N/A", str(mortality) if mortality else "0"])
+                                "N/A", "N/A", "N/A", "N/A", "N/A"])
             continue
         exp_str = f"{expected_pct:.1f}%" if expected_pct is not None else "N/A"
         if expected_pct is not None and actual_pct > 0:
@@ -495,12 +577,12 @@ def generate_operations_pdf(pdf_path: str, df: pd.DataFrame, range_type: str, st
             f"{int(total_eggs):,}" if total_eggs else "0",
             f"{trays:.1f}" if trays else "0",
             f"{actual_pct:.1f}%" if actual_pct else "0.0%",
-            exp_str, diff_str, str(mortality) if mortality else "0"
+            exp_str, diff_str
         ])
     draw_table("2. Age & Production (Eggs / Trays vs Book Standard)",
                prod_headers, prod2_rows,
-               col_widths=[0.9*inch, 0.7*inch, 0.7*inch, 0.8*inch, 0.8*inch,
-                           0.8*inch, 0.85*inch, 0.7*inch, 0.7*inch])
+               col_widths=[1.0*inch, 0.85*inch, 0.85*inch, 1.05*inch, 0.95*inch,
+                           0.95*inch, 0.95*inch, 0.85*inch])
 
     # ─── SECTION 3: Birds Weight Comparison ─────────────────────────────────────
     wt_headers = ["Shed", "Age\n(Days)", "Age\n(Weeks)", "Actual Weight\n(Kg)",
@@ -513,13 +595,16 @@ def generate_operations_pdf(pdf_path: str, df: pd.DataFrame, range_type: str, st
         age_weeks = info.get('book_week', 0)
         book_wt_g = info.get('book_weight_g')
         wt_df = df[(df['shead_name'] == shed) & (df['category'].isin(
-            ['weight', 'body_weight', 'bird_weight', 'avg_weight']))] if not df.empty else pd.DataFrame()
+            ['weight', 'body_weight', 'bird_weight', 'avg_weight', 'hen_weight']))] if not df.empty else pd.DataFrame()
         actual_wt_kg = None
         for _, row in wt_df.iterrows():
             qty = float(row['quantity'] or 0)
             if qty > 0:
                 unit = str(row['unit'] or '').lower()
-                actual_wt_kg = qty / 1000.0 if ('g' in unit and 'kg' not in unit) else qty
+                if qty > 50 or ('g' in unit and 'kg' not in unit):
+                    actual_wt_kg = qty / 1000.0
+                else:
+                    actual_wt_kg = qty
                 break
         for _, row in (df[(df['shead_name'] == shed) & (df['category'] == 'production')] if not df.empty else pd.DataFrame()).iterrows():
             qty = float(row['quantity'] or 0)
@@ -534,14 +619,14 @@ def generate_operations_pdf(pdf_path: str, df: pd.DataFrame, range_type: str, st
         book_g_str = f"{int(book_wt_g)}" if book_wt_g is not None else "No Data"
         book_kg_str = f"{book_wt_g/1000:.3f}" if book_wt_g is not None else "No Data"
         if actual_wt_kg is not None and book_wt_g is not None:
-            actual_g = actual_wt_kg * 1000
+            actual_g = actual_wt_kg * 1000.0
             diff_g = actual_g - book_wt_g
             if diff_g >= 0:
                 diff_str = Paragraph(f'<font color="#2d6a4f"><b>+{diff_g:.0f} g</b></font>', cell_style)
-                status = Paragraph('<font color="#2d6a4f"><b>Above</b></font>', cell_style)
+                status = Paragraph('<font color="#2d6a4f"><b>Above 🟢</b></font>', cell_style)
             else:
                 diff_str = Paragraph(f'<font color="#b7094c"><b>{diff_g:.0f} g</b></font>', cell_style)
-                status = Paragraph('<font color="#b7094c"><b>Below</b></font>', cell_style)
+                status = Paragraph('<font color="#b7094c"><b>Below 🔴</b></font>', cell_style)
         else:
             diff_str = "N/A"
             status = "N/A"

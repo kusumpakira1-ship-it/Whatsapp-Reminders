@@ -1,23 +1,32 @@
 🚨 *Daily Escalation Report*
 The following is the update on today's tasks and reports, organized by company:
 
-🏢 *Jataayu Jewellers Reports:*
-- ❌ Digital Team - Jataayu: *Daily Work Update* - Not Submitted
-- ❌ Jataayu updates: *Daily Work Update* - Not Submitted
-
 🏢 *Corporate Company (P&L) Reports:*
 - ❌ Sunfra Corporate P&L: *Daily Work Update* - Not Submitted
-- ❌ Sunfra P&L: *Daily Work Update* - Not Submitted
 - ❌ Sunfra Hyperscale: *Daily Work Update* - Not Submitted
+- ❌ Sunfra P&L: *Daily work update* - Not Submitted
 
 🏢 *Sunfra Farms Tasks:*
+- ❌ Gate Manager: *Meeting Follow up with feed and water medicine incharge worker's* - Not Completed
+- ❌ Gate Manager: *Meeting Follow up with shed worker's* - Not Completed
+- ❌ Gate Manager: *Meeting Follow up with  feed plant worker's* - Not Completed
+- ❌ Gate Manager: *Meeting Follow up with egg godown worker's* - Not Completed
+- ❌ Gate Manager: *Meeting Follow up with shed supervisor's* - Not Completed
+- ❌ Rule Book: *Wednesday Rule Book Checklist* - Not Completed
 - ❌ Feed Plant: *Silo Empty and Cleaning* - Not Completed
+- ❌ Gate Manager: *Meeting with Gate Manager* - Not Completed
+- ❌ Gate Manager: *Egg Godown Tractor Worker's* - Not Completed
+- ❌ Vaccine: *Vaccine - Chick 1: IB LOSATA (Ma5) Ventri (Day 30)* - Not Completed
+- ✅ Feed Formula: *Feed Formula (Requires Approval)* - Completed
+- ✅ Feed Formula: *Feed Formula - Shead 5 to PLM (Week 16)* - Completed
 
 *Reports:*
-- ❌ Sunfra AI Intern: *Daily Work Update* - Not Submitted
+- ❌ Kusum Direct: *Daily Work Update* - Not Submitted
 - ❌ Accounts Poultry: *CA Statement* - Not Submitted
-- ❌ Team: *Egg Pricing Evening Updates* - Not Submitted
+- ❌ Production & Mortality Mohan updates: *Daily Work Update* - Not Submitted
+- ❌ Raw Material Prices & Ordering: *Daily Work Update* - Not Submitted
+- ❌ Team: *Egg Pricing Morning Updates* - Not Submitted
 - ❌ Rule Book: *Rule Book Updates* - Not Submitted
-- ✅ Team: *Egg Pricing Morning Updates* - Submitted
-- ✅ Team: *Egg Pricing Afternoon Updates* - Submitted
-- ✅ Raw Material Prices & Ordering: *Stock/Website Updates* - Submitted
+- ❌ Team: *Egg Pricing Evening Updates* - Not Submitted
+- ❌ Team: *Egg Pricing Afternoon Updates* - Not Submitted
+- ✅ Vendor Daily Invoices: *Stock/Website Updates* - Submitted

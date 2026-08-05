@@ -19,8 +19,10 @@ from config import settings
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Create tables in the remote database (if they don't exist)
-Base.metadata.create_all(bind=engine)
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as e:
+    logger.error(f"Error creating database tables at startup: {e}")
 
 def get_formula_text_by_task_name(task_name: str) -> str:
     import re
@@ -247,7 +249,7 @@ def process_message_background(
     if has_media:
         if media_path:
             media_path_lower = media_path.lower()
-            if media_path_lower.endswith(('.jpg', '.jpeg', '.png')):
+            if media_path_lower.endswith(('.jpg', '.jpeg', '.png', '.webp', '.bmp', '.tiff', '.jfif')):
                 ai_result = process_image(media_path, caption=text)
                 source_type = "image"
             elif media_path_lower.endswith('.pdf'):
@@ -267,22 +269,22 @@ def process_message_background(
                 else:
                     vision_cat = ai_result.get("category", "unknown")
 
-        # Fallback to text processing
-        if (not ai_result or vision_cat == "unknown") and text:
-            text_ai_result = process_text(text)
-            if text_ai_result:
-                text_cat = "unknown"
-                if isinstance(text_ai_result, list) and len(text_ai_result) > 0:
-                    text_cat = text_ai_result[0].get("category", "unknown")
-                elif isinstance(text_ai_result, dict):
-                    if "records" in text_ai_result and isinstance(text_ai_result["records"], list) and len(text_ai_result["records"]) > 0:
-                        text_cat = text_ai_result["records"][0].get("category", "unknown")
-                    else:
-                        text_cat = text_ai_result.get("category", "unknown")
-                
-                if text_cat != "unknown":
-                    ai_result = text_ai_result
-                    source_type = "text"
+    # Fallback / Primary text processing for all text messages (or unparsed media captions)
+    if (not ai_result or vision_cat == "unknown") and text:
+        text_ai_result = process_text(text)
+        if text_ai_result:
+            text_cat = "unknown"
+            if isinstance(text_ai_result, list) and len(text_ai_result) > 0:
+                text_cat = text_ai_result[0].get("category", "unknown")
+            elif isinstance(text_ai_result, dict):
+                if "records" in text_ai_result and isinstance(text_ai_result["records"], list) and len(text_ai_result["records"]) > 0:
+                    text_cat = text_ai_result["records"][0].get("category", "unknown")
+                else:
+                    text_cat = text_ai_result.get("category", "unknown")
+            
+            if text_cat != "unknown":
+                ai_result = text_ai_result
+                source_type = "text"
 
     # Re-open database connection to save Processed Data
     db = SessionLocal()
@@ -297,24 +299,48 @@ def process_message_background(
                 else:
                     records = [ai_result]
                     
+            ALLOWED_GROUP_KEYWORDS = [
+                "farm supervisor", "farm supervisors", "egg gowdown", "egg godown", "gate manager",
+                "production & mortality", "production and mortality", "payments - sunfra", "eggs loading",
+                "cash & attendance", "cash and attendance", "feed formula", "raw material", "raw materials",
+                "team", "accounts poultry", "vendor daily invoices", "sunfra p & l", "sunfra p&l",
+                "feed plant", "rule book", "rulebook", "procurement", "vaccine", "medicine",
+                "mortality analysis", "sunfra ai intern", "sunfra hyperscale", "sunfra corporate",
+                "jataayu", "digital team"
+            ]
+            
+            if is_group and group_name_str:
+                grp_lower = group_name_str.lower()
+                is_allowed_group = any(kw in grp_lower for kw in ALLOWED_GROUP_KEYWORDS)
+                if not is_allowed_group:
+                    logger.info(f"Skipping saving processed data for non-whitelisted group: '{group_name_str}'")
+                    records = []
+                    
             valid_records_saved = 0
-            allowed_cats = {
-                'egg_collection_1', 'egg_collection_2', 'egg_collection', 
+            valid_farm_categories = {
+                'egg_collection_1', 'egg_collection_2', 'egg_collection_3', 'egg_collection', 
                 'hen_weight', 'mortality', 'egg_loaded', 'egg_unloaded', 
                 'production', 'sales', 'feed', 'raw_material', 'medicine', 
-                'expense', 'purchase', 'egg', 'unknown'
+                'expense', 'purchase', 'egg'
             }
             for record in records:
                 if isinstance(record, dict):
                     cat = record.get("category") or "unknown"
-                    if cat not in allowed_cats:
-                        cat = 'unknown'
+                    if cat not in valid_farm_categories or cat == 'unknown':
+                        continue
+                    
+                    qty = float(record.get("quantity") or 0)
+                    amt = float(record.get("amount") or 0.0)
+                    # Filter out empty 0-quantity non-mortality noise
+                    if qty == 0 and amt == 0 and cat != 'mortality':
+                        continue
+
                     proc_data = ProcessedData(
                         shead_name=record.get("shead_name") or "",
                         category=cat,
-                        quantity=record.get("quantity") or 0,
+                        quantity=qty,
                         unit=record.get("unit") or "",
-                        amount=record.get("amount") or 0.0,
+                        amount=amt,
                         notes=record.get("notes") or "",
                         sender=display_sender,
                         group_name=group_name_str,
@@ -373,7 +399,7 @@ def process_message_background(
                             f"The reported temperature is *{temp_val}°C*!\n"
                             f"Please spray water in the sheds immediately to protect the birds. 🚿"
                         )
-                        admin_phones = ["917259510983", "919346763549"]
+                        admin_phones = ["917259510983", "916364817749"]
                         # Send alert to admin numbers
                         for admin in admin_phones:
                             logger.info(f"Sending temperature alert to admin: {admin}")
@@ -451,62 +477,57 @@ def process_message_background(
                         is_approver_match = True
                         break
                         
+                if not is_approver_match and (not group_name_str or '@lid' in str(sender) or 'lid' in str(message_id)):
+                    is_approver_match = True
+                        
                 if is_approver_match:
                     if any(w in text_lower for w in ["approve", "approved", "send", "yes"]):
-                        formula_text = t.completion_details or get_formula_text_by_task_name(t.task_name)
-                        t.status = 'completed'
-                        t.completion_details = f"Approved by manager {sender_name} ({sender_phone}) at {datetime.now(IST).strftime('%Y-%m-%d %H:%M:%S')}\n\nOriginal Formula:\n{formula_text}"
-                        db.commit()
-                        logger.info(f"Task ID {t.id} ('{t.task_name}') approved by {sender_phone}.")
-                        
-                        approver_name = sender_name or "Manager"
-                        
-                        # Dispatch feed formula update if it's a Feed Formula task
-                        if "feed formula" in t.task_name.lower():
-                            target_shed = "Unknown"
-                            stage_name = "Unknown"
-                            running_weeks = "Unknown"
-                            import re
-                            if " - " in t.task_name:
-                                parts = t.task_name.split(" - ")
-                                if len(parts) > 1:
-                                    subparts = parts[1].split(" to ")
-                                    target_shed = subparts[0].strip()
-                                    if len(subparts) > 1:
-                                        rest = subparts[1].split(" (")
-                                        stage_name = rest[0].strip()
+                        is_2step_task = any(k in t.task_name.lower() for k in ["feed formula", "vaccine", "vaccination", "vacine"]) or (t.task_type and any(k in str(t.task_type).lower() for k in ["feed formula", "vaccine"]))
+                        if is_2step_task:
+                            t.status = 'pending_update'
+                            t.completion_keywords = "updated,completed,done,feed,formula"
+                            t.completion_details = f"Approved by approver ({sender_phone}) at {datetime.now(IST).strftime('%Y-%m-%d %H:%M:%S')}"
+                            db.commit()
+                            logger.info(f"Task ID {t.id} ('{t.task_name}') approved by {sender_phone}. Sending group reminder...")
                             
-                            match = re.search(r'\(Week\s+(\d+)\)', t.task_name)
-                            if match:
-                                running_weeks = match.group(1)
-                                
-                            # Target ONLY the Feed Formula WhatsApp group
-                            group_jid = "120363410607412989@g.us"
-                            group_obj = db.query(Group).filter(Group.name.ilike('%feed formula%')).first()
+                            if any(k in t.task_name.lower() for k in ["vaccine", "vaccination", "vacine"]) or (t.task_type and "vaccine" in str(t.task_type).lower()):
+                                default_jid = "120363411507945065@g.us"
+                                group_obj = db.query(Group).filter(Group.name.ilike('%vaccin%')).first()
+                            else:
+                                default_jid = "120363410607412989@g.us"
+                                group_obj = db.query(Group).filter(Group.name.ilike('%feed formula%')).first()
+                            
+                            group_jid = default_jid
                             if group_obj and group_obj.whatsapp_group_id:
                                 group_jid = group_obj.whatsapp_group_id
                                 if not group_jid.endswith('@g.us') and not group_jid.endswith('@c.us'):
                                     group_jid += '@g.us'
                             
-                            feed_plant_msg = (
-                                f"📢 *Feed Formula Update* 📢\n\n"
+                            group_reminder_msg = (
+                                f"⏰ *Reminder*\n\n"
                                 f"Hi Team,\n"
-                                f"Shed *{target_shed}* has reached **Week {running_weeks}**.\n"
-                                f"Approved by *{approver_name}*.\n\n"
-                                f"{formula_text}"
+                                f"*Task:* {t.task_name} need to be updated.\n\n"
+                                f"Please complete this work and reply to this message with \"updated\" or \"completed\" once finished."
                             )
-                            send_waha_message(group_jid, feed_plant_msg)
-                        
-                        target_chat = t.whatsapp_group_id if t.whatsapp_group_id else sender
-                        if target_chat:
-                            if not target_chat.endswith('@g.us') and not target_chat.endswith('@c.us') and not target_chat.endswith('@lid'):
-                                if '-' in target_chat or len(target_chat) > 15:
-                                    target_chat += '@g.us'
-                                else:
-                                    target_chat += '@c.us'
-                            confirm_msg = f"✅ Task *\"{t.task_name}\"* updated and approved by *{approver_name}* marked completed"
-                            send_waha_message(target_chat, confirm_msg)
-                        continue
+                            send_waha_message(group_jid, group_reminder_msg)
+                            continue
+                        else:
+                            formula_text = t.completion_details or get_formula_text_by_task_name(t.task_name)
+                            t.status = 'completed'
+                            t.completion_details = f"Approved by manager {sender_name} ({sender_phone}) at {datetime.now(IST).strftime('%Y-%m-%d %H:%M:%S')}\n\nOriginal Formula:\n{formula_text}"
+                            db.commit()
+                            logger.info(f"Task ID {t.id} ('{t.task_name}') approved by {sender_phone}.")
+                            
+                            target_chat = t.whatsapp_group_id if t.whatsapp_group_id else sender
+                            if target_chat:
+                                if not target_chat.endswith('@g.us') and not target_chat.endswith('@c.us') and not target_chat.endswith('@lid'):
+                                    if '-' in target_chat or len(target_chat) > 15:
+                                        target_chat += '@g.us'
+                                    else:
+                                        target_chat += '@c.us'
+                                confirm_msg = f"✅ Task *\"{t.task_name}\"* updated and marked completed"
+                                send_waha_message(target_chat, confirm_msg)
+                            continue
                 continue
  
             # Check Rule 2: Wednesday Meeting points check
@@ -593,7 +614,16 @@ def process_message_background(
                     continue
                 continue
  
-            # Check Rule 4: Generic/Silo tasks match keywords
+            # Check Rule 4: Generic/Silo/Pending_Update tasks match keywords
+            if t.status == 'pending_update':
+                has_completion = any(kw in text_lower for kw in ["updated", "completed", "done", "update", "feed formula", "formula"])
+                if has_completion:
+                    t.status = 'completed'
+                    t.completion_details = f"Marked completed via WhatsApp group update: '{text}'"
+                    db.commit()
+                    logger.info(f"Task ID {t.id} ('{t.task_name}') marked completed via group update.")
+                    continue
+
             is_silo_task = "silo" in t.task_name.lower() or "selo" in t.task_name.lower()
             if is_silo_task:
                 has_silo_word = "silo" in text_lower or "selo" in text_lower
@@ -1349,6 +1379,30 @@ def trigger_egg_market_report(background_tasks: BackgroundTasks):
     from egg_market_analyzer import send_daily_egg_market_pdf_job
     background_tasks.add_task(send_daily_egg_market_pdf_job)
     return {"status": "success", "message": "Egg Market Analysis PDF report generation triggered in background."}
+
+
+@app.get("/api/zoho/auth-url")
+def get_zoho_auth_url_endpoint():
+    from zoho_service import get_zoho_auth_url
+    url = get_zoho_auth_url()
+    return {"status": "success", "auth_url": url}
+
+@app.post("/api/zoho/save-grant-code")
+def save_zoho_grant_code(payload: dict):
+    grant_code = payload.get("grant_code", "")
+    if not grant_code:
+        raise HTTPException(status_code=400, detail="grant_code is required")
+    from zoho_service import exchange_grant_code
+    res = exchange_grant_code(grant_code)
+    return {"status": "success", "result": res}
+
+@app.post("/api/zoho/trigger-report")
+def trigger_zoho_reconciliation_report(background_tasks: BackgroundTasks, phone: str = None):
+    from zoho_reconciliation import generate_and_send_zoho_reconciliation_report
+    target_phone = phone or "917259510983"
+    background_tasks.add_task(generate_and_send_zoho_reconciliation_report, target_phone)
+    return {"status": "success", "message": f"Zoho reconciliation report generation queued for {target_phone}."}
+
 
 
 

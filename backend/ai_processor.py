@@ -55,8 +55,9 @@ Rules:
 
     return r"""You are a specialized poultry farm data extraction AI. You read WhatsApp messages from farm supervisors and extract farm records into a clean, structured JSON object or a JSON array of objects (if multiple entries are reported).
 Use EXACTLY ONE of these category values:
-  egg_collection_1 -> MORNING collection (keywords: 1st, morning, subah, batch 1, round 1)
-  egg_collection_2 -> EVENING collection (keywords: 2nd, evening, shaam, batch 2, round 2)
+  egg_collection_1 -> MORNING collection (keywords: 1st, first, morning, subah, batch 1, round 1)
+  egg_collection_2 -> AFTERNOON collection (keywords: 2nd, second, evening, shaam, batch 2, round 2)
+  egg_collection_3 -> EVENING/3RD collection (keywords: 3rd, third, late evening, raat, batch 3, round 3)
   egg_collection   -> General egg collection (when round is not specified)
   hen_weight       -> Bird weight measurements (e.g. "Shead 1 bird weight 1.516" -> quantity: 1.516, unit: 'kg')
   mortality        -> Bird deaths (keywords: died, death, dead, mortality)
@@ -86,7 +87,8 @@ Rules:
 1. Multiple entries: If the message contains entries for multiple sheds or categories, output a JSON array of objects (one for each shed/entry).
 2. Chick mortality: If the message lists separate mortality for Whites and Brownie (e.g. "Chick Whites: 2, Brownie: 1"), output two separate objects with shead_name as 'Chick Whites' and 'Chick Brownie' under category 'mortality'.
 3. Identify shead name: 'shead3', 'S3' -> 'Shead 3'. Normalize spelling 'Shead' / 'Shed' to 'Shead' followed by number.
-4. Only return valid JSON or JSON array. NO markdown blocks. NO other text."""
+5. Egg production & trays: E.g. "629.11 Trays of Production 4th Shead" -> category: 'egg_collection', shead_name: 'Shead 4', quantity: 629.11, unit: 'trays'. Always preserve exact decimal tray counts as reported.
+6. Only return valid JSON or JSON array. NO markdown blocks. NO other text."""
 
 
 def _call_ollama(prompt: str, images: list = None, is_vision: bool = False, format_json: bool = True) -> any:

@@ -16,6 +16,11 @@ class Settings(BaseSettings):
     OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "llama3")
     OLLAMA_VISION_MODEL: str = os.getenv("OLLAMA_VISION_MODEL", "llava")
     USE_N8N: str = os.getenv("USE_N8N", "false")
+    ZOHO_CLIENT_ID: str = os.getenv("ZOHO_CLIENT_ID", "1000.4NB8AJUGTTJY1MIBKIA2X5O1E70N2S")
+    ZOHO_CLIENT_SECRET: str = os.getenv("ZOHO_CLIENT_SECRET", "112554efa1b33cec9a81eefbaa7b411c9eb980b6b1")
+    ZOHO_DOMAIN: str = os.getenv("ZOHO_DOMAIN", "zoho.com")
+    ZOHO_RECIPIENT_PHONE: str = os.getenv("ZOHO_RECIPIENT_PHONE", "917259510983")
+    ZOHO_REDIRECT_URI: str = os.getenv("ZOHO_REDIRECT_URI", "https://sunfragroup.com/kusum/Whatsapp_Rem/callback.php")
     class Config:
         extra = 'ignore'
         env_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env")
