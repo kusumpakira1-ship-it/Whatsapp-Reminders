@@ -12,6 +12,13 @@ header("Pragma: no-cache");
 header("Expires: 0");
 
 // 1. Database Connection with Persistent Pooling & Fallback Protection
+$pdo = null;
+$host = '145.223.17.70';
+$db   = 'u632391467_kusumpakira';
+$user = 'u632391467_kusumpakira';
+$pass = 'Kusum@2026Bb!';
+$charset = 'utf8mb4';
+
 try {
     if (file_exists('../database.php')) {
         require_once '../database.php';
@@ -22,12 +29,22 @@ try {
 
 if (!isset($pdo) || !$pdo) {
     try {
-        $pdo = new PDO('sqlite:' . __DIR__ . '/whatsapp_reminders.sqlite', null, null, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-        ]);
-    } catch (PDOException $e) {
-        // Fallback initialized
+        $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+        $options = [
+            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES   => false,
+            PDO::ATTR_PERSISTENT         => true,
+        ];
+        $pdo = new PDO($dsn, $user, $pass, $options);
+    } catch (Exception $e) {
+        // Fallback seamlessly to SQLite if MySQL hourly quota (1226) is reached
+        try {
+            $pdo = new PDO('sqlite:' . __DIR__ . '/whatsapp_reminders.sqlite', null, null, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+            ]);
+        } catch (Exception $e2) {}
     }
 }
 
@@ -283,7 +300,7 @@ try {
                 $advanced = true;
             }
             if ($advanced) {
-                $upd = $pdo->prepare("UPDATE sunfra_tasks SET due_time = ?, status = 'pending', completion_details = REPLACE(completion_details, '[OVERDUE_ALERT_AT:', '[OLD_ALERT:') WHERE id = ?");
+                $upd = $pdo->prepare("UPDATE sunfra_tasks SET due_time = ?, status = 'pending', completion_details = NULL WHERE id = ?");
                 $upd->execute([$dt->format('Y-m-d H:i:s'), $t['id']]);
             }
         }
@@ -1161,6 +1178,13 @@ if (isset($_GET['api'])) {
             $rem_id = $matches[1];
             $pdo->prepare("UPDATE sunfra_unified_reminders SET status = 'sent' WHERE id = ?")->execute([$rem_id]);
             
+            // Delete sent log entry for today so this reminder is marked as manually done on dashboard
+            $IST_OFFSET = 5.5 * 3600;
+            $today_ist = date('Y-m-d', time() + $IST_OFFSET);
+            try {
+                $pdo->prepare("DELETE FROM sunfra_reminder_logs WHERE reminder_id = ? AND DATE(executed_at) = ?")->execute([$rem_id, $today_ist]);
+            } catch (Exception $e) {}
+            
             // Cross-complete matching pending/overdue tasks
             $stmt = $pdo->prepare("SELECT * FROM sunfra_unified_reminders WHERE id = ?");
             $stmt->execute([$rem_id]);
@@ -1817,22 +1841,39 @@ try {
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-            color: white;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            background: #2563eb !important;
+            color: #ffffff !important;
+            font-weight: 700;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
         }
 
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4); }
+        .btn-primary:hover { 
+            background: #1d4ed8 !important;
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 18px rgba(37, 99, 235, 0.45); 
+        }
 
-        .btn-secondary { background: transparent; color: var(--text-secondary); border: 1px solid rgba(0,0,0,0.1); }
-        .btn-secondary:hover { color: var(--text-primary); border-color: rgba(0,0,0,0.3); background: rgba(0,0,0,0.05); }
+        .btn-secondary { 
+            background: #ffffff !important; 
+            color: #1e293b !important; 
+            border: 1.5px solid #cbd5e1 !important; 
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+        }
+        
+        .btn-secondary:hover { 
+            background: #f8fafc !important;
+            color: #0f172a !important; 
+            border-color: #94a3b8 !important; 
+        }
 
         .btn-danger {
             background: rgba(239, 68, 68, 0.1);
-            color: #fca5a5;
+            color: #ef4444;
             padding: 0.5rem 1rem;
             font-size: 0.85rem;
-            border: 1px solid rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            font-weight: 600;
         }
 
         .btn-danger:hover { background: var(--danger-color); color: white; }
@@ -1842,8 +1883,8 @@ try {
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.65) !important;
-            backdrop-filter: blur(4px);
+            background: rgba(15, 23, 42, 0.45) !important;
+            backdrop-filter: blur(3px);
             z-index: 99999 !important;
             align-items: center;
             justify-content: center;
@@ -1859,6 +1900,11 @@ try {
         }
 
         .modal-content {
+            background: #ffffff !important;
+            color: #0f172a !important;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             width: 450px;
             max-height: 90vh;
             overflow-y: auto;
@@ -1954,7 +2000,6 @@ try {
             <div class="logo">Farm Reminders</div>
             <nav>
                 <a href="#" class="nav-item active" data-target="dashboard">Dashboard</a>
-                <a href="#" class="nav-item" data-target="flocks_view">Flock Dashboard</a>
                 <a href="#" class="nav-item" data-target="reminders_view">Reminders</a>
                 <a href="#" class="nav-item" data-target="tasks_view">Tasks & Approvals</a>
                 <a href="#" class="nav-item" data-target="waha_settings_view">WAHA Status & Settings</a>
@@ -2002,33 +2047,6 @@ try {
                         <h3>Total Tasks</h3>
                         <div class="stat-value" id="stat-tasks">0</div>
                     </div>
-                </div>
-
-                <h2 style="font-size: 1.2rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--text-color);">Flocks & Standards Overview</h2>
-                <div class="stats-grid">
-                    <div class="card stat-card" onclick="document.querySelector('.nav-item[data-target=\'flocks_view\']').click()" style="cursor: pointer; margin-right: 0; border-left: 4px solid #10b981;" title="Go to Flock Dashboard">
-                        <h3>Active Flocks</h3>
-                        <div class="stat-value" id="stat-total-flocks">11</div>
-                    </div>
-                    <div class="card stat-card" onclick="document.querySelector('.nav-item[data-target=\'flocks_view\']').click()" style="cursor: pointer; margin-right: 0; border-left: 4px solid #3b82f6;" title="Go to Flock Dashboard">
-                        <h3>Total Live Birds</h3>
-                        <div class="stat-value" id="stat-total-live-birds">230,900</div>
-                    </div>
-                    <div class="card stat-card" onclick="document.querySelector('.nav-item[data-target=\'flocks_view\']').click()" style="cursor: pointer; margin-right: 0; border-left: 4px solid #8b5cf6;" title="Go to Flock Dashboard">
-                        <h3>View All Flocks</h3>
-                        <div class="stat-value" style="font-size: 1rem; color: #6366f1;">Open Cards ➔</div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Flocks View (Batch Dashboard) -->
-            <section id="flocks_view" class="view" style="background: #9ecfdc; padding: 2rem; border-radius: 16px; min-height: 100vh;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h1 style="font-size: 2.2rem; color: #1e293b; margin: 0; font-weight: 700;">Batch</h1>
-                    <button class="btn" onclick="openAddFlockModal()" style="background: #15803d; color: #ffffff; border-radius: 8px; padding: 0.65rem 1.4rem; font-weight: 700; border: none; cursor: pointer; font-size: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">Add Batch</button>
-                </div>
-                <div class="flocks-grid" id="flocks-grid-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 1.25rem;">
-                    <!-- Flock cards will be rendered here dynamically -->
                 </div>
             </section>
 
@@ -3151,7 +3169,7 @@ try {
                     <td>
                         <div style="display:flex; gap:0.25rem; flex-wrap:wrap;">
                             <button class="btn btn-secondary" onclick="editReminder(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Edit</button> 
-                            ${r.status !== 'sent' && r.status !== 'skipped' ? `<button class="btn btn-primary" onclick="markReminderDone(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Done</button>` : ''}
+                            ${!r.is_submitted ? `<button class="btn btn-primary" onclick="markReminderDone(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Done</button>` : ''}
                             <button class="btn btn-danger" onclick="deleteReminder(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Delete</button>
                             ${r.verification_details ? '<button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; margin: 0;" onclick="showReminderDetails(' + r.id + ')">Details</button>' : ''}
                         </div>
@@ -3630,14 +3648,15 @@ try {
 
             const nowTs = new Date().getTime();
             tasks.forEach(t => {
-                // Auto-detect overdue client-side: if due_time is in past and not completed
+                // Auto-detect sent alert after deadline client-side: if due_time is in past and not completed, mark status as sent
                 const dueTs = t.due_time ? new Date(t.due_time.replace(/-/g, '/').replace('T', ' ')).getTime() : null;
-                if (t.status === 'pending' && dueTs && dueTs < nowTs) {
-                    t.status = 'overdue';
+                if ((t.status === 'pending' || t.status === 'overdue') && dueTs && dueTs < nowTs) {
+                    t.status = 'sent';
                 }
                 let badgeClass = 'badge-blue';
                 if (t.status === 'completed') badgeClass = 'badge-green';
-                else if (t.status === 'overdue') badgeClass = 'badge-red';
+                else if (t.status === 'sent') badgeClass = 'badge-green';
+                else if (t.status === 'overdue') badgeClass = 'badge-green';
                 else if (t.status === 'pending_approval') badgeClass = 'badge-yellow';
                 else if (t.status === 'pending') badgeClass = 'badge-orange';
 
@@ -3675,7 +3694,7 @@ try {
                     // Skipped = task completed BEFORE due time (early submission)
                     taskSubBadge = 'background:#dcfce7; color:#16a34a; border:1px solid #bbf7d0;';
                     taskSubLabel = '🟢 Submitted (YES)';
-                } else if (t.status === 'overdue') {
+                } else if (t.status === 'overdue' || (dueTs && dueTs < nowTs)) {
                     taskSubBadge = 'background:#fee2e2; color:#dc2626; border:1px solid #fca5a5;';
                     taskSubLabel = '🔴 Overdue (NO)';
                 } else if (t.status === 'pending_approval') {
@@ -3707,7 +3726,7 @@ try {
                                 <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.8rem; margin:0;" onclick="editTask(${t.id})">Edit</button>
                                 ${t.status !== 'completed' ? `<button class="btn btn-primary" style="padding:0.25rem 0.5rem; font-size:0.8rem; margin:0;" onclick="completeTask(${t.id})">Done</button>` : ''}
                                 <button class="btn" style="padding:0.25rem 0.5rem; font-size:0.8rem; background:#fee2e2; color:#ef4444; border:1px solid #fca5a5; margin:0;" onclick="deleteTask(${t.id})">Delete</button>
-                                ${t.completion_details ? '<button class="btn" style="padding:0.25rem 0.5rem; font-size:0.8rem; margin:0;" onclick="showTaskDetails(' + t.id + ')">Details</button>' : ''}
+                                ${t.status === 'completed' && t.completion_details ? '<button class="btn" style="padding:0.25rem 0.5rem; font-size:0.8rem; margin:0;" onclick="showTaskDetails(' + t.id + ')">Details</button>' : ''}
                             </div>
                         </td>
                     </tr>
@@ -4127,5 +4146,4 @@ try {
         };
     </script>
 </body>
-
 </html>

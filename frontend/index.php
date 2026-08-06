@@ -1161,6 +1161,13 @@ if (isset($_GET['api'])) {
             $rem_id = $matches[1];
             $pdo->prepare("UPDATE sunfra_unified_reminders SET status = 'sent' WHERE id = ?")->execute([$rem_id]);
             
+            // Delete sent log entry for today so this reminder is marked as manually done on dashboard
+            $IST_OFFSET = 5.5 * 3600;
+            $today_ist = date('Y-m-d', time() + $IST_OFFSET);
+            try {
+                $pdo->prepare("DELETE FROM sunfra_reminder_logs WHERE reminder_id = ? AND DATE(executed_at) = ?")->execute([$rem_id, $today_ist]);
+            } catch (Exception $e) {}
+            
             // Cross-complete matching pending/overdue tasks
             $stmt = $pdo->prepare("SELECT * FROM sunfra_unified_reminders WHERE id = ?");
             $stmt->execute([$rem_id]);
@@ -3151,7 +3158,7 @@ try {
                     <td>
                         <div style="display:flex; gap:0.25rem; flex-wrap:wrap;">
                             <button class="btn btn-secondary" onclick="editReminder(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Edit</button> 
-                            ${r.status !== 'sent' && r.status !== 'skipped' ? `<button class="btn btn-primary" onclick="markReminderDone(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Done</button>` : ''}
+                            ${!r.is_submitted ? `<button class="btn btn-primary" onclick="markReminderDone(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Done</button>` : ''}
                             <button class="btn btn-danger" onclick="deleteReminder(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Delete</button>
                             ${r.verification_details ? '<button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; margin: 0;" onclick="showReminderDetails(' + r.id + ')">Details</button>' : ''}
                         </div>
@@ -3630,14 +3637,15 @@ try {
 
             const nowTs = new Date().getTime();
             tasks.forEach(t => {
-                // Auto-detect overdue client-side: if due_time is in past and not completed
+                // Auto-detect sent alert after deadline client-side: if due_time is in past and not completed, mark status as sent
                 const dueTs = t.due_time ? new Date(t.due_time.replace(/-/g, '/').replace('T', ' ')).getTime() : null;
-                if (t.status === 'pending' && dueTs && dueTs < nowTs) {
-                    t.status = 'overdue';
+                if ((t.status === 'pending' || t.status === 'overdue') && dueTs && dueTs < nowTs) {
+                    t.status = 'sent';
                 }
                 let badgeClass = 'badge-blue';
                 if (t.status === 'completed') badgeClass = 'badge-green';
-                else if (t.status === 'overdue') badgeClass = 'badge-red';
+                else if (t.status === 'sent') badgeClass = 'badge-green';
+                else if (t.status === 'overdue') badgeClass = 'badge-green';
                 else if (t.status === 'pending_approval') badgeClass = 'badge-yellow';
                 else if (t.status === 'pending') badgeClass = 'badge-orange';
 
@@ -3675,7 +3683,7 @@ try {
                     // Skipped = task completed BEFORE due time (early submission)
                     taskSubBadge = 'background:#dcfce7; color:#16a34a; border:1px solid #bbf7d0;';
                     taskSubLabel = '🟢 Submitted (YES)';
-                } else if (t.status === 'overdue') {
+                } else if (t.status === 'overdue' || (dueTs && dueTs < nowTs)) {
                     taskSubBadge = 'background:#fee2e2; color:#dc2626; border:1px solid #fca5a5;';
                     taskSubLabel = '🔴 Overdue (NO)';
                 } else if (t.status === 'pending_approval') {

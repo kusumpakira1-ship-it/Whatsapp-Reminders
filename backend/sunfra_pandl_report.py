@@ -138,9 +138,16 @@ def generate_pandl_pdf(title_date: str, rows_data: list, pdf_path: str) -> str:
     doc.build(story)
     return pdf_path
 
-def generate_and_send_sunfra_pandl_report(recipient_phone: str = "917259510983@c.us", target_date_str: str = None) -> bool:
+def generate_and_send_sunfra_pandl_report(recipient_phone = None, target_date_str: str = None) -> bool:
     """Fetches P&L for a particular single day and Batch age from sunfra.com (Read-Only), generates PDF with ₹ symbol, and dispatches ONLY PDF to WhatsApp."""
     try:
+        if recipient_phone is None:
+            recipients = ["917259510983@c.us", "120363427856964756@g.us"]
+        elif isinstance(recipient_phone, list):
+            recipients = recipient_phone
+        else:
+            recipients = [recipient_phone]
+
         now_ist = datetime.now(IST)
         if not target_date_str:
             target_date_str = now_ist.strftime("%Y-%m-%d")
@@ -229,10 +236,17 @@ def generate_and_send_sunfra_pandl_report(recipient_phone: str = "917259510983@c
         pdf_file = f"/app/media/reports/Sunfra_PL_Report_{target_date_str}.pdf"
         generate_pandl_pdf(display_date, table_rows, pdf_file)
 
-        # 2. Dispatch ONLY PDF file (No text message, no image)
-        status = send_waha_file(recipient_phone, pdf_file, caption=f"📄 Sunfra Farms P&L Report ({display_date}).pdf")
-        logger.info(f"Sunfra P&L PDF dispatched successfully to {recipient_phone}")
-        return status
+        # 2. Dispatch ONLY PDF file to all target recipients
+        success_count = 0
+        for rec in recipients:
+            status = send_waha_file(rec, pdf_file, caption=f"📄 Sunfra Farms P&L Report ({display_date}).pdf")
+            if status:
+                success_count += 1
+            logger.info(f"Sunfra P&L PDF dispatched successfully to {rec}")
+        return success_count > 0
+    except Exception as e:
+        logger.error(f"Error generating Sunfra P&L report: {e}")
+        return False
     except Exception as e:
         logger.error(f"Error generating Sunfra P&L report: {e}")
         return False

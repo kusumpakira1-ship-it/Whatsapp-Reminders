@@ -2250,7 +2250,12 @@ async def manager_escalation_job():
         report_lines = not_submitted_reports
 
         # Assemble the Escalation Report
-        report_msg_lines = ["🚨 *Daily Escalation Report*", "The following is the update on today's tasks and reports:\n"]
+        date_str = now_ist.strftime("%d %b %Y")
+        report_msg_lines = [
+            f"🚨 *Daily Escalation Report*",
+            f"📅 *Date:* {date_str}\n",
+            "The following is the update on today's tasks and reports:\n"
+        ]
         
         if task_lines:
             report_msg_lines.append("*Tasks:*")
@@ -2620,7 +2625,12 @@ async def company_wise_escalation_job():
             companies[comp]["reports"].append((submitted, line))
 
         # Assemble the Escalation Report
-        report_msg_lines = ["🚨 *Daily Escalation Report*", "The following is the update on today's tasks and reports, organized by company:\n"]
+        date_str = now_ist.strftime("%d %b %Y")
+        report_msg_lines = [
+            f"📊 *Company-Wise Escalation Report*",
+            f"📅 *Date:* {date_str}\n",
+            "The following is the company-wise status of tasks and reports for today:\n"
+        ]
         
         for comp in ["Jataayu Jewellers", "Corporate Company (P&L)", "Sunfra Farms"]:
             comp_tasks = companies[comp]["tasks"]
@@ -3134,7 +3144,8 @@ async def scheduled_sunfra_pandl_job():
     logger.info("Starting 9:29 PM Sunfra P&L Report generation...")
     try:
         from sunfra_pandl_report import generate_and_send_sunfra_pandl_report
-        generate_and_send_sunfra_pandl_report("917259510983@c.us")
+        # Dispatches at 9:29 PM IST to BOTH number 7259510983 and Sunfra P&L Group
+        generate_and_send_sunfra_pandl_report(["917259510983@c.us", "120363427856964756@g.us"])
     except Exception as e:
         logger.error(f"Error in scheduled_sunfra_pandl_job: {e}")
 
