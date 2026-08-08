@@ -436,11 +436,17 @@ def process_message_background(
                         break
             
             # Check group match
-            if t.whatsapp_group_id and group_name_str:
+            if t.whatsapp_group_id:
                 clean_target_group = t.whatsapp_group_id.replace('@g.us', '').strip()
                 clean_sender_group = sender.replace('@g.us', '').strip()
                 if clean_target_group == clean_sender_group:
                     is_assigned = True
+                elif group_name_str:
+                    grp = db.query(Group).filter(Group.name.ilike(f"%{group_name_str}%")).first()
+                    if grp and grp.whatsapp_group_id:
+                        clean_grp_jid = grp.whatsapp_group_id.replace('@g.us', '').strip()
+                        if clean_grp_jid == clean_target_group:
+                            is_assigned = True
  
             # Fallback for LIDs (Hidden Phone Numbers): Match by Name using fuzzy string matching
             if not is_assigned and t.assigned_person_name and sender_name:
@@ -637,8 +643,11 @@ def process_message_background(
                 task_identifiers = [w for w in task_name_words if len(w) > 3 and w not in ['task', 'check', 'please', 'update', 'submit', 'report', 'reports', 'checklist', 'updates', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'monday', 'tuesday']]
                 
                 has_completion = any(kw in text_lower for kw in keywords)
-                has_identifier_match = any(id_kw in text_lower for id_kw in task_identifiers) if task_identifiers else True
-                is_matched_task = has_completion and has_identifier_match
+                if t.whatsapp_group_id:
+                    is_matched_task = has_completion
+                else:
+                    has_identifier_match = any(id_kw in text_lower for id_kw in task_identifiers) if task_identifiers else True
+                    is_matched_task = has_completion and has_identifier_match
 
             if is_matched_task:
                 t.status = 'completed'

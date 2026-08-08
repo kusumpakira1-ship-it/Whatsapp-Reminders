@@ -8,7 +8,11 @@ pydantic
 pydantic-settings
 PyMySQL
 pypdf
+pdfplumber
+PyMuPDF
 pytesseract
+pdf2image
+opencv-python-headless
 reportlab
 requests
 SQLAlchemy

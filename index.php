@@ -139,8 +139,12 @@ try {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
 } catch (PDOException $e) {
-    // Fallback to SQLite syntax if MySQL fails
+    // Fallback seamlessly to SQLite if MySQL fails or quota (1226) is reached
     try {
+        $pdo = new PDO('sqlite:' . __DIR__ . '/whatsapp_reminders.sqlite', null, null, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+        ]);
         $pdo->exec("CREATE TABLE IF NOT EXISTS sunfra_groups (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name VARCHAR(255) NOT NULL,
@@ -274,8 +278,10 @@ try {
             $advanced = false;
             while ($dt <= $now_utc) {
                 if ($freq === 'weekly')       { $dt->modify('+7 days'); }
-                elseif ($freq === 'monthly')  { $dt->modify('+1 month'); }
-                elseif ($freq === 'yearly')   { $dt->modify('+1 year'); }
+                elseif ($freq === 'monthly')  { 
+                    $dt->modify('first day of next month');
+                    $dt->setTime(11, 0, 0);
+                }
                 else                          { $dt->modify('+1 day'); } // daily default
                 $advanced = true;
             }
@@ -3672,11 +3678,21 @@ try {
                 }
 
                 // Assigned Task badge
-                let taskTypeLabel = t.task_type.toUpperCase();
-                if (t.task_type === 'general') taskTypeLabel = 'SILO CLEANING';
-                else if (t.task_type === 'meeting') taskTypeLabel = 'WED MEETING';
-                else if (t.task_type === 'approval') taskTypeLabel = 'FEED APPROVAL';
-                else if (t.task_type === 'personal') taskTypeLabel = 'PERSONAL';
+                let taskTypeLabel = (t.task_type || 'GENERAL').toUpperCase();
+                const tnUpper = (t.task_name || '').toUpperCase();
+                if (tnUpper.includes('VACCINE')) {
+                    taskTypeLabel = 'VACCINE PURCHASE';
+                } else if (tnUpper.includes('SILO')) {
+                    taskTypeLabel = 'SILO CLEANING';
+                } else if (t.task_type === 'general') {
+                    taskTypeLabel = 'GENERAL TASK';
+                } else if (t.task_type === 'meeting') {
+                    taskTypeLabel = 'WED MEETING';
+                } else if (t.task_type === 'approval') {
+                    taskTypeLabel = 'FEED APPROVAL';
+                } else if (t.task_type === 'personal') {
+                    taskTypeLabel = 'PERSONAL';
+                }
 
                 const names = (t.assigned_person_name || '').split(',').map(n => n.trim()).filter(Boolean);
                 const phones = (t.assigned_person_phone || '').split(',').map(p => p.trim()).filter(Boolean);

@@ -18,24 +18,10 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
 def generate_pandl_pdf(title_date: str, rows_data: list, pdf_path: str) -> str:
-    """Generates a professional PDF report with the green P&L Summary table and ₹ symbol."""
+    """Generates a professional PDF report with 100% universal mobile PDF reader compatibility."""
     
     font_reg = 'Helvetica'
     font_bold = 'Helvetica-Bold'
-
-    for p, pb in [
-        ("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"),
-        ("C:/Windows/Fonts/arial.ttf", "C:/Windows/Fonts/arialbd.ttf")
-    ]:
-        if os.path.exists(p):
-            try:
-                pdfmetrics.registerFont(TTFont('RupeeFont', p))
-                pdfmetrics.registerFont(TTFont('RupeeFontBold', pb if os.path.exists(pb) else p))
-                font_reg = 'RupeeFont'
-                font_bold = 'RupeeFontBold'
-                break
-            except Exception as e:
-                logger.error(f"Error registering TTF font: {e}")
 
     doc = SimpleDocTemplate(
         pdf_path,
@@ -58,7 +44,7 @@ def generate_pandl_pdf(title_date: str, rows_data: list, pdf_path: str) -> str:
     subtitle_style = ParagraphStyle(
         'DocSubTitle',
         parent=styles['Normal'],
-        fontName=font_reg,
+        fontName='Helvetica-Oblique',
         fontSize=11,
         leading=14,
         textColor=colors.HexColor('#555555'),
@@ -92,21 +78,21 @@ def generate_pandl_pdf(title_date: str, rows_data: list, pdf_path: str) -> str:
         tot_rev += rev
         tot_profit += profit
         
-        p_str = f"₹ {profit:,.2f}" if profit >= 0 else f"-₹ {abs(profit):,.2f}"
+        p_str = f"Rs. {profit:,.2f}" if profit >= 0 else f"-Rs. {abs(profit):,.2f}"
         
         row = [
             r.get("shead", ""),
             r.get("batch_age", "-"),
-            f"₹ {feed_c:,.0f}" if feed_c > 0 else "0",
-            f"₹ {labour_c:,.0f}" if labour_c > 0 else "0",
+            f"Rs. {feed_c:,.0f}" if feed_c > 0 else "0",
+            f"Rs. {labour_c:,.0f}" if labour_c > 0 else "0",
             f"{prod:,.2f}" if prod > 0 else "0",
-            f"₹ {rev:,.0f}" if rev > 0 else "0",
+            f"Rs. {rev:,.0f}" if rev > 0 else "0",
             p_str
         ]
         table_data.append(row)
         
-    tot_p_str = f"₹ {tot_profit:,.2f}" if tot_profit >= 0 else f"-₹ {abs(tot_profit):,.2f}"
-    table_data.append(["TOTAL", "", f"₹ {tot_feed:,.0f}", f"₹ {tot_labour:,.0f}", f"{tot_prod:,.2f}", f"₹ {tot_rev:,.0f}", tot_p_str])
+    tot_p_str = f"Rs. {tot_profit:,.2f}" if tot_profit >= 0 else f"-Rs. {abs(tot_profit):,.2f}"
+    table_data.append(["TOTAL", "", f"Rs. {tot_feed:,.0f}", f"Rs. {tot_labour:,.0f}", f"{tot_prod:,.2f}", f"Rs. {tot_rev:,.0f}", tot_p_str])
     
     col_widths = [105, 70, 75, 75, 75, 80, 80]
     t = Table(table_data, colWidths=col_widths)
@@ -232,14 +218,15 @@ def generate_and_send_sunfra_pandl_report(recipient_phone = None, target_date_st
             return False
 
         # 1. Generate PDF
-        os.makedirs("/app/media/reports", exist_ok=True)
-        pdf_file = f"/app/media/reports/Sunfra_PL_Report_{target_date_str}.pdf"
+        media_dir = "/app/media/reports" if os.path.exists("/app") else os.path.join(os.path.dirname(__file__), "media", "reports")
+        os.makedirs(media_dir, exist_ok=True)
+        pdf_file = os.path.join(media_dir, f"Sunfra_PL_Report_{target_date_str}.pdf")
         generate_pandl_pdf(display_date, table_rows, pdf_file)
 
         # 2. Dispatch ONLY PDF file to all target recipients
         success_count = 0
         for rec in recipients:
-            status = send_waha_file(rec, pdf_file, caption=f"📄 Sunfra Farms P&L Report ({display_date}).pdf")
+            status = send_waha_file(rec, pdf_file, caption=f"Sunfra Farms P&L Report ({display_date}).pdf")
             if status:
                 success_count += 1
             logger.info(f"Sunfra P&L PDF dispatched successfully to {rec}")

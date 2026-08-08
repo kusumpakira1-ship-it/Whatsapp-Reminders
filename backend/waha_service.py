@@ -1,6 +1,9 @@
 import os
 import requests
+import logging
 from config import settings
+
+logger = logging.getLogger(__name__)
 
 BLOCKED_PHONES = ['9346763549', '919346763549']
 
@@ -38,10 +41,10 @@ def send_waha_message(chat_id: str, text: str, session: str = None, mentions: li
         return False
 
 def send_waha_file(chat_id: str, file_path: str, caption: str = "", session: str = None) -> bool:
-    """Send a file (PDF/Image/Excel) via WAHA using http URL from mounted static media endpoint."""
+    """Send a file (PDF/Image/Excel) via WAHA using public HTTPS URL hosted on Hostinger for 100% reliable WhatsApp delivery."""
     clean_chat = "".join(filter(str.isdigit, str(chat_id or '')))
     if any(b in clean_chat for b in BLOCKED_PHONES):
-        print(f"Blocked file sending to {chat_id} per user directive.")
+        logger.info(f"Blocked file sending to {chat_id} per user directive.")
         return False
     
     if not chat_id.endswith('@c.us') and not chat_id.endswith('@g.us') and not chat_id.endswith('@lid'):
@@ -55,18 +58,33 @@ def send_waha_file(chat_id: str, file_path: str, caption: str = "", session: str
         headers["X-Api-Key"] = api_key
         
     try:
-        # Ensure file is saved in /app/media/
-        if not file_path.startswith('/app/media/'):
-            filename = os.path.basename(file_path)
-            media_dest = os.path.join('/app/media/reports', filename)
-            os.makedirs('/app/media/reports', exist_ok=True)
-            import shutil
-            shutil.copyfile(file_path, media_dest)
-            file_path = media_dest
-
-        relative_path = file_path.replace('/app/', '')
-        file_url = f"http://fastapi_backend:8000/{relative_path}"
+        filename = os.path.basename(file_path)
         
+        # 1. Upload to Hostinger FTP for public HTTPS access
+        file_url = f"http://fastapi_backend:8000/media/reports/{filename}"
+        try:
+            import ftplib
+            host = "145.223.17.70"
+            user = "u632391467.kusum12345"
+            passwd = "Kusum@1234!"
+            ftp = ftplib.FTP()
+            ftp.connect(host, 21, timeout=10)
+            ftp.login(user, passwd)
+            try: ftp.cwd('Whatsapp_Rem')
+            except Exception: pass
+            try: ftp.mkd('reports')
+            except Exception: pass
+            try: ftp.cwd('reports')
+            except Exception: pass
+            
+            with open(file_path, 'rb') as f:
+                ftp.storbinary(f"STOR {filename}", f)
+            ftp.quit()
+            file_url = f"https://sunfragroup.com/kusum/Whatsapp_Rem/reports/{filename}"
+            logger.info(f"Uploaded {filename} to Hostinger FTP public HTTPS URL: {file_url}")
+        except Exception as ftperr:
+            logger.error(f"Hostinger FTP upload error: {ftperr}, falling back to internal URL.")
+
         mimetype = "application/pdf"
         ext = os.path.splitext(file_path)[1].lower()
         if ext in ['.png', '.jpg', '.jpeg']:
@@ -82,7 +100,7 @@ def send_waha_file(chat_id: str, file_path: str, caption: str = "", session: str
             "chatId": chat_id,
             "file": {
                 "mimetype": mimetype,
-                "filename": os.path.basename(file_path),
+                "filename": filename,
                 "url": file_url
             },
             "caption": caption,
@@ -91,10 +109,10 @@ def send_waha_file(chat_id: str, file_path: str, caption: str = "", session: str
         
         response = requests.post(url, json=payload, headers=headers, timeout=60)
         if response.status_code not in (200, 201):
-            print(f"WAHA sendFile failed: {response.status_code} - {response.text}")
+            logger.error(f"WAHA sendFile failed: {response.status_code} - {response.text}")
         return response.status_code in (200, 201)
     except Exception as e:
-        print(f"Failed to send WAHA file: {e}")
+        logger.error(f"Failed to send WAHA file: {e}")
         return False
 
 def download_waha_media(message_id: str, media_url: str = None, mimetype: str = None, filename: str = None) -> str:

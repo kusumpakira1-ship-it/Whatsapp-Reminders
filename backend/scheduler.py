@@ -1828,8 +1828,9 @@ def poll_and_remind_tasks_job():
                         targets.append((target_jid, name))
 
                 for target, target_name in targets:
-                    is_personal = t.task_type and 'Personal' in t.task_type
-                    if is_personal:
+                    if t.task_name and "MONTHLY VACCINE PURCHASE REMINDER" in t.task_name:
+                        msg = f"{t.task_name.strip()}\n\nPlease complete this work and reply to this message with *\"done\"* or *\"completed\"* once finished.\n\nThank you! 🌱"
+                    elif t.task_type and 'Personal' in t.task_type:
                         msg = f"🔔 *Task Reminder* 🔔\n\n{t.task_name}"
                     else:
                         is_feed_formula = t.task_type and ('approval' in t.task_type.lower() or 'feed formula' in t.task_name.lower())
@@ -1913,7 +1914,7 @@ ESCALATION_REPORT_PHONES = [
     "917204021105@c.us",  # Prasad
 ]
 
-async def manager_escalation_job():
+def manager_escalation_job():
     logger.info("Starting 9:30 PM Manager Escalation Check...")
 
     from datetime import datetime, timezone, timedelta
@@ -2290,7 +2291,7 @@ def get_company_category(display_name: str) -> str:
         return "Sunfra Farms"
 
 
-async def company_wise_escalation_job():
+def company_wise_escalation_job():
     logger.info("Starting 11:59 PM Company-Wise Manager Escalation Check...")
 
     from datetime import datetime, timezone, timedelta
@@ -2724,11 +2725,17 @@ VACCINE_APPROVAL_KEYWORDS = ["yes", "ok", "okay", "approve", "approved", "send",
 VACCINE_GROUP_JID = "120363411507945065@g.us"
 
 
-async def scheduled_vaccine_approval_request_job():
+def scheduled_vaccine_approval_request_job():
     """Runs at 6:30 AM IST - sends today's vaccine list to ALL approvers for approval."""
     logger.info("Sending vaccine reminder approval request to all approvers...")
-    from datetime import datetime, timedelta
+    try:
+        from sunfra_batch_sync import sync_flocks_from_sunfra_web
+        sync_flocks_from_sunfra_web()
+    except Exception as e:
+        logger.error(f"Error syncing hatch dates before vaccine approval: {e}")
+    from datetime import datetime, timezone, timedelta
     from models import Flock, BookStandard
+    IST = timezone(timedelta(hours=5, minutes=30))
 
     db = SessionLocal()
     try:
@@ -2772,11 +2779,12 @@ async def scheduled_vaccine_approval_request_job():
         db.close()
 
 
-async def scheduled_vaccine_reminder_job():
+def scheduled_vaccine_reminder_job():
     """Runs at 7:00 AM IST - sends vaccine reminder to group ONLY if manager approved."""
     logger.info("Starting scheduled morning vaccine reminder job...")
-    from datetime import datetime, timedelta
+    from datetime import datetime, timezone, timedelta
     from models import Flock, BookStandard, SystemSetting
+    IST = timezone(timedelta(hours=5, minutes=30))
 
     db = SessionLocal()
     try:
@@ -2860,8 +2868,8 @@ async def scheduled_vaccine_reminder_job():
 
         if reminders:
             msg_lines = [
-                "💉 *Daily Vaccine & Medicine Reminder*",
-                "Please administer/schedule the following treatments today:\n"
+                "💉 *TODAY'S VACCINE REMINDER*",
+                f"Date: {today.strftime('%d %b %Y')}\n"
             ]
             msg_lines.extend(reminders)
             reminder_msg = "\n".join(msg_lines)
@@ -3140,7 +3148,7 @@ def scheduled_zoho_reconciliation_job():
     except Exception as e:
         logger.error(f"Error in scheduled_zoho_reconciliation_job: {e}")
 
-async def scheduled_sunfra_pandl_job():
+def scheduled_sunfra_pandl_job():
     logger.info("Starting 9:29 PM Sunfra P&L Report generation...")
     try:
         from sunfra_pandl_report import generate_and_send_sunfra_pandl_report
@@ -3156,6 +3164,10 @@ def setup_scheduler():
     
     # Schedule Health Monitor every 1 minute
     scheduler.add_job(health_monitor_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60)
+    
+    # Schedule Daily Live Flock Hatch Date & Birds Sync from sunfra.com at 06:00 AM IST
+    from sunfra_batch_sync import sync_flocks_from_sunfra_web
+    scheduler.add_job(sync_flocks_from_sunfra_web, CronTrigger(hour=6, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="sync_sunfra_flocks_job")
     
     # Schedule Daily Zoho Reconciliation Report at 11:00 PM IST daily
     scheduler.add_job(scheduled_zoho_reconciliation_job, CronTrigger(hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
