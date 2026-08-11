@@ -927,31 +927,37 @@ def get_next_occurrence(base_time, frequency):
             next_time += timedelta(days=1)
     return next_time
 
-def format_report_list(reports):
-    if not reports:
+def format_report_name(r: str) -> str:
+    """Preserve exact report name with proper Title Case capitalization."""
+    if not r:
         return ""
-    cleaned = []
-    for r in reports:
-        rl = r.lower()
-        if "production" in rl:
-            cleaned.append("production")
-        elif "feed" in rl:
-            cleaned.append("feed")
-        elif "expense" in rl or "expenditure" in rl:
-            cleaned.append("expense")
-        elif "sale" in rl:
-            cleaned.append("sales")
-        elif "profit" in rl or "p&l" in rl or "p and l" in rl:
-            cleaned.append("Profit & Loss")
+    r_str = str(r).strip()
+    words = r_str.split()
+    formatted = []
+    for w in words:
+        wl = w.lower()
+        if wl in ['p&l', 'p/l', 'p-and-l']:
+            formatted.append('P&L')
+        elif wl in ['ca']:
+            formatted.append('CA')
+        elif wl in ['eod']:
+            formatted.append('EOD')
         else:
-            cleaned.append(r)
-            
-    if len(cleaned) == 1:
-        return cleaned[0]
-    elif len(cleaned) == 2:
-        return f"{cleaned[0]} & {cleaned[1]}"
+            formatted.append(w.capitalize())
+    return " ".join(formatted)
+
+def build_reminder_body(reports: list) -> str:
+    """Format single report as inline message, or multiple reports as bullet points."""
+    if not reports:
+        return "Please submit today's reports so the daily records can be completed accurately."
+    
+    formatted_reports = [format_report_name(rep) for rep in reports]
+    
+    if len(formatted_reports) == 1:
+        return f"Please submit today's *{formatted_reports[0]}* Report so the daily records and reports can be completed accurately."
     else:
-        return ", ".join(cleaned[:-1]) + f" & {cleaned[-1]}"
+        bullets = "\n".join(f"  • {rep}" for rep in formatted_reports)
+        return f"Please submit the following pending reports for today:\n{bullets}"
 
 def format_name_list(names):
     if not names:
@@ -1300,8 +1306,7 @@ def poll_and_execute_unified_reminders():
                     if not assigned_reports:
                         private_body = r.task_notes
                     else:
-                        missing_str = format_report_list(p['missing_reports'])
-                        private_body = f"Please submit today's *{missing_str}* Report so the daily records and reports can be completed accurately."
+                        private_body = build_reminder_body(p['missing_reports'])
                     
                     private_msg = (
                         "⏰ Reminder\n\n"
@@ -1324,8 +1329,7 @@ def poll_and_execute_unified_reminders():
                         group_body = r.task_notes
                     else:
                         all_missing = sorted(list(set([rep for p in pending_assignees for rep in p['missing_reports']])))
-                        missing_str = format_report_list(all_missing)
-                        group_body = f"Please submit today's *{missing_str}* Report so the daily records and reports can be completed accurately."
+                        group_body = build_reminder_body(all_missing)
                         
                     group_msg = (
                         "⏰ Reminder\n\n"

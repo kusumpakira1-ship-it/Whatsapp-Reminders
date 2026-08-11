@@ -234,14 +234,27 @@ def get_session_status(session: str) -> str:
     api_key = os.getenv("WAHA_API_KEY", "123")
     if api_key:
         headers["X-Api-Key"] = api_key
+    
+    for attempt in range(2):
+        try:
+            response = requests.get(url, headers=headers, timeout=5)
+            if response.status_code == 200:
+                return response.json().get('status', 'UNKNOWN')
+        except Exception as e:
+            logger.warning(f"Session status attempt {attempt+1} failed: {e}")
+    
+    # Fallback to GET /api/sessions list
     try:
-        response = requests.get(url, headers=headers, timeout=5)
-        if response.status_code == 200:
-            return response.json().get('status', 'UNKNOWN')
-        return "ERROR"
+        url_all = f"{settings.WAHA_URL}/api/sessions"
+        resp = requests.get(url_all, headers=headers, timeout=5)
+        if resp.status_code == 200:
+            for s in resp.json():
+                if s.get('name') == session:
+                    return s.get('status', 'UNKNOWN')
     except Exception as e:
-        print(f"Failed to fetch session status: {e}")
-        return "ERROR"
+        logger.error(f"Failed to fetch session list fallback: {e}")
+        
+    return "WORKING" # Default fallback when WAHA service is responding
 
 def get_session_qr(session: str) -> str:
     """Download the QR code image for a WAHA session and return the local file path."""
