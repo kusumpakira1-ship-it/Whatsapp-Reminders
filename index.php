@@ -3413,7 +3413,7 @@ try {
                         notesTextarea.value = `Please submit today's *${checked[0]}* Report so the daily records and reports can be completed accurately.`;
                     }
                 } else {
-                    const bullets = checked.map(rep => `  • ${rep}`).join('\n');
+                    const bullets = checked.map(rep => `  • *${rep}*`).join('\n');
                     if (isApproval) {
                         notesTextarea.value = `Please review and approve the following pending reports for today:\n${bullets}`;
                     } else {

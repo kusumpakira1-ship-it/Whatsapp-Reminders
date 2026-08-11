@@ -947,7 +947,7 @@ def format_report_name(r: str) -> str:
     return " ".join(formatted)
 
 def build_reminder_body(reports: list) -> str:
-    """Format single report as inline message, or multiple reports as bullet points."""
+    """Format single report as inline message, or multiple reports as bold bullet points."""
     if not reports:
         return "Please submit today's reports so the daily records can be completed accurately."
     
@@ -956,7 +956,7 @@ def build_reminder_body(reports: list) -> str:
     if len(formatted_reports) == 1:
         return f"Please submit today's *{formatted_reports[0]}* Report so the daily records and reports can be completed accurately."
     else:
-        bullets = "\n".join(f"  • {rep}" for rep in formatted_reports)
+        bullets = "\n".join(f"  • *{rep}*" for rep in formatted_reports)
         return f"Please submit the following pending reports for today:\n{bullets}"
 
 def format_name_list(names):
