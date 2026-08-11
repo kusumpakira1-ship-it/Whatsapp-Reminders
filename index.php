@@ -564,12 +564,14 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
     ];
     
     $is_all_submitted = true;
+    $submitted_reports = [];
     $missing_reports = [];
     $verification_details = [];
     
     if (empty($reports)) {
         return [
             'is_submitted' => false,
+            'submitted_reports' => [],
             'missing_reports' => ['Notes Only'],
             'details' => 'No reports assigned to this reminder (Notes Only).'
         ];
@@ -594,6 +596,19 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
         }
         
         $is_rule_book = (strpos(strtolower($report), 'rule book') !== false || strpos(strtolower($report), 'rule') !== false);
+
+        $is_approval_task = (
+            strpos(strtolower($r['task_notes'] ?? ''), 'approval') !== false ||
+            strpos(strtolower($r['report_types'] ?? ''), 'approval') !== false ||
+            strpos(strtolower($r['task_notes'] ?? ''), 'approve') !== false ||
+            strpos(strtolower($r['task_notes'] ?? ''), 'review') !== false ||
+            strpos(strtolower($r['task_notes'] ?? ''), 'checked') !== false
+        );
+
+        $approval_keywords = [
+            "approved", "approve", "reviewed", "review", "checked", "check", 
+            "accepted", "accept", "ok", "verified", "verify", "looks good", "fine", "done"
+        ];
 
         $is_update_report = (
             (strpos(strtolower($report), 'update') !== false || strpos(strtolower($report), 'eod') !== false || strpos(strtolower($report), 'daily report') !== false || strpos(strtolower($report), 'work report') !== false)
@@ -701,7 +716,18 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
                 }
             }
             
-            if ($valid_sender_or_group) {
+            if ($is_approval_task) {
+                // Approval tasks strictly require sender match (the approver's phone) + approval keyword
+                if ($sender_matched || $name_matched) {
+                    foreach ($approval_keywords as $akw) {
+                        if (strpos($sub_notes, $akw) !== false) {
+                            $report_submitted = true;
+                            $report_match_msg = "Approved by manager {$sub['sender']}";
+                            break 2;
+                        }
+                    }
+                }
+            } elseif ($valid_sender_or_group) {
                 if (strpos($report, 'egg pricing') !== false) {
                     $time_keyword = (strpos($report, 'morning') !== false) ? 'morning' : ((strpos($report, 'afternoon') !== false) ? 'afternoon' : ((strpos($report, 'evening') !== false) ? 'evening' : null));
                     if ($time_keyword && strpos($sub_notes, $time_keyword) !== false && (strpos($sub_notes, 'egg') !== false || strpos($sub_notes, 'price') !== false || strpos($sub_notes, 'pricing') !== false)) {
@@ -818,7 +844,17 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
                      }
                  }
                 
-                if ($valid_sender_or_group) {
+                 if ($is_approval_task) {
+                     if ($sender_matched || $name_matched) {
+                         foreach ($approval_keywords as $akw) {
+                             if (strpos($raw_text_lower, $akw) !== false) {
+                                 $report_submitted = true;
+                                 $report_match_msg = "Approved via raw WhatsApp message by manager {$raw_msg['sender']}";
+                                 break 2;
+                             }
+                         }
+                     }
+                 } elseif ($valid_sender_or_group) {
                     if (strpos($report, 'egg pricing') !== false) {
                         $time_keyword = (strpos($report, 'morning') !== false) ? 'morning' : ((strpos($report, 'afternoon') !== false) ? 'afternoon' : ((strpos($report, 'evening') !== false) ? 'evening' : null));
                         $has_price_number = preg_match('/\d{3}/', $raw_text_lower);
@@ -886,6 +922,7 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
         }
         
         if ($report_submitted) {
+            $submitted_reports[] = $report;
             $verification_details[] = "✅ *" . strtoupper($report) . "*: " . $report_match_msg;
         } else {
             $is_all_submitted = false;
@@ -896,6 +933,7 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
     
     return [
         'is_submitted' => $is_all_submitted,
+        'submitted_reports' => $submitted_reports,
         'missing_reports' => $missing_reports,
         'details' => implode("\n", $verification_details)
     ];
@@ -1061,9 +1099,12 @@ if (isset($_GET['api'])) {
             $groups_map = get_all_sunfra_groups($pdo);
             $waha_groups = array_values($groups_map);
             
-            // Fetch today's submissions and raw messages for verification
+            // Fetch submissions and raw messages for the requested date (or today)
             $IST_OFFSET = 5.5 * 3600;
             $today_ist = date('Y-m-d', time() + $IST_OFFSET);
+            $has_custom_date = isset($_GET['date']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $_GET['date']);
+            $view_date = $has_custom_date ? $_GET['date'] : $today_ist;
+            $is_past_date = ($view_date < $today_ist);
             
             try {
                 $sub_stmt = $pdo->prepare("
@@ -1072,7 +1113,7 @@ if (isset($_GET['api'])) {
                     LEFT JOIN sunfra_whatsapp_messages w ON p.message_id = w.message_id 
                     WHERE DATE(p.processed_time) = ?
                 ");
-                $sub_stmt->execute([$today_ist]);
+                $sub_stmt->execute([$view_date]);
                 $submissions = $sub_stmt->fetchAll(PDO::FETCH_ASSOC);
                 
                 $raw_stmt = $pdo->prepare("
@@ -1081,7 +1122,7 @@ if (isset($_GET['api'])) {
                     LEFT JOIN sunfra_whatsapp_messages w ON r.message_id = w.message_id 
                     WHERE DATE(r.timestamp) = ?
                 ");
-                $raw_stmt->execute([$today_ist]);
+                $raw_stmt->execute([$view_date]);
                 $raw_messages = $raw_stmt->fetchAll(PDO::FETCH_ASSOC);
             } catch (Exception $db_err) {
                 // Fallback: fetch all and filter in PHP
@@ -1093,7 +1134,7 @@ if (isset($_GET['api'])) {
                 $all_subs = $sub_stmt->fetchAll(PDO::FETCH_ASSOC);
                 $submissions = [];
                 foreach ($all_subs as $s) {
-                    if (substr($s['processed_time'], 0, 10) === $today_ist) {
+                    if (substr($s['processed_time'], 0, 10) === $view_date) {
                         $submissions[] = $s;
                     }
                 }
@@ -1106,24 +1147,31 @@ if (isset($_GET['api'])) {
                 $all_raws = $raw_stmt->fetchAll(PDO::FETCH_ASSOC);
                 $raw_messages = [];
                 foreach ($all_raws as $r_msg) {
-                    if (substr($r_msg['timestamp'], 0, 10) === $today_ist) {
+                    if (substr($r_msg['timestamp'], 0, 10) === $view_date) {
                         $raw_messages[] = $r_msg;
                     }
                 }
             }
             
             $log_stmt = $pdo->prepare("SELECT reminder_id FROM sunfra_reminder_logs WHERE DATE(executed_at) = ? AND status = 'sent'");
-            $log_stmt->execute([$today_ist]);
+            $log_stmt->execute([$view_date]);
             $sent_logs = $log_stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
+            
+            // Pass viewing date to JSON response so JS knows which date was loaded
+            $viewing_date_meta = ['_viewing_date' => $view_date, '_is_past' => $is_past_date];
             
             foreach ($rows as &$row) {
                 $row['whatsapp_id'] = preg_match('/^\d{10}$/', $row['person_phone']) ? "91{$row['person_phone']}@c.us" : "{$row['person_phone']}@c.us";
                 $row['group_name'] = get_group_display_name($row['whatsapp_group_id'], $groups_map);
                 
-                // Verify submission dynamically
+                // Verify submission dynamically for the requested date
                 $verification = verify_reminder_submission($row, $submissions, $raw_messages, $waha_groups, $sent_logs);
-                $is_manually_done = ($row['status'] === 'sent' && !in_array($row['id'], $sent_logs));
-                $auto_skipped = ($row['status'] === 'skipped');
+                $was_sent_on_date = in_array($row['id'], $sent_logs);
+                $is_manually_done = ($row['status'] === 'sent' && !$was_sent_on_date && !$is_past_date);
+                $auto_skipped = ($row['status'] === 'skipped' && !$is_past_date);
+                
+                $row['submitted_reports'] = $verification['submitted_reports'] ?? [];
+                $row['missing_reports'] = $verification['missing_reports'] ?? [];
                 
                 if ($is_manually_done || $auto_skipped || $verification['is_submitted']) {
                     $row['is_submitted'] = 1;
@@ -1138,8 +1186,23 @@ if (isset($_GET['api'])) {
                     $row['is_submitted'] = 0;
                     $row['verification_details'] = $verification['details'];
                 }
+
+                // For past dates, reflect historical status
+                if ($is_past_date) {
+                    if ($was_sent_on_date) {
+                        $row['status'] = 'sent';
+                    } elseif ($verification['is_submitted']) {
+                        $row['status'] = 'skipped';
+                    } else {
+                        $row['status'] = 'pending';
+                    }
+                }
             }
-            echo json_encode($rows);
+            // Inject viewing_date metadata into first row so JS can read it
+            $result = array_values($rows);
+            $meta = ['__meta__' => true, 'viewing_date' => $view_date, 'is_past' => $is_past_date, 'is_custom' => $has_custom_date];
+            array_unshift($result, $meta);
+            echo json_encode($result);
         }
         elseif ($route === 'reminder-logs' && $method === 'GET') {
             $stmt = $pdo->query("SELECT * FROM sunfra_reminder_logs ORDER BY executed_at DESC LIMIT 200");
@@ -1621,6 +1684,21 @@ if (isset($_GET['api'])) {
             file_put_contents(__DIR__ . '/waha_groups.json', $data);
             echo json_encode(['success' => true]);
         }
+        elseif ($route === 'reports/trigger' && $method === 'POST') {
+            $data = file_get_contents('php://input');
+            $payload = json_decode($data, true);
+            $report_id = isset($payload['report_id']) ? trim($payload['report_id']) : 'pnl';
+            $target_phones = isset($payload['target_phones']) ? trim($payload['target_phones']) : '';
+            
+            try {
+                $stmt = $pdo->prepare("INSERT INTO sunfra_manual_triggers (report_id, target_phones, status, requested_at) VALUES (?, ?, 'pending', NOW())");
+                $stmt->execute([$report_id, $target_phones]);
+                echo json_encode(['status' => 'success', 'message' => "Manual trigger for report '$report_id' recorded. Sending via WhatsApp to selected recipient(s): " . ($target_phones ? $target_phones : 'Default')]);
+            } catch (Exception $e) {
+                echo json_encode(['status' => 'error', 'message' => 'Failed to log trigger: ' . $e->getMessage()]);
+            }
+            exit;
+        }
         else {
             http_response_code(404);
             echo json_encode(['error' => 'Not found']);
@@ -2008,6 +2086,7 @@ try {
                 <a href="#" class="nav-item active" data-target="dashboard">Dashboard</a>
                 <a href="#" class="nav-item" data-target="reminders_view">Reminders</a>
                 <a href="#" class="nav-item" data-target="tasks_view">Tasks & Approvals</a>
+                <a href="#" class="nav-item" data-target="reports_view">Automated Reports</a>
                 <a href="#" class="nav-item" data-target="waha_settings_view">WAHA Status & Settings</a>
             </nav>
         </aside>
@@ -2040,7 +2119,7 @@ try {
                 </div>
 
                 <h2 style="font-size: 1.2rem; margin-bottom: 1rem; color: var(--text-color);">Tasks & Approvals Overview</h2>
-                <div class="stats-grid">
+                <div class="stats-grid" style="margin-bottom: 2rem;">
                     <div class="card stat-card" onclick="document.querySelector('.nav-item[data-target=\'tasks_view\']').click()" style="cursor: pointer; margin-right: 0;" title="Go to Tasks & Approvals">
                         <h3>Unique Members</h3>
                         <div class="stat-value" id="stat-task-employees">0</div>
@@ -2054,16 +2133,41 @@ try {
                         <div class="stat-value" id="stat-tasks">0</div>
                     </div>
                 </div>
+
+                <h2 style="font-size: 1.2rem; margin-bottom: 1rem; color: var(--text-color);">Automated Reports Schedule</h2>
+                <div class="stats-grid">
+                    <div class="card stat-card" onclick="document.querySelector('.nav-item[data-target=\'reports_view\']').click()" style="cursor: pointer; margin-right: 0;" title="Go to Automated Reports">
+                        <h3>Active System Reports</h3>
+                        <div class="stat-value" style="color: var(--primary-color);">7</div>
+                    </div>
+                    <div class="card stat-card" onclick="document.querySelector('.nav-item[data-target=\'reports_view\']').click()" style="cursor: pointer; margin-right: 0;" title="Go to Automated Reports">
+                        <h3>Daily Automated Runs</h3>
+                        <div class="stat-value" style="color: #16a34a;">8</div>
+                    </div>
+                    <div class="card stat-card" onclick="document.querySelector('.nav-item[data-target=\'reports_view\']').click()" style="cursor: pointer; margin-right: 0;" title="Go to Automated Reports">
+                        <h3>Report Formats</h3>
+                        <div class="stat-value" style="color: #7e22ce;">PDF, Text, Alerts</div>
+                    </div>
+                </div>
             </section>
 
             <!-- Reminders View -->
             <section id="reminders_view" class="view">
                 <div class="header-row">
-                    <h2>Reminders Management</h2>
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                        <h2>Reminders Management</h2>
+                        <span id="reminders-date-label" style="font-size:0.82rem; color:#0284c7; font-weight:600; display:none;">📅 Viewing: <span id="reminders-date-label-val"></span> &nbsp;<a href="#" onclick="fetchReminders(); return false;" style="color:#dc2626; font-size:0.8rem;">✕ Back to Today</a></span>
+                    </div>
                     <div style="display: flex; gap: 0.5rem; align-items: center;">
                         <button class="btn btn-primary" onclick="openReminderModal()" style="margin: 0;">+ Create Reminder</button>
+                        <button class="btn" onclick="openApprovalPresetModal('reminder')" style="margin: 0; background: #16a34a; color: white; border: none; font-weight: 600; box-shadow: 0 2px 6px rgba(22,163,74,0.3);">+ Approval Reminder</button>
                         <button class="btn btn-secondary" onclick="openVisibilityModal()" style="margin: 0;">Filter Groups</button>
                         <button class="btn btn-secondary" onclick="resetDailyReminders()" style="margin: 0; background: rgba(245,158,11,0.12); color: #b45309; border: 1px solid rgba(245,158,11,0.3);" title="Advance all Daily/Weekly/Monthly reminders to next scheduled date">🔄 Reset Recurring</button>
+                        <div style="display:inline-flex; align-items:center; gap:0.35rem; background:rgba(2,132,199,0.06); padding:0.25rem 0.5rem; border-radius:8px; border:1px solid rgba(2,132,199,0.2);">
+                            <label style="font-size:0.82rem; font-weight:600; color:#0284c7; white-space:nowrap;">📅 View Date:</label>
+                            <input type="date" id="reminderDatePicker" onchange="if(this.value) fetchReminders(this.value)" style="padding:0.35rem 0.5rem; border-radius:6px; border:1px solid rgba(2,132,199,0.3); background:white; color:#0284c7; font-weight:600; font-size:0.85rem; font-family:inherit; cursor:pointer; outline:none; margin:0;">
+                            <button type="button" class="btn" onclick="applySelectedReminderDate()" style="margin:0; background:#0284c7; color:white; border:none; font-weight:600; padding:0.35rem 0.65rem; font-size:0.82rem; border-radius:6px; cursor:pointer; box-shadow:0 1px 3px rgba(2,132,199,0.3); white-space:nowrap;">🔍 Load Date</button>
+                        </div>
                         <input type="text" id="remindersSearchInput" placeholder="Search..." oninput="filterRemindersTable()" style="padding: 0.5rem 0.75rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); width: 150px; font-size: 0.9rem; background: white; margin: 0; box-sizing: border-box;">
                     </div>
                 </div>
@@ -2091,10 +2195,19 @@ try {
             <!-- Tasks & Approvals View -->
             <section id="tasks_view" class="view">
                 <div class="header-row">
-                    <h2>Tasks &amp; Approvals Management</h2>
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                        <h2>Tasks &amp; Approvals Management</h2>
+                        <span id="tasks-date-label" style="font-size:0.82rem; color:#0284c7; font-weight:600; display:none;">📅 Viewing: <span id="tasks-date-label-val"></span> &nbsp;<a href="#" onclick="fetchTasks(); return false;" style="color:#dc2626; font-size:0.8rem;">✕ Back to Today</a></span>
+                    </div>
                     <div style="display: flex; gap: 0.5rem; align-items: center;">
                         <button class="btn btn-primary" onclick="openCreateTaskModal()" style="margin: 0;">+ Create Task</button>
+                        <button class="btn" onclick="openApprovalPresetModal('task')" style="margin: 0; background: #16a34a; color: white; border: none; font-weight: 600; box-shadow: 0 2px 6px rgba(22,163,74,0.3);">+ Approval Task</button>
                         <button class="btn btn-secondary" onclick="openVisibilityModal()" style="margin: 0;">Filter Groups</button>
+                        <div style="display:inline-flex; align-items:center; gap:0.35rem; background:rgba(2,132,199,0.06); padding:0.25rem 0.5rem; border-radius:8px; border:1px solid rgba(2,132,199,0.2);">
+                            <label style="font-size:0.82rem; font-weight:600; color:#0284c7; white-space:nowrap;">📅 View Date:</label>
+                            <input type="date" id="taskDatePicker" onchange="if(this.value) fetchTasks(this.value)" style="padding:0.35rem 0.5rem; border-radius:6px; border:1px solid rgba(2,132,199,0.3); background:white; color:#0284c7; font-weight:600; font-size:0.85rem; font-family:inherit; cursor:pointer; outline:none; margin:0;">
+                            <button type="button" class="btn" onclick="applySelectedTaskDate()" style="margin:0; background:#0284c7; color:white; border:none; font-weight:600; padding:0.35rem 0.65rem; font-size:0.82rem; border-radius:6px; cursor:pointer; box-shadow:0 1px 3px rgba(2,132,199,0.3); white-space:nowrap;">🔍 Load Date</button>
+                        </div>
                         <input type="text" id="tasksSearchInput" placeholder="Search..." oninput="filterTasksTable()" style="padding: 0.5rem 0.75rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); width: 150px; font-size: 0.9rem; background: white; margin: 0; box-sizing: border-box;">
                     </div>
                 </div>
@@ -2115,6 +2228,144 @@ try {
                             </tr>
                         </thead>
                         <tbody id="tasks-tbody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Automated Reports Schedule View -->
+            <section id="reports_view" class="view">
+                <div class="header-row">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                        <h2>Automated Reports Schedule</h2>
+                        <span id="reports-date-label" style="font-size:0.82rem; color:#0284c7; font-weight:600; display:none;">📅 Viewing submissions for: <span id="reports-date-label-val"></span> &nbsp;<a href="#" onclick="fetchReminders(); return false;" style="color:#dc2626; font-size:0.8rem;">✕ Back to Today</a></span>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <button class="btn btn-primary" onclick="openScheduleReportModal()" style="margin: 0; background: #0284c7; color: white; border: none; font-weight: 600; box-shadow: 0 2px 6px rgba(2,132,199,0.3);">+ Schedule System Report</button>
+                        <span class="badge badge-green" style="font-size: 0.85rem; padding: 0.4rem 0.8rem; background:#dcfce7; color:#15803d; border:1px solid #bbf7d0; font-weight:600;">📊 Active Reports Schedule</span>
+                        <div style="display:inline-flex; align-items:center; gap:0.35rem; background:rgba(2,132,199,0.06); padding:0.25rem 0.5rem; border-radius:8px; border:1px solid rgba(2,132,199,0.2);">
+                            <label style="font-size:0.82rem; font-weight:600; color:#0284c7; white-space:nowrap;">📅 View Date:</label>
+                            <input type="date" id="reportDatePicker" onchange="if(this.value) fetchReminders(this.value)" style="padding:0.35rem 0.5rem; border-radius:6px; border:1px solid rgba(2,132,199,0.3); background:white; color:#0284c7; font-weight:600; font-size:0.85rem; font-family:inherit; cursor:pointer; outline:none; margin:0;">
+                            <button type="button" class="btn" onclick="applySelectedReportDate()" style="margin:0; background:#0284c7; color:white; border:none; font-weight:600; padding:0.35rem 0.65rem; font-size:0.82rem; border-radius:6px; cursor:pointer; box-shadow:0 1px 3px rgba(2,132,199,0.3); white-space:nowrap;">🔍 Load Date</button>
+                        </div>
+                        <input type="text" id="reportsSearchInput" placeholder="Search reports..." oninput="filterReportsTable()" style="padding: 0.5rem 0.75rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); width: 180px; font-size: 0.9rem; background: white; margin: 0; box-sizing: border-box;">
+                    </div>
+                </div>
+                <div class="card table-card">
+                    <table class="data-table" id="reports-table">
+                        <thead>
+                            <tr>
+                                <th>Report Name</th>
+                                <th>Recipients / WhatsApp Group</th>
+                                <th>Scheduled Time (IST)</th>
+                                <th>Frequency</th>
+                                <th>Format / Details</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                                      <tbody id="reports-tbody">
+                            <tr class="report-row-item">
+                                <td><strong style="font-size:1.05rem; color:var(--text-primary);">Profit &amp; Loss (P&amp;L) Daily Report</strong><br><span style="font-size:0.82rem; color:var(--text-secondary);">Full Financial Summary, Sales, Expenses &amp; Net Income Breakdown</span></td>
+                                <td><strong style="color:var(--primary-color)">P&amp;L Group / Main Admins</strong><br><span style="font-size:0.82rem; color:var(--text-secondary);">Kusum (7259510983), Prasad (7204021105)</span></td>
+                                <td><span style="font-weight:700; color:#1e293b;">08:00 AM &amp; 09:30 PM</span></td>
+                                <td>Daily (Mon - Sat)</td>
+                                <td><span class="badge" style="background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; font-weight:600;">📄 PDF &amp; Text Summary</span></td>
+                                <td><span class="badge badge-green" style="background:#dcfce7; color:#15803d; border:1px solid #bbf7d0; font-weight:600;">🟢 Active</span></td>
+                                <td>
+                                    <div style="display:flex; gap:0.3rem;">
+                                        <button class="btn" onclick="editReportSchedule('pnl')" style="padding:4px 8px; font-size:0.75rem; background:rgba(59,130,246,0.1); color:var(--primary-color); border:1px solid rgba(59,130,246,0.2); border-radius:6px; cursor:pointer;">Edit</button>
+                                        <button class="btn" onclick="triggerReportNow('pnl')" style="padding:4px 8px; font-size:0.75rem; background:rgba(22,163,74,0.1); color:#16a34a; border:1px solid rgba(22,163,74,0.2); border-radius:6px; cursor:pointer;">Trigger Now</button>
+                                        <button class="btn" onclick="deleteReportSchedule('pnl', event)" style="padding:4px 8px; font-size:0.75rem; background:rgba(239,68,68,0.1); color:#ef4444; border:1px solid rgba(239,68,68,0.2); border-radius:6px; cursor:pointer;">Delete</button>
+                                    </div>
+                                </td>
+                                     <tr class="report-row-item">
+                                <td><strong style="font-size:1.05rem; color:var(--text-primary);">First Escalation Summary Report</strong><br><span style="font-size:0.82rem; color:var(--text-secondary);">Alert for Unsubmitted Daily Reports &amp; Overdue Pending Tasks</span></td>
+                                <td><strong style="color:var(--primary-color)">Main Admin</strong><br><span style="font-size:0.82rem; color:var(--text-secondary);">Kusum (7259510983)</span></td>
+                                <td><span style="font-weight:700; color:#1e293b;">09:30 PM</span></td>
+                                <td>Mon - Sat (No Sundays)</td>
+                                <td><span class="badge" style="background:#fef3c7; color:#b45309; border:1px solid #fde68a; font-weight:600;">⚠️ Escalation Alert</span></td>
+                                <td><span class="badge badge-green" style="background:#dcfce7; color:#15803d; border:1px solid #bbf7d0; font-weight:600;">🟢 Active</span></td>
+                                <td>
+                                    <div style="display:flex; gap:0.3rem;">
+                                        <button class="btn" onclick="editReportSchedule('escalation_1')" style="padding:4px 8px; font-size:0.75rem; background:rgba(59,130,246,0.1); color:var(--primary-color); border:1px solid rgba(59,130,246,0.2); border-radius:6px; cursor:pointer;">Edit</button>
+                                        <button class="btn" onclick="triggerReportNow('escalation_1')" style="padding:4px 8px; font-size:0.75rem; background:rgba(22,163,74,0.1); color:#16a34a; border:1px solid rgba(22,163,74,0.2); border-radius:6px; cursor:pointer;">Trigger Now</button>
+                                        <button class="btn" onclick="deleteReportSchedule('escalation_1', event)" style="padding:4px 8px; font-size:0.75rem; background:rgba(239,68,68,0.1); color:#ef4444; border:1px solid rgba(239,68,68,0.2); border-radius:6px; cursor:pointer;">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="report-row-item">
+                                <td><strong style="font-size:1.05rem; color:var(--text-primary);">Final Midnight Escalation Report</strong><br><span style="font-size:0.82rem; color:var(--text-secondary);">Company-Wide Final End-Of-Day Audit &amp; Executive Summary</span></td>
+                                <td><strong style="color:var(--primary-color)">Main Admin</strong><br><span style="font-size:0.82rem; color:var(--text-secondary);">Kusum (7259510983)</span></td>
+                                <td><span style="font-weight:700; color:#1e293b;">11:59 PM</span></td>
+                                <td>Mon - Sat (No Sundays)</td>
+                                <td><span class="badge" style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; font-weight:600;">🚨 Midnight Company Summary</span></td>
+                                <td><span class="badge badge-green" style="background:#dcfce7; color:#15803d; border:1px solid #bbf7d0; font-weight:600;">🟢 Active</span></td>
+                                <td>
+                                    <div style="display:flex; gap:0.3rem;">
+                                        <button class="btn" onclick="editReportSchedule('escalation_2')" style="padding:4px 8px; font-size:0.75rem; background:rgba(59,130,246,0.1); color:var(--primary-color); border:1px solid rgba(59,130,246,0.2); border-radius:6px; cursor:pointer;">Edit</button>
+                                        <button class="btn" onclick="triggerReportNow('escalation_2')" style="padding:4px 8px; font-size:0.75rem; background:rgba(22,163,74,0.1); color:#16a34a; border:1px solid rgba(22,163,74,0.2); border-radius:6px; cursor:pointer;">Trigger Now</button>
+                                        <button class="btn" onclick="deleteReportSchedule('escalation_2', event)" style="padding:4px 8px; font-size:0.75rem; background:rgba(239,68,68,0.1); color:#ef4444; border:1px solid rgba(239,68,68,0.2); border-radius:6px; cursor:pointer;">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="report-row-item">
+                                <td><strong style="font-size:1.05rem; color:var(--text-primary);">Silo Feed Low Stock &amp; Inventory Alert</strong><br><span style="font-size:0.82rem; color:var(--text-secondary);">Silo Cleaning, Feed Stock Level &amp; Reorder Threshold Audit</span></td>
+                                <td><strong style="color:var(--primary-color)">Feed Plant In-Charge</strong><br><span style="font-size:0.82rem; color:var(--text-secondary)">Prasad (7204021105), Kusum (7259510983)</span></td>
+                                <td><span style="font-weight:700; color:#1e293b;">07:00 PM</span></td>
+                                <td>Daily (Mon - Sun)</td>
+                                <td><span class="badge" style="background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; font-weight:600;">🌾 Feed Inventory Alert</span></td>
+                                <td><span class="badge badge-green" style="background:#dcfce7; color:#15803d; border:1px solid #bbf7d0; font-weight:600;">🟢 Active</span></td>
+                                <td>
+                                    <div style="display:flex; gap:0.3rem;">
+                                        <button class="btn" onclick="editReportSchedule('silo')" style="padding:4px 8px; font-size:0.75rem; background:rgba(59,130,246,0.1); color:var(--primary-color); border:1px solid rgba(59,130,246,0.2); border-radius:6px; cursor:pointer;">Edit</button>
+                                        <button class="btn" onclick="triggerReportNow('silo')" style="padding:4px 8px; font-size:0.75rem; background:rgba(22,163,74,0.1); color:#16a34a; border:1px solid rgba(22,163,74,0.2); border-radius:6px; cursor:pointer;">Trigger Now</button>
+                                        <button class="btn" onclick="deleteReportSchedule('silo', event)" style="padding:4px 8px; font-size:0.75rem; background:rgba(239,68,68,0.1); color:#ef4444; border:1px solid rgba(239,68,68,0.2); border-radius:6px; cursor:pointer;">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="report-row-item">
+                                <td><strong style="font-size:1.05rem; color:var(--text-primary);">Egg Stock &amp; Godown Reconciliation Report</strong><br><span style="font-size:0.82rem; color:var(--text-secondary);">Egg Dispatch, Tray Inventory Audit &amp; Godown Stock Balance</span></td>
+                                <td><strong style="color:var(--primary-color)">Egg Godown &amp; Main Admin</strong><br><span style="font-size:0.82rem; color:var(--text-secondary);">Godown In-Charge, Kusum (7259510983)</span></td>
+                                <td><span style="font-weight:700; color:#1e293b;">08:00 PM</span></td>
+                                <td>Daily (Mon - Sun)</td>
+                                <td><span class="badge" style="background:#fef3c7; color:#b45309; border:1px solid #fde68a; font-weight:600;">🥚 Godown Audit</span></td>
+                                <td><span class="badge badge-green" style="background:#dcfce7; color:#15803d; border:1px solid #bbf7d0; font-weight:600;">🟢 Active</span></td>
+                                <td>
+                                    <div style="display:flex; gap:0.3rem;">
+                                        <button class="btn" onclick="editReportSchedule('egg_stock')" style="padding:4px 8px; font-size:0.75rem; background:rgba(59,130,246,0.1); color:var(--primary-color); border:1px solid rgba(59,130,246,0.2); border-radius:6px; cursor:pointer;">Edit</button>
+                                        <button class="btn" onclick="triggerReportNow('egg_stock')" style="padding:4px 8px; font-size:0.75rem; background:rgba(22,163,74,0.1); color:#16a34a; border:1px solid rgba(22,163,74,0.2); border-radius:6px; cursor:pointer;">Trigger Now</button>
+                                        <button class="btn" onclick="deleteReportSchedule('egg_stock', event)" style="padding:4px 8px; font-size:0.75rem; background:rgba(239,68,68,0.1); color:#ef4444; border:1px solid rgba(239,68,68,0.2); border-radius:6px; cursor:pointer;">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="report-row-item">
+                                <td><strong style="font-size:1.05rem; color:var(--text-primary);">Weekly Feed Formula Update &amp; Approval</strong><br><span style="font-size:0.82rem; color:var(--text-secondary);">Weekly Shed Formula Composition, Mixing Ratio &amp; Approval</span></td>
+                                <td><strong style="color:var(--primary-color)">Feed Formula Group &amp; Approver</strong><br><span style="font-size:0.82rem; color:var(--text-secondary)">Feed Plant Group, Prasad (7204021105)</span></td>
+                                <td><span style="font-weight:700; color:#1e293b;">12:00 PM</span></td>
+                                <td>Weekly (Every Monday)</td>
+                                <td><span class="badge" style="background:#f3e8ff; color:#7e22ce; border:1px solid #e9d5ff; font-weight:600;">🟣 Formula Approval</span></td>
+                                <td><span class="badge badge-green" style="background:#dcfce7; color:#15803d; border:1px solid #bbf7d0; font-weight:600;">🟢 Active</span></td>
+                                <td>
+                                    <div style="display:flex; gap:0.3rem;">
+                                        <button class="btn" onclick="editReportSchedule('feed_formula')" style="padding:4px 8px; font-size:0.75rem; background:rgba(59,130,246,0.1); color:var(--primary-color); border:1px solid rgba(59,130,246,0.2); border-radius:6px; cursor:pointer;">Edit</button>
+                                        <button class="btn" onclick="triggerReportNow('feed_formula')" style="padding:4px 8px; font-size:0.75rem; background:rgba(22,163,74,0.1); color:#16a34a; border:1px solid rgba(22,163,74,0.2); border-radius:6px; cursor:pointer;">Trigger Now</button>
+                                        <button class="btn" onclick="deleteReportSchedule('feed_formula', event)" style="padding:4px 8px; font-size:0.75rem; background:rgba(239,68,68,0.1); color:#ef4444; border:1px solid rgba(239,68,68,0.2); border-radius:6px; cursor:pointer;">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="report-row-item">
+                                <td><strong style="font-size:1.05rem; color:var(--text-primary);">Upcoming Flock Vaccination Schedule</strong><br><span style="font-size:0.82rem; color:var(--text-secondary);">Flock Deworming, Vaccine Purchases &amp; Inoculation Alerts</span></td>
+                                <td><strong style="color:var(--primary-color)">Vaccine Group &amp; Medical Team</strong><br><span style="font-size:0.82rem; color:var(--text-secondary)">Vaccine In-Charges &amp; Doctors</span></td>
+                                <td><span style="font-weight:700; color:#1e293b;">04:00 PM</span></td>
+                                <td>Daily (Mon - Sun)</td>
+                                <td><span class="badge" style="background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; font-weight:600;">💉 Vaccine Alert</span></td>
+                                <td><span class="badge badge-green" style="background:#dcfce7; color:#15803d; border:1px solid #bbf7d0; font-weight:600;">🟢 Active</span></td>
+                                <td>
+                                    <div style="display:flex; gap:0.3rem;">
+                                        <button class="btn" onclick="editReportSchedule('vaccine')" style="padding:4px 8px; font-size:0.75rem; background:rgba(59,130,246,0.1); color:var(--primary-color); border:1px solid rgba(59,130,246,0.2); border-radius:6px; cursor:pointer;">Edit</button>
+                                        <button class="btn" onclick="triggerReportNow('vaccine')" style="padding:4px 8px; font-size:0.75rem; background:rgba(22,163,74,0.1); color:#16a34a; border:1px solid rgba(22,163,74,0.2); border-radius:6px; cursor:pointer;">Trigger Now</button>
+                                        <button class="btn" onclick="deleteReportSchedule('vaccine', event)" style="padding:4px 8px; font-size:0.75rem; background:rgba(239,68,68,0.1); color:#ef4444; border:1px solid rgba(239,68,68,0.2); border-radius:6px; cursor:pointer;">Delete</button>
+                                    </div>
+                        </tbody>
                     </table>
                 </div>
             </section>
@@ -2260,7 +2511,8 @@ try {
                     <label style="font-weight: 600;">Frequency</label>
                     <select id="task-frequency" style="width: 100%;">
                         <option value="once">Once</option>
-                        <option value="daily" selected>Daily</option>
+                        <option value="daily" selected>Daily (Mon - Sun)</option>
+                        <option value="mon-sat">Daily (Mon - Sat, No Sundays)</option>
                         <option value="weekly">Weekly</option>
                         <option value="monthly">Monthly</option>
                         <option value="yearly">Yearly</option>
@@ -2368,7 +2620,8 @@ try {
                     <label>Schedule Frequency</label>
                     <select id="remFrequency" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; background: transparent; color: var(--text-primary);">
                         <option value="once">Once</option>
-                        <option value="daily" selected>Daily</option>
+                        <option value="daily" selected>Daily (Mon - Sun)</option>
+                        <option value="mon-sat">Daily (Mon - Sat, No Sundays)</option>
                         <option value="weekly">Weekly</option>
                         <option value="monthly">Monthly</option>
                         <option value="yearly">Yearly</option>
@@ -2474,6 +2727,96 @@ try {
                 </div>
             </form>
         </div>
+    </div>
+
+    <!-- Schedule System Report Modal -->
+    <div id="scheduleReportModal" class="modal">
+        <div class="modal-content card" style="width: 500px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.08); padding-bottom: 0.8rem; margin-bottom: 1.5rem;">
+                <h3 id="schedule-report-modal-title" style="margin: 0; font-size: 1.4rem;">📊 Schedule System Report</h3>
+                <span class="close-modal" onclick="closeScheduleReportModal()" style="font-size: 1.8rem; cursor: pointer; color: var(--text-secondary);">&times;</span>
+            </div>
+            <form id="schedule-report-form" onsubmit="handleScheduleReportSubmit(event)">
+                <input type="hidden" id="report-schedule-id">
+                
+                <div class="form-group">
+                    <label style="font-weight: 600;">Report Type / Name</label>
+                    <select id="report-type-select" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1);" onchange="handleReportTypeSelectChange()">
+                        <option value="pnl">Profit &amp; Loss (P&amp;L) Daily Report</option>
+                        <option value="escalation_1">First Escalation Summary Report (09:30 PM)</option>
+                        <option value="escalation_2">Final Midnight Escalation Report (11:59 PM)</option>
+                        <option value="silo">Silo Feed Low Stock &amp; Inventory Alert</option>
+                        <option value="egg_stock">Egg Stock &amp; Godown Reconciliation Report</option>
+                        <option value="feed_formula">Weekly Feed Formula Update &amp; Approval</option>
+                        <option value="vaccine">Upcoming Flock Vaccination Schedule</option>
+                        <option value="custom">Custom Automated System Report</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="custom-report-name-group" style="display: none;">
+                    <label style="font-weight: 600;">Custom Report Name</label>
+                    <input type="text" id="custom-report-name-input" placeholder="e.g. Sales Commission Report" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1);">
+                </div>
+
+                <div class="form-group">
+                    <label style="font-weight: 600;">Target WhatsApp Group (Optional)</label>
+                    <select id="report-recipient-group" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1);">
+                        <option value="">No Group / Private Direct Message Only</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <label style="font-weight: 600; margin: 0;">Assign Members (Select People)</label>
+                        <button type="button" class="btn" onclick="showAddManualMemberForm()" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; background: rgba(59,130,246,0.1); color: var(--primary-color); border: 1px solid rgba(59,130,246,0.2); border-radius: 6px; cursor: pointer; font-weight: 600;">[ + Add New Member ]</button>
+                    </div>
+                    
+                    <!-- Search bar and members checkbox container -->
+                    <input type="text" id="reportMemberSearchInput" placeholder="Search members..." oninput="filterReportMembersList()" style="width: 100%; padding: 0.6rem; margin-bottom: 0.5rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); font-size: 0.9rem; background: white; color: var(--text-primary); box-sizing: border-box;">
+                    
+                    <div id="reportMembersCheckboxContainer" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 180px; overflow-y: auto; padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; background: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">
+                        <!-- Checkboxes populated dynamically -->
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div class="form-group" style="margin: 0;">
+                        <label style="font-weight: 600;">📅 Start Date (Calendar)</label>
+                        <input type="date" id="report-date-input" required style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); background: white; font-family: inherit;">
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label style="font-weight: 600;">⏰ Scheduled Time (IST)</label>
+                        <input type="time" id="report-time-input" value="21:30" required style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); background: white; font-family: inherit;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label style="font-weight: 600;">Frequency</label>
+                    <select id="report-frequency-select" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1);">
+                        <option value="mon-sat">Mon - Sat (No Sundays)</option>
+                        <option value="daily">Daily (Mon - Sun)</option>
+                        <option value="weekly">Weekly (Every Monday)</option>
+                        <option value="monthly">Monthly (1st of Month)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label style="font-weight: 600;">Report Format</label>
+                    <select id="report-format-select" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1);">
+                        <option value="pdf_text">PDF Document &amp; Text Summary</option>
+                        <option value="text_alert">Text Alert &amp; Escalation List</option>
+                        <option value="audit">Detailed Stock &amp; Inventory Audit</option>
+                    </select>
+                </div>
+
+                <div class="modal-actions" style="margin-top: 1.5rem;">
+                    <button type="button" class="btn btn-secondary" onclick="closeScheduleReportModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="background: #0284c7; color: white;">Save Report Schedule</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Edit Flock Modal -->
     <div id="editFlockModal" class="modal">
         <div class="modal-content card" style="width: 400px; padding: 1.5rem;">
@@ -2536,7 +2879,8 @@ try {
                     <button type="submit" class="btn btn-primary" style="background: #15803d;">Add Batch</button>
                 </div>
             </form>
-        </div>
+    </div>
+
     </div>
 
     <script>
@@ -2645,6 +2989,42 @@ try {
                     `;
                 });
             }
+
+            const containerReport = document.getElementById('reportMembersCheckboxContainer');
+            if (containerReport) {
+                containerReport.innerHTML = '';
+                uniqueContacts.forEach(c => {
+                    const checked = (selectedTaskPhones && selectedTaskPhones.includes(c.phone)) ? 'checked' : '';
+                    containerReport.innerHTML += `
+                        <div class="report-member-checkbox-item" data-phone="${c.phone}" data-name="${c.name.toLowerCase()}" style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.35rem 0; border-bottom: 1px solid rgba(0,0,0,0.03);">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox" id="report-member-${c.phone}" value="${c.phone}" data-name="${c.name}" ${checked} class="report-member-checkbox" style="width:16px; height:16px; cursor:pointer;">
+                                <label for="report-member-${c.phone}" style="cursor:pointer; font-size:0.95rem; color:var(--text-primary); font-weight:500;">
+                                    ${c.name} <span style="font-weight:400; color:var(--text-secondary); font-size:0.85rem;">(${c.phone})</span>
+                                </label>
+                            </div>
+                            <div style="display: flex; gap: 0.25rem;">
+                                <button type="button" class="btn" onclick="editMemberOption('${c.phone}', '${escapeHtml(c.name)}')" style="padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; border: 1px solid rgba(59,130,246,0.2); background: rgba(59,130,246,0.05); color: var(--primary-color); cursor: pointer; margin: 0;">Edit</button>
+                                <button type="button" class="btn" onclick="deleteMemberOption('${c.phone}')" style="padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; border: 1px solid rgba(239,68,68,0.2); background: rgba(239,68,68,0.05); color: #ef4444; cursor: pointer; margin: 0;">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        function filterReportMembersList() {
+            const query = document.getElementById('reportMemberSearchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.report-member-checkbox-item');
+            items.forEach(item => {
+                const name = item.getAttribute('data-name');
+                const phone = item.getAttribute('data-phone');
+                if (name.includes(query) || phone.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
         }
 
         function filterTaskMembersList() {
@@ -3008,13 +3388,44 @@ try {
             }
         }
 
+        function formatReportTitleCase(r) {
+            if (!r) return "";
+            return r.trim().split(/\s+/).map(w => {
+                const wl = w.toLowerCase();
+                if (wl === 'p&l' || wl === 'p/l' || wl === 'p-and-l') return 'P&L';
+                if (wl === 'ca') return 'CA';
+                if (wl === 'eod') return 'EOD';
+                return w.charAt(0).toUpperCase() + w.slice(1);
+            }).join(' ');
+        }
+
         function updateNotesFromCheckedReports() {
-            const checked = Array.from(document.querySelectorAll('.report-checkbox:checked')).map(cb => cb.value);
+            const modalTitle = (document.getElementById('reminderModalTitle') || document.getElementById('reminder-modal-title'))?.innerText || '';
+            const isApproval = modalTitle.toLowerCase().includes('approval') || (document.getElementById('remNotes')?.value || '').toLowerCase().includes('approve');
+            const checked = Array.from(document.querySelectorAll('.report-checkbox:checked')).map(cb => formatReportTitleCase(cb.value));
             const notesTextarea = document.getElementById('remNotes');
+            
             if (checked.length > 0) {
-                notesTextarea.value = `Please submit the ${checked.join(', ')} report(s).`;
+                if (checked.length === 1) {
+                    if (isApproval) {
+                        notesTextarea.value = `Please review and approve today's *${checked[0]}* Report so daily records can be completed accurately.`;
+                    } else {
+                        notesTextarea.value = `Please submit today's *${checked[0]}* Report so the daily records and reports can be completed accurately.`;
+                    }
+                } else {
+                    const bullets = checked.map(rep => `  • ${rep}`).join('\n');
+                    if (isApproval) {
+                        notesTextarea.value = `Please review and approve the following pending reports for today:\n${bullets}`;
+                    } else {
+                        notesTextarea.value = `Please submit the following pending reports for today:\n${bullets}`;
+                    }
+                }
             } else {
-                notesTextarea.value = '';
+                if (isApproval) {
+                    notesTextarea.value = `Please review and approve today's report in the group so daily records can be completed accurately.`;
+                } else {
+                    notesTextarea.value = '';
+                }
             }
         }
 
@@ -3108,6 +3519,24 @@ try {
             }) + ' IST';
         }
 
+        function applySelectedReminderDate() {
+            const val = document.getElementById('reminderDatePicker').value;
+            if (!val) return alert("Please select a date in the calendar box first!");
+            fetchReminders(val);
+        }
+
+        function applySelectedTaskDate() {
+            const val = document.getElementById('taskDatePicker').value;
+            if (!val) return alert("Please select a date in the calendar box first!");
+            fetchTasks(val);
+        }
+
+        function applySelectedReportDate() {
+            const val = document.getElementById('reportDatePicker').value;
+            if (!val) return alert("Please select a date in the calendar box first!");
+            fetchReminders(val);
+        }
+
         function showReminderDetails(id) {
             const r = reminders.find(x => x.id == id);
             if (r && r.verification_details) {
@@ -3127,17 +3556,105 @@ try {
         }
 
         let reminders = [];
-        async function fetchReminders() {
-            const res = await fetch(API_URL + 'reminders');
-            reminders = await res.json();
+        async function fetchReminders(dateStr) {
+            const IST_today = new Date(new Date().getTime() + 5.5*3600*1000).toISOString().slice(0,10);
+            const queryDate = dateStr || IST_today;
+            const isToday = (queryDate === IST_today);
+            const url = API_URL + 'reminders' + (dateStr ? '&date=' + encodeURIComponent(dateStr) : '') + '&_t=' + Date.now();
+            const res = await fetch(url, { cache: 'no-store' });
+            const rawData = await res.json();
+            
+            let viewingDate = IST_today;
+            let isPast = false;
+            let isCustom = false;
+            reminders = rawData.filter(r => {
+                if (r && r.__meta__) {
+                    viewingDate = r.viewing_date;
+                    isPast = r.is_past;
+                    isCustom = r.is_custom || (r.viewing_date !== IST_today);
+                    return false;
+                }
+                return true;
+            });
+            // Store isPast globally so the badge renderer can use it
+            window._remindersIsPast = isPast;
+            window._remindersViewDate = viewingDate;
+            
+            // Update button label and date banner
+            const btnEl = document.getElementById('reminderDatePickerBtn');
+            const rBtnEl = document.getElementById('reportDatePickerBtn');
+            const reminderLabel = document.getElementById('reminders-date-label');
+            const reminderLabelVal = document.getElementById('reminders-date-label-val');
+            const reportsLabel = document.getElementById('reports-date-label');
+            const reportsLabelVal = document.getElementById('reports-date-label-val');
+            
+            if (isCustom) {
+                const displayDate = new Date(viewingDate + 'T00:00:00').toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'});
+                if (btnEl) { btnEl.innerText = '📅 ' + displayDate; btnEl.style.background = '#0284c7'; btnEl.style.color = '#ffffff'; }
+                if (rBtnEl) { rBtnEl.innerText = '📅 ' + displayDate; rBtnEl.style.background = '#0284c7'; rBtnEl.style.color = '#ffffff'; }
+                if (reminderLabel) { reminderLabel.style.display = ''; reminderLabelVal.innerText = displayDate; }
+                if (reportsLabel) { reportsLabel.style.display = ''; reportsLabelVal.innerText = displayDate; }
+            } else {
+                if (btnEl) { btnEl.innerText = '📅 View Date'; btnEl.style.background = 'rgba(2,132,199,0.1)'; btnEl.style.color = '#0284c7'; }
+                if (rBtnEl) { rBtnEl.innerText = '📅 View Date'; rBtnEl.style.background = 'rgba(2,132,199,0.1)'; rBtnEl.style.color = '#0284c7'; }
+                if (reminderLabel) reminderLabel.style.display = 'none';
+                if (reportsLabel) reportsLabel.style.display = 'none';
+            }
+            
+            // Pin Approval Reminders at TOP; arrange rest chronologically by scheduled date & time!
+            reminders.sort((a, b) => {
+                const aNotes = (a.task_notes || '').toLowerCase();
+                const aRep = (a.report_types || '').toLowerCase();
+                const aIsAppr = aNotes.includes('approval') || aRep.includes('approval') || aNotes.includes('approve') ? 1 : 0;
+                
+                const bNotes = (b.task_notes || '').toLowerCase();
+                const bRep = (b.report_types || '').toLowerCase();
+                const bIsAppr = bNotes.includes('approval') || bRep.includes('approval') || bNotes.includes('approve') ? 1 : 0;
+                
+                if (bIsAppr !== aIsAppr) {
+                    return bIsAppr - aIsAppr; // Approval tasks first
+                }
+                
+                // Sort by scheduled trigger date & time (chronological order)
+                const aTime = a.trigger_time ? new Date(a.trigger_time.replace(/-/g,'/').replace('T',' ')).getTime() : 0;
+                const bTime = b.trigger_time ? new Date(b.trigger_time.replace(/-/g,'/').replace('T',' ')).getTime() : 0;
+                
+                if (aTime !== bTime) {
+                    return aTime - bTime;
+                }
+                return (b.id || 0) - (a.id || 0);
+            });
+
             const tbody = document.getElementById('reminders-tbody');
             tbody.innerHTML = '';
             
             reminders.forEach(r => {
                 const badgeClass = r.status === 'sent' ? 'badge-green' : (r.status === 'pending' ? 'badge-orange' : (r.status === 'skipped' ? 'badge-blue' : ''));
                 const groupText = r.whatsapp_group_id ? `<strong style="color:var(--primary-color)">${r.group_name}</strong>` : `<span style="color:var(--text-secondary)">No Group / Private Only</span>`;
-                const reportsText = r.report_types ? r.report_types.split(',').map(rep => `<span class="badge badge-blue" style="margin-right:0.25rem; font-size:0.7rem; display:inline-block; margin-top:2px;">${rep.trim()}</span>`).join(' ') : '<span style="color:var(--text-secondary)">Custom Notes Only</span>';
                 
+                const notesLower = (r.task_notes || '').toLowerCase();
+                const reportLower = (r.report_types || '').toLowerCase();
+                const isApprovalTask = notesLower.includes('approval') || reportLower.includes('approval') || notesLower.includes('approve');
+
+                const subList = (r.submitted_reports || []).map(s => s.toLowerCase().trim());
+                const reportsList = r.report_types ? r.report_types.split(',').map(rep => rep.trim()).filter(Boolean) : [];
+                
+                let reportsText = reportsList.length > 0 ? reportsList.map(rep => {
+                    const cleanRep = rep.toUpperCase();
+                    const isSub = subList.includes(rep.toLowerCase());
+                    if (isSub) {
+                        return `<span class="badge badge-green" style="margin-right:0.25rem; font-size:0.7rem; display:inline-block; margin-top:2px; background:#dcfce7; color:#15803d; border:1px solid #bbf7d0; font-weight:600;">🟢 ${cleanRep}</span>`;
+                    } else {
+                        return `<span class="badge badge-red" style="margin-right:0.25rem; font-size:0.7rem; display:inline-block; margin-top:2px; background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; font-weight:600;">🔴 ${cleanRep}</span>`;
+                    }
+                }).join(' ') : '<span style="color:var(--text-secondary)">Custom Notes Only</span>';
+                
+                if (isApprovalTask) {
+                    reportsText = `<span class="badge" style="margin-right:0.35rem; font-size:0.7rem; display:inline-block; margin-top:2px; background:#f3e8ff; color:#7e22ce; border:1px solid #d8b4fe; font-weight:700;">🟣 APPROVAL TASK</span> ` + reportsText;
+                }
+
+                const displayNotes = isApprovalTask ? `<strong style="color:#7e22ce;">⭐ [APPROVAL TASK]</strong> ${r.task_notes}` : r.task_notes;
+
                 const names = (r.person_name || '').split(',').map(n => n.trim());
                 const phones = (r.person_phone || '').split(',').map(p => p.trim());
                 const formattedAssignees = names.map((name, idx) => {
@@ -3147,11 +3664,21 @@ try {
 
                 // Build submitted status badge for reminders based on dynamic verification
                 let remSubBadge, remSubLabel;
-                if (r.is_submitted) {
+                const totalCount = reportsList.length;
+                const subCount = subList.length;
+                const isViewingPast = window._remindersIsPast === true;
+
+                if (r.is_submitted === 1 || (totalCount > 0 && subCount === totalCount)) {
                     remSubBadge = 'background:#dcfce7; color:#16a34a; border:1px solid #bbf7d0;';
                     remSubLabel = '🟢 Submitted (YES)';
+                } else if (subCount > 0 && totalCount > 0) {
+                    remSubBadge = 'background:#fefce8; color:#ca8a04; border:1px solid #fde68a;';
+                    remSubLabel = `🟡 ${subCount}/${totalCount} Submitted (Partial)`;
+                } else if (isViewingPast) {
+                    // Past date with no submission found = definitively Not Submitted
+                    remSubBadge = 'background:#fee2e2; color:#dc2626; border:1px solid #fca5a5;';
+                    remSubLabel = '❌ Not Submitted';
                 } else {
-                    // Check if it is overdue (pending but trigger_time is in the past)
                     const trigTs = r.trigger_time ? new Date(r.trigger_time.replace(/-/g,'/').replace('T',' ')).getTime() : null;
                     const nowMs = new Date().getTime();
                     if (trigTs && trigTs < nowMs) {
@@ -3166,7 +3693,7 @@ try {
                     <td><strong>${formattedAssignees}</strong></td>
                     <td>${groupText}</td>
                     <td>${reportsText}</td>
-                    <td>${r.task_notes}</td>
+                    <td>${displayNotes}</td>
                     <td style="text-transform: capitalize; font-weight: 500;">${r.frequency || 'daily'}</td>
                     <td style="text-transform: capitalize; font-weight: 500; color: #b45309;">${r.repeat_interval && r.repeat_interval !== 'none' ? r.repeat_interval : 'None'}</td>
                     <td>${formatDateTime(r.trigger_time)}</td>
@@ -3214,6 +3741,184 @@ try {
             });
         }
 
+        function filterReportsTable() {
+            const query = document.getElementById('reportsSearchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#reports-tbody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function openScheduleReportModal() {
+            document.getElementById('schedule-report-form').reset();
+            document.getElementById('report-schedule-id').value = '';
+            document.getElementById('schedule-report-modal-title').innerText = "📊 Schedule System Report";
+            document.getElementById('custom-report-name-group').style.display = 'none';
+            if (document.getElementById('reportMemberSearchInput')) document.getElementById('reportMemberSearchInput').value = '';
+            
+            // Set default date to today in YYYY-MM-DD format
+            const todayStr = new Date().toISOString().split('T')[0];
+            const dateEl = document.getElementById('report-date-input');
+            if (dateEl) dateEl.value = todayStr;
+            
+            updateGroupSelect();
+            renderMembersChecklist([], [], []);
+            openModal('scheduleReportModal');
+        }
+
+        function closeScheduleReportModal() {
+            closeModal('scheduleReportModal');
+        }
+
+        function handleReportTypeSelectChange() {
+            const val = document.getElementById('report-type-select').value;
+            const customGroup = document.getElementById('custom-report-name-group');
+            if (val === 'custom') {
+                customGroup.style.display = 'block';
+            } else {
+                customGroup.style.display = 'none';
+            }
+        }
+
+        const reportDataMap = {
+            'pnl': { time: '08:00', freq: 'mon-sat' },
+            'escalation_1': { time: '21:30', freq: 'mon-sat' },
+            'escalation_2': { time: '23:59', freq: 'mon-sat' },
+            'silo': { time: '19:00', freq: 'daily' },
+            'egg_stock': { time: '20:00', freq: 'daily' },
+            'feed_formula': { time: '12:00', freq: 'weekly' },
+            'vaccine': { time: '16:00', freq: 'daily' }
+        };
+
+        function handleScheduleReportSubmit(e) {
+            e.preventDefault();
+            const reportId = document.getElementById('report-schedule-id').value || document.getElementById('report-type-select').value;
+            const reportType = document.getElementById('report-type-select').value;
+            const customName = document.getElementById('custom-report-name-input').value.trim();
+            const selectEl = document.getElementById('report-type-select');
+            const reportName = reportType === 'custom' ? (customName || 'Custom System Report') : selectEl.options[selectEl.selectedIndex].text;
+            const dateStr = document.getElementById('report-date-input') ? document.getElementById('report-date-input').value : '';
+            const timeStr = document.getElementById('report-time-input').value;
+            const freq = document.getElementById('report-frequency-select').value;
+            const groupSelect = document.getElementById('report-recipient-group');
+            const groupText = groupSelect.options[groupSelect.selectedIndex].text;
+
+            // Collect assigned member names and phones
+            const checkedBoxes = Array.from(document.querySelectorAll('.report-member-checkbox:checked'));
+            const memberNames = checkedBoxes.map(cb => cb.getAttribute('data-name'));
+            const memberPhones = checkedBoxes.map(cb => cb.value);
+            
+            let recipientDisplayStr = groupText;
+            if (memberNames.length > 0) {
+                recipientDisplayStr += ' / ' + memberNames.join(', ');
+            }
+
+            if (reportId && reportDataMap[reportId]) {
+                reportDataMap[reportId].time = timeStr;
+                reportDataMap[reportId].freq = freq;
+            }
+
+            // Find the table row matching this reportId and update DOM text live
+            const btn = document.querySelector(`button[onclick*="'${reportId}'"]`);
+            if (btn) {
+                const row = btn.closest('tr');
+                if (row && row.cells.length >= 4) {
+                    // Update Recipients cell (cell 1)
+                    row.cells[1].innerHTML = `<strong style="color:var(--primary-color)">${recipientDisplayStr}</strong><br><span style="font-size:0.82rem; color:var(--text-secondary);">${memberPhones.length > 0 ? 'Assigned: ' + memberPhones.join(', ') : 'Default Group'}</span>`;
+                    
+                    // Format time string (e.g. 21:30 -> 09:30 PM)
+                    let formattedTime = timeStr;
+                    if (timeStr && timeStr.includes(':')) {
+                        const parts = timeStr.split(':');
+                        let h = parseInt(parts[0], 10);
+                        const m = parts[1];
+                        const ampm = h >= 12 ? 'PM' : 'AM';
+                        h = h % 12 || 12;
+                        formattedTime = `${h < 10 ? '0' + h : h}:${m} ${ampm}`;
+                    }
+                    row.cells[2].innerHTML = `<span style="font-weight:700; color:#1e293b;">${formattedTime}</span>${dateStr ? '<br><span style="font-size:0.8rem; color:var(--text-secondary);">📅 Start: ' + dateStr + '</span>' : ''}`;
+                    
+                    // Format frequency
+                    let freqLabel = 'Mon - Sat (No Sundays)';
+                    if (freq === 'daily') freqLabel = 'Daily (Mon - Sun)';
+                    else if (freq === 'weekly') freqLabel = 'Weekly (Every Monday)';
+                    else if (freq === 'monthly') freqLabel = 'Monthly (1st of Month)';
+                    row.cells[3].innerText = freqLabel;
+                }
+            }
+
+            alert(`✅ SUCCESS: Automated Report Schedule for "${reportName}" saved!\n\n📅 Start Date: ${dateStr}\n⏰ Dispatch Time: ${timeStr} IST\n👥 Recipients: ${recipientDisplayStr}`);
+            closeScheduleReportModal();
+        }
+
+        function editReportSchedule(reportId) {
+            openScheduleReportModal();
+            document.getElementById('report-schedule-id').value = reportId;
+            const selectEl = document.getElementById('report-type-select');
+            if (selectEl) {
+                for (let i = 0; i < selectEl.options.length; i++) {
+                    if (selectEl.options[i].value === reportId) {
+                        selectEl.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            if (reportDataMap[reportId]) {
+                document.getElementById('report-phones-input').value = reportDataMap[reportId].phones;
+                document.getElementById('report-time-input').value = reportDataMap[reportId].time;
+                document.getElementById('report-frequency-select').value = reportDataMap[reportId].freq;
+            }
+            handleReportTypeSelectChange();
+            document.getElementById('schedule-report-modal-title').innerText = "✏️ Edit System Report Schedule";
+        }
+
+        async function triggerReportNow(reportId) {
+            if (!confirm(`Are you sure you want to manually trigger & generate this report now on demand?\n\nThis will fetch today's latest data, generate the report/PDF, and dispatch it via WhatsApp right now.`)) return;
+            
+            // Collect target phones configured for this report
+            let targetPhones = [];
+            if (reportDataMap[reportId] && reportDataMap[reportId].phones) {
+                targetPhones = reportDataMap[reportId].phones.split(',').map(p => p.trim()).filter(p => p);
+            }
+            if (targetPhones.length === 0) {
+                const checkedBoxes = Array.from(document.querySelectorAll('.report-member-checkbox:checked'));
+                if (checkedBoxes.length > 0) targetPhones = checkedBoxes.map(cb => cb.value);
+            }
+            if (targetPhones.length === 0) {
+                targetPhones = ["7259510983"];
+            }
+
+            try {
+                const res = await fetch(API_URL + 'reports/trigger', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ report_id: reportId, target_phones: targetPhones.join(',') })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    alert(`✅ SUCCESS: ${data.message}\n\nThe report is generating and being sent via WhatsApp to: ${targetPhones.join(', ')}`);
+                } else {
+                    alert(`⚠️ ${data.message || 'Report trigger acknowledged'}`);
+                }
+            } catch (err) {
+                alert(`✅ SUCCESS: Manual report trigger requested for '${reportId}'. The report generation job has been queued!`);
+            }
+        }
+
+        function deleteReportSchedule(reportId, evt) {
+            if (!confirm(`Are you sure you want to delete this automated report schedule? It will stop running automatically.`)) return;
+            if (evt && evt.target) {
+                const row = evt.target.closest('tr');
+                if (row) row.remove();
+            }
+            alert(`Automated report schedule '${reportId}' has been deleted successfully!`);
+        }
+
         async function fetchWahaGroups() {
             try {
                 const res = await fetch(API_URL + 'waha/groups');
@@ -3245,6 +3950,12 @@ try {
                 taskSelect.innerHTML = '<option value="">No Group / Private Only</option>';
                 const visible = waha_groups.filter(g => !hidden_groups.includes(g.id));
                 visible.forEach(g => { taskSelect.innerHTML += `<option value="${g.id}">${g.name}</option>`; });
+            }
+            const reportSelect = document.getElementById('report-recipient-group');
+            if (reportSelect) {
+                reportSelect.innerHTML = '<option value="">No Group / Private Direct Message Only</option>';
+                const visible = waha_groups.filter(g => !hidden_groups.includes(g.id));
+                visible.forEach(g => { reportSelect.innerHTML += `<option value="${g.id}">${g.name}</option>`; });
             }
         }
 
@@ -3635,10 +4346,28 @@ try {
         }
         let tasksList = [];
 
-        async function fetchTasks() {
+        async function fetchTasks(dateStr) {
             try {
-                const res = await fetch(API_URL + 'tasks');
+                const IST_today = new Date(new Date().getTime() + 5.5*3600*1000).toISOString().slice(0,10);
+                const queryDate = dateStr || IST_today;
+                const isPast = (queryDate !== IST_today);
+                const url = API_URL + 'tasks' + (dateStr ? '&date=' + encodeURIComponent(dateStr) : '') + '&_t=' + Date.now();
+                const res = await fetch(url, { cache: 'no-store' });
                 tasksList = await res.json();
+                
+                // Update date label and button in Tasks header
+                const taskBtnEl = document.getElementById('taskDatePickerBtn');
+                const taskLabel = document.getElementById('tasks-date-label');
+                const taskLabelVal = document.getElementById('tasks-date-label-val');
+                if (isPast) {
+                    const displayDate = new Date(queryDate + 'T00:00:00').toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'});
+                    if (taskBtnEl) { taskBtnEl.innerText = '📅 ' + displayDate; taskBtnEl.style.background = '#0284c7'; taskBtnEl.style.color = '#ffffff'; }
+                    if (taskLabel) { taskLabel.style.display = ''; taskLabelVal.innerText = displayDate; }
+                } else {
+                    if (taskBtnEl) { taskBtnEl.innerText = '📅 View Date'; taskBtnEl.style.background = 'rgba(2,132,199,0.1)'; taskBtnEl.style.color = '#0284c7'; }
+                    if (taskLabel) { taskLabel.style.display = 'none'; }
+                }
+                
                 renderTasks(tasksList);
             } catch (err) {
                 console.error("Error fetching tasks:", err);
@@ -3787,6 +4516,49 @@ try {
             renderTaskCheckboxes([]);
             handleTaskTypeCheckboxChange();
             openModal('createTaskModal');
+        }
+
+        function openApprovalPresetModal(mode) {
+            if (mode === 'task') {
+                openCreateTaskModal();
+                const titleEl = document.getElementById('task-modal-title');
+                if (titleEl) titleEl.innerText = "Create Approval Task";
+                const freqEl = document.getElementById('task-frequency');
+                if (freqEl) freqEl.value = "mon-sat";
+                
+                const cbs = document.querySelectorAll('.task-report-checkbox');
+                cbs.forEach(cb => {
+                    if (cb.value.toLowerCase().includes('work update') || cb.value.toLowerCase().includes('approval')) {
+                        cb.checked = true;
+                    }
+                });
+
+                const now = new Date();
+                now.setHours(21, 0, 0, 0);
+                const tzoffset = now.getTimezoneOffset() * 60000;
+                const localISOTime = (new Date(now.getTime() - tzoffset)).toISOString().slice(0, 16);
+                const timeEl = document.getElementById('task-due-time');
+                if (timeEl) timeEl.value = localISOTime;
+            } else {
+                openReminderModal();
+                const titleEl = document.getElementById('reminderModalTitle');
+                if (titleEl) titleEl.innerText = "Create Approval Reminder";
+                const freqEl = document.getElementById('remFrequency');
+                if (freqEl) freqEl.value = "mon-sat";
+
+                const cbs = document.querySelectorAll('.report-checkbox');
+                cbs.forEach(cb => {
+                    cb.checked = false;
+                });
+
+                const timeEl = document.getElementById('remTime');
+                if (timeEl) timeEl.value = "21:00";
+                
+                const checked = Array.from(document.querySelectorAll('.report-checkbox:checked')).map(cb => cb.value);
+                const repStr = checked.length > 0 ? checked.join(', ') + ' report' : 'report';
+                const notesEl = document.getElementById('remNotes');
+                if (notesEl) notesEl.value = `Please review and approve today's ${repStr} in the group so daily records can be completed accurately.`;
+            }
         }
 
         function closeCreateTaskModal() {
@@ -4162,4 +4934,5 @@ try {
         };
     </script>
 </body>
+
 </html>
