@@ -1,376 +1,410 @@
-{
-  "groups": [
-    {
-      "id": "120363405877065233@g.us",
-      "name": "Team"
-    },
-    {
-      "id": "120363405469158412@g.us",
-      "name": "Payments - Sunfra Farms"
-    },
-    {
-      "id": "120363212822578807@g.us",
-      "name": "Farm Supervisors"
-    },
-    {
-      "id": "120363409533299483@g.us",
-      "name": "2.O Bongo Buddies in Bengaluru 2.O"
-    },
-    {
-      "id": "120363225998735559@g.us",
-      "name": "Gate Manager"
-    },
-    {
-      "id": "120363046205890693@g.us",
-      "name": "Egg Gowdown & Sales"
-    },
-    {
-      "id": "120363410607412989@g.us",
-      "name": "Feed Formula"
-    },
-    {
-      "id": "120363405639932471@g.us",
-      "name": "Eggs Loading Details"
-    },
-    {
-      "id": "120363421181996594@g.us",
-      "name": "Raw Material Prices & Ordering"
-    },
-    {
-      "id": "120363407511560539@g.us",
-      "name": "Production & Mortality Mohan updates"
-    },
-    {
-      "id": "120363426039486670@g.us",
-      "name": "Cash & Attendance"
-    },
-    {
-      "id": "120363427856964756@g.us",
-      "name": "Sunfra P&L"
-    },
-    {
-      "id": "120363426582770759@g.us",
-      "name": "BBB Promo Zone\n(For Promotions & Advertisements)\ud83c\udfaf\ud83d\ude9a\ud83c\udfe6\ud83d\udcb5\ud83d\udcb0\ud83c\udff7\ufe0f"
-    },
-    {
-      "id": "120363042907512705@g.us",
-      "name": "Accounts Poultry"
-    },
-    {
-      "id": "120363406924564250@g.us",
-      "name": "Sunfra AI Intern"
-    },
-    {
-      "id": "120363404679476946@g.us",
-      "name": "Vendor Daily Invoices"
-    },
-    {
-      "id": "120363428417403024@g.us",
-      "name": "Sunfra Hyperscale"
-    },
-    {
-      "id": "120363425581380088@g.us",
-      "name": "Sunfra Corporate P&L"
-    },
-    {
-      "id": "120363428881117777@g.us",
-      "name": "Jataayu updates"
-    },
-    {
-      "id": "120363422729608263@g.us",
-      "name": "Digital Team - Jataayu"
-    },
-    {
-      "id": "120363428008153650@g.us",
-      "name": "AIoT Alliance"
-    },
-    {
-      "id": "120363111757096162@g.us",
-      "name": "Feed Plant"
-    },
-    {
-      "id": "120363430772426306@g.us",
-      "name": "Rule Book"
-    },
-    {
-      "id": "120363409377063037@g.us",
-      "name": "BBB COMMUNITY"
-    },
-    {
-      "id": "120363039314488462@g.us",
-      "name": "CS&D"
-    },
-    {
-      "id": "120363045203298576@g.us",
-      "name": "\ud83e\udd19 DR\u00c3W\u00cf\u00d1G \ud83c\udfa8\ud83d\udcab"
-    },
-    {
-      "id": "917975209680-1631256436@g.us",
-      "name": "\ud83e\udd19 DR\u00c5W\u00cf\u00d1G \ud83c\udfa8\u2728"
-    },
-    {
-      "id": "120363302334188208@g.us",
-      "name": "Final Year Team"
-    },
-    {
-      "id": "120363363661508926@g.us",
-      "name": "Procurement & requirement"
-    },
-    {
-      "id": "120363046170495033@g.us",
-      "name": "CSD- Alumni 2021-25"
-    },
-    {
-      "id": "919008349756-1631603913@g.us",
-      "name": "\ud83e\udd19 T\u00d9\u00cfT\u00cd\u00d8\u00d1 \ud83e\udd40\u2728"
-    },
-    {
-      "id": "120363406786751662@g.us",
-      "name": "M^2 KP\ud83e\udd70\u2764\ufe0f\ud83d\ude0d"
-    },
-    {
-      "id": "120363411507945065@g.us",
-      "name": "Vaccine"
-    },
-    {
-      "id": "120363405488431580@g.us",
-      "name": "Cloudcredits Technologies 7.8"
-    },
-    {
-      "id": "120363429448876536@g.us",
-      "name": "Messages"
-    },
-    {
-      "id": "120363221285198390@g.us",
-      "name": "Sunfra Farms"
-    },
-    {
-      "id": "120363410577961394@g.us",
-      "name": "SS - NetApp - Graduation Day"
-    },
-    {
-      "id": "120363407546430183@g.us",
-      "name": "NetApp Batch 3"
-    },
-    {
-      "id": "120363408876484504@g.us",
-      "name": "SS - NetApp Placements Group"
-    },
-    {
-      "id": "120363409299826962@g.us",
-      "name": "Rental Updates"
-    },
-    {
-      "id": "120363406491578145@g.us",
-      "name": "JSD 1 - Junior Software Developer  Seventh Sense Talent Solution"
-    },
-    {
-      "id": "120363364834052512@g.us",
-      "name": "Rooman VTU Afternoon C Sessions"
-    },
-    {
-      "id": "120363427470582988@g.us",
-      "name": "Sunfra Corporate"
-    },
-    {
-      "id": "120363405225826884@g.us",
-      "name": "4 forever"
-    },
-    {
-      "id": "120363423776786240@g.us",
-      "name": "KSIT NSS Alumni"
-    },
-    {
-      "id": "120363283932954482@g.us",
-      "name": "2025-CSE/AI&ML/CSD"
-    },
-    {
-      "id": "120363425347866009@g.us",
-      "name": "Medicine Prices & Ordering"
-    },
-    {
-      "id": "120363406249191457@g.us",
-      "name": "Family \u2764\ufe0f\u2728"
-    },
-    {
-      "id": "120363407998492627@g.us",
-      "name": "Unisys Pool Drive 22nd April @ Sapthagiri NPS University"
-    },
-    {
-      "id": "120363405803750281@g.us",
-      "name": "Seventh_Sense_unofficial"
-    },
-    {
-      "id": "120363408234617063@g.us",
-      "name": "Cohort May - July 2026"
-    },
-    {
-      "id": "120363394421597077@g.us",
-      "name": "CR Group (Cultural)"
-    },
-    {
-      "id": "120363406084427043@g.us",
-      "name": "Grp 13 SVNIT_Pantech Internship on AI Driven Software Development"
-    },
-    {
-      "id": "120363319295102034@g.us",
-      "name": "Alvineient Career Gateway \ud83d\ude80"
-    },
-    {
-      "id": "120363400294037289@g.us",
-      "name": "SJU Parent Council 2025-26 Official"
-    },
-    {
-      "id": "120363404583052508@g.us",
-      "name": "Candidate Group 2 (Festival of Humanity)"
-    },
-    {
-      "id": "120363418836651656@g.us",
-      "name": "Day1-June 17, 2025 ,Parent's Orientation"
-    },
-    {
-      "id": "120363424033977647@g.us",
-      "name": "Sunfra Group"
-    },
-    {
-      "id": "120363406945375986@g.us",
-      "name": "JSD 23 Reunion"
-    },
-    {
-      "id": "120363418475125306@g.us",
-      "name": "\ud83c\udfaf Tap Academy \u2013 Future Developers - New batch : 15th Sept. 2025"
-    },
-    {
-      "id": "120363425641447802@g.us",
-      "name": "JSD 2 - Junior Software Developer - Seventh Sense Talent Solutions"
-    },
-    {
-      "id": "120363422460955046@g.us",
-      "name": "Software Developer Community - RiseUpp.com"
-    },
-    {
-      "id": "120363422678216943@g.us",
-      "name": "Software Development Career Growth"
-    },
-    {
-      "id": "120363403742759117@g.us",
-      "name": "Sparidian drive group "
-    },
-    {
-      "id": "120363403721799431@g.us",
-      "name": "Software Dev With AI \ud83c\udf81 Agents"
-    },
-    {
-      "id": "120363023470709090@g.us",
-      "name": "KSIT NSS"
-    },
-    {
-      "id": "120363420706578960@g.us",
-      "name": "INTERNZ LEARN OFFICIAL"
-    },
-    {
-      "id": "120363027865658172@g.us",
-      "name": "Garut Club 2k23"
-    },
-    {
-      "id": "120363403086550628@g.us",
-      "name": "Production & morality Analysis "
-    },
-    {
-      "id": "120363327379157578@g.us",
-      "name": "NSDC - VTU_INTERNSHIP - KSIT"
-    },
-    {
-      "id": "120363339799790616@g.us",
-      "name": "DevOps Internship "
-    },
-    {
-      "id": "120363024121013632@g.us",
-      "name": "G\u00efrl's Sq\u00fcad \u2728"
-    },
-    {
-      "id": "120363024797720657@g.us",
-      "name": "CR GROUP(KSIT)"
-    },
-    {
-      "id": "120363338972555463@g.us",
-      "name": "NSDC Internship "
-    },
-    {
-      "id": "120363158996771868@g.us",
-      "name": "CSD Notes\u203c\ufe0f"
-    },
-    {
-      "id": "120363356936775077@g.us",
-      "name": "Document "
-    },
-    {
-      "id": "120363025747251464@g.us",
-      "name": "CORE COMMITTEE \u00d7 CRs"
-    },
-    {
-      "id": "120363159907579771@g.us",
-      "name": "Kabhi bhi Mann hua toh meet-up Karen?"
-    },
-    {
-      "id": "120363297327881953@g.us",
-      "name": "MINI PROJECT"
-    },
-    {
-      "id": "917975209680-1559924778@g.us",
-      "name": "\ud83e\udd19C\u00d8LL\u00cbG\u00c9 N\u00d8T\u00cfF\u00ceC\u00c3T\u00cf\u00d8NS \ud83d\ude0e"
-    },
-    {
-      "id": "919945856383-1605081905@g.us",
-      "name": "2D Moj Masti Grp"
-    },
-    {
-      "id": "120363221211615047@g.us",
-      "name": "Sunfra Farms"
-    },
-    {
-      "id": "120363320584790932@g.us",
-      "name": "Alvineient Career Gateway \ud83d\ude80"
-    },
-    {
-      "id": "120363328827020988@g.us",
-      "name": "NSDC - VTU_INTERNSHIP - KSIT"
-    },
-    {
-      "id": "120363345627509999@g.us",
-      "name": "Rooman VTU Afternoon C Sessions"
-    },
-    {
-      "id": "120363401779289868@g.us",
-      "name": "Software Dev With AI \ud83c\udf81 Agents"
-    },
-    {
-      "id": "120363403382205473@g.us",
-      "name": "SJU Parent Council 2025-26 Official"
-    },
-    {
-      "id": "120363406384343973@g.us",
-      "name": "Sunfra Group"
-    },
-    {
-      "id": "120363419044864584@g.us",
-      "name": "Day1-June 17, 2025 ,Parent's Orientation"
-    },
-    {
-      "id": "120363423012746697@g.us",
-      "name": "Cohort May - July 2026"
-    },
-    {
-      "id": "120363423338552679@g.us",
-      "name": "Software Developer Community - RiseUpp.com"
-    },
-    {
-      "id": "120363423925080933@g.us",
-      "name": "BBB COMMUNITY"
-    },
-    {
-      "id": "120363426659667927@g.us",
-      "name": "Sunfra Corporate"
-    }
-  ]
-}
+[
+  {
+    "id": "120363111757096162@g.us",
+    "name": "Feed Plant"
+  },
+  {
+    "id": "120363409533299483@g.us",
+    "name": "2.O Bongo Buddies in Bengaluru 2.O"
+  },
+  {
+    "id": "120363407511560539@g.us",
+    "name": "Production & Mortality Mohan updates"
+  },
+  {
+    "id": "120363426039486670@g.us",
+    "name": "Cash & Attendance"
+  },
+  {
+    "id": "120363225998735559@g.us",
+    "name": "Gate Manager"
+  },
+  {
+    "id": "120363046205890693@g.us",
+    "name": "Egg Gowdown & Sales"
+  },
+  {
+    "id": "120363425581380088@g.us",
+    "name": "Sunfra Corporate P&L"
+  },
+  {
+    "id": "120363427856964756@g.us",
+    "name": "Sunfra P&L"
+  },
+  {
+    "id": "120363429954274639@g.us",
+    "name": "Accounts - Sunfra Feeds"
+  },
+  {
+    "id": "120363406924564250@g.us",
+    "name": "Balaji Team"
+  },
+  {
+    "id": "120363428881117777@g.us",
+    "name": "Jataayu updates"
+  },
+  {
+    "id": "120363428417403024@g.us",
+    "name": "Sunfra Hyperscale"
+  },
+  {
+    "id": "120363042907512705@g.us",
+    "name": "Accounts Poultry"
+  },
+  {
+    "id": "120363212822578807@g.us",
+    "name": "Farm Supervisors"
+  },
+  {
+    "id": "120363426582770759@g.us",
+    "name": "BBB Promo Zone\n(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️"
+  },
+  {
+    "id": "120363405469158412@g.us",
+    "name": "Payments - Sunfra Farms"
+  },
+  {
+    "id": "120363405877065233@g.us",
+    "name": "Team"
+  },
+  {
+    "id": "120363405639932471@g.us",
+    "name": "Eggs Loading Details"
+  },
+  {
+    "id": "120363409756032304@g.us",
+    "name": "Sales - Sunfra Feeds"
+  },
+  {
+    "id": "120363429180468592@g.us",
+    "name": "Sunfra Feed Plant"
+  },
+  {
+    "id": "120363421181996594@g.us",
+    "name": "Raw Material Prices & Ordering"
+  },
+  {
+    "id": "120363429851145929@g.us",
+    "name": "Raw Material Prices & Orders"
+  },
+  {
+    "id": "120363430772426306@g.us",
+    "name": "Rule Book"
+  },
+  {
+    "id": "120363428748481277@g.us",
+    "name": "Summary - Sunfra Feeds"
+  },
+  {
+    "id": "120363417476109037@g.us",
+    "name": "Flavours Cafe"
+  },
+  {
+    "id": "120363429948387845@g.us",
+    "name": "Payments - Sunfra Feeds"
+  },
+  {
+    "id": "120363404679476946@g.us",
+    "name": "Vendor Daily Invoices"
+  },
+  {
+    "id": "120363409299826962@g.us",
+    "name": "Rental Updates"
+  },
+  {
+    "id": "120363428008153650@g.us",
+    "name": "AIoT Alliance"
+  },
+  {
+    "id": "120363410607412989@g.us",
+    "name": "Feed Formula"
+  },
+  {
+    "id": "120363411507945065@g.us",
+    "name": "Vaccine"
+  },
+  {
+    "id": "120363423776786240@g.us",
+    "name": "KSIT NSS Alumni"
+  },
+  {
+    "id": "120363405488431580@g.us",
+    "name": "Cloudcredits Technologies 7.8"
+  },
+  {
+    "id": "120363409377063037@g.us",
+    "name": "BBB COMMUNITY"
+  },
+  {
+    "id": "120363045203298576@g.us",
+    "name": "🤙 DRÃWÏÑG 🎨💫"
+  },
+  {
+    "id": "917975209680-1631256436@g.us",
+    "name": "🤙 DRÅWÏÑG 🎨✨"
+  },
+  {
+    "id": "120363412616266332@g.us",
+    "name": "Sunfra Feeds"
+  },
+  {
+    "id": "120363422729608263@g.us",
+    "name": "Digital Team - Jataayu"
+  },
+  {
+    "id": "120363408876484504@g.us",
+    "name": "SS - NetApp Placements Group"
+  },
+  {
+    "id": "120363039314488462@g.us",
+    "name": "CS&D"
+  },
+  {
+    "id": "120363302334188208@g.us",
+    "name": "Final Year Team"
+  },
+  {
+    "id": "120363363661508926@g.us",
+    "name": "Procurement & requirement"
+  },
+  {
+    "id": "120363046170495033@g.us",
+    "name": "CSD- Alumni 2021-25"
+  },
+  {
+    "id": "919008349756-1631603913@g.us",
+    "name": "🤙 TÙÏTÍØÑ 🥀✨"
+  },
+  {
+    "id": "120363406786751662@g.us",
+    "name": "M^2 KP🥰❤️😍"
+  },
+  {
+    "id": "120363429448876536@g.us",
+    "name": "Messages"
+  },
+  {
+    "id": "120363221285198390@g.us",
+    "name": "Sunfra Farms"
+  },
+  {
+    "id": "120363410577961394@g.us",
+    "name": "SS - NetApp - Graduation Day"
+  },
+  {
+    "id": "120363407546430183@g.us",
+    "name": "NetApp Batch 3"
+  },
+  {
+    "id": "120363406491578145@g.us",
+    "name": "JSD 1 - Junior Software Developer  Seventh Sense Talent Solution"
+  },
+  {
+    "id": "120363364834052512@g.us",
+    "name": "Rooman VTU Afternoon C Sessions"
+  },
+  {
+    "id": "120363427470582988@g.us",
+    "name": "Sunfra Corporate"
+  },
+  {
+    "id": "120363405225826884@g.us",
+    "name": "4 forever"
+  },
+  {
+    "id": "120363283932954482@g.us",
+    "name": "2025-CSE/AI&ML/CSD"
+  },
+  {
+    "id": "120363425347866009@g.us",
+    "name": "Medicine Prices & Ordering"
+  },
+  {
+    "id": "120363406249191457@g.us",
+    "name": "Family ❤️✨"
+  },
+  {
+    "id": "120363407998492627@g.us",
+    "name": "Unisys Pool Drive 22nd April @ Sapthagiri NPS University"
+  },
+  {
+    "id": "120363405803750281@g.us",
+    "name": "Seventh_Sense_unofficial"
+  },
+  {
+    "id": "120363408234617063@g.us",
+    "name": "Cohort May - July 2026"
+  },
+  {
+    "id": "120363394421597077@g.us",
+    "name": "CR Group (Cultural)"
+  },
+  {
+    "id": "120363406084427043@g.us",
+    "name": "Grp 13 SVNIT_Pantech Internship on AI Driven Software Development"
+  },
+  {
+    "id": "120363319295102034@g.us",
+    "name": "Alvineient Career Gateway 🚀"
+  },
+  {
+    "id": "120363400294037289@g.us",
+    "name": "SJU Parent Council 2025-26 Official"
+  },
+  {
+    "id": "120363404583052508@g.us",
+    "name": "Candidate Group 2 (Festival of Humanity)"
+  },
+  {
+    "id": "120363418836651656@g.us",
+    "name": "Day1-June 17, 2025 ,Parent's Orientation"
+  },
+  {
+    "id": "120363424033977647@g.us",
+    "name": "Sunfra Group"
+  },
+  {
+    "id": "120363406945375986@g.us",
+    "name": "JSD 23 Reunion"
+  },
+  {
+    "id": "120363418475125306@g.us",
+    "name": "🎯 Tap Academy – Future Developers - New batch : 15th Sept. 2025"
+  },
+  {
+    "id": "120363425641447802@g.us",
+    "name": "JSD 2 - Junior Software Developer - Seventh Sense Talent Solutions"
+  },
+  {
+    "id": "120363422460955046@g.us",
+    "name": "Software Developer Community - RiseUpp.com"
+  },
+  {
+    "id": "120363422678216943@g.us",
+    "name": "Software Development Career Growth"
+  },
+  {
+    "id": "120363403742759117@g.us",
+    "name": "Sparidian drive group "
+  },
+  {
+    "id": "120363403721799431@g.us",
+    "name": "Software Dev With AI 🎁 Agents"
+  },
+  {
+    "id": "120363023470709090@g.us",
+    "name": "KSIT NSS"
+  },
+  {
+    "id": "120363420706578960@g.us",
+    "name": "INTERNZ LEARN OFFICIAL"
+  },
+  {
+    "id": "120363027865658172@g.us",
+    "name": "Garut Club 2k23"
+  },
+  {
+    "id": "120363403086550628@g.us",
+    "name": "Production & morality Analysis "
+  },
+  {
+    "id": "120363327379157578@g.us",
+    "name": "NSDC - VTU_INTERNSHIP - KSIT"
+  },
+  {
+    "id": "120363339799790616@g.us",
+    "name": "DevOps Internship "
+  },
+  {
+    "id": "120363024121013632@g.us",
+    "name": "Gïrl's Sqüad ✨"
+  },
+  {
+    "id": "120363024797720657@g.us",
+    "name": "CR GROUP(KSIT)"
+  },
+  {
+    "id": "120363338972555463@g.us",
+    "name": "NSDC Internship "
+  },
+  {
+    "id": "120363158996771868@g.us",
+    "name": "CSD Notes‼️"
+  },
+  {
+    "id": "120363356936775077@g.us",
+    "name": "Document "
+  },
+  {
+    "id": "120363025747251464@g.us",
+    "name": "CORE COMMITTEE × CRs"
+  },
+  {
+    "id": "120363159907579771@g.us",
+    "name": "Kabhi bhi Mann hua toh meet-up Karen?"
+  },
+  {
+    "id": "120363297327881953@g.us",
+    "name": "MINI PROJECT"
+  },
+  {
+    "id": "917975209680-1559924778@g.us",
+    "name": "🤙CØLLËGÉ NØTÏFÎCÃTÏØNS 😎"
+  },
+  {
+    "id": "919945856383-1605081905@g.us",
+    "name": "2D Moj Masti Grp"
+  },
+  {
+    "id": "120363221211615047@g.us",
+    "name": "Sunfra Farms"
+  },
+  {
+    "id": "120363320584790932@g.us",
+    "name": "Alvineient Career Gateway 🚀"
+  },
+  {
+    "id": "120363328827020988@g.us",
+    "name": "NSDC - VTU_INTERNSHIP - KSIT"
+  },
+  {
+    "id": "120363345627509999@g.us",
+    "name": "Rooman VTU Afternoon C Sessions"
+  },
+  {
+    "id": "120363401779289868@g.us",
+    "name": "Software Dev With AI 🎁 Agents"
+  },
+  {
+    "id": "120363403382205473@g.us",
+    "name": "SJU Parent Council 2025-26 Official"
+  },
+  {
+    "id": "120363406384343973@g.us",
+    "name": "Sunfra Group"
+  },
+  {
+    "id": "120363410508859526@g.us",
+    "name": "Sunfra Feeds"
+  },
+  {
+    "id": "120363419044864584@g.us",
+    "name": "Day1-June 17, 2025 ,Parent's Orientation"
+  },
+  {
+    "id": "120363423012746697@g.us",
+    "name": "Cohort May - July 2026"
+  },
+  {
+    "id": "120363423338552679@g.us",
+    "name": "Software Developer Community - RiseUpp.com"
+  },
+  {
+    "id": "120363423925080933@g.us",
+    "name": "BBB COMMUNITY"
+  },
+  {
+    "id": "120363426659667927@g.us",
+    "name": "Sunfra Corporate"
+  }
+]

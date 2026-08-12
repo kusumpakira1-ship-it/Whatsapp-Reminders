@@ -569,12 +569,7 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
     $verification_details = [];
     
     if (empty($reports)) {
-        return [
-            'is_submitted' => false,
-            'submitted_reports' => [],
-            'missing_reports' => ['Notes Only'],
-            'details' => 'No reports assigned to this reminder (Notes Only).'
-        ];
+        $reports = ['Custom Notes'];
     }
     
     foreach ($reports as $report) {
@@ -683,11 +678,14 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
             // Match name fuzzy
             $name_matched = false;
             if (!$sender_matched && $r['person_name'] && $sub['sender']) {
-                $sender_name_part = clean_name_string(explode(' (', $sub['sender'])[0]);
+                $raw_s = preg_replace('/^\[.*?\]\s*/', '', $sub['sender'] ?? '');
+                $sender_name_part = clean_name_string(explode(' (', $raw_s)[0]);
                 foreach ($names as $name) {
                     $t_name = clean_name_string($name);
                     if (strlen($sender_name_part) >= 3 && strlen($t_name) >= 3) {
-                        if (strpos($sender_name_part, $t_name) !== false || strpos($t_name, $sender_name_part) !== false) {
+                        $p1 = substr($sender_name_part, 0, 4);
+                        $p2 = substr($t_name, 0, 4);
+                        if (strpos($sender_name_part, $t_name) !== false || strpos($t_name, $sender_name_part) !== false || ($p1 && $p2 && $p1 === $p2)) {
                             $name_matched = true;
                             break;
                         }
@@ -717,12 +715,16 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
             }
             
             if ($is_approval_task) {
-                // Approval tasks strictly require sender match (the approver's phone) + approval keyword
-                if ($sender_matched || $name_matched) {
+                // Individual approval tasks strictly require the assigned person (matching phone or name)
+                $is_target_poorna = (strpos(strtolower($r['person_name'] ?? ''), 'poorna') !== false || strpos(strtolower($r['person_name'] ?? ''), 'poornima') !== false);
+                $is_poorna_sender = (strpos($sender_name_part ?? '', 'poorna') !== false || strpos($sender_name_part ?? '', 'poornima') !== false);
+                $is_poorna_match = ($is_target_poorna && $is_poorna_sender);
+                $is_assigned_person = ($is_group_level ? ($sender_matched || $name_matched || $group_matched) : ($sender_matched || $name_matched || $is_poorna_match));
+                if ($is_assigned_person) {
                     foreach ($approval_keywords as $akw) {
                         if (strpos($sub_notes, $akw) !== false) {
                             $report_submitted = true;
-                            $report_match_msg = "Approved by manager {$sub['sender']}";
+                            $report_match_msg = "Approved by assigned manager {$sub['sender']}";
                             break 2;
                         }
                     }
@@ -811,11 +813,14 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
                  // Match name fuzzy
                  $name_matched = false;
                  if (!$sender_matched && $r['person_name'] && $raw_msg['sender']) {
-                     $sender_name_part = clean_name_string(explode(' (', $raw_msg['sender'])[0]);
+                     $raw_s = preg_replace('/^\[.*?\]\s*/', '', $raw_msg['sender'] ?? '');
+                     $sender_name_part = clean_name_string(explode(' (', $raw_s)[0]);
                      foreach ($names as $name) {
                          $t_name = clean_name_string($name);
                          if (strlen($sender_name_part) >= 3 && strlen($t_name) >= 3) {
-                             if (strpos($sender_name_part, $t_name) !== false || strpos($t_name, $sender_name_part) !== false) {
+                             $p1 = substr($sender_name_part, 0, 4);
+                             $p2 = substr($t_name, 0, 4);
+                             if (strpos($sender_name_part, $t_name) !== false || strpos($t_name, $sender_name_part) !== false || ($p1 && $p2 && $p1 === $p2)) {
                                  $name_matched = true;
                                  break;
                              }
@@ -845,15 +850,19 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
                  }
                 
                  if ($is_approval_task) {
-                     if ($sender_matched || $name_matched) {
-                         foreach ($approval_keywords as $akw) {
-                             if (strpos($raw_text_lower, $akw) !== false) {
-                                 $report_submitted = true;
-                                 $report_match_msg = "Approved via raw WhatsApp message by manager {$raw_msg['sender']}";
-                                 break 2;
-                             }
-                         }
-                     }
+                      $is_target_poorna = (strpos(strtolower($r['person_name'] ?? ''), 'poorna') !== false || strpos(strtolower($r['person_name'] ?? ''), 'poornima') !== false);
+                      $is_poorna_sender = (strpos(strtolower($raw_msg['sender'] ?? ''), 'poorna') !== false || strpos(strtolower($raw_msg['sender'] ?? ''), 'poornima') !== false);
+                      $is_poorna_match = ($is_target_poorna && $is_poorna_sender);
+                      $is_assigned_person = ($is_group_level ? ($sender_matched || $name_matched || $group_matched) : ($sender_matched || $name_matched || $is_poorna_match));
+                      if ($is_assigned_person) {
+                          foreach ($approval_keywords as $akw) {
+                              if (strpos($raw_text_lower, $akw) !== false) {
+                                  $report_submitted = true;
+                                  $report_match_msg = "Approved via raw WhatsApp message by assigned manager {$raw_msg['sender']}";
+                                  break 2;
+                              }
+                          }
+                      }
                  } elseif ($valid_sender_or_group) {
                     if (strpos($report, 'egg pricing') !== false) {
                         $time_keyword = (strpos($report, 'morning') !== false) ? 'morning' : ((strpos($report, 'afternoon') !== false) ? 'afternoon' : ((strpos($report, 'evening') !== false) ? 'evening' : null));

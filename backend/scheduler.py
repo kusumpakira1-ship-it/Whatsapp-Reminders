@@ -1911,768 +1911,227 @@ async def create_wednesday_meeting_tasks():
         db.close()
 
 
-# Recipients for both escalation reports
+# Recipients for escalation reports (ONLY Kusum per user explicit directive)
 ESCALATION_REPORT_PHONES = [
     "917259510983@c.us",  # Kusum
-    "918985779911@c.us",  # Nani
-    "917204021105@c.us",  # Prasad
 ]
 
-def manager_escalation_job():
-    logger.info("Starting 9:30 PM Manager Escalation Check...")
+def build_7_company_escalation_reports(db, now_ist):
+    """Builds escalation reports for the 7 distinct company departments with day-of-week awareness and bullet points."""
+    today_date_str = now_ist.strftime("%d %b %Y")
+    day_of_week = now_ist.strftime("%a").lower()  # e.g. 'wed'
+    day_of_month = now_ist.day
+    
+    is_sunday = (day_of_week == 'sun')
+    is_monday = (day_of_week == 'mon')
+    is_first_of_month = (day_of_month == 1)
 
-    from datetime import datetime, timezone, timedelta
-    import re
-    import difflib
-    IST = timezone(timedelta(hours=5, minutes=30))
-    now_ist = datetime.now(IST).replace(tzinfo=None)
     start_of_day = now_ist.replace(hour=0, minute=0, second=0, microsecond=0)
 
+    raw_messages_today = db.query(RawMessage).filter(RawMessage.timestamp >= start_of_day).all()
+    processed_today_all = db.query(ProcessedData).filter(func.date(ProcessedData.processed_time) == start_of_day.date()).all()
+
+    def check_approval(sender_name_target=None, group_target=None):
+        approval_kws = ["approved", "approve", "reviewed", "review", "checked", "check", "accepted", "accept", "ok", "verified", "verify", "looks good", "fine", "done"]
+        for m in raw_messages_today:
+            raw_text = (m.raw_text or '').lower()
+            raw_sender = (m.sender or '').lower()
+            raw_group = (m.group_name or '').lower()
+            
+            sender_match = (sender_name_target and sender_name_target.lower() in raw_sender)
+            group_match = (group_target and group_target.lower() in raw_group)
+                
+            if (sender_match or group_match):
+                if any(akw in raw_text for akw in approval_kws):
+                    return True
+        return False
+
+    def check_report_submitted(report_name, group_target=None, sender_target=None):
+        rep_lower = report_name.lower()
+        
+        for p in processed_today_all:
+            p_cat = (p.category or '').lower()
+            p_notes = (p.notes or '').lower()
+            p_group = (p.group_name or '').lower()
+            p_sender = (p.sender or '').lower()
+            
+            grp_ok = (not group_target or group_target.lower() in p_group)
+            snd_ok = (not sender_target or sender_target.lower() in p_sender)
+            
+            if grp_ok and snd_ok:
+                if rep_lower in p_cat or rep_lower in p_notes or any(w in p_notes for w in rep_lower.split()):
+                    return True
+
+        for m in raw_messages_today:
+            raw_text = (m.raw_text or '').lower()
+            raw_sender = (m.sender or '').lower()
+            raw_group = (m.group_name or '').lower()
+            
+            grp_ok = (not group_target or group_target.lower() in raw_group)
+            snd_ok = (not sender_target or sender_target.lower() in raw_sender)
+            
+            if grp_ok and snd_ok:
+                if rep_lower in raw_text:
+                    return True
+                if rep_lower in ['daily work update', 'work update', 'eod update']:
+                    if any(w in raw_text for w in ['update', 'updates', 'work report', 'eod', 'today work']):
+                        return True
+        return False
+
+    def format_bold_item(item_tuple):
+        raw_name, is_sub = item_tuple
+        emoji = "✅" if is_sub else "❌"
+        if ":" in raw_name:
+            parts = raw_name.split(":", 1)
+            prefix = parts[0].strip()
+            rep_name = parts[1].strip()
+            return f"• {prefix}: *{rep_name}* - {emoji}"
+        else:
+            return f"• *{raw_name}* - {emoji}"
+
+    # 1. Jataayu Jewellers Reports
+    j_items = [
+        ("Jataayu updates: Daily Work Update", check_report_submitted('daily work update', group_target='jataayu')),
+        ("Jataayu updates: Day Book", check_report_submitted('day book', group_target='jataayu')),
+        ("Jataayu updates: Daily Sales", check_report_submitted('daily sales', group_target='jataayu')),
+        ("Jataayu updates: Daily Purchases", check_report_submitted('daily purchases', group_target='jataayu')),
+    ]
+    if is_sunday or is_monday:
+        j_items.append(("Jataayu Jewellers: Weekly P&L", check_report_submitted('weekly p&l', group_target='jataayu')))
+
+    # 2. Sunfra Hyperscale Reports
+    h_items = [
+        ("Sunfra Hyperscale: Daily Work Update", check_report_submitted('daily work update', group_target='hyperscale')),
+    ]
+
+    # 3. Monthly Rental Updates
+    r_items = []
+    if is_first_of_month or day_of_month <= 5:
+        r_items.append(("Monthly Rental: Rental Updates Monthly", check_report_submitted('rental updates', group_target='rental')))
+
+    # 4. Balaji Team Reports
+    b_items = [
+        ("Balaji Team: Daily Work Update", check_report_submitted('daily work update', group_target='balaji')),
+        ("Balaji (Approval Task): Report Review & Approval", check_approval(sender_name_target='balaji', group_target='balaji')),
+    ]
+
+    # 5. Corporate Company (P&L) Reports
+    c_items = [
+        ("Sunfra Corporate P&L: Day Book", check_report_submitted('day book', group_target='corporate')),
+        ("Sunfra Corporate P&L: Daily Sales", check_report_submitted('daily sales', group_target='corporate')),
+        ("Sunfra Corporate P&L: Daily Purchases", check_report_submitted('daily purchases', group_target='corporate')),
+        ("Sunfra Corporate P&L: Total Payables", check_report_submitted('total payables', group_target='corporate')),
+        ("Sunfra Corporate P&L: Total Receivables", check_report_submitted('total receivables', group_target='corporate')),
+        ("Sunfra Corporate P&L: Each Sales P&L", check_report_submitted('each sales p&l', group_target='corporate')),
+    ]
+    if is_sunday or is_monday:
+        c_items.append(("Sunfra Corporate: Weekly P&L", check_report_submitted('weekly p&l', group_target='corporate')))
+
+    # 6. Sunfra Feed Tasks & Reports
+    feed_items = [
+        ("Sunfra Feed Plant: Silo Empty and Cleaning", check_report_submitted('silo', group_target='feed plant')),
+        ("Raw Material Prices & Orders: Stock/Website Updates", check_report_submitted('stock', group_target='raw material')),
+        ("Feed Changes: Feed Stage Transitions", check_report_submitted('stage', group_target='feed')),
+        ("Vaccines: Vaccine Schedule", check_report_submitted('vaccine')),
+        ("Accounts - Sunfra Feeds: Day Book", check_report_submitted('day book', group_target='feeds')),
+        ("Accounts - Sunfra Feeds: Daily Sales", check_report_submitted('daily sales', group_target='feeds')),
+        ("Accounts - Sunfra Feeds: Daily Purchases", check_report_submitted('daily purchases', group_target='feeds')),
+        ("Accounts - Sunfra Feeds: Total Payables", check_report_submitted('total payables', group_target='feeds')),
+        ("Accounts - Sunfra Feeds: Total Receivables", check_report_submitted('total receivables', group_target='feeds')),
+        ("Accounts - Sunfra Feeds: Each Sales P&L", check_report_submitted('each sales p&l', group_target='feeds')),
+    ]
+    if is_sunday or is_monday:
+        feed_items.append(("Accounts - Sunfra Feeds: Weekly P&L", check_report_submitted('weekly p&l', group_target='feeds')))
+
+    # 7. Sunfra Farms Tasks & Reports
+    farm_items = [
+        ("Raw Material Prices & Ordering: Stock/Website Updates", check_report_submitted('stock', group_target='ordering')),
+        ("Rule Book: Rule Book Updates", check_report_submitted('rule book')),
+        ("Gate Managers: Entry Logs", check_report_submitted('gate')),
+        ("Feed Formula: Feed Formula Updates", check_report_submitted('formula')),
+        ("Accounts Poultry: CA Statement", check_report_submitted('ca statement', sender_target='mahalakshmi')),
+        ("Accounts Poultry: Day Book", check_report_submitted('day book', sender_target='mahalakshmi')),
+        ("Accounts Poultry: Daily Sales", check_report_submitted('daily sales', sender_target='mahalakshmi')),
+        ("Accounts Poultry: Daily Purchases", check_report_submitted('daily purchases', sender_target='mahalakshmi')),
+        ("Accounts Poultry: Total Payables", check_report_submitted('total payables', sender_target='mahalakshmi')),
+        ("Accounts Poultry: Total Receivables", check_report_submitted('total receivables', sender_target='mahalakshmi')),
+        ("Accounts Poultry: Average P&L", check_report_submitted('average p&l', sender_target='mahalakshmi')),
+        ("Accounts Poultry: Each Sales P&L", check_report_submitted('each sales p&l', sender_target='mahalakshmi')),
+        ("Sunfra P&L: Profit & Loss Summary", check_report_submitted('profit & loss summary', group_target='sunfra p&l')),
+    ]
+    if is_sunday or is_monday:
+        farm_items.append(("Accounts Poultry: Weekly P&L", check_report_submitted('weekly p&l', sender_target='mahalakshmi')))
+
+    sections_config = [
+        ("1️⃣ *Jataayu Jewellers Reports:*", j_items),
+        ("2️⃣ *Sunfra Hyperscale Reports:*", h_items),
+        ("3️⃣ *Balaji Team Reports:*", b_items),
+        ("4️⃣ *Corporate Company (P&L) Reports:*", c_items),
+        ("5️⃣ *Sunfra Feed Tasks & Reports:*", feed_items),
+        ("6️⃣ *Sunfra Farms Tasks & Reports:*", farm_items),
+        ("7️⃣ *Monthly Rental Updates:*", r_items),
+    ]
+
+    messages_930 = []
+    combined_1159_lines = [f"📊 *Company-Wise Escalation Report (EOD Summary)*\n📅 *Date:* {today_date_str}\n"]
+
+    for title, items in sections_config:
+        if not items:
+            continue
+            
+        missing_items = [it for it in items if not it[1]]
+        
+        # Build 9:30 PM message for this company
+        lines_930 = [f"{title}"]
+        if missing_items:
+            for it in sorted(missing_items, key=lambda x: x[0]):
+                lines_930.append(format_bold_item(it))
+        else:
+            lines_930.append("All reports and tasks have been submitted successfully today! ✅")
+        messages_930.append("\n".join(lines_930))
+
+        # Build 11:59 PM combined lines (showing both missing and submitted)
+        sorted_items = sorted(items, key=lambda x: (1 if x[1] else 0, x[0]))
+        lines_1159 = [f"{title}"]
+        for it in sorted_items:
+            lines_1159.append(format_bold_item(it))
+        combined_1159_lines.append("\n".join(lines_1159) + "\n---")
+
+    combined_1159_text = "\n".join(combined_1159_lines)
+    return messages_930, combined_1159_text
+
+
+def manager_escalation_job():
+    logger.info("Starting 9:30 PM Manager Escalation Check (7 Separate Messages)...")
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST).replace(tzinfo=None)
+
     db = SessionLocal()
-    waha_groups_map = get_all_waha_groups_map()
-    
     try:
-        raw_messages_today = db.query(RawMessage).filter(RawMessage.timestamp >= start_of_day).all()
-        processed_today_all = db.query(ProcessedData).filter(func.date(ProcessedData.processed_time) == start_of_day.date()).all()
-        msg_jids = {w.message_id: w.group_id for w in db.query(WhatsAppMessage).filter(WhatsAppMessage.timestamp >= start_of_day).all()}
-        
-        # 1. Fetch ALL Tasks due today or overdue (excluding older completed ones)
-        from sqlalchemy import or_, and_
-        end_of_day = now_ist.replace(hour=23, minute=59, second=59, microsecond=999999)
-        
-        tasks_today = db.query(Task).filter(
-            Task.due_time <= end_of_day,
-            or_(
-                Task.status != 'completed',
-                and_(Task.status == 'completed', Task.due_time >= start_of_day)
-            )
-        ).order_by(Task.due_time).all()
-        
-        not_completed_tasks = []
-        completed_tasks = []
-        if tasks_today:
-            for t in tasks_today:
-                assignee = None
-                if t.whatsapp_group_id:
-                    clean_jid = t.whatsapp_group_id.replace('@g.us', '') + '@g.us'
-                    if clean_jid in waha_groups_map:
-                        assignee = waha_groups_map[clean_jid]
-                    else:
-                        grp = db.query(Group).filter(Group.whatsapp_group_id == clean_jid).first()
-                        if grp:
-                            assignee = grp.name
-                if not assignee or assignee.lower() == 'team':
-                    if t.whatsapp_group_id:
-                        clean_jid = t.whatsapp_group_id.replace('@g.us', '') + '@g.us'
-                        if clean_jid in waha_groups_map:
-                            assignee = waha_groups_map[clean_jid]
-                        else:
-                            grp = db.query(Group).filter(Group.whatsapp_group_id == clean_jid).first()
-                            if grp: assignee = grp.name
-                    if not assignee or assignee.lower() == 'team':
-                        assignee = t.assigned_person_name or t.assigned_person_phone or "Unknown"
-                    
-                status_text = "Completed" if t.status == 'completed' else "Not Completed"
-                status_emoji = "✅" if t.status == 'completed' else "❌"
-                line = f"- {status_emoji} {assignee}: *{t.task_name}* - {status_text}"
-                if t.status == 'completed':
-                    completed_tasks.append(line)
-                else:
-                    not_completed_tasks.append(line)
-        task_lines = not_completed_tasks
-        
-        # 2. Fetch today's scheduled and overdue reminders
-        reminders_today = db.query(UnifiedReminder).filter(
-            UnifiedReminder.trigger_time <= end_of_day,
-            or_(
-                UnifiedReminder.status == 'pending',
-                and_(UnifiedReminder.status.in_(['sent', 'skipped']), UnifiedReminder.trigger_time >= start_of_day)
-            )
-        ).all()
-        
-        # Fetch sent logs today
-        sent_logs_today = db.query(ReminderLog).filter(
-            ReminderLog.executed_at >= start_of_day,
-            ReminderLog.status == 'sent'
-        ).all()
-        sent_reminder_ids = {log.reminder_id for log in sent_logs_today if log.reminder_id}
-
-        # Build list of reminders to check
-        reminders_to_check = []
-        for r in reminders_today:
-            reminders_to_check.append({
-                "id": r.id,
-                "person_name": r.person_name,
-                "person_phone": r.person_phone,
-                "whatsapp_group_id": r.whatsapp_group_id,
-                "report_types": r.report_types,
-                "status": r.status
-            })
-        
-        # Pre-load all Group records into memory to avoid repeated DB queries inside loops
-        all_groups = db.query(Group).all()
-        group_db_map = {}
-        for g in all_groups:
-            if g.whatsapp_group_id:
-                clean_g_jid = g.whatsapp_group_id.replace('@g.us', '').strip()
-                group_db_map[clean_g_jid] = g.name
-                group_db_map[g.whatsapp_group_id] = g.name
-
-        not_submitted_reports = []
-        submitted_reports = []
-        for r in reminders_to_check:
-            clean_group_jid = None
-            group_name_display = None
-            if r["whatsapp_group_id"]:
-                clean_group_jid = r["whatsapp_group_id"]
-                if not clean_group_jid.endswith('@g.us'):
-                    clean_group_jid += '@g.us'
-                clean_target_jid_stripped = clean_group_jid.replace('@g.us', '').strip()
-                group_name_display = waha_groups_map.get(clean_group_jid) or group_db_map.get(clean_group_jid) or group_db_map.get(clean_target_jid_stripped) or clean_group_jid
-            
-            # Filter raw messages today for this assignee/group
-            msgs_today = []
-            for raw_msg in raw_messages_today:
-                clean_phone = "".join(c for c in r["person_phone"] if c.isdigit())
-                if clean_phone.startswith("0"):
-                    clean_phone = clean_phone[1:]
-                alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
-                
-                match_sender_raw = clean_phone in str(raw_msg.sender) or alt_phone in str(raw_msg.sender)
-                clean_target_jid_stripped = clean_group_jid.replace('@g.us', '').strip() if clean_group_jid else ''
-                match_group_raw = False
-                if clean_group_jid:
-                    group_name = waha_groups_map.get(clean_group_jid) or group_db_map.get(clean_group_jid) or group_db_map.get(clean_target_jid_stripped, "")
-                    match_group_raw = (
-                        raw_msg.group_name
-                        and group_name
-                        and (str(raw_msg.group_name).lower() in str(group_name).lower() or str(group_name).lower() in str(raw_msg.group_name).lower())
-                    )
-                
-                match_name = False
-                if not match_sender_raw and r["person_name"] and raw_msg.sender:
-                    sender_name_part = clean_name_string(raw_msg.sender.split(' (')[0])
-                    t_names = [clean_name_string(n) for n in r["person_name"].split(',')]
-                    for t_name in t_names:
-                        if len(sender_name_part) >= 3 and len(t_name) >= 3:
-                            ratio = difflib.SequenceMatcher(None, sender_name_part, t_name).ratio()
-                            if ratio > 0.75 or sender_name_part in t_name or t_name in sender_name_part:
-                                match_name = True
-                                break
-                
-                match_waha_sender_raw = False
-                if raw_msg.sender and not r["whatsapp_group_id"]:
-                    sender_name_part = clean_name_string(raw_msg.sender.split(' (')[0])
-                    manager_name = clean_name_string("kusum")
-                    ratio = difflib.SequenceMatcher(None, sender_name_part, manager_name).ratio()
-                    if ratio > 0.75 or manager_name in sender_name_part or sender_name_part in manager_name:
-                        match_waha_sender_raw = True
-                                
-                raw_msg_jid = msg_jids.get(raw_msg.message_id) or ''
-                clean_raw_jid = raw_msg_jid.replace('@g.us', '').strip()
-                
-                keyword_group_match = False
-                if raw_msg.group_name and r["report_types"]:
-                    gn_lower = raw_msg.group_name.lower()
-                    rt_lower = r["report_types"].lower()
-                    if ("egg pricing" in gn_lower and "egg pricing" in rt_lower) or \
-                       ("rule book" in gn_lower and "rule" in rt_lower) or \
-                       ("raw material" in gn_lower and ("stock" in rt_lower or "website" in rt_lower)) or \
-                       ("p&l" in gn_lower and ("p&l" in rt_lower or "profit" in rt_lower)) or \
-                       ("hyperscale" in gn_lower and "hyperscale" in rt_lower) or \
-                       ("jataayu" in gn_lower and "jataayu" in rt_lower):
-                        keyword_group_match = True
-
-                is_match = False
-                if clean_target_jid_stripped:
-                    is_match = (clean_raw_jid and clean_raw_jid == clean_target_jid_stripped) or match_group_raw or keyword_group_match
-                else:
-                    sender_matched = match_sender_raw or match_name or match_waha_sender_raw
-                    if not sender_matched and r["person_name"] and 'mahalakshmi' in r["person_name"].lower() and 'mahalakshmi' in str(raw_msg.sender).lower():
-                        sender_matched = True
-                    is_match = sender_matched or keyword_group_match
-                            
-                if is_match:
-                    msgs_today.append(raw_msg)
-            
-            update_keywords = [
-                "update", "updates", "work report", "work update", "work updates",
-                "daily update", "daily updates", "daily work update", "daily work updates",
-                "eod", "eod update", "eod updates", "eod report", "eod reports",
-                "today, i worked", "today i worked", "today's work", "today work",
-                "today's work report", "today work report", "work day report",
-                "daily report", "daily reports", "work done", "tasks completed",
-                "task completed", "tasks done", "task done", "today's update", "today update",
-                "profit summary", "profit update", "p&l summary", "p&l update", "summary"
-            ]
-            is_egg_pricing = "egg pricing" in r["report_types"].lower()
-            is_ca_statement = "ca statement" in r["report_types"].lower() or "ca" in r["report_types"].lower()
-            is_rule_book = "rule book" in r["report_types"].lower() or "rule" in r["report_types"].lower()
-            is_profit_report = any(w in r["report_types"].lower() for w in ["profit", "p&l", "p and l", "p/l", "loss"])
-            is_update_report = any(w in r["report_types"].lower() for w in ["update", "eod", "daily report", "work"]) and not is_egg_pricing and not is_rule_book and not is_profit_report
-            
-            report_keywords = []
-            for comma_part in r["report_types"].split(","):
-                for slash_part in comma_part.split("/"):
-                    trimmed = slash_part.strip().lower()
-                    if trimmed:
-                        report_keywords.append(trimmed)
-                        
-            is_manually_done = (r.get("status") == 'sent' and r.get("id") not in sent_reminder_ids)
-            submitted = (r.get("status") == 'skipped' or is_manually_done)
-            msgs_to_check = msgs_today if not submitted else []
-            for m in msgs_to_check:
-                text_lower = (m.raw_text or "").lower()
-                msg_hour = m.timestamp.hour
-                if is_egg_pricing:
-                    time_keyword = "morning" if "morning" in r["report_types"].lower() else "afternoon" if "afternoon" in r["report_types"].lower() else "evening" if "evening" in r["report_types"].lower() else None
-                    has_price_number = bool(re.search(r'\d{3}', text_lower))
-                    is_time_match = False
-                    
-                    # Extract hour from text if mentioned in the format like '8:44' or '13:20'
-                    msg_hour_to_use = msg_hour
-                    match_time = re.search(r'\b(\d{1,2}):(\d{2})\b', text_lower)
-                    if match_time:
-                        try:
-                            msg_hour_to_use = int(match_time.group(1))
-                        except Exception:
-                            pass
-                            
-                    if time_keyword == 'morning' and (msg_hour_to_use < 12 or 'morning' in text_lower or 'veh kol' in text_lower) and 'ppr rate' not in text_lower and 'closing' not in text_lower:
-                        is_time_match = True
-                    elif time_keyword == 'afternoon' and (12 <= msg_hour_to_use < 17 or 'afternoon' in text_lower or 'ppr rate' in text_lower) and 'closing' not in text_lower:
-                        is_time_match = True
-                    elif time_keyword == 'evening' and (msg_hour_to_use >= 17 or 'evening' in text_lower or 'closing' in text_lower or '18:' in text_lower or '19:' in text_lower):
-                        is_time_match = True
-
-                    if is_time_match and has_price_number and any(w in text_lower for w in ["egg", "price", "pricing", "ppr rate", "closing", "veh kol", "papaak"]):
-                        submitted = True
-                        break
-                elif is_profit_report:
-                    profit_kws = ["profit", "p&l", "p and l", "p/l", "loss", "profit summary", "p&l summary", "summary", "profit update", "p&l report", "p&l statement"]
-                    if any(kw in text_lower for kw in profit_kws) and "yesterday" not in text_lower:
-                        submitted = True
-                        break
-                elif is_ca_statement:
-                    if 'ca' in text_lower or 'statement' in text_lower:
-                        submitted = True
-                        break
-                elif is_rule_book:
-                    rule_kws = ["rule book", "rules book", "rule", "rules", "point", "points", "policy", "guideline", "godown rule", "farm rule", "addition"]
-                    if any(kw in text_lower for kw in rule_kws) or any(any(kw in (m_raw.raw_text or "").lower() for kw in ["rule book", "rules book"]) for m_raw in raw_messages_today):
-                        submitted = True
-                        break
-                elif is_update_report:
-                    is_stock_website = any(w in text_lower for w in ["website update", "website updates", "stock update", "stock updates", "stock/website"])
-                    if not (is_stock_website and "stock" not in r["report_types"].lower() and "website" not in r["report_types"].lower()):
-                        if any(kw in text_lower for kw in update_keywords):
-                            submitted = True
-                            break
-                else:
-                    if any(kw in text_lower for kw in report_keywords):
-                        submitted = True
-                        break
-                    
-            if not submitted:
-                processed_today = []
-                for p in processed_today_all:
-                    clean_phone = "".join(c for c in r["person_phone"] if c.isdigit())
-                    if clean_phone.startswith("0"):
-                        clean_phone = clean_phone[1:]
-                    alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
-                    
-                    match_sender = clean_phone in str(p.sender) or alt_phone in str(p.sender)
-                    match_group = False
-                    if clean_group_jid:
-                        group_name = waha_groups_map.get(clean_group_jid)
-                        match_group = (
-                            p.group_name
-                            and group_name
-                            and str(p.group_name).lower() == group_name.lower()
-                        )
-                        
-                    match_name = False
-                    if not match_sender and r["person_name"] and p.sender:
-                        sender_name_part = clean_name_string(p.sender.split(' (')[0])
-                        t_names = [clean_name_string(n) for n in r["person_name"].split(',')]
-                        for t_name in t_names:
-                            if len(sender_name_part) >= 3 and len(t_name) >= 3:
-                                ratio = difflib.SequenceMatcher(None, sender_name_part, t_name).ratio()
-                                if ratio > 0.75 or sender_name_part in t_name or t_name in sender_name_part:
-                                    match_name = True
-                                    break
-                    
-                    match_waha_sender = False
-                    if p.sender and not r["whatsapp_group_id"]:
-                        sender_name_part = clean_name_string(p.sender.split(' (')[0])
-                        manager_name = clean_name_string("kusum")
-                        ratio = difflib.SequenceMatcher(None, sender_name_part, manager_name).ratio()
-                        if ratio > 0.75 or manager_name in sender_name_part or sender_name_part in manager_name:
-                            match_waha_sender = True
-                                    
-                    p_msg_jid = msg_jids.get(p.message_id) or ''
-                    clean_p_jid = p_msg_jid.replace('@g.us', '').strip()
-                    clean_target_jid_stripped = clean_group_jid.replace('@g.us', '').strip() if clean_group_jid else ''
-                    
-                    is_group_level = (r["person_phone"] == '1234567890' or 'team' in r["person_name"].lower())
-                    
-                    is_match = False
-                    if is_group_level:
-                        is_match = (clean_target_jid_stripped and clean_p_jid == clean_target_jid_stripped)
-                    else:
-                        sender_matched = match_sender or match_name or match_waha_sender
-                        if sender_matched:
-                            if not clean_p_jid:
-                                is_match = True
-                            elif clean_target_jid_stripped and clean_p_jid == clean_target_jid_stripped:
-                                is_match = True
-                                
-                    if is_match:
-                        processed_today.append(p)
-
-                for p in processed_today:
-                    p_cat = (p.category or "").lower()
-                    p_notes = (p.notes or "").lower()
-                    if is_egg_pricing:
-                        time_keyword = "morning" if "morning" in r["report_types"].lower() else "afternoon" if "afternoon" in r["report_types"].lower() else "evening" if "evening" in r["report_types"].lower() else None
-                        if time_keyword and time_keyword in p_notes and any(w in p_notes for w in ["egg", "price", "pricing"]):
-                            submitted = True
-                            break
-                    else:
-                        if any(kw in p_cat for kw in report_keywords) or any(kw in p_notes for kw in report_keywords):
-                            submitted = True
-                            break
-
-            display_name = f"{group_name_display}" if group_name_display else r["person_name"]
-            status_text = "Submitted" if submitted else "Not Submitted"
-            status_emoji = "✅" if submitted else "❌"
-            line = f"- {status_emoji} {display_name}: *{r['report_types']}* - {status_text}"
-            if submitted:
-                submitted_reports.append(line)
-            else:
-                not_submitted_reports.append(line)
-
-        report_lines = not_submitted_reports
-
-        # Assemble the Escalation Report
-        date_str = now_ist.strftime("%d %b %Y")
-        report_msg_lines = [
-            f"🚨 *Daily Escalation Report*",
-            f"📅 *Date:* {date_str}\n",
-            "The following is the update on today's tasks and reports:\n"
-        ]
-        
-        if task_lines:
-            report_msg_lines.append("*Tasks:*")
-            report_msg_lines.extend(task_lines)
-            report_msg_lines.append("")
-            
-        if report_lines:
-            report_msg_lines.append("*Reports:*")
-            report_msg_lines.extend(report_lines)
-            
-        if not task_lines and not report_lines:
-            report_msg_lines.append("All scheduled tasks and reports have been completed/submitted successfully today! ✅")
-            
-        final_msg = "\n".join(report_msg_lines)
+        messages_930, _ = build_7_company_escalation_reports(db, now_ist)
         for phone in ESCALATION_REPORT_PHONES:
-            send_waha_message(phone, final_msg)
-            logger.info(f"Manager Escalation sent to {phone}")
-        
+            for idx, msg in enumerate(messages_930, 1):
+                send_waha_message(phone, msg)
+                logger.info(f"Manager Escalation Msg {idx}/7 sent to {phone}")
     except Exception as e:
         logger.error(f"Error in manager_escalation_job: {e}")
     finally:
         db.close()
 
 
-def get_company_category(display_name: str) -> str:
-    name_lower = str(display_name or "").lower()
-    if "jataayu" in name_lower or "120363363311394336" in name_lower:
-        return "Jataayu Jewellers"
-    elif "p&l" in name_lower or "p & l" in name_lower or "corporate" in name_lower or "hyperscale" in name_lower or "120363427856964756" in name_lower or "120363428417403024" in name_lower:
-        return "Corporate Company (P&L)"
-    else:
-        return "Sunfra Farms"
-
-
 def company_wise_escalation_job():
-    logger.info("Starting 11:59 PM Company-Wise Manager Escalation Check...")
-
+    logger.info("Starting 11:59 PM Company-Wise Manager Escalation Check (1 Combined Message)...")
     from datetime import datetime, timezone, timedelta
-    import re
-    import difflib
     IST = timezone(timedelta(hours=5, minutes=30))
     now_ist = datetime.now(IST).replace(tzinfo=None)
-    start_of_day = now_ist.replace(hour=0, minute=0, second=0, microsecond=0)
 
     db = SessionLocal()
-    waha_groups_map = get_all_waha_groups_map()
-    
     try:
-        raw_messages_today = db.query(RawMessage).filter(RawMessage.timestamp >= start_of_day).all()
-        processed_today_all = db.query(ProcessedData).filter(func.date(ProcessedData.processed_time) == start_of_day.date()).all()
-        msg_jids = {w.message_id: w.group_id for w in db.query(WhatsAppMessage).filter(WhatsAppMessage.timestamp >= start_of_day).all()}
-        
-        # 1. Fetch ALL Tasks due today or overdue
-        from sqlalchemy import or_, and_
-        end_of_day = now_ist.replace(hour=23, minute=59, second=59, microsecond=999999)
-        
-        tasks_today = db.query(Task).filter(
-            Task.due_time <= end_of_day,
-            or_(
-                Task.status != 'completed',
-                and_(Task.status == 'completed', Task.due_time >= start_of_day)
-            )
-        ).order_by(Task.due_time).all()
-        
-        # Organize by company
-        companies = {
-            "Jataayu Jewellers": {"tasks": [], "reports": []},
-            "Corporate Company (P&L)": {"tasks": [], "reports": []},
-            "Sunfra Farms": {"tasks": [], "reports": []}
-        }
-        
-        if tasks_today:
-            for t in tasks_today:
-                assignee = None
-                if t.whatsapp_group_id:
-                    clean_jid = t.whatsapp_group_id.replace('@g.us', '') + '@g.us'
-                    if clean_jid in waha_groups_map:
-                        assignee = waha_groups_map[clean_jid]
-                    else:
-                        grp = db.query(Group).filter(Group.whatsapp_group_id == clean_jid).first()
-                        if grp:
-                            assignee = grp.name
-                if not assignee or assignee.lower() == 'team':
-                    if t.whatsapp_group_id:
-                        clean_jid = t.whatsapp_group_id.replace('@g.us', '') + '@g.us'
-                        if clean_jid in waha_groups_map:
-                            assignee = waha_groups_map[clean_jid]
-                        else:
-                            grp = db.query(Group).filter(Group.whatsapp_group_id == clean_jid).first()
-                            if grp: assignee = grp.name
-                    if not assignee or assignee.lower() == 'team':
-                        assignee = t.assigned_person_name or t.assigned_person_phone or "Unknown"
-                    
-                status_text = "Completed" if t.status == 'completed' else "Not Completed"
-                status_emoji = "✅" if t.status == 'completed' else "❌"
-                line = f"- {status_emoji} {assignee}: *{t.task_name}* - {status_text}"
-                
-                comp = get_company_category(assignee)
-                companies[comp]["tasks"].append((t.status == 'completed', line))
-        
-        # 2. Fetch today's scheduled and overdue reminders
-        reminders_today = db.query(UnifiedReminder).filter(
-            UnifiedReminder.trigger_time <= end_of_day,
-            or_(
-                UnifiedReminder.status == 'pending',
-                and_(UnifiedReminder.status.in_(['sent', 'skipped']), UnifiedReminder.trigger_time >= start_of_day)
-            )
-        ).all()
-        
-        # Fetch sent logs today
-        sent_logs_today = db.query(ReminderLog).filter(
-            ReminderLog.executed_at >= start_of_day,
-            ReminderLog.status == 'sent'
-        ).all()
-        sent_reminder_ids = {log.reminder_id for log in sent_logs_today if log.reminder_id}
-
-        # Build list of reminders to check
-        reminders_to_check = []
-        for r in reminders_today:
-            reminders_to_check.append({
-                "id": r.id,
-                "person_name": r.person_name,
-                "person_phone": r.person_phone,
-                "whatsapp_group_id": r.whatsapp_group_id,
-                "report_types": r.report_types,
-                "status": r.status
-            })
-            
-        # Pre-load all Group records into memory to avoid repeated DB queries inside loops
-        all_groups = db.query(Group).all()
-        group_db_map = {}
-        for g in all_groups:
-            if g.whatsapp_group_id:
-                clean_g_jid = g.whatsapp_group_id.replace('@g.us', '').strip()
-                group_db_map[clean_g_jid] = g.name
-                group_db_map[g.whatsapp_group_id] = g.name
-
-        for r in reminders_to_check:
-            clean_group_jid = None
-            group_name_display = None
-            if r["whatsapp_group_id"]:
-                clean_group_jid = r["whatsapp_group_id"]
-                if not clean_group_jid.endswith('@g.us'):
-                    clean_group_jid += '@g.us'
-                clean_target_jid_stripped = clean_group_jid.replace('@g.us', '').strip()
-                group_name_display = waha_groups_map.get(clean_group_jid) or group_db_map.get(clean_group_jid) or group_db_map.get(clean_target_jid_stripped) or clean_group_jid
-            
-            # Filter raw messages today for this assignee/group
-            msgs_today = []
-            for raw_msg in raw_messages_today:
-                clean_phone = "".join(c for c in r["person_phone"] if c.isdigit())
-                if clean_phone.startswith("0"):
-                    clean_phone = clean_phone[1:]
-                alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
-                
-                match_sender_raw = clean_phone in str(raw_msg.sender) or alt_phone in str(raw_msg.sender)
-                clean_target_jid_stripped = clean_group_jid.replace('@g.us', '').strip() if clean_group_jid else ''
-                match_group_raw = False
-                if clean_group_jid:
-                    group_name = waha_groups_map.get(clean_group_jid) or group_db_map.get(clean_group_jid) or group_db_map.get(clean_target_jid_stripped, "")
-                    match_group_raw = (
-                        raw_msg.group_name
-                        and group_name
-                        and (str(raw_msg.group_name).lower() in str(group_name).lower() or str(group_name).lower() in str(raw_msg.group_name).lower())
-                    )
-                
-                match_name = False
-                if not match_sender_raw and r["person_name"] and raw_msg.sender:
-                    sender_name_part = clean_name_string(raw_msg.sender.split(' (')[0])
-                    t_names = [clean_name_string(n) for n in r["person_name"].split(',')]
-                    for t_name in t_names:
-                        if len(sender_name_part) >= 3 and len(t_name) >= 3:
-                            ratio = difflib.SequenceMatcher(None, sender_name_part, t_name).ratio()
-                            if ratio > 0.75 or sender_name_part in t_name or t_name in sender_name_part:
-                                match_name = True
-                                break
-                
-                match_waha_sender_raw = False
-                if raw_msg.sender and not r["whatsapp_group_id"]:
-                    sender_name_part = clean_name_string(raw_msg.sender.split(' (')[0])
-                    manager_name = clean_name_string("kusum")
-                    ratio = difflib.SequenceMatcher(None, sender_name_part, manager_name).ratio()
-                    if ratio > 0.75 or manager_name in sender_name_part or sender_name_part in manager_name:
-                        match_waha_sender_raw = True
-                                
-                raw_msg_jid = msg_jids.get(raw_msg.message_id) or ''
-                clean_raw_jid = raw_msg_jid.replace('@g.us', '').strip()
-                
-                keyword_group_match = False
-                if raw_msg.group_name and r["report_types"]:
-                    gn_lower = raw_msg.group_name.lower()
-                    rt_lower = r["report_types"].lower()
-                    if ("egg pricing" in gn_lower and "egg pricing" in rt_lower) or \
-                       ("rule book" in gn_lower and "rule" in rt_lower) or \
-                       ("raw material" in gn_lower and ("stock" in rt_lower or "website" in rt_lower)) or \
-                       ("p&l" in gn_lower and ("p&l" in rt_lower or "profit" in rt_lower)) or \
-                       ("hyperscale" in gn_lower and "hyperscale" in rt_lower) or \
-                       ("jataayu" in gn_lower and "jataayu" in rt_lower):
-                        keyword_group_match = True
-
-                is_match = False
-                if clean_target_jid_stripped:
-                    is_match = (clean_raw_jid and clean_raw_jid == clean_target_jid_stripped) or match_group_raw or keyword_group_match
-                else:
-                    sender_matched = match_sender_raw or match_name or match_waha_sender_raw
-                    if not sender_matched and r["person_name"] and 'mahalakshmi' in r["person_name"].lower() and 'mahalakshmi' in str(raw_msg.sender).lower():
-                        sender_matched = True
-                    is_match = sender_matched or keyword_group_match
-                            
-                if is_match:
-                    msgs_today.append(raw_msg)
-            
-            update_keywords = [
-                "update", "updates", "work report", "work update", "work updates",
-                "daily update", "daily updates", "daily work update", "daily work updates",
-                "eod", "eod update", "eod updates", "eod report", "eod reports",
-                "today, i worked", "today i worked", "today's work", "today work",
-                "today's work report", "today work report", "work day report",
-                "daily report", "daily reports", "work done", "tasks completed",
-                "task completed", "tasks done", "task done", "today's update", "today update",
-                "profit summary", "profit update", "p&l summary", "p&l update", "summary"
-            ]
-            is_egg_pricing = "egg pricing" in r["report_types"].lower()
-            is_ca_statement = "ca statement" in r["report_types"].lower() or "ca" in r["report_types"].lower()
-            is_rule_book = "rule book" in r["report_types"].lower() or "rule" in r["report_types"].lower()
-            is_profit_report = any(w in r["report_types"].lower() for w in ["profit", "p&l", "p and l", "p/l", "loss"])
-            is_update_report = any(w in r["report_types"].lower() for w in ["update", "eod", "daily report", "work"]) and not is_egg_pricing and not is_rule_book and not is_profit_report
-            
-            report_keywords = []
-            for comma_part in r["report_types"].split(","):
-                for slash_part in comma_part.split("/"):
-                    trimmed = slash_part.strip().lower()
-                    if trimmed:
-                        report_keywords.append(trimmed)
-                        
-            is_manually_done = (r.get("status") == 'sent' and r.get("id") not in sent_reminder_ids)
-            submitted = (r.get("status") == 'skipped' or is_manually_done)
-            msgs_to_check = msgs_today if not submitted else []
-            for m in msgs_to_check:
-                text_lower = (m.raw_text or "").lower()
-                msg_hour = m.timestamp.hour
-                if is_egg_pricing:
-                    time_keyword = "morning" if "morning" in r["report_types"].lower() else "afternoon" if "afternoon" in r["report_types"].lower() else "evening" if "evening" in r["report_types"].lower() else None
-                    has_price_number = bool(re.search(r'\d{3}', text_lower))
-                    is_time_match = False
-                    
-                    # Extract hour from text if mentioned in the format like '8:44' or '13:20'
-                    msg_hour_to_use = msg_hour
-                    match_time = re.search(r'\b(\d{1,2}):(\d{2})\b', text_lower)
-                    if match_time:
-                        try:
-                            msg_hour_to_use = int(match_time.group(1))
-                        except Exception:
-                            pass
-                            
-                    if time_keyword == 'morning' and (msg_hour_to_use < 12 or 'morning' in text_lower or 'veh kol' in text_lower) and 'ppr rate' not in text_lower and 'closing' not in text_lower:
-                        is_time_match = True
-                    elif time_keyword == 'afternoon' and (12 <= msg_hour_to_use < 17 or 'afternoon' in text_lower or 'ppr rate' in text_lower or 'paper rate' in text_lower) and 'closing' not in text_lower:
-                        is_time_match = True
-                    elif time_keyword == 'evening' and (msg_hour_to_use >= 17 or 'evening' in text_lower or 'closing' in text_lower or '18:' in text_lower or '19:' in text_lower):
-                        is_time_match = True
-
-                    if is_time_match and has_price_number and any(w in text_lower for w in ["egg", "price", "pricing", "ppr rate", "paper rate", "closing", "veh kol", "papaak"]):
-                        submitted = True
-                        break
-                elif is_profit_report:
-                    profit_kws = ["profit", "p&l", "p and l", "p/l", "loss", "profit summary", "p&l summary", "summary", "profit update", "p&l report", "p&l statement"]
-                    if any(kw in text_lower for kw in profit_kws) and "yesterday" not in text_lower:
-                        submitted = True
-                        break
-                elif is_ca_statement:
-                    if 'ca' in text_lower or 'statement' in text_lower:
-                        submitted = True
-                        break
-                elif is_rule_book:
-                    rule_kws = ["rule book", "rules book", "rule", "rules", "point", "points", "policy", "guideline", "godown rule", "farm rule", "addition"]
-                    if any(kw in text_lower for kw in rule_kws) or any(any(kw in (m_raw.raw_text or "").lower() for kw in ["rule book", "rules book"]) for m_raw in raw_messages_today):
-                        submitted = True
-                        break
-                elif is_update_report:
-                    is_stock_website = any(w in text_lower for w in ["website update", "website updates", "stock update", "stock updates", "stock/website", "feed materials to shed"])
-                    if not (is_stock_website and "stock" not in r["report_types"].lower() and "website" not in r["report_types"].lower()):
-                        if any(kw in text_lower for kw in update_keywords) or is_stock_website:
-                            submitted = True
-                            break
-                else:
-                    if any(kw in text_lower for kw in report_keywords):
-                        submitted = True
-                        break
-                    
-            if not submitted:
-                processed_today = []
-                for p in processed_today_all:
-                    clean_phone = "".join(c for c in r["person_phone"] if c.isdigit())
-                    if clean_phone.startswith("0"):
-                        clean_phone = clean_phone[1:]
-                    alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
-                    
-                    match_sender = clean_phone in str(p.sender) or alt_phone in str(p.sender)
-                    match_group = False
-                    if clean_group_jid:
-                        group_name = waha_groups_map.get(clean_group_jid)
-                        match_group = (
-                            p.group_name
-                            and group_name
-                            and str(p.group_name).lower() == group_name.lower()
-                        )
-                        
-                    match_name = False
-                    if not match_sender and r["person_name"] and p.sender:
-                        sender_name_part = clean_name_string(p.sender.split(' (')[0])
-                        t_names = [clean_name_string(n) for n in r["person_name"].split(',')]
-                        for t_name in t_names:
-                            if len(sender_name_part) >= 3 and len(t_name) >= 3:
-                                ratio = difflib.SequenceMatcher(None, sender_name_part, t_name).ratio()
-                                if ratio > 0.75 or sender_name_part in t_name or t_name in sender_name_part:
-                                    match_name = True
-                                    break
-                    
-                    match_waha_sender = False
-                    if p.sender and not r["whatsapp_group_id"]:
-                        sender_name_part = clean_name_string(p.sender.split(' (')[0])
-                        manager_name = clean_name_string("kusum")
-                        ratio = difflib.SequenceMatcher(None, sender_name_part, manager_name).ratio()
-                        if ratio > 0.75 or manager_name in sender_name_part or sender_name_part in manager_name:
-                            match_waha_sender = True
-                                    
-                    p_msg_jid = msg_jids.get(p.message_id) or ''
-                    clean_p_jid = p_msg_jid.replace('@g.us', '').strip()
-                    clean_target_jid_stripped = clean_group_jid.replace('@g.us', '').strip() if clean_group_jid else ''
-                    
-                    is_group_level = (r["person_phone"] == '1234567890' or 'team' in r["person_name"].lower())
-                    
-                    is_match = False
-                    if is_group_level:
-                        is_match = (clean_target_jid_stripped and clean_p_jid == clean_target_jid_stripped)
-                    else:
-                        sender_matched = match_sender or match_name or match_waha_sender
-                        if sender_matched:
-                            if not clean_p_jid:
-                                is_match = True
-                            elif clean_target_jid_stripped and clean_p_jid == clean_target_jid_stripped:
-                                is_match = True
-                                
-                    if is_match:
-                        processed_today.append(p)
-
-                for p in processed_today:
-                    p_cat = (p.category or "").lower()
-                    p_notes = (p.notes or "").lower()
-                    if is_egg_pricing:
-                        time_keyword = "morning" if "morning" in r["report_types"].lower() else "afternoon" if "afternoon" in r["report_types"].lower() else "evening" if "evening" in r["report_types"].lower() else None
-                        if time_keyword and time_keyword in p_notes and any(w in p_notes for w in ["egg", "price", "pricing"]):
-                            submitted = True
-                            break
-                    else:
-                        if any(kw in p_cat for kw in report_keywords) or any(kw in p_notes for kw in report_keywords):
-                            submitted = True
-                            break
-
-            display_name = f"{group_name_display}" if group_name_display else r["person_name"]
-            status_text = "Submitted" if submitted else "Not Submitted"
-            status_emoji = "✅" if submitted else "❌"
-            line = f"- {status_emoji} {display_name}: *{r['report_types']}* - {status_text}"
-            
-            comp = get_company_category(display_name)
-            companies[comp]["reports"].append((submitted, line))
-
-        # Assemble the Escalation Report
-        date_str = now_ist.strftime("%d %b %Y")
-        report_msg_lines = [
-            f"📊 *Company-Wise Escalation Report*",
-            f"📅 *Date:* {date_str}\n",
-            "The following is the company-wise status of tasks and reports for today:\n"
-        ]
-        
-        for comp in ["Jataayu Jewellers", "Corporate Company (P&L)", "Sunfra Farms"]:
-            comp_tasks = companies[comp]["tasks"]
-            comp_reports = companies[comp]["reports"]
-            
-            if not comp_tasks and not comp_reports:
-                continue
-                
-            if comp_tasks and comp_reports:
-                report_msg_lines.append(f"🏢 *{comp} Tasks:*")
-                comp_tasks.sort(key=lambda x: x[0])
-                for completed, line in comp_tasks:
-                    report_msg_lines.append(line)
-                report_msg_lines.append("")
-                report_msg_lines.append("*Reports:*")
-                comp_reports.sort(key=lambda x: x[0])
-                for submitted_flag, line in comp_reports:
-                    report_msg_lines.append(line)
-                report_msg_lines.append("")
-            elif comp_tasks:
-                report_msg_lines.append(f"🏢 *{comp} Tasks:*")
-                comp_tasks.sort(key=lambda x: x[0])
-                for completed, line in comp_tasks:
-                    report_msg_lines.append(line)
-                report_msg_lines.append("")
-            elif comp_reports:
-                report_msg_lines.append(f"🏢 *{comp} Reports:*")
-                comp_reports.sort(key=lambda x: x[0])
-                for submitted_flag, line in comp_reports:
-                    report_msg_lines.append(line)
-                report_msg_lines.append("")
-                
-        final_msg = "\n".join(report_msg_lines).strip()
+        _, combined_1159_text = build_7_company_escalation_reports(db, now_ist)
         for phone in ESCALATION_REPORT_PHONES:
-            send_waha_message(phone, final_msg)
-            logger.info(f"Company-Wise Manager Escalation sent to {phone}")
-        
+            send_waha_message(phone, combined_1159_text)
+            logger.info(f"Combined EOD Manager Escalation sent to {phone}")
     except Exception as e:
         logger.error(f"Error in company_wise_escalation_job: {e}")
     finally:
@@ -3153,11 +2612,11 @@ def scheduled_zoho_reconciliation_job():
         logger.error(f"Error in scheduled_zoho_reconciliation_job: {e}")
 
 def scheduled_sunfra_pandl_job():
-    logger.info("Starting 9:29 PM Sunfra P&L Report generation...")
+    logger.info("Starting 9:30 PM Sunfra P&L Report generation...")
     try:
         from sunfra_pandl_report import generate_and_send_sunfra_pandl_report
-        # Dispatches at 9:29 PM IST to BOTH number 7259510983 and Sunfra P&L Group
-        generate_and_send_sunfra_pandl_report(["917259510983@c.us", "120363427856964756@g.us"])
+        # Dispatches at 9:30 PM IST to ONLY 7259510983, 8985779911, and 6364817749 per user explicit directive
+        generate_and_send_sunfra_pandl_report(["917259510983@c.us", "918985779911@c.us", "916364817749@c.us"])
     except Exception as e:
         logger.error(f"Error in scheduled_sunfra_pandl_job: {e}")
 
@@ -3176,8 +2635,8 @@ def setup_scheduler():
     # Schedule Daily Zoho Reconciliation Report at 11:00 PM IST daily
     scheduler.add_job(scheduled_zoho_reconciliation_job, CronTrigger(hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
 
-    # Schedule Daily Sunfra P&L PDF report at 9:29 PM IST daily
-    scheduler.add_job(scheduled_sunfra_pandl_job, CronTrigger(hour=21, minute=29, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    # Schedule Daily Sunfra P&L PDF report at 9:30 PM IST daily (ONLY to 7259510983, 8985779911, and 6364817749)
+    scheduler.add_job(scheduled_sunfra_pandl_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
     # Schedule Monday Weekly Feed Formula update reminder at 8:00 AM IST on Mondays
     scheduler.add_job(send_monday_weekly_feed_reminder_job, CronTrigger(day_of_week='mon', hour=8, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
@@ -3188,8 +2647,8 @@ def setup_scheduler():
     # Schedule Task Overdue Checker & Nagging alert every 1 minute
     scheduler.add_job(poll_and_remind_tasks_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="poll_tasks_job")
     
-    # Schedule Wednesday meetings checklist generation every Wednesday at 6:00 AM IST
-    scheduler.add_job(create_wednesday_meeting_tasks, CronTrigger(day_of_week='wed', hour=6, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    # Wednesday meeting auto-task generation disabled per user request
+    # scheduler.add_job(create_wednesday_meeting_tasks, CronTrigger(day_of_week='wed', hour=6, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
 
     # Schedule Vaccine Approval Request to manager at 6:30 AM IST
     scheduler.add_job(scheduled_vaccine_approval_request_job, CronTrigger(hour=6, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600)

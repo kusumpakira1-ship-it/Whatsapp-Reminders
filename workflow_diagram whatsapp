@@ -1,0 +1,150 @@
+# 🔄 WhatsApp Reminders System - Complete Workflow Diagrams
+
+This document contains the visual workflow diagrams detailing how the entire **WhatsApp Reminders & Escalation System** operates across the Frontend Dashboard, Python Backend Scheduler, Verification Engine, and WAHA WhatsApp Gateway.
+
+---
+
+## 1. 🌐 Overall System Architecture & Data Flow
+
+```mermaid
+graph TD
+    classDef fe fill:#e0f2fe,stroke:#0284c7,stroke-width:2px;
+    classDef be fill:#fef3c7,stroke:#d97706,stroke-width:2px;
+    classDef db fill:#f3e8ff,stroke:#9333ea,stroke-width:2px;
+    classDef wa fill:#dcfce7,stroke:#16a34a,stroke-width:2px;
+
+    subgraph FRONTEND ["💻 Frontend (Hostinger PHP Dashboard)"]
+        Dashboard["PHP Web Interface (index.php)"]
+        DatePicker["📅 View Date Filter (?date=YYYY-MM-DD)"]
+        JSNotes["JS Notes Auto-Formatter"]
+    end
+
+    subgraph BACKEND ["⚡ Backend Engine (Python / FastAPI)"]
+        Scheduler["1-Min Scheduler Loop"]
+        Verifier["Dynamic Verification Engine"]
+        Formatter["Multi-Report Formatter"]
+        EscalationJob["9:30 PM Escalation Job"]
+    end
+
+    subgraph DATABASE ["🗄️ Database & Registries"]
+        MySQL[("Hostinger MySQL DB")]
+        WAHAJson["waha_groups.json Registry"]
+    end
+
+    subgraph GATEWAY ["📱 WAHA WhatsApp Service"]
+        WAHA_API["WAHA REST API"]
+        Webhook["Incoming Webhook Listener"]
+        Users["WhatsApp Users & Groups"]
+    end
+
+    %% Flow connections
+    Dashboard -->|Reads/Writes Reminders| MySQL
+    Dashboard -->|Group Name Resolution| WAHAJson
+    DatePicker -->|Fetches Past Submissions| Dashboard
+    JSNotes -->|Auto-Generates Bold Bullets| Dashboard
+
+    Users -->|1. Incoming WhatsApp Report| Webhook
+    Webhook -->|2. Saves Raw & Processed Data| MySQL
+
+    Scheduler -->|3. Triggers Every 1 Min| Verifier
+    Verifier -->|4. Checks Today Submissions| MySQL
+    Verifier -->|5. Passes Status| Formatter
+
+    Formatter -->|6a. Missing Reports: Send Bullet Reminder| WAHA_API
+    Verifier -->|6b. All Reports Submitted: Auto-Skip| MySQL
+
+    EscalationJob -->|7. Runs at 9:30 PM| WAHA_API
+    WAHA_API -->|8. Delivers Message| Users
+
+    class Dashboard,DatePicker,JSNotes fe;
+    class Scheduler,Verifier,Formatter,EscalationJob be;
+    class MySQL,WAHAJson db;
+    class WAHA_API,Webhook,Users wa;
+```
+
+---
+
+## 2. ⏰ Reminder Polling & Execution Workflow
+
+```mermaid
+flowchart TD
+    Start(["Start 1-Minute Polling Loop"]) --> QueryDB["Query sunfra_unified_reminders WHERE trigger_time <= NOW"]
+    QueryDB --> CheckDue{"Any Due Reminders?"}
+    
+    CheckDue -- "No" --> Sleep["Wait 1 Minute"] --> Start
+    CheckDue -- "Yes" --> LoopReminders["For Each Due Reminder"]
+    
+    LoopReminders --> FetchSubmissions["Fetch Today's Submissions (sunfra_processed_data) & Raw Messages (sunfra_raw_messages)"]
+    FetchSubmissions --> VerifyReports["Run Dynamic Verification Engine"]
+    
+    VerifyReports --> AllSubmitted{"Are ALL Assigned Reports Submitted?"}
+    
+    AllSubmitted -- "Yes" --> MarkSkipped["Mark Reminder Status = 'skipped'"]
+    MarkSkipped --> LogSkipped["Log Execution: 'All assigned reports submitted on time'"]
+    LogSkipped --> AdvanceTime["Advance trigger_time to next schedule (Daily / Weekly / Monthly)"]
+    AdvanceTime --> NextReminder
+    
+    AllSubmitted -- "No" --> CheckCount{"How Many Reports Missing?"}
+    
+    CheckCount -- "1 Report" --> FormatSingle["Build Single Report Message:\n'Please submit today's *Report Name* Report...'"]
+    CheckCount -- "2+ Reports" --> FormatMulti["Build Multi-Report Bold Bullet Message:\n'Please submit the following pending reports:\n  • *Report 1*\n  • *Report 2*'"]
+    
+    FormatSingle --> SendWAHA["Send Message via WAHA API (POST /api/sendText)"]
+    FormatMulti --> SendWAHA
+    
+    SendWAHA --> MarkSent["Mark Reminder Status = 'sent'"]
+    MarkSent --> LogSent["Log Execution in sunfra_reminder_logs"]
+    LogSent --> CheckRepeat{"Is Repeat (Nagging) Interval Enabled?"}
+    
+    CheckRepeat -- "Yes (5m/10m/15m)" --> ScheduleNag["Set Next trigger_time = NOW + Interval"]
+    CheckRepeat -- "No / Done" --> NextReminder["Next Reminder in Queue"]
+    
+    ScheduleNag --> NextReminder
+    NextReminder --> Sleep
+```
+
+---
+
+## 3. 🔍 Submission Verification Decision Tree
+
+```mermaid
+flowchart TD
+    Input["Incoming Report / Message"] --> CheckSender{"Does Sender Phone / Name Match Reminder Assignee?"}
+    
+    CheckSender -- "No" --> CheckGroup{"Does Message Group JID Match Reminder Group JID?"}
+    CheckSender -- "Yes" --> CheckCategory
+    
+    CheckGroup -- "No" --> NotMatched["Not Matched -> Marked Missing (❌)"]
+    CheckGroup -- "Yes" --> CheckCategory{"Does Message Category / Keywords Match Assigned Report?"}
+    
+    CheckCategory -- "Keywords Match" --> CheckTime{"Is Report Specific Time Window Matched? (e.g. Morning / Evening)"}
+    CheckCategory -- "No Keyword Match" --> NotMatched
+    
+    CheckTime -- "Yes" --> Matched["Report Identified as Submitted (🟢)"]
+    CheckTime -- "No" --> NotMatched
+```
+
+---
+
+## 4. 🚨 9:30 PM Company-Wise Escalation Report Workflow
+
+```mermaid
+flowchart TD
+    CronStart(["9:30 PM IST Cron Trigger"]) --> ExecEscalation["Run manager_escalation_job()"]
+    
+    ExecEscalation --> FetchTasks["Fetch Today's Tasks & Overdue Tasks"]
+    ExecEscalation --> FetchReminders["Fetch Today's Scheduled Reminders"]
+    ExecEscalation --> FetchMessages["Fetch Today's Raw WhatsApp Messages & Processed Data"]
+    
+    FetchReminders --> GroupByCompany["Group Reports by Company / Department\n(Accounts Poultry, Sunfra Corporate P&L, Jataayu Updates, etc.)"]
+    
+    GroupByCompany --> SortCompanyItems["Sort Items Within Each Company:\n1. Missing Items (❌) at TOP\n2. Submitted Items (🟢) at BOTTOM"]
+    
+    SortCompanyItems --> SortCompanies["Sort Company Sections:\nCompanies with Missing Items at TOP"]
+    
+    SortCompanies --> AssembleText["Assemble Final WhatsApp Message Text"]
+    
+    AssembleText --> SendTarget["Send WhatsApp Message ONLY to 7259510983 (Kusum)"]
+    
+    SendTarget --> Complete(["Escalation Report Delivered! 🚀"])
+```

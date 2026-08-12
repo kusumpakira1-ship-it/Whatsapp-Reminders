@@ -128,7 +128,7 @@ def generate_and_send_sunfra_pandl_report(recipient_phone = None, target_date_st
     """Fetches P&L for a particular single day and Batch age from sunfra.com (Read-Only), generates PDF with ₹ symbol, and dispatches ONLY PDF to WhatsApp."""
     try:
         if recipient_phone is None:
-            recipients = ["917259510983@c.us", "120363427856964756@g.us"]
+            recipients = ["917259510983@c.us", "918985779911@c.us", "916364817749@c.us"]
         elif isinstance(recipient_phone, list):
             recipients = recipient_phone
         else:

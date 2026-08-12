@@ -539,7 +539,7 @@ def process_message_background(
             # Check Rule 2: Wednesday Meeting points check
             is_meeting = (t.task_type and 'meeting' in t.task_type.lower()) or 'meeting' in t.task_name.lower() or 'follow up' in t.task_name.lower()
             if is_meeting:
-                meeting_keywords = ["points", "minutes", "checklist", "topics", "discussed", "conducting", "conducted", "done", "completed"]
+                meeting_keywords = ["points", "minutes", "checklist", "topics", "discussed", "conducting", "conducted", "done", "completed", "meeting", "metting", "conduct", "manage", "shade", "godown"]
                 if any(kw in text_lower for kw in meeting_keywords):
                     # Check department matching
                     tn = t.task_name.lower()
