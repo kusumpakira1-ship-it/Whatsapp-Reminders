@@ -140,6 +140,7 @@ def get_chart_of_accounts(access_token: str = None, org_id: str = None) -> dict:
         "sunfra_farm_od": 0.0,
         "sunfra_farms_bank": 0.0,
         "sunfra_indian_bank": 0.0,
+        "sunfra_feeds_bank": 0.0,
         "total_bank_balance": 0.0,
         "details": []
     }
@@ -167,8 +168,13 @@ def get_chart_of_accounts(access_token: str = None, org_id: str = None) -> dict:
                 elif "indian bank" in name_lower:
                     accounts["sunfra_indian_bank"] = balance
                     accounts["total_bank_balance"] += balance
+                elif "sunfra feeds" in name_lower or "feeds" in name_lower or "feed" in name_lower:
+                    accounts["sunfra_feeds_bank"] = balance
+                    accounts["total_bank_balance"] += balance
                 elif "sunfra farms" in name_lower or "sunfra farm" in name_lower:
                     accounts["sunfra_farms_bank"] = balance
+                    accounts["total_bank_balance"] += balance
+                else:
                     accounts["total_bank_balance"] += balance
                     
                 accounts["details"].append({"name": acc_name, "balance": balance})

@@ -509,12 +509,24 @@ def process_message_background(
                                 if not group_jid.endswith('@g.us') and not group_jid.endswith('@c.us'):
                                     group_jid += '@g.us'
                             
-                            group_reminder_msg = (
-                                f"⏰ *Reminder*\n\n"
-                                f"Hi Team,\n"
-                                f"*Task:* {t.task_name} need to be updated.\n\n"
-                                f"Please complete this work and reply to this message with \"updated\" or \"completed\" once finished."
-                            )
+                            formula_text = get_formula_text_by_task_name(t.task_name) or (t.completion_details if t.completion_details and "Maize" in t.completion_details else "")
+                            if "feed formula" in t.task_name.lower() or (t.task_type and "feed" in str(t.task_type).lower()):
+                                m_stage = re.search(r'to\s+([A-Za-z0-9]+)\s*\(Week\s+(\d+)\)', t.task_name, re.IGNORECASE)
+                                stage_info = f"{m_stage.group(1)} ({m_stage.group(2)} W)" if m_stage else t.task_name
+                                group_reminder_msg = (
+                                    f"🌾 *APPROVED FEED FORMULATION MIX INSTRUCTIONS*\n\n"
+                                    f"Hi Team,\n"
+                                    f"Manager has approved feed transition: *{t.task_name}*\n\n"
+                                    f"Sunfra Poultry Farm feed formulations: *{stage_info}*\n"
+                                    f"Please mix according to this formula and reply *\"updated\"* once completed."
+                                )
+                            else:
+                                group_reminder_msg = (
+                                    f"⏰ *Reminder*\n\n"
+                                    f"Hi Team,\n"
+                                    f"*Task:* {t.task_name} needs to be updated.\n\n"
+                                    f"Please complete this work and reply to this message with \"updated\" or \"completed\" once finished."
+                                )
                             send_waha_message(group_jid, group_reminder_msg)
                             continue
                         else:

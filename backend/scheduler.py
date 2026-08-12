@@ -2176,6 +2176,19 @@ async def send_all_10pm_daily_reports_job():
     except Exception as e:
         logger.error(f"Error sending Daily Egg Godown Report at 10 PM: {e}")
 
+    try:
+        # 5. Zoho Books Reconciliation Reports (Sunfra Farms, Sunfra Feeds & Sunfra Corporate)
+        from zoho_reconciliation import (
+            generate_and_send_zoho_reconciliation_report,
+            generate_and_send_sunfra_feeds_reconciliation_report,
+            generate_and_send_sunfra_corporate_reconciliation_report
+        )
+        generate_and_send_zoho_reconciliation_report()
+        generate_and_send_sunfra_feeds_reconciliation_report()
+        generate_and_send_sunfra_corporate_reconciliation_report()
+    except Exception as e:
+        logger.error(f"Error sending Zoho Reconciliation Reports at 10 PM: {e}")
+
 
 # Recipients for vaccine approval requests
 VACCINE_APPROVAL_PHONES = [
@@ -2543,6 +2556,7 @@ Total: 1062.7""")
                         status="pending_approval",
                         assigned_person_name="Team",
                         assigned_person_phone="1234567890",
+                        whatsapp_group_id="120363410607412989@g.us",
                         approver_phone="917259510983,916364817749",
                         due_time=now_ist.replace(hour=21, minute=30, second=0, microsecond=0),
                         completion_keywords="approve,approved,send,yes",
@@ -2628,9 +2642,9 @@ def setup_scheduler():
     # Schedule Health Monitor every 1 minute
     scheduler.add_job(health_monitor_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60)
     
-    # Schedule Daily Live Flock Hatch Date & Birds Sync from sunfra.com at 06:00 AM IST
+    # Schedule Live Flock Hatch Date & Birds Sync from sunfra.com every 4 hours
     from sunfra_batch_sync import sync_flocks_from_sunfra_web
-    scheduler.add_job(sync_flocks_from_sunfra_web, CronTrigger(hour=6, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="sync_sunfra_flocks_job")
+    scheduler.add_job(sync_flocks_from_sunfra_web, CronTrigger(hour="*/4", minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="sync_sunfra_flocks_job")
     
     # Schedule Daily Zoho Reconciliation Report at 11:00 PM IST daily
     scheduler.add_job(scheduled_zoho_reconciliation_job, CronTrigger(hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
