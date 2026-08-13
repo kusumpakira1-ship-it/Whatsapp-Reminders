@@ -2034,12 +2034,54 @@ def build_7_company_escalation_reports(db, now_ist):
     if is_sunday or is_monday:
         c_items.append(("Sunfra Corporate: Weekly P&L", check_report_submitted('weekly p&l', group_target='corporate')))
 
+    def is_vaccine_scheduled_today():
+        import datetime as dt_module
+        target_date = now_ist.date()
+        flocks = db.query(Flock).filter(Flock.status == 'active').all()
+        for f in flocks:
+            if not f.hatch_date:
+                continue
+            age_days = (target_date - f.hatch_date).days + 1
+            if age_days < 1:
+                continue
+            std = db.query(BookStandard).filter(BookStandard.day == age_days).first()
+            if std and std.vaccine and std.vaccine.strip():
+                v_text = str(std.vaccine).strip().lower()
+                if any(k in v_text for k in ['vaccine', 'nd', 'ibd', 'coryza', 'pox', 'killed', 'live', 'mareks', 'losata', 'lasata', 'vvnd', 'deworming', 'hvt', 'ma5', 'cox', 'debeaking']):
+                    return True
+        start_dt = dt_module.datetime(target_date.year, target_date.month, target_date.day, 0, 0, 0)
+        end_dt = dt_module.datetime(target_date.year, target_date.month, target_date.day, 23, 59, 59)
+        v_task = db.query(Task).filter(Task.due_time >= start_dt, Task.due_time <= end_dt, Task.task_name.ilike('%vaccin%')).first()
+        return bool(v_task)
+
+    def is_feed_transition_scheduled_today():
+        import datetime as dt_module
+        target_date = now_ist.date()
+        flocks = db.query(Flock).filter(Flock.status == 'active').all()
+        transition_weeks = {4, 9, 16, 19, 41, 71}
+        for f in flocks:
+            if not f.hatch_date:
+                continue
+            age_days = (target_date - f.hatch_date).days + 1
+            if age_days < 1:
+                continue
+            w = (age_days - 1) // 7 + 1
+            if (age_days - 1) % 7 == 0 and w in transition_weeks:
+                return True
+        start_dt = dt_module.datetime(target_date.year, target_date.month, target_date.day, 0, 0, 0)
+        end_dt = dt_module.datetime(target_date.year, target_date.month, target_date.day, 23, 59, 59)
+        f_task = db.query(Task).filter(Task.due_time >= start_dt, Task.due_time <= end_dt, Task.task_name.ilike('%feed formula%')).first()
+        return bool(f_task)
+
+    has_vaccine_today = is_vaccine_scheduled_today()
+    has_feed_transition_today = is_feed_transition_scheduled_today()
+
     # 6. Sunfra Feed Tasks & Reports
     feed_items = [
         ("Sunfra Feed Plant: Silo Empty and Cleaning", check_report_submitted('silo', group_target='feed plant')),
         ("Raw Material Prices & Orders: Stock/Website Updates", check_report_submitted('stock', group_target='raw material')),
-        ("Feed Changes: Feed Stage Transitions", check_report_submitted('stage', group_target='feed')),
-        ("Vaccines: Vaccine Schedule", check_report_submitted('vaccine')),
+        ("Feed Changes: Feed Stage Transitions", (not has_feed_transition_today) or check_report_submitted('stage', group_target='feed')),
+        ("Vaccines: Vaccine Schedule", (not has_vaccine_today) or check_report_submitted('vaccine')),
         ("Accounts - Sunfra Feeds: Day Book", check_report_submitted('day book', group_target='feeds')),
         ("Accounts - Sunfra Feeds: Daily Sales", check_report_submitted('daily sales', group_target='feeds')),
         ("Accounts - Sunfra Feeds: Daily Purchases", check_report_submitted('daily purchases', group_target='feeds')),
@@ -2055,7 +2097,7 @@ def build_7_company_escalation_reports(db, now_ist):
         ("Raw Material Prices & Ordering: Stock/Website Updates", check_report_submitted('stock', group_target='ordering')),
         ("Rule Book: Rule Book Updates", check_report_submitted('rule book')),
         ("Gate Managers: Entry Logs", check_report_submitted('gate')),
-        ("Feed Formula: Feed Formula Updates", check_report_submitted('formula')),
+        ("Feed Formula: Feed Formula Updates", (not has_feed_transition_today) or check_report_submitted('formula')),
         ("Accounts Poultry: CA Statement", check_report_submitted('ca statement', sender_target='mahalakshmi')),
         ("Accounts Poultry: Day Book", check_report_submitted('day book', sender_target='mahalakshmi')),
         ("Accounts Poultry: Daily Sales", check_report_submitted('daily sales', sender_target='mahalakshmi')),
