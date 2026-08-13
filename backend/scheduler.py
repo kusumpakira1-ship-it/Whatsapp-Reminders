@@ -2159,10 +2159,25 @@ def manager_escalation_job():
     db = SessionLocal()
     try:
         messages_930, _ = build_7_company_escalation_reports(db, now_ist)
-        for phone in ESCALATION_REPORT_PHONES:
-            for idx, msg in enumerate(messages_930, 1):
+        for idx, msg in enumerate(messages_930, 1):
+            for phone in ESCALATION_REPORT_PHONES:
                 send_waha_message(phone, msg)
                 logger.info(f"Manager Escalation Msg {idx}/7 sent to {phone}")
+            
+            # Also send Corporate Company (P&L) report (Message 4) to 9066646784
+            if "Corporate Company" in msg or "4️⃣" in msg:
+                send_waha_message("919066646784@c.us", msg)
+                logger.info(f"Manager Escalation Msg {idx}/7 (Corporate P&L) also sent to 919066646784@c.us")
+
+            # Also send Sunfra Feed Tasks & Reports (Message 5) to 8951520293
+            if "Sunfra Feed" in msg or "5️⃣" in msg:
+                send_waha_message("918951520293@c.us", msg)
+                logger.info(f"Manager Escalation Msg {idx}/7 (Sunfra Feed) also sent to 918951520293@c.us")
+
+            # Also send Sunfra Farms Tasks & Reports (Message 6) to 8985779911
+            if "Sunfra Farms" in msg or "6️⃣" in msg:
+                send_waha_message("918985779911@c.us", msg)
+                logger.info(f"Manager Escalation Msg {idx}/7 (Sunfra Farms) also sent to 918985779911@c.us")
     except Exception as e:
         logger.error(f"Error in manager_escalation_job: {e}")
     finally:
@@ -2667,10 +2682,19 @@ def send_monday_weekly_feed_reminder_job():
 
 
 def scheduled_zoho_reconciliation_job():
-    logger.info("Executing scheduled Zoho Books reconciliation report job...")
+    logger.info("Starting 10:00 PM Zoho Reconciliation Reports dispatch for Farms, Feeds & Corporate...")
+    recipients = ["917259510983@c.us", "917204021105@c.us"]
     try:
-        from zoho_reconciliation import generate_and_send_zoho_reconciliation_report
-        generate_and_send_zoho_reconciliation_report("917259510983")
+        from zoho_reconciliation import (
+            generate_and_send_zoho_reconciliation_report,
+            generate_and_send_sunfra_feeds_reconciliation_report,
+            generate_and_send_sunfra_corporate_reconciliation_report
+        )
+        for phone in recipients:
+            generate_and_send_zoho_reconciliation_report(phone)
+            generate_and_send_sunfra_feeds_reconciliation_report(phone)
+            generate_and_send_sunfra_corporate_reconciliation_report(phone)
+            logger.info(f"Successfully sent all 3 Zoho Reconciliation Reports to {phone}")
     except Exception as e:
         logger.error(f"Error in scheduled_zoho_reconciliation_job: {e}")
 
@@ -2695,8 +2719,8 @@ def setup_scheduler():
     from sunfra_batch_sync import sync_flocks_from_sunfra_web
     scheduler.add_job(sync_flocks_from_sunfra_web, CronTrigger(hour="*/4", minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="sync_sunfra_flocks_job")
     
-    # Schedule Daily Zoho Reconciliation Report at 11:00 PM IST daily
-    scheduler.add_job(scheduled_zoho_reconciliation_job, CronTrigger(hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    # Schedule Daily 3 Zoho Reconciliation Reports at 10:00 PM IST daily (to 7259510983 and 7204021105)
+    scheduler.add_job(scheduled_zoho_reconciliation_job, CronTrigger(hour=22, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_zoho_reconciliation_job")
 
     # Schedule Daily Sunfra P&L PDF report at 9:30 PM IST daily (ONLY to 7259510983, 8985779911, and 6364817749)
     scheduler.add_job(scheduled_sunfra_pandl_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600)
