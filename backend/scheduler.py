@@ -1976,6 +1976,13 @@ def build_7_company_escalation_reports(db, now_ist):
                 if rep_lower in ['daily work update', 'work update', 'eod update']:
                     if any(w in raw_text for w in ['update', 'updates', 'work report', 'eod', 'today work']):
                         return True
+                # Check for PDF files or image attachments matching the report category
+                if '.pdf' in raw_text or '.jpg' in raw_text or '.png' in raw_text or '.jpeg' in raw_text or '[image]' in raw_text:
+                    terms = [w for w in rep_lower.split() if w not in ['updates', 'reports', 'daily', 'total']]
+                    if terms and any(t in raw_text for t in terms):
+                        return True
+                    if any(kw in raw_text for kw in ['inv-', 'invoices', 'day book', 'receivables', 'payables', 'purchases', 'sales', 'p&l', 'statement']):
+                        return True
         return False
 
     def format_bold_item(item_tuple):
