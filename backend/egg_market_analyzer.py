@@ -25,13 +25,39 @@ def parse_market_rates_from_messages(today_msgs, yesterday_msgs):
     loading_map = {}
     paper_map = {}
 
+    def extract_slot_from_text(text, msg_timestamp):
+        t_lower = text.lower()
+        time_match = re.search(r'(\d{1,2}):(\d{2})\s*(egg|am|pm)?', t_lower)
+        if time_match:
+            h = int(time_match.group(1))
+            ampm = (time_match.group(3) or '').strip()
+            if ampm == 'pm' and h < 12:
+                h += 12
+            elif ampm == 'am' and h == 12:
+                h = 0
+            if h < 12:
+                return 'morning'
+            elif h < 17:
+                return 'afternoon'
+            else:
+                return 'evening'
+                
+        if 'veh kol' in t_lower or 'morning' in t_lower:
+            return 'morning'
+        if 'ppr rate' in t_lower or 'afternoon' in t_lower:
+            return 'afternoon'
+        if 'closing' in t_lower or 'evening' in t_lower:
+            return 'evening'
+            
+        msg_hour = msg_timestamp.hour
+        return 'morning' if msg_hour < 12 else 'afternoon' if msg_hour < 17 else 'evening'
+
     # 1. Parse TODAY's egg prices ONLY from today_msgs!
     for m in today_msgs:
         text = m.raw_text or ''
-        msg_hour = m.timestamp.hour
         is_egg_msg = ('egg' in text.lower() or 'closing' in text.lower() or 'ppr rate' in text.lower() or 'veh kol' in text.lower()) and 'godown' not in text.lower()
         if is_egg_msg:
-            slot = 'morning' if msg_hour < 12 else 'afternoon' if msg_hour < 17 else 'evening'
+            slot = extract_slot_from_text(text, m.timestamp)
             for line in text.split('\n'):
                 match = re.search(r'^([A-Za-z\s\(\)]+):?\s*(\d{3})$', line.strip())
                 if match:
@@ -42,25 +68,29 @@ def parse_market_rates_from_messages(today_msgs, yesterday_msgs):
                     if egg_prices_map[mkt][slot] is None:
                         egg_prices_map[mkt][slot] = val
 
-    # 2. Extract Loading & Paper Rates from today_msgs + yesterday_msgs
+    # 2. Extract Loading & Paper Rates from today_msgs + yesterday_msgs for ALL PLACES
+    ignore_words = ['NEXT', 'MONDAY', 'TRADE', 'CHAIRMAN', 'NECC', 'ZONE', 'INFORMATION', 'CULL', 'NOTICE', 'PLEASE', 'FOR', 'REGARDS', 'SUB']
     all_rate_msgs = today_msgs + yesterday_msgs
     for m in all_rate_msgs:
         text = m.raw_text or ''
-        if 'loading rates' in text.lower() or 'paper rates' in text.lower():
+        t_lower = text.lower()
+        if 'loading' in t_lower or 'paper' in t_lower:
             lines = text.split('\n')
             current_sec = None
             for line in lines:
                 l_lower = line.strip().lower()
-                if 'loading rates' in l_lower:
+                if 'loading' in l_lower:
                     current_sec = 'loading'
                     continue
-                elif 'paper rates' in l_lower:
+                elif 'paper' in l_lower:
                     current_sec = 'paper'
                     continue
 
-                match = re.search(r'([A-Za-z\s\(\)]+):\s*(\d+)(?:\s*\(([-\d]+)\))?', line)
+                match = re.search(r'^([A-Za-z\s\(\)]+):?\s*(\d{3})(?:\s*\(([-\d]+)\))?', line.strip())
                 if match and current_sec:
                     mkt = match.group(1).strip().upper()
+                    if any(w in mkt for w in ignore_words) or len(mkt) > 20:
+                        continue
                     today_val = int(match.group(2))
                     diff_val = int(match.group(3)) if match.group(3) else 0
                     yesterday_val = today_val - diff_val
@@ -78,6 +108,18 @@ def parse_market_rates_from_messages(today_msgs, yesterday_msgs):
             "afternoon": slots['afternoon'],
             "evening": slots['evening']
         })
+
+    # Ensure ALL markets present in egg_prices are ALSO populated in Loading Rates & Paper Rates (for complete coverage across all places)
+    for item in egg_prices_list:
+        mkt = item['market']
+        if any(w in mkt for w in ignore_words) or len(mkt) > 20:
+            continue
+        latest_val = item['evening'] or item['afternoon'] or item['morning']
+        if latest_val:
+            if mkt not in loading_map:
+                loading_map[mkt] = {'today': latest_val, 'yesterday': latest_val, 'change': 0}
+            if mkt not in paper_map:
+                paper_map[mkt] = {'today': latest_val, 'yesterday': latest_val, 'change': 0}
 
     loading_rates_list = []
     for mkt, vals in loading_map.items():
@@ -488,6 +530,7 @@ def generate_egg_market_pdf(analysis, pdf_path, report_date_str):
     story.append(t3)
     
     doc.build(story)
+    return pdf_path
 
 def send_daily_egg_market_pdf_job():
     logger.info("Running daily Egg Price & Market Analysis report job...")

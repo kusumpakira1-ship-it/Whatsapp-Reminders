@@ -45,9 +45,11 @@ def get_all_waha_groups_map() -> dict:
     return waha_groups_map
 
 def get_company_category(display_name: str) -> str:
-    name_lower = display_name.lower()
+    name_lower = (display_name or '').lower()
     if "jataayu" in name_lower:
         return "Jataayu Jewellers"
+    elif any(k in name_lower for k in ["raw material", "ordering", "feed", "feeds", "vendor", "silo", "dorb", "soya", "maize"]):
+        return "Sunfra Feeds"
     elif "p&l" in name_lower or "p & l" in name_lower or "corporate" in name_lower or "hyperscale" in name_lower:
         return "Corporate Company (P&L)"
     else:
@@ -94,11 +96,16 @@ try:
     companies = {
         "Jataayu Jewellers": {"tasks": [], "reports": []},
         "Corporate Company (P&L)": {"tasks": [], "reports": []},
+        "Sunfra Feeds": {"tasks": [], "reports": []},
         "Sunfra Farms": {"tasks": [], "reports": []}
     }
     
     if tasks_today:
         for t in tasks_today:
+            if t.assigned_person_name and 'supervisor' in t.assigned_person_name.lower():
+                continue
+            if t.task_name and ('water' in t.task_name.lower() or 'mac:' in t.task_name.lower()):
+                continue
             assignee = None
             if t.whatsapp_group_id:
                 clean_jid = t.whatsapp_group_id.replace('@g.us', '') + '@g.us'
@@ -130,7 +137,7 @@ try:
                 status_emoji = "❌"
             line = f"- {status_emoji} {assignee}: *{t.task_name}* - {status_text}"
             
-            comp = get_company_category(assignee)
+            comp = get_company_category(f"{assignee} {t.task_name or ''}")
             companies[comp]["tasks"].append((t.status in ('completed', 'pending_update'), line))
     
     # 2. Fetch today's scheduled and overdue reminders
@@ -157,6 +164,12 @@ try:
     # Build list of reminders to check
     reminders_to_check = []
     for r in reminders_today:
+        p_name = (r.person_name or '').lower()
+        r_types = (r.report_types or '').lower()
+        notes = (r.task_notes or '').lower()
+        g_id = (r.whatsapp_group_id or '').lower()
+        if 'water' in p_name or 'water' in r_types or 'water' in notes or 'mac:' in notes or 'location:' in notes or 'power status' in notes or 'water' in g_id or '120363409544891824' in g_id or 'lid' in g_id:
+            continue
         reminders_to_check.append({
             "id": r.id,
             "person_name": r.person_name,
@@ -245,17 +258,19 @@ try:
             "daily report", "daily reports", "work done", "tasks completed",
             "task completed", "tasks done", "task done", "today's update", "today update"
         ]
-        is_egg_pricing = "egg pricing" in r["report_types"].lower()
-        is_ca_statement = "ca statement" in r["report_types"].lower() or "ca" in r["report_types"].lower()
-        is_rule_book = "rule book" in r["report_types"].lower() or "rule" in r["report_types"].lower()
-        is_update_report = any(w in r["report_types"].lower() for w in ["update", "eod", "daily report", "work"]) and not is_egg_pricing and not is_rule_book
+        r_types = (r.get("report_types") or "").lower()
+        is_egg_pricing = "egg pricing" in r_types
+        is_ca_statement = "ca statement" in r_types or "ca" in r_types
+        is_rule_book = "rule book" in r_types or "rule" in r_types
+        is_update_report = any(w in r_types for w in ["update", "eod", "daily report", "work"]) and not is_egg_pricing and not is_rule_book
         
         report_keywords = []
-        for comma_part in r["report_types"].split(","):
-            for slash_part in comma_part.split("/"):
-                trimmed = slash_part.strip().lower()
-                if trimmed:
-                    report_keywords.append(trimmed)
+        if r.get("report_types"):
+            for comma_part in r["report_types"].split(","):
+                for slash_part in comma_part.split("/"):
+                    trimmed = slash_part.strip().lower()
+                    if trimmed:
+                        report_keywords.append(trimmed)
                     
         is_manually_done = (r.get("status") == 'sent' and r.get("id") not in sent_reminder_ids)
         submitted = (r.get("status") == 'skipped' or is_manually_done)
@@ -372,14 +387,14 @@ try:
         status_text = "Submitted" if submitted else "Not Submitted"
         status_emoji = "✅" if submitted else "❌"
         line = f"- {status_emoji} {display_name}: *{r['report_types']}* - {status_text}"
-        
-        comp = get_company_category(display_name)
+        category_check_str = f"{display_name} {r.get('report_types') or ''} {r.get('person_name') or ''} {r.get('whatsapp_group_id') or ''}"
+        comp = get_company_category(category_check_str)
         companies[comp]["reports"].append((submitted, line))
 
     # Assemble the Escalation Report
     report_msg_lines = ["🚨 *Daily Escalation Report*", "The following is the update on today's tasks and reports, organized by company:\n"]
     
-    for comp in ["Jataayu Jewellers", "Corporate Company (P&L)", "Sunfra Farms"]:
+    for comp in ["Corporate Company (P&L)", "Sunfra Feeds", "Sunfra Farms", "Jataayu Jewellers"]:
         comp_tasks = companies[comp]["tasks"]
         comp_reports = companies[comp]["reports"]
         

@@ -1,15 +1,26 @@
 <?php
+@clearstatcache(true);
+if (function_exists('opcache_invalidate')) { @opcache_invalidate(__FILE__, true); }
+if (function_exists('opcache_reset')) { @opcache_reset(); }
+@header("Cache-Control: private, no-cache, no-store, must-revalidate, max-age=0, s-maxage=0");
+@header("Pragma: no-cache");
+@header("Expires: 0");
+@header("X-LiteSpeed-Purge: *");
+@header("X-Hostinger-CDN-Cache: bypass");
+
 // ============================================================
 // Sunfra Poultry - Whatsapp Reminders & Farm Automation
 // Single-file unified backend and frontend
 // ============================================================
-@opcache_reset();
+@clearstatcache(true);
+if (function_exists('opcache_invalidate')) { @opcache_invalidate(__FILE__, true); }
+if (function_exists('opcache_reset')) { @opcache_reset(); }
+@header("X-LiteSpeed-Purge: *");
+@header("Cache-Control: no-cache, no-store, must-revalidate, max-age=0");
+@header("Pragma: no-cache");
+@header("Expires: 0");
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
-
-header("Cache-Control: no-cache, no-store, must-revalidate");
-header("Pragma: no-cache");
-header("Expires: 0");
 
 // 1. Database Connection with Persistent Pooling & Fallback Protection
 try {
@@ -533,7 +544,7 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
     }
     $date_formats = array_values(array_unique($cleaned_dates));
     
-    $update_keywords = [
+$update_keywords = [
         "daily work update", "eod update", "work update", "today's work update", 
         "today work update", "daily report", "today's work report", "today work report",
         "work report", "work day report", "submitted", "profit summary","eod", "eod report", "daily work report",
@@ -543,16 +554,21 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
     $is_all_submitted = true;
     $missing_reports = [];
     $verification_details = [];
+    $per_report_status = [];
     
-    if (empty($reports)) {
+    $reports_orig = array_filter(array_map('trim', explode(',', $r['report_types'] ?? '')));
+    
+    if (empty($reports_orig)) {
         return [
             'is_submitted' => false,
             'missing_reports' => ['Notes Only'],
-            'details' => 'No reports assigned to this reminder (Notes Only).'
+            'details' => 'No reports assigned to this reminder (Notes Only).',
+            'sub_reports_status' => []
         ];
     }
     
-    foreach ($reports as $report) {
+    foreach ($reports_orig as $orig_report) {
+        $report = strtolower($orig_report);
         $is_manually_done = ($r['status'] === 'sent' && !in_array($r['id'], $sent_logs));
         $report_submitted = ($r['status'] === 'skipped' || $is_manually_done);
         $report_match_msg = $is_manually_done ? "Manually marked done on dashboard" : ($r['status'] === 'skipped' ? "Skipped automatically or manually" : "");
@@ -731,7 +747,6 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
         
         // 2. Check RawMessage fallback
         if (!$report_submitted) {
-            
             foreach ($raw_messages as $raw_msg) {
                 $raw_text_lower = strtolower($raw_msg['raw_text'] ?? '');
                 $raw_sender = strtolower($raw_msg['sender'] ?? '');
@@ -749,51 +764,52 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
                     }
                 }
                 
-                // Match group by JID
-                 $group_matched = false;
-                 $raw_group_jid = $raw_msg['whatsapp_group_jid'] ?? '';
-                 $clean_raw_group_jid = str_replace('@g.us', '', $raw_group_jid);
-                 $clean_target_group_jid = str_replace('@g.us', '', $r['whatsapp_group_id'] ?? '');
+                // Match group by JID (column in DB is group_name or whatsapp_group_jid)
+                $group_matched = false;
+                $raw_group = strtolower($raw_msg['group_name'] ?? '');
+                $clean_raw_group = str_replace('@g.us', '', $raw_group);
+                $clean_target_group_jid = str_replace('@g.us', '', strtolower($r['whatsapp_group_id'] ?? ''));
+
+                $target_group_name = '';
+                if (!empty($r['whatsapp_group_id']) && isset($all_groups[$r['whatsapp_group_id']])) {
+                    $target_group_name = strtolower($all_groups[$r['whatsapp_group_id']]['name'] ?? '');
+                }
+
+                if ($clean_target_group_jid && (
+                    strpos($clean_raw_group, $clean_target_group_jid) !== false || 
+                    strpos($clean_target_group_jid, $clean_raw_group) !== false ||
+                    strpos($raw_sender, $clean_target_group_jid) !== false
+                )) {
+                    $group_matched = true;
+                } elseif ($target_group_name && (strpos($raw_group, $target_group_name) !== false || strpos($target_group_name, $raw_group) !== false)) {
+                    $group_matched = true;
+                } elseif (!empty($r['whatsapp_group_id']) && (strpos($raw_group, strtolower($r['whatsapp_group_id'])) !== false)) {
+                    $group_matched = true;
+                }
                  
-                 if ($clean_target_group_jid && $clean_raw_group_jid && $clean_target_group_jid === $clean_raw_group_jid) {
-                     $group_matched = true;
-                 }
+                // Match name fuzzy
+                $name_matched = false;
+                if (!$sender_matched && !empty($r['person_name']) && !empty($raw_msg['sender'])) {
+                    $sender_name_part = clean_name_string(explode(' (', $raw_msg['sender'])[0]);
+                    foreach ($names as $name) {
+                        $t_name = clean_name_string($name);
+                        if (strlen($sender_name_part) >= 3 && strlen($t_name) >= 3) {
+                            if (strpos($sender_name_part, $t_name) !== false || strpos($t_name, $sender_name_part) !== false) {
+                                $name_matched = true;
+                                break;
+                            }
+                        }
+                    }
+                }
                  
-                 // Match name fuzzy
-                 $name_matched = false;
-                 if (!$sender_matched && $r['person_name'] && $raw_msg['sender']) {
-                     $sender_name_part = clean_name_string(explode(' (', $raw_msg['sender'])[0]);
-                     foreach ($names as $name) {
-                         $t_name = clean_name_string($name);
-                         if (strlen($sender_name_part) >= 3 && strlen($t_name) >= 3) {
-                             if (strpos($sender_name_part, $t_name) !== false || strpos($t_name, $sender_name_part) !== false) {
-                                 $name_matched = true;
-                                 break;
-                             }
-                         }
-                     }
-                 }
+                $is_group_level = ($r['person_phone'] === '1234567890' || strpos(strtolower($r['person_name']), 'team') !== false);
                  
-                 $is_group_level = ($r['person_phone'] === '1234567890' || strpos(strtolower($r['person_name']), 'team') !== false);
-                 
-                 if ($is_group_level) {
-                     // Group-level reminder (assigned to Team): strictly require matching group JID
-                     $valid_sender_or_group = $group_matched;
-                 } else {
-                     // Individual-level reminder: sender must match, and message must be either a direct message (no group)
-                     // or sent in the reminder's target group JID (if specified)
-                     if ($sender_matched || $name_matched) {
-                         if (empty($clean_raw_group_jid)) {
-                             $valid_sender_or_group = true;
-                         } elseif ($clean_target_group_jid && $clean_raw_group_jid === $clean_target_group_jid) {
-                             $valid_sender_or_group = true;
-                         } else {
-                             $valid_sender_or_group = false;
-                         }
-                     } else {
-                         $valid_sender_or_group = false;
-                     }
-                 }
+                // Valid if group matches OR sender/name matches OR no group specified for reminder
+                if ($is_group_level) {
+                    $valid_sender_or_group = $group_matched || (strpos($r['whatsapp_group_id'] ?? '', '120363430772426306') !== false && strpos($clean_raw_group, '120363430772426306') !== false);
+                } else {
+                    $valid_sender_or_group = $group_matched || $sender_matched || $name_matched || empty($clean_target_group_jid);
+                }
                 
                 if ($valid_sender_or_group) {
                     if (strpos($report, 'egg pricing') !== false) {
@@ -826,13 +842,20 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
                         }
                     } elseif ($is_rule_book) {
                         $rule_book_kws = ['rule book', 'rule', 'rules', 'point', 'points', 'policy', 'guideline', 'godown rule', 'farm rule', 'addition'];
+                        $is_rule_group_msg = (strpos($clean_raw_group, '120363430772426306') !== false || strpos($raw_group, 'rule') !== false);
+                        
                         $matched_kw = null;
-                        foreach ($rule_book_kws as $kw) {
-                            if (strpos($raw_text_lower, $kw) !== false) {
-                                $matched_kw = $kw;
-                                break;
+                        if ($is_rule_group_msg) {
+                            $matched_kw = 'Rule Book Group message';
+                        } else {
+                            foreach ($rule_book_kws as $kw) {
+                                if (strpos($raw_text_lower, $kw) !== false) {
+                                    $matched_kw = $kw;
+                                    break;
+                                }
                             }
                         }
+                        
                         if ($matched_kw !== null) {
                             $report_submitted = true;
                             $truncated_text = strlen($raw_msg['raw_text']) > 40 ? substr($raw_msg['raw_text'], 0, 40) . '...' : $raw_msg['raw_text'];
@@ -842,19 +865,48 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
                             break;
                         }
                     } else {
+                        // Smart Keyword Search for all financial & operational reports
+                        $expanded_kws = $raw_keywords;
+                        $kw_map = [
+                            'day book' => ['day book', 'daybook', 'cash book', 'bank book', 'day book (', 'daybook.pdf'],
+                            'daily sales' => ['daily sales', 'sales', 'sale', 'egg sales', 'sales by customer', 'sales by customer (', 'sales.pdf'],
+                            'daily purchases' => ['daily purchase', 'daily purchases', 'purchase', 'purchases', 'buy', 'bought', 'purchases by vendor', 'purchases by vendor (', 'purchases.pdf'],
+                            'total payables' => ['total payables', 'total payable', 'payable', 'payables', 'due to', 'ap aging', 'payableee', 'payable.pdf', 'payables.pdf'],
+                            'total receivables' => ['total receivables', 'total receivable', 'receivable', 'receivables', 'due from', 'ar aging', 'receivable.pdf', 'receivables.pdf'],
+                            'ca statement' => ['ca statement', 'ca', 'statement', 'audit', 'tally', 'balance sheet', 'ca statement on', 'ca.pdf'],
+                            'average p&l' => ['average p&l', 'p&l', 'pl', 'p and l', 'profit', 'loss', 'horizontal profit', 'p&l.pdf'],
+                            'each sales p&l' => ['each sales p&l', 'p&l', 'pl', 'p and l', 'profit', 'loss', 'each sales p&l.pdf'],
+                            'profit & loss summary' => ['profit & loss', 'p&l', 'pl', 'p and l', 'profit', 'loss', 'summary', 'p&l summary'],
+                            'daily work update' => ['daily work update', 'work update', 'update', 'done', 'completed', 'eod update', 'eod', 'report'],
+                            'stock' => ['stock', 'website', 'website updates', 'ordering', 'update', 'updates', 'maize', 'soya', 'dorb', 'stonegrit', 'raw material'],
+                            'stock/website updates' => ['stock', 'website', 'website updates', 'ordering', 'update', 'updates', 'maize', 'soya', 'dorb', 'stonegrit', 'raw material']
+                        ];
+                        
+                        foreach ($kw_map as $rkey => $synonyms) {
+                            if (strpos($report, $rkey) !== false) {
+                                $expanded_kws = array_merge($expanded_kws, $synonyms);
+                            }
+                        }
+                        
                         $matched_kw = null;
-                        foreach ($raw_keywords as $kw) {
+                        foreach ($expanded_kws as $kw) {
                             if ($kw && strpos($raw_text_lower, strtolower($kw)) !== false) {
                                 $matched_kw = $kw;
                                 break;
                             }
                         }
+                        
+                        # Fallback: if message/document/attachment sent in group or by sender, count as submitted!
+                        if ($matched_kw === null && strlen($raw_text_lower) >= 3 && ($group_matched || $sender_matched || $name_matched)) {
+                            $matched_kw = 'WhatsApp group message';
+                        }
+
                         if ($matched_kw !== null) {
                             $report_submitted = true;
                             $truncated_text = strlen($raw_msg['raw_text']) > 40 ? substr($raw_msg['raw_text'], 0, 40) . '...' : $raw_msg['raw_text'];
                             $raw_dt = new DateTime($raw_msg['timestamp'], new DateTimeZone('Asia/Kolkata'));
                             $time_display = $raw_dt->format('g:i A');
-                            $report_match_msg = "WhatsApp message matched keyword '{$matched_kw}': \"{$truncated_text}\" by {$raw_msg['sender']} at {$time_display}";
+                            $report_match_msg = "WhatsApp message matched: \"{$truncated_text}\" by {$raw_msg['sender']} at {$time_display}";
                             break;
                         }
                     }
@@ -863,23 +915,25 @@ function verify_reminder_submission($r, $submissions, $raw_messages, $waha_group
         }
         
         if ($report_submitted) {
-            $verification_details[] = "✅ *" . strtoupper($report) . "*: " . $report_match_msg;
+            $verification_details[] = "✅ *" . strtoupper($orig_report) . "*: " . $report_match_msg;
+            $per_report_status[$orig_report] = 'done';
         } else {
             $is_all_submitted = false;
-            $missing_reports[] = $report;
-            $verification_details[] = "❌ *" . strtoupper($report) . "*: No matching report submitted today.";
+            $missing_reports[] = $orig_report;
+            $verification_details[] = "❌ *" . strtoupper($orig_report) . "*: No matching report submitted today.";
+            $per_report_status[$orig_report] = 'pending';
         }
     }
     
     return [
         'is_submitted' => $is_all_submitted,
         'missing_reports' => $missing_reports,
-        'details' => implode("\n", $verification_details)
+        'details' => implode("\n", $verification_details),
+        'sub_reports_status' => $per_report_status
     ];
 }
 
 function get_all_sunfra_groups($pdo) {
-    $groups_map = [];
     
     // 1. Fetch from database sunfra_groups table (Primary)
     try {
@@ -939,10 +993,11 @@ function get_group_display_name($group_id, $groups_map) {
 }
 
 // 5. Simple REST API Router
-if (isset($_GET['api'])) {
+$input_json = json_decode(file_get_contents('php://input'), true);
+$route = $_GET['api'] ?? $_GET['action'] ?? $input_json['action'] ?? $input_json['route'] ?? null;
+if ($route && !in_array($route, ['app', 'view', 'dashboard', 'live', 'reminders_page', 'page'])) {
     header("Content-Type: application/json");
     $method = $_SERVER['REQUEST_METHOD'];
-    $route = $_GET['api'];
 
     try {
         if ($route === 'temp_read_file' && $method === 'GET') {
@@ -1032,16 +1087,20 @@ if (isset($_GET['api'])) {
         }
 
         if ($route === 'reminders' && $method === 'GET') {
-            $stmt = $pdo->query("SELECT * FROM sunfra_unified_reminders ORDER BY trigger_time DESC");
+            $stmt = $pdo->query("SELECT * FROM sunfra_unified_reminders WHERE (LOWER(COALESCE(person_name,'')) NOT LIKE '%water%' AND LOWER(COALESCE(report_types,'')) NOT LIKE '%water%' AND LOWER(COALESCE(task_notes,'')) NOT LIKE '%water%' AND LOWER(COALESCE(task_notes,'')) NOT LIKE '%mac:%' AND LOWER(COALESCE(task_notes,'')) NOT LIKE '%location:%' AND LOWER(COALESCE(task_notes,'')) NOT LIKE '%power status%' AND LOWER(COALESCE(whatsapp_group_id,'')) NOT LIKE '%water%' AND LOWER(COALESCE(whatsapp_group_id,'')) NOT LIKE '%120363409544891824%' AND LOWER(COALESCE(whatsapp_group_id,'')) NOT LIKE '%lid%') ORDER BY trigger_time DESC");
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             $groups_map = get_all_sunfra_groups($pdo);
             $waha_groups = array_values($groups_map);
             
-            // Fetch today's submissions and raw messages for verification
+            // Fetch target date's submissions and raw messages for verification
             $IST_OFFSET = 5.5 * 3600;
             $today_ist = date('Y-m-d', time() + $IST_OFFSET);
+            $req_date = $_GET['date'] ?? null;
+            $target_date = (is_string($req_date) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $req_date)) ? $req_date : $today_ist;
             
+            $submissions = [];
+            $raw_messages = [];
             try {
                 $sub_stmt = $pdo->prepare("
                     SELECT p.*, w.group_id AS whatsapp_group_jid 
@@ -1049,51 +1108,46 @@ if (isset($_GET['api'])) {
                     LEFT JOIN sunfra_whatsapp_messages w ON p.message_id = w.message_id 
                     WHERE DATE(p.processed_time) = ?
                 ");
-                $sub_stmt->execute([$today_ist]);
-                $submissions = $sub_stmt->fetchAll(PDO::FETCH_ASSOC);
-                
+                $sub_stmt->execute([$target_date]);
+                $submissions = $sub_stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            } catch (Exception $db_err) {}
+
+            try {
                 $raw_stmt = $pdo->prepare("
                     SELECT r.*, w.group_id AS whatsapp_group_jid, w.sender_id AS whatsapp_sender_id
                     FROM sunfra_raw_messages r 
                     LEFT JOIN sunfra_whatsapp_messages w ON r.message_id = w.message_id 
                     WHERE DATE(r.timestamp) = ?
                 ");
-                $raw_stmt->execute([$today_ist]);
-                $raw_messages = $raw_stmt->fetchAll(PDO::FETCH_ASSOC);
-            } catch (Exception $db_err) {
-                // Fallback: fetch all and filter in PHP
-                $sub_stmt = $pdo->query("
-                    SELECT p.*, w.group_id AS whatsapp_group_jid 
-                    FROM sunfra_processed_data p 
-                    LEFT JOIN sunfra_whatsapp_messages w ON p.message_id = w.message_id
-                ");
-                $all_subs = $sub_stmt->fetchAll(PDO::FETCH_ASSOC);
-                $submissions = [];
-                foreach ($all_subs as $s) {
-                    if (substr($s['processed_time'], 0, 10) === $today_ist) {
-                        $submissions[] = $s;
-                    }
+                $raw_stmt->execute([$target_date]);
+                $raw_messages = $raw_stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            } catch (Exception $db_err) {}
+
+            $sent_logs = [];
+            try {
+                $log_stmt = $pdo->prepare("SELECT reminder_id FROM sunfra_reminder_logs WHERE DATE(executed_at) = ? AND status = 'sent'");
+                $log_stmt->execute([$target_date]);
+                $sent_logs = $log_stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
+            } catch (Exception $e) {}
+            
+            foreach ($rows as $key => &$row) {
+                $pname = strtolower($row['person_name'] ?? '');
+                $rtypes = strtolower($row['report_types'] ?? '');
+                $notes = strtolower($row['task_notes'] ?? '');
+                $gid = strtolower($row['whatsapp_group_id'] ?? '');
+                if (strpos($pname, 'water') !== false || strpos($rtypes, 'water') !== false || strpos($notes, 'water') !== false || strpos($notes, 'mac:') !== false || strpos($notes, 'location:') !== false || strpos($notes, 'power status') !== false || strpos($gid, 'water') !== false || strpos($gid, '120363409544891824') !== false || strpos($gid, 'lid') !== false) {
+                    unset($rows[$key]);
+                    continue;
                 }
                 
-                $raw_stmt = $pdo->query("
-                    SELECT r.*, w.group_id AS whatsapp_group_jid, w.sender_id AS whatsapp_sender_id
-                    FROM sunfra_raw_messages r 
-                    LEFT JOIN sunfra_whatsapp_messages w ON r.message_id = w.message_id
-                ");
-                $all_raws = $raw_stmt->fetchAll(PDO::FETCH_ASSOC);
-                $raw_messages = [];
-                foreach ($all_raws as $r_msg) {
-                    if (substr($r_msg['timestamp'], 0, 10) === $today_ist) {
-                        $raw_messages[] = $r_msg;
-                    }
+                // Weekly P&L and Weekly reminders are ONLY due on Sunday and Monday
+                $freq = strtolower($row['frequency'] ?? 'daily');
+                $target_day_name = date('l', strtotime($target_date));
+                $is_weekly_report = ($freq === 'weekly' || strpos($rtypes, 'weekly') !== false);
+                if ($is_weekly_report && !in_array($target_day_name, ['Sunday', 'Monday'])) {
+                    unset($rows[$key]);
+                    continue;
                 }
-            }
-            
-            $log_stmt = $pdo->prepare("SELECT reminder_id FROM sunfra_reminder_logs WHERE DATE(executed_at) = ? AND status = 'sent'");
-            $log_stmt->execute([$today_ist]);
-            $sent_logs = $log_stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
-            
-            foreach ($rows as &$row) {
                 $row['whatsapp_id'] = preg_match('/^\d{10}$/', $row['person_phone']) ? "91{$row['person_phone']}@c.us" : "{$row['person_phone']}@c.us";
                 $row['group_name'] = get_group_display_name($row['whatsapp_group_id'], $groups_map);
                 
@@ -1102,7 +1156,33 @@ if (isset($_GET['api'])) {
                 $is_manually_done = ($row['status'] === 'sent' && !in_array($row['id'], $sent_logs));
                 $auto_skipped = ($row['status'] === 'skipped');
                 
-                if ($is_manually_done || $auto_skipped || $verification['is_submitted']) {
+                // Merge DB sub_reports_status (manual overrides) with dynamic verification sub_reports_status
+                $db_sub_status = [];
+                if (!empty($row['sub_reports_status'])) {
+                    try {
+                        $dec = json_decode($row['sub_reports_status'], true);
+                        if (is_array($dec)) $db_sub_status = $dec;
+                    } catch (Exception $e) {}
+                }
+                $merged_sub_status = array_merge($verification['sub_reports_status'] ?? [], $db_sub_status);
+                $row['sub_reports_status'] = json_encode($merged_sub_status);
+                
+                // Check if any assigned sub-report is explicitly pending (Undone)
+                $assigned_reps = array_filter(array_map('trim', explode(',', $row['report_types'] ?? '')));
+                $has_undone_sub_report = false;
+                if (!empty($assigned_reps)) {
+                    foreach ($assigned_reps as $ar) {
+                        if (($merged_sub_status[$ar] ?? 'pending') !== 'done') {
+                            $has_undone_sub_report = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if ($has_undone_sub_report) {
+                    $row['is_submitted'] = 0;
+                    $row['verification_details'] = "Pending sub-reports remaining.\n\n" . $verification['details'];
+                } elseif ($is_manually_done || $auto_skipped || $verification['is_submitted']) {
                     $row['is_submitted'] = 1;
                     if ($is_manually_done) {
                         $row['verification_details'] = "Manually marked as completed (Done).\n\n" . $verification['details'];
@@ -1117,6 +1197,130 @@ if (isset($_GET['api'])) {
                 }
             }
             echo json_encode($rows);
+            exit;
+        }
+        elseif ($route === 'sub_report_status' && $method === 'POST') {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $reminder_id = $data['reminder_id'] ?? null;
+            $report_name = $data['report_name'] ?? null;
+            $status = $data['status'] ?? 'done';
+            
+            if ($reminder_id && $report_name) {
+                $stmt = $pdo->prepare("SELECT sub_reports_status FROM sunfra_unified_reminders WHERE id = ?");
+                $stmt->execute([$reminder_id]);
+                $raw = $stmt->fetchColumn();
+                $arr = [];
+                if ($raw) {
+                    $decoded = json_decode($raw, true);
+                    if (is_array($decoded)) $arr = $decoded;
+                }
+                $arr[$report_name] = $status;
+                
+                // If toggling to pending, reset overall status to pending if needed
+                $has_pending = false;
+                foreach ($arr as $k => $v) {
+                    if ($v !== 'done') { $has_pending = true; break; }
+                }
+                if ($has_pending) {
+                    $upd = $pdo->prepare("UPDATE sunfra_unified_reminders SET sub_reports_status = ?, status = 'pending' WHERE id = ?");
+                    $upd->execute([json_encode($arr), $reminder_id]);
+                } else {
+                    $upd = $pdo->prepare("UPDATE sunfra_unified_reminders SET sub_reports_status = ? WHERE id = ?");
+                    $upd->execute([json_encode($arr), $reminder_id]);
+                }
+                
+                echo json_encode(['status' => 'success', 'sub_reports_status' => json_encode($arr)]);
+                exit;
+            }
+            echo json_encode(['status' => 'error', 'message' => 'Invalid params']);
+            exit;
+        }
+        elseif ($route === 'reset_sub_reports' && $method === 'POST') {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $reminder_id = $data['reminder_id'] ?? null;
+            if ($reminder_id) {
+                $rem_stmt = $pdo->prepare("SELECT report_types FROM sunfra_unified_reminders WHERE id = ?");
+                $rem_stmt->execute([$reminder_id]);
+                $rep_types_str = $rem_stmt->fetchColumn();
+                $arr = [];
+                if ($rep_types_str) {
+                    foreach (explode(',', $rep_types_str) as $rt) {
+                        $rt_clean = trim($rt);
+                        if ($rt_clean) $arr[$rt_clean] = 'pending';
+                    }
+                }
+                $upd = $pdo->prepare("UPDATE sunfra_unified_reminders SET sub_reports_status = ?, status = 'pending' WHERE id = ?");
+                $upd->execute([json_encode($arr), $reminder_id]);
+                
+                $IST_OFFSET = 5.5 * 3600;
+                $today_ist = date('Y-m-d', time() + $IST_OFFSET);
+                try {
+                    $pdo->prepare("DELETE FROM sunfra_reminder_logs WHERE reminder_id = ? AND DATE(executed_at) = ?")->execute([$reminder_id, $today_ist]);
+                } catch (Exception $e) {}
+                
+                echo json_encode(['status' => 'success']);
+                exit;
+            }
+            echo json_encode(['status' => 'error', 'message' => 'Invalid params']);
+            exit;
+        }
+        elseif ($route === 'task_sub_report_status' && $method === 'POST') {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $task_id = $data['task_id'] ?? null;
+            $report_name = $data['report_name'] ?? null;
+            $status = $data['status'] ?? 'done';
+            
+            if ($task_id && $report_name) {
+                $stmt = $pdo->prepare("SELECT sub_reports_status, task_name FROM sunfra_tasks WHERE id = ?");
+                $stmt->execute([$task_id]);
+                $task_row = $stmt->fetch(PDO::FETCH_ASSOC);
+                $arr = [];
+                if ($task_row && $task_row['sub_reports_status']) {
+                    $decoded = json_decode($task_row['sub_reports_status'], true);
+                    if (is_array($decoded)) $arr = $decoded;
+                }
+                $arr[$report_name] = $status;
+                
+                $all_done = true;
+                if ($task_row && $task_row['task_name']) {
+                    $all_reps = array_filter(array_map('trim', explode(',', $task_row['task_name'])));
+                    foreach ($all_reps as $ar) {
+                        if (($arr[$ar] ?? 'pending') !== 'done') {
+                            $all_done = false;
+                            break;
+                        }
+                    }
+                }
+                $new_task_status = $all_done ? 'completed' : 'pending';
+                $upd = $pdo->prepare("UPDATE sunfra_tasks SET sub_reports_status = ?, status = ? WHERE id = ?");
+                $upd->execute([json_encode($arr), $new_task_status, $task_id]);
+                echo json_encode(['status' => 'success', 'sub_reports_status' => json_encode($arr)]);
+                exit;
+            }
+            echo json_encode(['status' => 'error', 'message' => 'Invalid params']);
+            exit;
+        }
+        elseif ($route === 'reset_task_sub_reports' && $method === 'POST') {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $task_id = $data['task_id'] ?? null;
+            if ($task_id) {
+                $task_stmt = $pdo->prepare("SELECT task_name FROM sunfra_tasks WHERE id = ?");
+                $task_stmt->execute([$task_id]);
+                $t_name = $task_stmt->fetchColumn();
+                $arr = [];
+                if ($t_name) {
+                    foreach (explode(',', $t_name) as $rt) {
+                        $rt_clean = trim($rt);
+                        if ($rt_clean) $arr[$rt_clean] = 'pending';
+                    }
+                }
+                $upd = $pdo->prepare("UPDATE sunfra_tasks SET sub_reports_status = ?, status = 'pending', completion_details = NULL WHERE id = ?");
+                $upd->execute([json_encode($arr), $task_id]);
+                echo json_encode(['status' => 'success']);
+                exit;
+            }
+            echo json_encode(['status' => 'error', 'message' => 'Invalid params']);
+            exit;
         }
         elseif ($route === 'reminder-logs' && $method === 'GET') {
             $stmt = $pdo->query("SELECT * FROM sunfra_reminder_logs ORDER BY executed_at DESC LIMIT 200");
@@ -1124,6 +1328,16 @@ if (isset($_GET['api'])) {
         }
         elseif ($route === 'reminders' && $method === 'POST') {
             $data = json_decode(file_get_contents('php://input'), true);
+            $pname = strtolower($data['person_name'] ?? '');
+            $rtypes = strtolower($data['report_types'] ?? '');
+            $notes = strtolower($data['task_notes'] ?? '');
+            $gid = strtolower($data['whatsapp_group_id'] ?? '');
+
+            if (strpos($pname, 'water') !== false || strpos($rtypes, 'water') !== false || strpos($notes, 'water') !== false || strpos($notes, 'mac:') !== false || strpos($notes, 'location:') !== false || strpos($notes, 'power status') !== false || strpos($gid, 'water') !== false || strpos($gid, '120363409544891824') !== false || strpos($gid, 'lid') !== false) {
+                echo json_encode(['success' => false, 'message' => 'Water Monitoring alerts blocked from Reminders table']);
+                exit;
+            }
+
             $stmt = $pdo->prepare("INSERT INTO sunfra_unified_reminders (person_name, person_phone, whatsapp_group_id, report_types, task_notes, trigger_time, frequency, repeat_interval, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
             $stmt->execute([
                 $data['person_name'],
@@ -1136,6 +1350,7 @@ if (isset($_GET['api'])) {
                 $data['repeat_interval'] ?? 'none'
             ]);
             echo json_encode(['success' => true]);
+            exit;
         }
         elseif (preg_match('/^reminders\/(\d+)$/', $route, $matches) && $method === 'PUT') {
             $data = json_decode(file_get_contents('php://input'), true);
@@ -1286,13 +1501,33 @@ if (isset($_GET['api'])) {
             
             $groups_map = get_all_sunfra_groups($pdo);
             
-            foreach ($rows as &$row) {
+            $filtered_tasks = [];
+            foreach ($rows as $row) {
+                $tname = strtolower($row['task_name'] ?? '');
+                $ttype = strtolower($row['task_type'] ?? '');
+                $aname = strtolower($row['assigned_person_name'] ?? '');
+                $gid = strtolower($row['whatsapp_group_id'] ?? '');
+                
+                if (strpos($aname, 'supervisor') !== false || strpos($tname, 'water') !== false || strpos($ttype, 'water') !== false || strpos($aname, 'water') !== false || strpos($gid, 'water') !== false || strpos($gid, '120363409544891824') !== false) {
+                    continue;
+                }
                 $row['group_name'] = get_group_display_name($row['whatsapp_group_id'], $groups_map);
+                $filtered_tasks[] = $row;
             }
-            echo json_encode($rows);
+            echo json_encode($filtered_tasks);
+            exit;
         }
         elseif ($route === 'tasks' && $method === 'POST') {
             $data = json_decode(file_get_contents('php://input'), true);
+            $aname = strtolower($data['assigned_person_name'] ?? '');
+            $tname = strtolower($data['task_name'] ?? '');
+            $ttype = strtolower($data['task_type'] ?? '');
+            $gid = strtolower($data['whatsapp_group_id'] ?? '');
+
+            if (strpos($aname, 'supervisor') !== false || strpos($tname, 'water') !== false || strpos($ttype, 'water') !== false || strpos($aname, 'water') !== false || strpos($gid, 'water') !== false) {
+                echo json_encode(['success' => false, 'message' => 'Supervisors and Water tasks blocked']);
+                exit;
+            }
             $stmt = $pdo->prepare("INSERT INTO sunfra_tasks (task_name, task_type, assigned_person_name, assigned_person_phone, whatsapp_group_id, due_time, completion_keywords, status, approver_phone, frequency, repeat_interval) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)");
             $stmt->execute([
                 $data['task_name'],
@@ -2043,7 +2278,12 @@ try {
             <section id="reminders_view" class="view">
                 <div class="header-row">
                     <h2>Reminders Management</h2>
-                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                        <input type="date" id="remindersDatePicker" onchange="changeRemindersViewingDate(this.value)" style="padding: 0.45rem 0.75rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.15); font-size: 0.88rem; background: white; cursor: pointer; color: var(--text-primary);" title="Filter reminders by date">
+                        <span id="reminders-date-label" style="font-size: 0.85rem; color: #0284c7; font-weight: 600; display: none;">
+                            📅 Viewing: <span id="reminders-date-label-val"></span>
+                            &nbsp;<a href="#" onclick="resetRemindersViewingDate(); return false;" style="color: #dc2626; font-size: 0.8rem; text-decoration: none; font-weight: 700;">✕ Back to Today</a>
+                        </span>
                         <button class="btn btn-primary" onclick="openReminderModal()" style="margin: 0;">+ Create Reminder</button>
                         <button class="btn btn-secondary" onclick="openVisibilityModal()" style="margin: 0;">Filter Groups</button>
                         <button class="btn btn-secondary" onclick="resetDailyReminders()" style="margin: 0; background: rgba(245,158,11,0.12); color: #b45309; border: 1px solid rgba(245,158,11,0.3);" title="Advance all Daily/Weekly/Monthly reminders to next scheduled date">🔄 Reset Recurring</button>
@@ -3109,17 +3349,71 @@ try {
             }
         }
 
+        let currentViewingDate = '';
+
+        function changeRemindersViewingDate(val) {
+            currentViewingDate = val;
+            const label = document.getElementById('reminders-date-label');
+            const labelVal = document.getElementById('reminders-date-label-val');
+            if (val) {
+                const parts = val.split('-');
+                if (parts.length === 3) {
+                    const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                    if (labelVal) labelVal.textContent = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+                }
+                if (label) label.style.display = 'inline-block';
+            } else {
+                if (label) label.style.display = 'none';
+            }
+            fetchReminders();
+        }
+
+        function resetRemindersViewingDate() {
+            currentViewingDate = '';
+            const input = document.getElementById('remindersDatePicker');
+            if (input) input.value = '';
+            const label = document.getElementById('reminders-date-label');
+            if (label) label.style.display = 'none';
+            fetchReminders();
+        }
+
         let reminders = [];
         async function fetchReminders() {
-            const res = await fetch(API_URL + 'reminders');
+            const dateParam = currentViewingDate ? ('&date=' + currentViewingDate) : '';
+            const res = await fetch(API_URL + 'reminders' + dateParam);
             reminders = await res.json();
             const tbody = document.getElementById('reminders-tbody');
             tbody.innerHTML = '';
             
             reminders.forEach(r => {
+                if (r.__meta__) return;
+                const pNameLower = (r.person_name || '').toLowerCase();
+                const rTypesLower = (r.report_types || '').toLowerCase();
+                const notesLower = (r.task_notes || '').toLowerCase();
+                const gNameLower = (r.group_name || '').toLowerCase();
+                const gIdLower = (r.whatsapp_group_id || '').toLowerCase();
+                if (pNameLower.includes('water') || rTypesLower.includes('water') || notesLower.includes('water') || notesLower.includes('mac:') || notesLower.includes('location:') || notesLower.includes('power status') || gNameLower.includes('water') || gIdLower.includes('water') || gIdLower.includes('120363409544891824') || gIdLower.includes('lid')) return;
                 const badgeClass = r.status === 'sent' ? 'badge-green' : (r.status === 'pending' ? 'badge-orange' : (r.status === 'skipped' ? 'badge-blue' : ''));
                 const groupText = r.whatsapp_group_id ? `<strong style="color:var(--primary-color)">${r.group_name}</strong>` : `<span style="color:var(--text-secondary)">No Group / Private Only</span>`;
-                const reportsText = r.report_types ? r.report_types.split(',').map(rep => `<span class="badge badge-blue" style="margin-right:0.25rem; font-size:0.7rem; display:inline-block; margin-top:2px;">${rep.trim()}</span>`).join(' ') : '<span style="color:var(--text-secondary)">Custom Notes Only</span>';
+                let subStatus = {};
+                if (r.sub_reports_status) {
+                    try {
+                        subStatus = typeof r.sub_reports_status === 'object' ? r.sub_reports_status : JSON.parse(r.sub_reports_status);
+                    } catch(e) {}
+                }
+
+                const reportsText = r.report_types ? r.report_types.split(',').map(rawRep => {
+                    const rep = rawRep.trim();
+                    if (!rep) return '';
+                    const st = subStatus[rep];
+                    const isDone = (st === 'done') || (st !== 'pending' && r.is_submitted);
+                    const safeRep = rep.replace(/'/g, "\\'");
+                    if (isDone) {
+                        return `<button type="button" onclick="confirmToggleSubReport(${r.id}, '${safeRep}', 'pending')" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; padding:4px 10px; border-radius:16px; cursor:pointer; font-weight:600; font-size:0.75rem; margin:2px; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05); user-select:none; outline:none;" title="Click to revert to Pending (Undone)">🟢 ${rep}</button>`;
+                    } else {
+                        return `<button type="button" onclick="confirmToggleSubReport(${r.id}, '${safeRep}', 'done')" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; padding:4px 10px; border-radius:16px; cursor:pointer; font-weight:600; font-size:0.75rem; margin:2px; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05); user-select:none; outline:none;" title="Click to mark Done">🔴 ${rep}</button>`;
+                    }
+                }).join(' ') : '<span style="color:var(--text-secondary)">Custom Notes Only</span>';
                 
                 const names = (r.person_name || '').split(',').map(n => n.trim());
                 const phones = (r.person_phone || '').split(',').map(p => p.trim());
@@ -3159,6 +3453,7 @@ try {
                         <div style="display:flex; gap:0.25rem; flex-wrap:wrap;">
                             <button class="btn btn-secondary" onclick="editReminder(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Edit</button> 
                             ${!r.is_submitted ? `<button class="btn btn-primary" onclick="markReminderDone(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Done</button>` : ''}
+                            <button class="btn btn-warning" style="padding: 0.35rem 0.7rem; font-size: 0.8rem; font-weight: 700; background: #f59e0b; color: #ffffff; border: none; border-radius: 6px; box-shadow: 0 2px 4px rgba(245,158,11,0.3); margin: 0;" onclick="resetAllSubReports(${r.id})" title="Revert sub-reports to Pending">↩️ Undone</button>
                             <button class="btn btn-danger" onclick="deleteReminder(${r.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin: 0;">Delete</button>
                             ${r.verification_details ? '<button class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; margin: 0;" onclick="showReminderDetails(' + r.id + ')">Details</button>' : ''}
                         </div>
@@ -3169,6 +3464,104 @@ try {
             document.getElementById('stat-employees').innerText = new Set(reminders.map(r => r.person_phone)).size;
             document.getElementById('stat-groups').innerText = new Set(reminders.map(r => r.whatsapp_group_id).filter(g => g)).size;
             document.getElementById('stat-alarms').innerText = reminders.length;
+        }
+
+        async function confirmToggleSubReport(reminderId, reportName, targetStatus) {
+            const isDone = (targetStatus === 'done');
+            const msg = isDone 
+                ? `Are you sure you want to mark "${reportName}" as DONE?` 
+                : `Do you want to revert "${reportName}" back to PENDING (Undone)?`;
+            
+            if (!confirm(msg)) return;
+            
+            try {
+                const res = await fetch(API_URL + 'sub_report_status', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        reminder_id: reminderId,
+                        report_name: reportName,
+                        status: targetStatus
+                    })
+                });
+                const data = await res.json();
+                if (data.status === 'success' || res.ok) {
+                    fetchReminders();
+                } else {
+                    alert("Error updating report status: " + (data.message || 'Error'));
+                }
+            } catch(e) {
+                console.error(e);
+                alert("Network error updating report status.");
+            }
+        }
+
+        async function resetAllSubReports(reminderId) {
+            if (!confirm("Do you want to reset all sub-reports for this item back to PENDING?")) return;
+            try {
+                const res = await fetch(API_URL + 'reset_sub_reports', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ reminder_id: reminderId })
+                });
+                const data = await res.json();
+                if (data.status === 'success' || res.ok) {
+                    fetchReminders();
+                } else {
+                    alert("Error resetting reports.");
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        async function confirmToggleSubReport(reminderId, reportName, targetStatus) {
+            const isDone = (targetStatus === 'done');
+            const msg = isDone 
+                ? `Are you sure you want to mark "${reportName}" as DONE?` 
+                : `Do you want to revert "${reportName}" back to PENDING (Undone)?`;
+            
+            if (!confirm(msg)) return;
+            
+            try {
+                const res = await fetch(API_URL + 'sub_report_status', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        reminder_id: reminderId,
+                        report_name: reportName,
+                        status: targetStatus
+                    })
+                });
+                const data = await res.json();
+                if (data.status === 'success' || res.ok) {
+                    fetchReminders();
+                } else {
+                    alert("Error updating report status: " + (data.message || 'Error'));
+                }
+            } catch(e) {
+                console.error(e);
+                alert("Network error updating report status.");
+            }
+        }
+
+        async function resetAllSubReports(reminderId) {
+            if (!confirm("Do you want to reset all sub-reports for this item back to PENDING?")) return;
+            try {
+                const res = await fetch(API_URL + 'reset_sub_reports', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ reminder_id: reminderId })
+                });
+                const data = await res.json();
+                if (data.status === 'success' || res.ok) {
+                    fetchReminders();
+                } else {
+                    alert("Error resetting reports.");
+                }
+            } catch(e) {
+                console.error(e);
+            }
         }
 
         function filterRemindersTable() {
@@ -3694,6 +4087,22 @@ try {
                     taskSubLabel = '🟡 Pending (NO)';
                 }
 
+                         let taskDisplayName = t.task_name;
+                if (t.task_name) {
+                    taskDisplayName = t.task_name.split(',').map(rawRep => {
+                        const rep = rawRep.trim();
+                        if (!rep) return '';
+                        const st = subStatus[rep];
+                        const isDone = (st === 'done') || (st === undefined && t.status === 'completed');
+                        const safeRep = rep.replace(/'/g, "\\'");
+                        if (isDone) {
+                            return `<button type="button" onclick="confirmToggleTaskSubReport(${t.id}, '${safeRep}', 'pending')" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; padding:4px 10px; border-radius:16px; cursor:pointer; font-weight:600; font-size:0.75rem; margin:2px; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05); user-select:none; outline:none;" title="Click to revert to Pending (Undone)">🟢 ${rep}</button>`;
+                        } else {
+                            return `<button type="button" onclick="confirmToggleTaskSubReport(${t.id}, '${safeRep}', 'done')" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; padding:4px 10px; border-radius:16px; cursor:pointer; font-weight:600; font-size:0.75rem; margin:2px; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05); user-select:none; outline:none;" title="Click to mark Done">🔴 ${rep}</button>`;
+                        }
+                    }).join(' ');
+                }
+
                 tbody.innerHTML += `
                     <tr>
                         <td><strong>${formattedAssignees}</strong></td>
@@ -3701,7 +4110,7 @@ try {
                         <td><span class="badge badge-blue">${taskTypeLabel}</span></td>
                         <td>
                             <div style="max-width:250px; font-size:0.9rem;">
-                                ${t.task_name}
+                                ${taskDisplayName}
                                 ${t.approver_phone ? `<br><small style="color:var(--text-secondary)">Approver: ${t.approver_phone}</small>` : ''}
                             </div>
                         </td>
@@ -3714,13 +4123,62 @@ try {
                             <div style="display:flex; gap:0.25rem; flex-wrap:wrap;">
                                 <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.8rem; margin:0;" onclick="editTask(${t.id})">Edit</button>
                                 ${t.status !== 'completed' ? `<button class="btn btn-primary" style="padding:0.25rem 0.5rem; font-size:0.8rem; margin:0;" onclick="completeTask(${t.id})">Done</button>` : ''}
-                                <button class="btn" style="padding:0.25rem 0.5rem; font-size:0.8rem; background:#fee2e2; color:#ef4444; border:1px solid #fca5a5; margin:0;" onclick="deleteTask(${t.id})">Delete</button>
+                                <button class="btn btn-warning" style="padding:0.35rem 0.7rem; font-size:0.8rem; font-weight:700; background:#f59e0b; color:#ffffff; border:none; border-radius:6px; box-shadow:0 2px 4px rgba(245,158,11,0.3); margin:0;" onclick="resetTaskSubReports(${t.id})" title="Revert sub-reports to Pending">↩️ Undone</button>
+                                <button class="btn btn-danger" style="padding:0.25rem 0.5rem; font-size:0.8rem; margin:0;" onclick="deleteTask(${t.id})">Delete</button>
                                 ${t.completion_details ? '<button class="btn" style="padding:0.25rem 0.5rem; font-size:0.8rem; margin:0;" onclick="showTaskDetails(' + t.id + ')">Details</button>' : ''}
                             </div>
                         </td>
-                    </tr>
-                `;
+                    </tr>`;
             });
+
+        async function confirmToggleTaskSubReport(taskId, reportName, targetStatus) {
+            const isDone = (targetStatus === 'done');
+            const msg = isDone 
+                ? `Are you sure you want to mark "${reportName}" as DONE?` 
+                : `Do you want to revert "${reportName}" back to PENDING (Undone)?`;
+            
+            if (!confirm(msg)) return;
+            
+            try {
+                const res = await fetch(API_URL + 'task_sub_report_status', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        task_id: taskId,
+                        report_name: reportName,
+                        status: targetStatus
+                    })
+                });
+                const data = await res.json();
+                if (data.status === 'success' || res.ok) {
+                    fetchTasks();
+                } else {
+                    alert("Error updating report status: " + (data.message || 'Error'));
+                }
+            } catch(e) {
+                console.error(e);
+                alert("Network error updating report status.");
+            }
+        }
+
+        async function resetTaskSubReports(taskId) {
+            if (!confirm("Do you want to reset all sub-reports for this task back to PENDING?")) return;
+            try {
+                const res = await fetch(API_URL + 'reset_task_sub_reports', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ task_id: taskId })
+                });
+                const data = await res.json();
+                if (data.status === 'success' || res.ok) {
+                    fetchTasks();
+                } else {
+                    alert("Error resetting reports.");
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }
             
             // Populate Tasks & Approvals dashboard stats
             const uniqueTaskPhones = new Set();
@@ -3949,6 +4407,7 @@ try {
 
         function renderFlocks(flocks) {
             const container = document.getElementById('flocks-grid-container');
+            if (!container) return;
             container.innerHTML = '';
             
             let totalLive = 0;
@@ -4116,24 +4575,22 @@ try {
         }
 
         window.onload = async () => {
-            await fetchWahaGroups();
-            await loadReportTypesDropdowns();
-            await loadTaskTypesDropdowns();
-            await fetchReminders();
-            await fetchTasks();
-            await fetchFlocks();
-            renderMembersChecklist([]);
+            try { await fetchWahaGroups(); } catch(e) { console.error("fetchWahaGroups notice:", e); }
+            try { await loadReportTypesDropdowns(); } catch(e) { console.error("loadReportTypesDropdowns notice:", e); }
+            try { await loadTaskTypesDropdowns(); } catch(e) { console.error("loadTaskTypesDropdowns notice:", e); }
+            try { await fetchReminders(); } catch(e) { console.error("fetchReminders notice:", e); }
+            try { await fetchTasks(); } catch(e) { console.error("fetchTasks notice:", e); }
+            try { await fetchFlocks(); } catch(e) { console.error("fetchFlocks notice:", e); }
+            try { renderMembersChecklist([]); } catch(e) { console.error("renderMembersChecklist notice:", e); }
             
             // WAHA Session Monitoring Init
-            await checkWahaStatus();
-            await loadWahaEvents();
-            await loadWahaSettings();
+            try { await checkWahaStatus(); } catch(e) { console.error("checkWahaStatus notice:", e); }
+            try { await loadWahaEvents(); } catch(e) { console.error("loadWahaEvents notice:", e); }
+            try { await loadWahaSettings(); } catch(e) { console.error("loadWahaSettings notice:", e); }
             
-            // Periodically check status (every 60s) and events (every 2 min)
-            setInterval(() => checkWahaStatus(), 60000);
-            setInterval(() => loadWahaEvents(), 120000);
+            setInterval(() => { try { checkWahaStatus(); } catch(e){} }, 60000);
+            setInterval(() => { try { loadWahaEvents(); } catch(e){} }, 120000);
         };
     </script>
 </body>
-
 </html>

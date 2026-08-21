@@ -121,6 +121,7 @@ class UnifiedReminder(Base):
     status = Column(String(20), default='pending')
     frequency = Column(String(20), default='daily')
     repeat_interval = Column(String(20), default='none')
+    sub_reports_status = Column(Text, nullable=True) # JSON format: {"DAY BOOK": "done", "DAILY SALES": "pending"}
     created_at = Column(DateTime, default=func.now())
 
 class ReminderLog(Base):
@@ -152,6 +153,7 @@ class Task(Base):
     completion_details = Column(Text, nullable=True) # E.g., Wednesday meeting points covered
     frequency = Column(String(20), default='once')
     repeat_interval = Column(String(20), default='none')
+    sub_reports_status = Column(Text, nullable=True) # JSON format: {"DAY BOOK": "done", "DAILY SALES": "pending"}
     created_at = Column(DateTime, default=func.now())
 
 class EggGodownInventory(Base):

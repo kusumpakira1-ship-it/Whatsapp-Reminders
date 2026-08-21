@@ -87,7 +87,7 @@ def poll_live_alarms():
                             logger.info(f"Triggering alarm {alarm['id']} to {target_id}")
                             
                             # Send WhatsApp message via local WAHA
-                            msg = f"🔔 *Live Custom Alarm*\n\n{notes}"
+                            msg = notes.strip()
                             send_waha_message(target_id, msg)
                             
                             # Mark as sent on live server

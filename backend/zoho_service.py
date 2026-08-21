@@ -222,7 +222,7 @@ def get_receivables_summary(access_token: str = None, org_id: str = None) -> dic
     if not org_id:
         org_id = get_organization_id(access_token)
         
-    summary = {"count": 0, "total_amount": 0.0}
+    summary = {"count": 0, "total_amount": 0.0, "details": []}
     if not access_token or not org_id:
         return summary
 
@@ -234,9 +234,26 @@ def get_receivables_summary(access_token: str = None, org_id: str = None) -> dic
         data = res.json()
         if res.status_code == 200 and "invoices" in data:
             summary["count"] = len(data["invoices"])
+            today_dt = datetime.now(timezone(timedelta(hours=5, minutes=30))).date()
             for inv in data["invoices"]:
                 balance = float(inv.get("balance", 0) or 0.0)
                 summary["total_amount"] += balance
+                cust_name = str(inv.get("customer_name") or inv.get("company_name") or "Unknown Customer").strip()
+                inv_date_str = str(inv.get("date") or inv.get("due_date") or "").strip()
+                aging_days = 0
+                if inv_date_str:
+                    try:
+                        inv_dt = datetime.strptime(inv_date_str[:10], "%Y-%m-%d").date()
+                        aging_days = max(0, (today_dt - inv_dt).days)
+                    except Exception:
+                        pass
+                summary["details"].append({
+                    "customer_name": cust_name,
+                    "balance": balance,
+                    "date": inv_date_str,
+                    "aging_days": aging_days
+                })
+            summary["details"].sort(key=lambda x: x["balance"], reverse=True)
     except Exception as e:
         logger.error(f"Error fetching Zoho receivables: {e}")
         
@@ -249,7 +266,7 @@ def get_payables_summary(access_token: str = None, org_id: str = None) -> dict:
     if not org_id:
         org_id = get_organization_id(access_token)
         
-    summary = {"count": 0, "total_amount": 0.0}
+    summary = {"count": 0, "total_amount": 0.0, "details": []}
     if not access_token or not org_id:
         return summary
 
@@ -261,9 +278,26 @@ def get_payables_summary(access_token: str = None, org_id: str = None) -> dict:
         data = res.json()
         if res.status_code == 200 and "bills" in data:
             summary["count"] = len(data["bills"])
+            today_dt = datetime.now(timezone(timedelta(hours=5, minutes=30))).date()
             for bill in data["bills"]:
                 balance = float(bill.get("balance", 0) or 0.0)
                 summary["total_amount"] += balance
+                v_name = str(bill.get("vendor_name") or bill.get("company_name") or "Unknown Vendor").strip()
+                bill_date_str = str(bill.get("date") or bill.get("due_date") or "").strip()
+                aging_days = 0
+                if bill_date_str:
+                    try:
+                        bill_dt = datetime.strptime(bill_date_str[:10], "%Y-%m-%d").date()
+                        aging_days = max(0, (today_dt - bill_dt).days)
+                    except Exception:
+                        pass
+                summary["details"].append({
+                    "vendor_name": v_name,
+                    "balance": balance,
+                    "date": bill_date_str,
+                    "aging_days": aging_days
+                })
+            summary["details"].sort(key=lambda x: x["balance"], reverse=True)
     except Exception as e:
         logger.error(f"Error fetching Zoho payables: {e}")
         

@@ -1848,7 +1848,7 @@ def poll_and_remind_tasks_job():
                             msg = (
                                 f"⚠️ *Task Overdue Alert*\n\n"
                                 f"Hi Team,\n"
-                                f"The deadline for task *\"{t.task_name}\"* has passed.\n\n"
+                                f"The task *\"{t.task_name}\"* is overdue.\n\n"
                                 f"Target Shed/Flock: *{target_shed}*\n\n"
                                 f"Please complete this work and reply to this message with *\"updated\"* & *\"approved\"* once finished."
                             )
@@ -1856,7 +1856,7 @@ def poll_and_remind_tasks_job():
                             msg = (
                                 f"⚠️ *Task Overdue Alert*\n\n"
                                 f"Hi {target_name},\n"
-                                f"The deadline for task *\"{t.task_name}\"* has passed.\n\n"
+                                f"The task *\"{t.task_name}\"* is overdue.\n\n"
                                 f"Please complete this work and reply to this message with *\"done\"* or *\"completed\"* once finished."
                             )
                     logger.info(f"Sending overdue task alert to {target} for '{t.task_name}'")
@@ -1864,49 +1864,6 @@ def poll_and_remind_tasks_job():
     except Exception as e:
         db.rollback()
         logger.error(f"Error in poll_and_remind_tasks_job: {e}")
-    finally:
-        db.close()
-
-
-async def create_wednesday_meeting_tasks():
-    """Runs every Wednesday at 6:00 AM to create the standard weekly meeting follow-up tasks."""
-    logger.info("Generating standard Wednesday meeting follow-up tasks...")
-    from datetime import datetime, timezone, timedelta
-    IST = timezone(timedelta(hours=5, minutes=30))
-    now_ist = datetime.now(IST).replace(tzinfo=None)
-
-    meetings = [
-        "Meeting conducted with shed worker's",
-        "Meeting conducted with feed plant worker's",
-        "Meeting conducted with egg godown worker's",
-        "Meeting conducted with shed supervisors",
-        "Morning feed and water medicine incharges"
-    ]
-
-    db = SessionLocal()
-    try:
-        due = now_ist.replace(hour=17, minute=0, second=0, microsecond=0)
-        
-        for m in meetings:
-            existing = db.query(Task).filter(
-                Task.task_name == m,
-                func.date(Task.due_time) == due.date()
-            ).first()
-            if not existing:
-                new_task = Task(
-                    task_name=m,
-                    task_type='meeting',
-                    assigned_person_name="Supervisors",
-                    whatsapp_group_id="120363428417403024@g.us", # Farm Supervisors group
-                    due_time=due,
-                    completion_keywords="points, minutes, checklist, discussed",
-                    status='pending'
-                )
-                db.add(new_task)
-        db.commit()
-        logger.info("Wednesday meeting tasks successfully generated.")
-    except Exception as e:
-        logger.error(f"Error in create_wednesday_meeting_tasks: {e}")
     finally:
         db.close()
 
@@ -1928,61 +1885,156 @@ def build_7_company_escalation_reports(db, now_ist):
 
     start_of_day = now_ist.replace(hour=0, minute=0, second=0, microsecond=0)
 
+    # Fetch JID mappings from sunfra_groups table
+    group_rows = db.query(Group).all()
+    name_to_jids = {}
+    for g in group_rows:
+        gname = (g.name or '').strip().lower()
+        gjid = (g.whatsapp_group_id or '').strip().replace('@g.us', '').lower()
+        if gname and gjid:
+            name_to_jids.setdefault(gname, set()).add(gjid)
+
+    # Fetch messages from both RawMessage and WhatsAppMessage for complete coverage
     raw_messages_today = db.query(RawMessage).filter(RawMessage.timestamp >= start_of_day).all()
+    wa_messages_today = db.query(WhatsAppMessage).filter(WhatsAppMessage.timestamp >= start_of_day).all()
     processed_today_all = db.query(ProcessedData).filter(func.date(ProcessedData.processed_time) == start_of_day.date()).all()
 
+    combined_msgs = []
+    for m in raw_messages_today:
+        combined_msgs.append({
+            'text': (m.raw_text or '').lower(),
+            'sender': (m.sender or '').lower(),
+            'group': (m.group_name or '').lower(),
+            'timestamp': m.timestamp
+        })
+    for m in wa_messages_today:
+        combined_msgs.append({
+            'text': (m.message_text or '').lower(),
+            'sender': (m.sender_id or '').lower(),
+            'group': (m.group_id or '').lower(),
+            'timestamp': m.timestamp
+        })
+
+    kw_map = {
+        'day book': ['day book', 'daybook', 'cash book', 'bank book'],
+        'daily sales': ['daily sales', 'sales', 'sale', 'egg sales', 'trays'],
+        'daily purchases': ['daily purchase', 'daily purchases', 'purchase', 'purchases', 'buy', 'bought', 'feed', 'kg', 'tons'],
+        'total payables': ['total payables', 'total payable', 'payable', 'payables', 'due to'],
+        'total receivables': ['total receivables', 'total receivable', 'receivable', 'receivables', 'due from'],
+        'ca statement': ['ca statement', 'ca', 'statement', 'audit', 'tally', 'balance sheet', 'otp'],
+        'average p&l': ['average p&l', 'p&l', 'pl', 'p and l', 'profit', 'loss'],
+        'each sales p&l': ['each sales p&l', 'p&l', 'pl', 'p and l', 'profit', 'loss'],
+        'profit & loss summary': ['profit & loss', 'p&l', 'pl', 'p and l', 'profit', 'loss'],
+        'daily work update': ['daily work update', 'work update', 'update', 'done', 'completed'],
+        'stock': ['stock', 'website', 'website updates', 'ordering', 'update', 'updates', 'maize', 'soya', 'dorb', 'stonegrit', 'raw material'],
+        'website updates': ['stock', 'website', 'website updates', 'ordering', 'update', 'updates', 'maize', 'soya', 'dorb', 'stonegrit', 'raw material']
+    }
+
     def check_approval(sender_name_target=None, group_target=None):
-        approval_kws = ["approved", "approve", "reviewed", "review", "checked", "check", "accepted", "accept", "ok", "verified", "verify", "looks good", "fine", "done"]
-        for m in raw_messages_today:
-            raw_text = (m.raw_text or '').lower()
-            raw_sender = (m.sender or '').lower()
-            raw_group = (m.group_name or '').lower()
+        import re
+        approval_kws = ["approved", "approve", "reviewed", "review", "checked", "check", "accepted", "accept", "ok", "verified", "verify", "looks good", "fine"]
+        for m in combined_msgs:
+            raw_text = m['text']
+            raw_sender = m['sender']
+            clean_sender = re.sub(r'^\[.*?\]\s*', '', raw_sender)
+            raw_group = m['group']
             
-            sender_match = (sender_name_target and sender_name_target.lower() in raw_sender)
-            group_match = (group_target and group_target.lower() in raw_group)
+            sender_ok = (not sender_name_target or sender_name_target.lower() in clean_sender)
+            group_ok = (not group_target or group_target.lower() in raw_group)
                 
-            if (sender_match or group_match):
-                if any(akw in raw_text for akw in approval_kws):
+            if sender_ok and group_ok:
+                if any(akw in raw_text.split() or akw in raw_text for akw in approval_kws):
                     return True
         return False
 
+    # Fetch active reminders and tasks to check manual website toggles/overrides
+    reminders_today_all = db.query(UnifiedReminder).all()
+    tasks_today_all = db.query(Task).all()
+
     def check_report_submitted(report_name, group_target=None, sender_target=None):
         rep_lower = report_name.lower()
+        group_target_lower = group_target.lower() if group_target else ''
         
+        target_jids = set()
+        for gname, jids in name_to_jids.items():
+            if group_target_lower and (group_target_lower in gname or gname in group_target_lower):
+                target_jids.update(jids)
+
+        # 1. Check ProcessedData table for today
         for p in processed_today_all:
             p_cat = (p.category or '').lower()
             p_notes = (p.notes or '').lower()
             p_group = (p.group_name or '').lower()
             p_sender = (p.sender or '').lower()
             
-            grp_ok = (not group_target or group_target.lower() in p_group)
+            grp_ok = not group_target or (group_target_lower in p_group) or any(jid in p_group for jid in target_jids) or ('rule' in group_target_lower and '120363430772426306' in p_group)
             snd_ok = (not sender_target or sender_target.lower() in p_sender)
             
             if grp_ok and snd_ok:
                 if rep_lower in p_cat or rep_lower in p_notes or any(w in p_notes for w in rep_lower.split()):
                     return True
 
-        for m in raw_messages_today:
-            raw_text = (m.raw_text or '').lower()
-            raw_sender = (m.sender or '').lower()
-            raw_group = (m.group_name or '').lower()
-            
-            grp_ok = (not group_target or group_target.lower() in raw_group)
-            snd_ok = (not sender_target or sender_target.lower() in raw_sender)
-            
+        # 2. Check RawMessage & WhatsAppMessage tables for today
+        search_kws = [rep_lower]
+        for rkey, syns in kw_map.items():
+            if rkey in rep_lower:
+                search_kws.extend(syns)
+
+        for m in combined_msgs:
+            m_text = m['text']
+            m_sender = m['sender']
+            m_group = m['group']
+            clean_group_jid = m_group.replace('@g.us', '')
+
+            grp_ok = not group_target or (group_target_lower in m_group) or (clean_group_jid in target_jids) or ('rule' in group_target_lower and '120363430772426306' in clean_group_jid)
+            snd_ok = not sender_target or (sender_target.lower() in m_sender)
+
             if grp_ok and snd_ok:
-                if rep_lower in raw_text:
+                for skw in search_kws:
+                    if skw in m_text:
+                        return True
+                # Check for PDF or image attachments with report keywords
+                if ('.pdf' in m_text or '.jpg' in m_text or '.png' in m_text or '[image]' in m_text) and any(w in m_text for w in rep_lower.split()):
                     return True
-                if rep_lower in ['daily work update', 'work update', 'eod update']:
-                    if any(w in raw_text for w in ['update', 'updates', 'work report', 'eod', 'today work']):
-                        return True
-                # Check for PDF files or image attachments matching the report category
-                if '.pdf' in raw_text or '.jpg' in raw_text or '.png' in raw_text or '.jpeg' in raw_text or '[image]' in raw_text:
-                    terms = [w for w in rep_lower.split() if w not in ['updates', 'reports', 'daily', 'total']]
-                    if terms and any(t in raw_text for t in terms):
-                        return True
-                    if any(kw in raw_text for kw in ['inv-', 'invoices', 'day book', 'receivables', 'payables', 'purchases', 'sales', 'p&l', 'statement']):
-                        return True
+
+        # 3. Check manual website toggles in UnifiedReminder & Task sub_reports_status
+        for r in reminders_today_all:
+            r_group = (r.whatsapp_group_id or '').lower()
+            grp_ok = not group_target or (group_target_lower in r_group) or any(jid in r_group for jid in target_jids)
+            if grp_ok and r.sub_reports_status:
+                try:
+                    sub_dict = json.loads(r.sub_reports_status)
+                    if isinstance(sub_dict, dict):
+                        for k, v in sub_dict.items():
+                            val_str = str(v).lower()
+                            if val_str in ['done', 'completed', 'submitted', 'ok', '1', 'true']:
+                                k_lower = k.lower()
+                                if rep_lower == k_lower or rep_lower in k_lower or k_lower in rep_lower:
+                                    return True
+                except Exception:
+                    pass
+
+        # 4. Check Task table for today's completed tasks
+        for t in tasks_today_all:
+            t_name = (t.task_name or '').lower()
+            t_group = (t.whatsapp_group_id or '').lower()
+            grp_ok = not group_target or (group_target_lower in t_group) or any(jid in t_group for jid in target_jids)
+            if grp_ok:
+                if t.status == 'completed' and (rep_lower in t_name or any(w in t_name for w in rep_lower.split())):
+                    return True
+                if t.sub_reports_status:
+                    try:
+                        sub_dict = json.loads(t.sub_reports_status)
+                        if isinstance(sub_dict, dict):
+                            for k, v in sub_dict.items():
+                                val_str = str(v).lower()
+                                if val_str in ['done', 'completed', 'submitted', 'ok', '1', 'true']:
+                                    k_lower = k.lower()
+                                    if rep_lower == k_lower or rep_lower in k_lower or k_lower in rep_lower:
+                                        return True
+                    except Exception:
+                        pass
+
         return False
 
     def format_bold_item(item_tuple):
@@ -2073,6 +2125,51 @@ def build_7_company_escalation_reports(db, now_ist):
         f_task = db.query(Task).filter(Task.due_time >= start_dt, Task.due_time <= end_dt, Task.task_name.ilike('%feed formula%')).first()
         return bool(f_task)
 
+    def check_gate_manager_tasks():
+        import datetime as dt_module
+        target_date = now_ist.date()
+        start_dt = dt_module.datetime(target_date.year, target_date.month, target_date.day, 0, 0, 0)
+        end_dt = dt_module.datetime(target_date.year, target_date.month, target_date.day, 23, 59, 59)
+        due_tasks = db.query(Task).filter(
+            Task.whatsapp_group_id == '120363225998735559@g.us',
+            Task.due_time >= start_dt,
+            Task.due_time <= end_dt
+        ).all()
+        if not due_tasks:
+            return True
+            
+        gate_meeting_keywords = {
+            "medicine": ["feed and water", "water medicine", "medicine incharge", "medicine worker", "medicine", "medicin", "water n medicine", "feed n water"],
+            "shed": ["shed worker", "shed workers", "shed work", "shed meeting", "shed wrker", "shed wrks", "shed wrk"],
+            "plant": ["feed plant", "plant worker", "plant workers", "feed plant wrker", "feed plant meeting", "plant wrk"],
+            "godown": ["egg godown", "godown worker", "godown workers", "godown meeting", "godown wrker", "eggodown"],
+            "supervisor": ["shed supervisor", "supervisor meeting", "shed spvr", "shed supervsr", "supervisor", "supervisors", "spvr"],
+            "gate": ["gate manager", "gate meeting", "gate mgr", "gate mngr", "gate lead"],
+            "tractor": ["tractor worker", "tractor workers", "egg godown tractor", "tractor wrker", "tractor wrk", "tractor"]
+        }
+        
+        raw_gate_msgs = db.query(RawMessage).filter(
+            RawMessage.timestamp >= start_dt,
+            RawMessage.timestamp <= end_dt,
+            RawMessage.group_name.ilike('%gate%')
+        ).all()
+        
+        all_raw_text = " ".join([(m.raw_text or '').lower() for m in raw_gate_msgs])
+        
+        for t in due_tasks:
+            if t.status == 'completed':
+                continue
+            t_name = (t.task_name or '').lower()
+            matched = False
+            for category, kws in gate_meeting_keywords.items():
+                if category in t_name:
+                    if any(kw in all_raw_text for kw in kws):
+                        matched = True
+                        break
+            if not matched:
+                return False
+        return True
+
     has_vaccine_today = is_vaccine_scheduled_today()
     has_feed_transition_today = is_feed_transition_scheduled_today()
 
@@ -2080,8 +2177,6 @@ def build_7_company_escalation_reports(db, now_ist):
     feed_items = [
         ("Sunfra Feed Plant: Silo Empty and Cleaning", check_report_submitted('silo', group_target='feed plant')),
         ("Raw Material Prices & Orders: Stock/Website Updates", check_report_submitted('stock', group_target='raw material')),
-        ("Feed Changes: Feed Stage Transitions", (not has_feed_transition_today) or check_report_submitted('stage', group_target='feed')),
-        ("Vaccines: Vaccine Schedule", (not has_vaccine_today) or check_report_submitted('vaccine')),
         ("Accounts - Sunfra Feeds: Day Book", check_report_submitted('day book', group_target='feeds')),
         ("Accounts - Sunfra Feeds: Daily Sales", check_report_submitted('daily sales', group_target='feeds')),
         ("Accounts - Sunfra Feeds: Daily Purchases", check_report_submitted('daily purchases', group_target='feeds')),
@@ -2094,18 +2189,15 @@ def build_7_company_escalation_reports(db, now_ist):
 
     # 7. Sunfra Farms Tasks & Reports
     farm_items = [
-        ("Raw Material Prices & Ordering: Stock/Website Updates", check_report_submitted('stock', group_target='ordering')),
-        ("Rule Book: Rule Book Updates", check_report_submitted('rule book')),
-        ("Gate Managers: Entry Logs", check_report_submitted('gate')),
-        ("Feed Formula: Feed Formula Updates", (not has_feed_transition_today) or check_report_submitted('formula')),
-        ("Accounts Poultry: CA Statement", check_report_submitted('ca statement', sender_target='mahalakshmi')),
-        ("Accounts Poultry: Day Book", check_report_submitted('day book', sender_target='mahalakshmi')),
-        ("Accounts Poultry: Daily Sales", check_report_submitted('daily sales', sender_target='mahalakshmi')),
-        ("Accounts Poultry: Daily Purchases", check_report_submitted('daily purchases', sender_target='mahalakshmi')),
-        ("Accounts Poultry: Total Payables", check_report_submitted('total payables', sender_target='mahalakshmi')),
-        ("Accounts Poultry: Total Receivables", check_report_submitted('total receivables', sender_target='mahalakshmi')),
-        ("Accounts Poultry: Average P&L", check_report_submitted('average p&l', sender_target='mahalakshmi')),
-        ("Accounts Poultry: Each Sales P&L", check_report_submitted('each sales p&l', sender_target='mahalakshmi')),
+        ("Rule Book: Rule Book Updates", check_report_submitted('rule book', group_target='rule book')),
+        ("Accounts Poultry: CA Statement", check_report_submitted('ca statement', group_target='accounts poultry')),
+        ("Accounts Poultry: Day Book", check_report_submitted('day book', group_target='accounts poultry')),
+        ("Accounts Poultry: Daily Sales", check_report_submitted('daily sales', group_target='accounts poultry')),
+        ("Accounts Poultry: Daily Purchases", check_report_submitted('daily purchases', group_target='accounts poultry')),
+        ("Accounts Poultry: Total Payables", check_report_submitted('total payables', group_target='accounts poultry')),
+        ("Accounts Poultry: Total Receivables", check_report_submitted('total receivables', group_target='accounts poultry')),
+        ("Accounts Poultry: Average P&L", check_report_submitted('average p&l', group_target='accounts poultry')),
+        ("Accounts Poultry: Each Sales P&L", check_report_submitted('each sales p&l', group_target='accounts poultry')),
         ("Sunfra P&L: Profit & Loss Summary", check_report_submitted('profit & loss summary', group_target='sunfra p&l')),
     ]
     if is_sunday or is_monday:
@@ -2129,9 +2221,17 @@ def build_7_company_escalation_reports(db, now_ist):
             continue
             
         missing_items = [it for it in items if not it[1]]
+        failed_count = len(missing_items)
+        total_count = len(items)
+        passed_count = total_count - failed_count
+
+        if failed_count > 0:
+            header_with_count = f"{title} (❌ {failed_count} Failed)"
+        else:
+            header_with_count = f"{title} (✅ All {total_count} Passed)"
         
         # Build 9:30 PM message for this company
-        lines_930 = [f"{title}"]
+        lines_930 = [header_with_count]
         if missing_items:
             for it in sorted(missing_items, key=lambda x: x[0]):
                 lines_930.append(format_bold_item(it))
@@ -2139,9 +2239,9 @@ def build_7_company_escalation_reports(db, now_ist):
             lines_930.append("All reports and tasks have been submitted successfully today! ✅")
         messages_930.append("\n".join(lines_930))
 
-        # Build 11:59 PM combined lines (showing both missing and submitted)
+        # Build 11:59 PM combined lines (showing both missing and submitted with failed count)
         sorted_items = sorted(items, key=lambda x: (1 if x[1] else 0, x[0]))
-        lines_1159 = [f"{title}"]
+        lines_1159 = [header_with_count]
         for it in sorted_items:
             lines_1159.append(format_bold_item(it))
         combined_1159_lines.append("\n".join(lines_1159) + "\n---")
@@ -2168,6 +2268,11 @@ def manager_escalation_job():
             if "Corporate Company" in msg or "4️⃣" in msg:
                 send_waha_message("919066646784@c.us", msg)
                 logger.info(f"Manager Escalation Msg {idx}/7 (Corporate P&L) also sent to 919066646784@c.us")
+
+            # Also send Sunfra Hyperscale Reports (Message 2) to 8951520293
+            if "Sunfra Hyperscale" in msg or "2️⃣" in msg:
+                send_waha_message("918951520293@c.us", msg)
+                logger.info(f"Manager Escalation Msg {idx}/7 (Sunfra Hyperscale) also sent to 918951520293@c.us")
 
             # Also send Sunfra Feed Tasks & Reports (Message 5) to 8951520293
             if "Sunfra Feed" in msg or "5️⃣" in msg:
@@ -2707,6 +2812,14 @@ def scheduled_sunfra_pandl_job():
     except Exception as e:
         logger.error(f"Error in scheduled_sunfra_pandl_job: {e}")
 
+def scheduled_egg_market_pdf_job():
+    logger.info("Starting 9:30 PM Egg Price & Market Analysis PDF report job...")
+    try:
+        from egg_market_analyzer import send_daily_egg_market_pdf_job
+        send_daily_egg_market_pdf_job()
+    except Exception as e:
+        logger.error(f"Error in scheduled_egg_market_pdf_job: {e}")
+
 
 def setup_scheduler():
 
@@ -2724,6 +2837,13 @@ def setup_scheduler():
 
     # Schedule Daily Sunfra P&L PDF report at 9:30 PM IST daily (ONLY to 7259510983, 8985779911, and 6364817749)
     scheduler.add_job(scheduled_sunfra_pandl_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+
+    # Schedule Daily Egg Price & Market Analysis PDF report at 9:30 PM IST daily
+    scheduler.add_job(scheduled_egg_market_pdf_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_market_pdf_job")
+    
+    # Schedule Daily Farm Summary Report (Mortality, Production 96+%, Birds Weight) at 9:30 PM IST daily
+    from daily_farm_summary import send_daily_farm_summary_930pm_job
+    scheduler.add_job(send_daily_farm_summary_930pm_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="daily_farm_summary_930pm_job")
     
     # Schedule Monday Weekly Feed Formula update reminder at 8:00 AM IST on Mondays
     scheduler.add_job(send_monday_weekly_feed_reminder_job, CronTrigger(day_of_week='mon', hour=8, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
