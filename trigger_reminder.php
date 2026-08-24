@@ -2,6 +2,11 @@
 /**
  * Standalone API Endpoint & Browser Link: Trigger Custom WhatsApp Reminder
  * URL: https://sunfragroup.com/kusum/Whatsapp_Rem/trigger_reminder.php
+ * 
+ * Works as:
+ * 1. Web Page Form (when opened in browser without query params)
+ * 2. GET URL Query Link (e.g. ?phone=7259510983&name=Kusum&message=Hello)
+ * 3. JSON API Endpoint (JSON POST / Form POST)
  */
 
 header('Access-Control-Allow-Origin: *');
@@ -26,7 +31,9 @@ $trigger_time_input = trim($input_json['trigger_time'] ?? $input_json['time'] ??
 $frequency = strtolower(trim($input_json['frequency'] ?? $input_json['freq'] ?? $_REQUEST['frequency'] ?? $_REQUEST['freq'] ?? 'once'));
 $repeat_interval = strtolower(trim($input_json['repeat_interval'] ?? $input_json['interval'] ?? $_REQUEST['repeat_interval'] ?? $_REQUEST['interval'] ?? 'none'));
 
-// If no phone/message and GET, display Web Form UI
+$wants_json = (!empty($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false) || !empty($input_json) || isset($_REQUEST['json']);
+
+// If no phone or message provided and opened in browser (GET), show clean form
 if (empty($raw_phone) && empty($message_text) && $_SERVER['REQUEST_METHOD'] === 'GET') {
     header('Content-Type: text/html; charset=utf-8');
     ?>
@@ -53,7 +60,7 @@ if (empty($raw_phone) && empty($message_text) && $_SERVER['REQUEST_METHOD'] === 
     <body>
         <div class="card">
             <h2>🚀 Send WhatsApp Reminder</h2>
-            <form action="trigger_reminder.php" method="POST">
+            <form action="trigger_reminder.php" method="GET">
                 <label for="phone">Phone Number or WhatsApp Group JID</label>
                 <input type="text" id="phone" name="phone" placeholder="e.g. 7259510983" value="7259510983" required>
 
@@ -74,7 +81,7 @@ if (empty($raw_phone) && empty($message_text) && $_SERVER['REQUEST_METHOD'] === 
 
                 <button type="submit">📲 Send WhatsApp Reminder Now</button>
             </form>
-            <div class="note">Supports direct browser submit, URL GET query, and JSON API POST</div>
+            <div class="note">Supports URL query link & API POST</div>
         </div>
     </body>
     </html>
@@ -82,14 +89,16 @@ if (empty($raw_phone) && empty($message_text) && $_SERVER['REQUEST_METHOD'] === 
     exit;
 }
 
-// Process Request (API or Form Submit)
+// Validation
 if (empty($raw_phone) || empty($message_text)) {
-    header('Content-Type: application/json; charset=utf-8');
-    http_response_code(400);
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Missing required fields: phone and message are required.'
-    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    if ($wants_json) {
+        header('Content-Type: application/json; charset=utf-8');
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'Missing required fields: phone and message are required.'], JSON_PRETTY_PRINT);
+    } else {
+        header('Content-Type: text/html; charset=utf-8');
+        echo "<h2>⚠️ Missing required parameters: phone and message</h2><p>Usage: <code>trigger_reminder.php?phone=7259510983&name=Kusum&message=Hello</code></p>";
+    }
     exit;
 }
 
@@ -193,29 +202,39 @@ if (abs($now_ts - $trigger_ts) <= 120) {
     }
 }
 
-// Return Output (JSON for API, HTML for Browser Form Submit)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['phone'])) {
+// HTML Response for Browser Requests
+if (!$wants_json) {
     header('Content-Type: text/html; charset=utf-8');
     ?>
     <!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Reminder Sent Successfully</title>
+        <title>WhatsApp Reminder Triggered</title>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
         <style>
-            body { background: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-            .card { background: #1e293b; border: 1px solid #10b981; border-radius: 16px; padding: 32px; text-align: center; max-width: 440px; }
-            h2 { color: #10b981; margin-top: 0; }
-            p { color: #94a3b8; font-size: 14px; line-height: 1.5; }
-            a { display: inline-block; margin-top: 16px; background: #0284c7; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; }
+            body { background: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+            .card { background: #1e293b; border: 1px solid #10b981; border-radius: 16px; padding: 32px; text-align: center; max-width: 480px; width: 100%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
+            h2 { color: #10b981; margin-top: 0; font-size: 22px; }
+            .badge { display: inline-block; background: #064e3b; color: #34d399; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 16px; }
+            .box { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 16px; text-align: left; font-size: 14px; margin: 16px 0; color: #cbd5e1; }
+            .box strong { color: #38bdf8; }
+            a { display: inline-block; background: #0284c7; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 12px; }
+            a:hover { background: #0369a1; }
         </style>
     </head>
     <body>
         <div class="card">
-            <h2>✅ Reminder Created Successfully!</h2>
-            <p>Target: <strong><?php echo htmlspecialchars($target_jid); ?></strong></p>
-            <p>Message: "<?php echo htmlspecialchars($final_message); ?>"</p>
+            <h2>🚀 WhatsApp Reminder Triggered!</h2>
+            <div class="badge"><?php echo $waha_sent ? 'SENT IMMEDIATELY ✅' : 'QUEUED IN SCHEDULE 🕒'; ?></div>
+            
+            <div class="box">
+                <p><strong>Target:</strong> <?php echo htmlspecialchars($target_jid); ?></p>
+                <p><strong>Name:</strong> <?php echo htmlspecialchars($person_name ? $person_name : 'N/A'); ?></p>
+                <p><strong>Trigger Time:</strong> <?php echo htmlspecialchars($trigger_time); ?></p>
+                <p><strong>Message:</strong><br><?php echo nl2br(htmlspecialchars($final_message)); ?></p>
+            </div>
+
             <a href="trigger_reminder.php">⬅ Send Another Reminder</a>
         </div>
     </body>
@@ -224,6 +243,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['phone'])) {
     exit;
 }
 
+// JSON Response for API Requests
 header('Content-Type: application/json; charset=utf-8');
 http_response_code(200);
 echo json_encode([
