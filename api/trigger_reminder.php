@@ -1,19 +1,13 @@
 <?php
 /**
- * Standalone API Endpoint: Trigger Custom WhatsApp Reminder
+ * Standalone API Endpoint & Browser Link: Trigger Custom WhatsApp Reminder
  * URL: https://sunfragroup.com/kusum/Whatsapp_Rem/api/trigger_reminder.php
  * 
- * Supports JSON POST, Form POST, and GET requests.
- * Fields:
- *  - phone / recipient / whatsapp_group_id
- *  - name / person_name
- *  - message / text / task_notes
- *  - trigger_time / time / due_time (Optional, defaults to NOW)
- *  - frequency / freq (Optional, defaults to 'once')
- *  - repeat_interval / interval (Optional, defaults to 'none')
+ * Works both as:
+ * 1. Web Page Form (when opened in browser)
+ * 2. API Endpoint (JSON POST, Form POST, or URL GET query parameters)
  */
 
-header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
@@ -23,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// 1. Read input payload (JSON or $_REQUEST)
+// Read input payload (JSON or $_REQUEST)
 $input_json = json_decode(file_get_contents('php://input'), true);
 if (!is_array($input_json)) {
     $input_json = [];
@@ -36,23 +30,76 @@ $trigger_time_input = trim($input_json['trigger_time'] ?? $input_json['time'] ??
 $frequency = strtolower(trim($input_json['frequency'] ?? $input_json['freq'] ?? $_REQUEST['frequency'] ?? $_REQUEST['freq'] ?? 'once'));
 $repeat_interval = strtolower(trim($input_json['repeat_interval'] ?? $input_json['interval'] ?? $_REQUEST['repeat_interval'] ?? $_REQUEST['interval'] ?? 'none'));
 
+$is_api_request = (!empty($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false) || !empty($input_json) || ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['api_mode']));
+
+// If no phone or message provided and opened in browser (GET), show clean form
+if (empty($raw_phone) && empty($message_text) && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    header('Content-Type: text/html; charset=utf-8');
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Trigger Custom WhatsApp Reminder</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+            * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+            body { background: #0f172a; color: #f8fafc; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+            .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 32px; width: 100%; max-width: 480px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
+            h2 { margin-top: 0; color: #38bdf8; font-size: 22px; display: flex; align-items: center; gap: 10px; }
+            label { display: block; margin-top: 16px; font-weight: 500; font-size: 14px; color: #94a3b8; margin-bottom: 6px; }
+            input, textarea, select { width: 100%; background: #0f172a; border: 1px solid #475569; border-radius: 8px; padding: 12px; color: #f8fafc; font-size: 14px; outline: none; transition: 0.2s; }
+            input:focus, textarea:focus, select:focus { border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
+            button { margin-top: 24px; width: 100%; background: #0284c7; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 600; font-size: 16px; cursor: pointer; transition: 0.2s; }
+            button:hover { background: #0369a1; }
+            .note { margin-top: 16px; font-size: 12px; color: #64748b; text-align: center; }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <h2>🚀 Send WhatsApp Reminder</h2>
+            <form action="trigger_reminder.php" method="POST">
+                <label for="phone">Phone Number or WhatsApp Group JID</label>
+                <input type="text" id="phone" name="phone" placeholder="e.g. 7259510983" value="7259510983" required>
+
+                <label for="name">Recipient / Topic Name (Optional)</label>
+                <input type="text" id="name" name="name" placeholder="e.g. Kusum">
+
+                <label for="message">WhatsApp Message Text</label>
+                <textarea id="message" name="message" rows="4" placeholder="Type your custom WhatsApp message here..." required></textarea>
+
+                <label for="frequency">Frequency</label>
+                <select id="frequency" name="frequency">
+                    <option value="once">One-Time (Once)</option>
+                    <option value="daily">Daily (Everyday)</option>
+                    <option value="mon-sat">Monday to Saturday (Skip Sunday)</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                </select>
+
+                <button type="submit">📲 Send WhatsApp Reminder Now</button>
+            </form>
+            <div class="note">Supports direct browser submit & JSON API POST</div>
+        </div>
+    </body>
+    </html>
+    <?php
+    exit;
+}
+
+// Process Request (API or Form Submit)
 if (empty($raw_phone) || empty($message_text)) {
+    header('Content-Type: application/json; charset=utf-8');
     http_response_code(400);
     echo json_encode([
         'status' => 'error',
-        'message' => 'Missing required fields: phone (or recipient) and message (or text) are required.',
-        'example_payload' => [
-            'phone' => '7259510983',
-            'name' => 'Kusum',
-            'message' => 'Your custom text message here',
-            'trigger_time' => date('Y-m-d H:i:s'),
-            'frequency' => 'once'
-        ]
+        'message' => 'Missing required fields: phone and message are required.'
     ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-// 2. Format Target Phone / Group JID
+// Format Target Phone / Group JID
 $clean_target = preg_replace('/[^\d@a-zA-Z\.\-_]/', '', $raw_phone);
 if (strpos($clean_target, '@g.us') !== false) {
     $target_jid = $clean_target;
@@ -66,26 +113,20 @@ if (strpos($clean_target, '@g.us') !== false) {
     $target_type = 'employee';
 }
 
-// 3. Format Trigger Time (Default: NOW in IST +05:30)
 date_default_timezone_set('Asia/Kolkata');
 if (!empty($trigger_time_input)) {
     $ts = strtotime($trigger_time_input);
-    if ($ts !== false) {
-        $trigger_time = date('Y-m-d H:i:s', $ts);
-    } else {
-        $trigger_time = date('Y-m-d H:i:s');
-    }
+    $trigger_time = ($ts !== false) ? date('Y-m-d H:i:s', $ts) : date('Y-m-d H:i:s');
 } else {
     $trigger_time = date('Y-m-d H:i:s');
 }
 
-// Combine Person Name into Message if provided
 $final_message = $message_text;
 if (!empty($person_name) && strpos(strtolower($message_text), strtolower($person_name)) === false) {
     $final_message = "🔔 *Reminder for {$person_name}*\n\n" . $message_text;
 }
 
-// 4. Database Connection & Record Creation
+// Database Insertion
 $host = '145.223.17.70';
 $db   = 'u632391467_kusumpakira';
 $user = 'u632391467_kusumpakira';
@@ -112,7 +153,6 @@ try {
     ]);
     $alarm_id = $pdo->lastInsertId();
 
-    // Also save in sunfra_unified_reminders for unified tracking
     try {
         $stmt_unif = $pdo->prepare("INSERT INTO sunfra_unified_reminders (person_name, whatsapp_group_id, report_types, trigger_time, frequency, status, created_at) VALUES (:person_name, :whatsapp_group_id, :report_types, :trigger_time, :frequency, 'pending', NOW())");
         $stmt_unif->execute([
@@ -124,11 +164,9 @@ try {
         ]);
     } catch (\Exception $e_unif) {}
 
-} catch (\Exception $e) {
-    // If MySQL connection fails, continue to dispatch WAHA message if trigger_time is now
-}
+} catch (\Exception $e) {}
 
-// 5. Send Immediate WAHA Message if Trigger Time is Now (or within 2 minutes)
+// Immediate WAHA Dispatch
 $waha_sent = false;
 $now_ts = time();
 $trigger_ts = strtotime($trigger_time);
@@ -152,7 +190,6 @@ if (abs($now_ts - $trigger_ts) <= 120) {
 
     if ($http_code == 200 || $http_code == 201) {
         $waha_sent = true;
-        // Update alarm status to sent
         if ($alarm_id && isset($pdo)) {
             try {
                 $upd = $pdo->prepare("UPDATE sunfra_custom_alarms SET status = 'sent' WHERE id = :id");
@@ -162,7 +199,38 @@ if (abs($now_ts - $trigger_ts) <= 120) {
     }
 }
 
-// 6. Return JSON Response
+// Return Output (JSON for API, HTML for Browser Form Submit)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['phone'])) {
+    header('Content-Type: text/html; charset=utf-8');
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Reminder Sent Successfully</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+            body { background: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+            .card { background: #1e293b; border: 1px solid #10b981; border-radius: 16px; padding: 32px; text-align: center; max-width: 440px; }
+            h2 { color: #10b981; margin-top: 0; }
+            p { color: #94a3b8; font-size: 14px; line-height: 1.5; }
+            a { display: inline-block; margin-top: 16px; background: #0284c7; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <h2>✅ Reminder Created Successfully!</h2>
+            <p>Target: <strong><?php echo htmlspecialchars($target_jid); ?></strong></p>
+            <p>Message: "<?php echo htmlspecialchars($final_message); ?>"</p>
+            <a href="trigger_reminder.php">⬅ Send Another Reminder</a>
+        </div>
+    </body>
+    </html>
+    <?php
+    exit;
+}
+
+header('Content-Type: application/json; charset=utf-8');
 http_response_code(200);
 echo json_encode([
     'status' => 'success',
