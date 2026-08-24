@@ -99,7 +99,7 @@ if ((!empty($_REQUEST['phone']) || !empty($_GET['phone'])) && (!empty($_REQUEST[
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $payload_waha);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'X-Api-Key: 123']);
             curl_setopt($ch, CURLOPT_TIMEOUT, 10);
             $res_waha = curl_exec($ch);
             $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -288,7 +288,7 @@ if ((isset($_REQUEST['phone']) && (isset($_REQUEST['message']) || isset($_REQUES
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload_waha);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'X-Api-Key: 123']);
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         $res_waha = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -566,7 +566,7 @@ if ((isset($_REQUEST['phone']) && isset($_REQUEST['message'])) || strpos($_SERVE
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload_waha);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'X-Api-Key: 123']);
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         $res_waha = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
