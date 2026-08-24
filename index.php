@@ -1,6 +1,9 @@
 <?php
 // Route Handler for Standalone Trigger Reminder API / GET URL Query Link
-if ((isset($_REQUEST['phone']) && (isset($_REQUEST['message']) || isset($_REQUEST['text']))) || (isset($_GET['phone']) && (isset($_GET['message']) || isset($_GET['text']))) || strpos($_SERVER['REQUEST_URI'], 'trigger_reminder') !== false) {
+$input_json = json_decode(file_get_contents('php://input'), true);
+if (!is_array($input_json)) { $input_json = []; }
+
+if (isset($_GET['phone']) || isset($_POST['phone']) || isset($_REQUEST['phone']) || !empty($input_json['phone']) || strpos($_SERVER['REQUEST_URI'], 'trigger_reminder') !== false || strpos($_SERVER['REQUEST_URI'], 'send_reminder') !== false) {
     header('Access-Control-Allow-Origin: *');
     header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
     header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
@@ -9,9 +12,6 @@ if ((isset($_REQUEST['phone']) && (isset($_REQUEST['message']) || isset($_REQUES
         http_response_code(200);
         exit;
     }
-
-    $input_json = json_decode(file_get_contents('php://input'), true);
-    if (!is_array($input_json)) { $input_json = []; }
 
     $raw_phone = trim($input_json['phone'] ?? $input_json['phone_number'] ?? $input_json['whatsapp_group_id'] ?? $input_json['recipient'] ?? $_REQUEST['phone'] ?? $_REQUEST['phone_number'] ?? $_REQUEST['whatsapp_group_id'] ?? $_REQUEST['recipient'] ?? '');
     $person_name = trim($input_json['name'] ?? $input_json['person_name'] ?? $input_json['title'] ?? $_REQUEST['name'] ?? $_REQUEST['person_name'] ?? $_REQUEST['title'] ?? '');
