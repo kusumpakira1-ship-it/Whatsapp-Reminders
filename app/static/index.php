@@ -1496,9 +1496,7 @@ if ($route && !in_array($route, ['app', 'view', 'dashboard', 'live', 'reminders_
             ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
             exit;
         }
-
-    try {
-        if ($route === 'temp_read_file' && $method === 'GET') {
+        elseif ($route === 'temp_read_file' && $method === 'GET') {
             header("Content-Type: text/plain");
             $f = $_GET['file'];
             $path = __DIR__ . '/' . $f;
@@ -1506,7 +1504,7 @@ if ($route && !in_array($route, ['app', 'view', 'dashboard', 'live', 'reminders_
                 echo file_get_contents($path);
             }
         }
-        if ($route === 'flocks' && $method === 'GET') {
+        elseif ($route === 'flocks' && $method === 'GET') {
             try {
                 $stmt = $pdo->query("SELECT * FROM sunfra_flocks WHERE status = 'active' ORDER BY id ASC");
                 $flocks = $stmt->fetchAll(PDO::FETCH_ASSOC);
