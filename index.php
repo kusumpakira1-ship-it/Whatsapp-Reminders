@@ -1,9 +1,184 @@
 <?php
-// Route Handler for Standalone Trigger Reminder API / GET URL Query Link
-$input_json = json_decode(file_get_contents('php://input'), true);
-if (!is_array($input_json)) { $input_json = []; }
 
-if (isset($_GET['phone']) || isset($_POST['phone']) || isset($_REQUEST['phone']) || !empty($input_json['phone']) || strpos($_SERVER['REQUEST_URI'], 'trigger_reminder') !== false || strpos($_SERVER['REQUEST_URI'], 'send_reminder') !== false) {
+// Handle Standalone API & URL Query Link Reminders
+if ((!empty($_REQUEST['phone']) || !empty($_GET['phone'])) && (!empty($_REQUEST['message']) || !empty($_GET['message']) || !empty($_REQUEST['text']) || !empty($_GET['text']))) {
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(200); exit; }
+
+    $input_json = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($input_json)) { $input_json = []; }
+
+    $raw_phone   = trim($input_json['phone'] ?? $input_json['phone_number'] ?? $input_json['whatsapp_group_id'] ?? $input_json['recipient'] ?? $_REQUEST['phone'] ?? $_REQUEST['phone_number'] ?? $_REQUEST['whatsapp_group_id'] ?? $_REQUEST['recipient'] ?? '');
+    $person_name = trim($input_json['name'] ?? $input_json['person_name'] ?? $input_json['title'] ?? $_REQUEST['name'] ?? $_REQUEST['person_name'] ?? $_REQUEST['title'] ?? '');
+    $message_text= trim($input_json['message'] ?? $input_json['text'] ?? $input_json['task_notes'] ?? $input_json['notes'] ?? $_REQUEST['message'] ?? $_REQUEST['text'] ?? $_REQUEST['task_notes'] ?? $_REQUEST['notes'] ?? '');
+    $trigger_time_input = trim($input_json['trigger_time'] ?? $input_json['time'] ?? $input_json['due_time'] ?? $_REQUEST['trigger_time'] ?? $_REQUEST['time'] ?? $_REQUEST['due_time'] ?? '');
+    $frequency   = strtolower(trim($input_json['frequency'] ?? $input_json['freq'] ?? $_REQUEST['frequency'] ?? $_REQUEST['freq'] ?? 'once'));
+    $repeat_interval = strtolower(trim($input_json['repeat_interval'] ?? $input_json['interval'] ?? $_REQUEST['repeat_interval'] ?? $_REQUEST['interval'] ?? 'none'));
+
+    $wants_json  = (!empty($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false) || !empty($input_json) || isset($_REQUEST['json']);
+
+    if (!empty($raw_phone) && !empty($message_text)) {
+        $clean_target = preg_replace('/[^\d@a-zA-Z\.\-_]/', '', $raw_phone);
+        if (strpos($clean_target, '@g.us') !== false) {
+            $target_jid = $clean_target;
+            $target_type = 'group';
+        } else {
+            $digits = preg_replace('/[^\d]/', '', $clean_target);
+            if (strlen($digits) == 10) { $digits = '91' . $digits; }
+            $target_jid = $digits . '@c.us';
+            $target_type = 'employee';
+        }
+
+        date_default_timezone_set('Asia/Kolkata');
+        if (!empty($trigger_time_input)) {
+            $ts = strtotime($trigger_time_input);
+            $trigger_time = ($ts !== false) ? date('Y-m-d H:i:s', $ts) : date('Y-m-d H:i:s');
+        } else {
+            $trigger_time = date('Y-m-d H:i:s');
+        }
+
+        $final_message = $message_text;
+        if (!empty($person_name) && strpos(strtolower($message_text), strtolower($person_name)) === false) {
+            $final_message = "🔔 *Reminder for {$person_name}*\n\n" . $message_text;
+        }
+
+        $alarm_id = null;
+        $host = '145.223.17.70';
+        $db   = 'u632391467_kusumpakira';
+        $user = 'u632391467_kusumpakira';
+        $pass = 'Kusum@2026Bb!';
+        $charset = 'utf8mb4';
+
+        try {
+            $pdo = new PDO("mysql:host=$host;dbname=$db;charset=$charset", $user, $pass, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_PERSISTENT => true
+            ]);
+
+            $stmt = $pdo->prepare("INSERT INTO sunfra_custom_alarms (target_type, whatsapp_target_id, report_type, frequency, repeat_interval, task_notes, trigger_time, status, created_at) VALUES (:target_type, :whatsapp_target_id, :report_type, :frequency, :repeat_interval, :task_notes, :trigger_time, 'pending', NOW())");
+            $stmt->execute([
+                ':target_type' => $target_type,
+                ':whatsapp_target_id' => $target_jid,
+                ':report_type' => 'Custom API Reminder',
+                ':frequency' => $frequency,
+                ':repeat_interval' => $repeat_interval,
+                ':task_notes' => $final_message,
+                ':trigger_time' => $trigger_time
+            ]);
+            $alarm_id = $pdo->lastInsertId();
+
+            try {
+                $stmt_unif = $pdo->prepare("INSERT INTO sunfra_unified_reminders (person_name, whatsapp_group_id, report_types, trigger_time, frequency, status, created_at) VALUES (:person_name, :whatsapp_group_id, :report_types, :trigger_time, :frequency, 'pending', NOW())");
+                $stmt_unif->execute([
+                    ':person_name' => !empty($person_name) ? $person_name : 'Custom Reminder',
+                    ':whatsapp_group_id' => $target_jid,
+                    ':report_types' => $final_message,
+                    ':trigger_time' => $trigger_time,
+                    ':frequency' => $frequency
+                ]);
+            } catch (\Exception $e_unif) {}
+
+        } catch (\Exception $e) {}
+
+        $waha_sent = false;
+        $now_ts = time();
+        $trigger_ts = strtotime($trigger_time);
+        if (abs($now_ts - $trigger_ts) <= 120) {
+            $waha_url = getenv('WAHA_URL') ? getenv('WAHA_URL') : 'http://localhost:3000';
+            $payload_waha = json_encode([
+                'chatId' => $target_jid,
+                'text' => $final_message,
+                'session' => 'default'
+            ]);
+
+            $ch = curl_init("{$waha_url}/api/sendText");
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload_waha);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+            $res_waha = curl_exec($ch);
+            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($http_code == 200 || $http_code == 201) {
+                $waha_sent = true;
+                if ($alarm_id && isset($pdo)) {
+                    try {
+                        $upd = $pdo->prepare("UPDATE sunfra_custom_alarms SET status = 'sent' WHERE id = :id");
+                        $upd->execute([':id' => $alarm_id]);
+                    } catch (\Exception $ex) {}
+                }
+            }
+        }
+
+        if (!$wants_json) {
+            header('Content-Type: text/html; charset=utf-8');
+            ?>
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <title>WhatsApp Reminder Triggered</title>
+                <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+                <style>
+                    body { background: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+                    .card { background: #1e293b; border: 1px solid #10b981; border-radius: 16px; padding: 32px; text-align: center; max-width: 480px; width: 100%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
+                    h2 { color: #10b981; margin-top: 0; font-size: 22px; }
+                    .badge { display: inline-block; background: #064e3b; color: #34d399; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 16px; }
+                    .box { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 18px; text-align: left; font-size: 14px; margin: 16px 0; color: #cbd5e1; }
+                    .box strong { color: #38bdf8; }
+                    a { display: inline-block; background: #0284c7; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 12px; }
+                    a:hover { background: #0369a1; }
+                </style>
+            </head>
+            <body>
+                <div class="card">
+                    <h2>🚀 WhatsApp Reminder Created!</h2>
+                    <div class="badge"><?php echo $waha_sent ? 'SENT IMMEDIATELY ✅' : 'RECORDED & SCHEDULED 🕒'; ?></div>
+                    
+                    <div class="box">
+                        <p><strong>Recipient:</strong> <?php echo htmlspecialchars($target_jid); ?></p>
+                        <p><strong>Name:</strong> <?php echo htmlspecialchars($person_name ? $person_name : 'N/A'); ?></p>
+                        <p><strong>Trigger Time:</strong> <?php echo htmlspecialchars($trigger_time); ?></p>
+                        <p><strong>Message:</strong><br><?php echo nl2br(htmlspecialchars($final_message)); ?></p>
+                    </div>
+
+                    <a href="javascript:history.back()">⬅ Go Back</a>
+                </div>
+            </body>
+            </html>
+            <?php
+            exit;
+        }
+
+        header('Content-Type: application/json; charset=utf-8');
+        http_response_code(200);
+        echo json_encode([
+            'status' => 'success',
+            'message' => $waha_sent ? 'Reminder triggered and sent to WhatsApp immediately!' : 'Reminder scheduled successfully in database!',
+            'alarm_id' => $alarm_id,
+            'data' => [
+                'phone_input' => $raw_phone,
+                'target_jid' => $target_jid,
+                'person_name' => $person_name,
+                'message_text' => $final_message,
+                'trigger_time' => $trigger_time,
+                'frequency' => $frequency,
+                'repeat_interval' => $repeat_interval,
+                'immediate_whatsapp_sent' => $waha_sent
+            ]
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+}
+
+// Route Handler for Standalone Trigger Reminder API / GET URL Query Link
+if ((isset($_REQUEST['phone']) && (isset($_REQUEST['message']) || isset($_REQUEST['text']))) || (isset($_GET['phone']) && (isset($_GET['message']) || isset($_GET['text']))) || strpos($_SERVER['REQUEST_URI'], 'trigger_reminder') !== false) {
     header('Access-Control-Allow-Origin: *');
     header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
     header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
@@ -12,6 +187,9 @@ if (isset($_GET['phone']) || isset($_POST['phone']) || isset($_REQUEST['phone'])
         http_response_code(200);
         exit;
     }
+
+    $input_json = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($input_json)) { $input_json = []; }
 
     $raw_phone = trim($input_json['phone'] ?? $input_json['phone_number'] ?? $input_json['whatsapp_group_id'] ?? $input_json['recipient'] ?? $_REQUEST['phone'] ?? $_REQUEST['phone_number'] ?? $_REQUEST['whatsapp_group_id'] ?? $_REQUEST['recipient'] ?? '');
     $person_name = trim($input_json['name'] ?? $input_json['person_name'] ?? $input_json['title'] ?? $_REQUEST['name'] ?? $_REQUEST['person_name'] ?? $_REQUEST['title'] ?? '');
@@ -227,6 +405,244 @@ if (!isset($pdo) || !$pdo) {
         ]);
     } catch (PDOException $e) {
         // Fallback initialized
+    }
+}
+
+
+// Route Handler for Standalone Trigger Reminder API / GET URL Query Link
+if ((isset($_REQUEST['phone']) && isset($_REQUEST['message'])) || strpos($_SERVER['REQUEST_URI'], 'trigger_reminder') !== false) {
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        http_response_code(200);
+        exit;
+    }
+
+    $input_json = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($input_json)) { $input_json = []; }
+
+    $raw_phone = trim($input_json['phone'] ?? $input_json['phone_number'] ?? $input_json['whatsapp_group_id'] ?? $input_json['recipient'] ?? $_REQUEST['phone'] ?? $_REQUEST['phone_number'] ?? $_REQUEST['whatsapp_group_id'] ?? $_REQUEST['recipient'] ?? '');
+    $person_name = trim($input_json['name'] ?? $input_json['person_name'] ?? $input_json['title'] ?? $_REQUEST['name'] ?? $_REQUEST['person_name'] ?? $_REQUEST['title'] ?? '');
+    $message_text = trim($input_json['message'] ?? $input_json['text'] ?? $input_json['task_notes'] ?? $input_json['notes'] ?? $_REQUEST['message'] ?? $_REQUEST['text'] ?? $_REQUEST['task_notes'] ?? $_REQUEST['notes'] ?? '');
+    $trigger_time_input = trim($input_json['trigger_time'] ?? $input_json['time'] ?? $input_json['due_time'] ?? $_REQUEST['trigger_time'] ?? $_REQUEST['time'] ?? $_REQUEST['due_time'] ?? '');
+    $frequency = strtolower(trim($input_json['frequency'] ?? $input_json['freq'] ?? $_REQUEST['frequency'] ?? $_REQUEST['freq'] ?? 'once'));
+    $repeat_interval = strtolower(trim($input_json['repeat_interval'] ?? $input_json['interval'] ?? $_REQUEST['repeat_interval'] ?? $_REQUEST['interval'] ?? 'none'));
+
+    $wants_json = (!empty($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false) || !empty($input_json) || isset($_REQUEST['json']);
+
+    if (empty($raw_phone) && empty($message_text) && $_SERVER['REQUEST_METHOD'] === 'GET') {
+        header('Content-Type: text/html; charset=utf-8');
+        ?>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Trigger Custom WhatsApp Reminder</title>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+            <style>
+                * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+                body { background: #0f172a; color: #f8fafc; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+                .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 32px; width: 100%; max-width: 480px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
+                h2 { margin-top: 0; color: #38bdf8; font-size: 22px; display: flex; align-items: center; gap: 10px; }
+                label { display: block; margin-top: 16px; font-weight: 500; font-size: 14px; color: #94a3b8; margin-bottom: 6px; }
+                input, textarea, select { width: 100%; background: #0f172a; border: 1px solid #475569; border-radius: 8px; padding: 12px; color: #f8fafc; font-size: 14px; outline: none; transition: 0.2s; }
+                input:focus, textarea:focus, select:focus { border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
+                button { margin-top: 24px; width: 100%; background: #0284c7; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 600; font-size: 16px; cursor: pointer; transition: 0.2s; }
+                button:hover { background: #0369a1; }
+                .note { margin-top: 16px; font-size: 12px; color: #64748b; text-align: center; }
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                <h2>🚀 Send WhatsApp Reminder</h2>
+                <form action="index.php" method="GET">
+                    <label for="phone">Phone Number or WhatsApp Group JID</label>
+                    <input type="text" id="phone" name="phone" placeholder="e.g. 7259510983" value="7259510983" required>
+
+                    <label for="name">Recipient / Topic Name (Optional)</label>
+                    <input type="text" id="name" name="name" placeholder="e.g. Kusum">
+
+                    <label for="message">WhatsApp Message Text</label>
+                    <textarea id="message" name="message" rows="4" placeholder="Type your custom WhatsApp message here..." required></textarea>
+
+                    <label for="frequency">Frequency</label>
+                    <select id="frequency" name="frequency">
+                        <option value="once">One-Time (Once)</option>
+                        <option value="daily">Daily (Everyday)</option>
+                        <option value="mon-sat">Monday to Saturday (Skip Sunday)</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+
+                    <button type="submit">📲 Send WhatsApp Reminder Now</button>
+                </form>
+                <div class="note">Supports URL query link & API POST</div>
+            </div>
+        </body>
+        </html>
+        <?php
+        exit;
+    }
+
+    if (empty($raw_phone) || empty($message_text)) {
+        if ($wants_json) {
+            header('Content-Type: application/json; charset=utf-8');
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Missing required fields: phone and message are required.'], JSON_PRETTY_PRINT);
+        } else {
+            header('Content-Type: text/html; charset=utf-8');
+            echo "<h2>⚠️ Missing required parameters: phone and message</h2><p>Usage: <code>index.php?phone=7259510983&name=Kusum&message=Hello</code></p>";
+        }
+        exit;
+    }
+
+    $clean_target = preg_replace('/[^\d@a-zA-Z\.\-_]/', '', $raw_phone);
+    if (strpos($clean_target, '@g.us') !== false) {
+        $target_jid = $clean_target;
+        $target_type = 'group';
+    } else {
+        $digits = preg_replace('/[^\d]/', '', $clean_target);
+        if (strlen($digits) == 10) { $digits = '91' . $digits; }
+        $target_jid = $digits . '@c.us';
+        $target_type = 'employee';
+    }
+
+    date_default_timezone_set('Asia/Kolkata');
+    if (!empty($trigger_time_input)) {
+        $ts = strtotime($trigger_time_input);
+        $trigger_time = ($ts !== false) ? date('Y-m-d H:i:s', $ts) : date('Y-m-d H:i:s');
+    } else {
+        $trigger_time = date('Y-m-d H:i:s');
+    }
+
+    $final_message = $message_text;
+    if (!empty($person_name) && strpos(strtolower($message_text), strtolower($person_name)) === false) {
+        $final_message = "🔔 *Reminder for {$person_name}*\n\n" . $message_text;
+    }
+
+    $alarm_id = null;
+    if (isset($pdo) && $pdo) {
+        try {
+            $stmt = $pdo->prepare("INSERT INTO sunfra_custom_alarms (target_type, whatsapp_target_id, report_type, frequency, repeat_interval, task_notes, trigger_time, status, created_at) VALUES (:target_type, :whatsapp_target_id, :report_type, :frequency, :repeat_interval, :task_notes, :trigger_time, 'pending', NOW())");
+            $stmt->execute([
+                ':target_type' => $target_type,
+                ':whatsapp_target_id' => $target_jid,
+                ':report_type' => 'Custom API Reminder',
+                ':frequency' => $frequency,
+                ':repeat_interval' => $repeat_interval,
+                ':task_notes' => $final_message,
+                ':trigger_time' => $trigger_time
+            ]);
+            $alarm_id = $pdo->lastInsertId();
+
+            try {
+                $stmt_unif = $pdo->prepare("INSERT INTO sunfra_unified_reminders (person_name, whatsapp_group_id, report_types, trigger_time, frequency, status, created_at) VALUES (:person_name, :whatsapp_group_id, :report_types, :trigger_time, :frequency, 'pending', NOW())");
+                $stmt_unif->execute([
+                    ':person_name' => !empty($person_name) ? $person_name : 'Custom Reminder',
+                    ':whatsapp_group_id' => $target_jid,
+                    ':report_types' => $final_message,
+                    ':trigger_time' => $trigger_time,
+                    ':frequency' => $frequency
+                ]);
+            } catch (\Exception $e_unif) {}
+        } catch (\Exception $e) {}
+    }
+
+    $waha_sent = false;
+    $now_ts = time();
+    $trigger_ts = strtotime($trigger_time);
+    if (abs($now_ts - $trigger_ts) <= 120) {
+        $waha_url = getenv('WAHA_URL') ? getenv('WAHA_URL') : 'http://localhost:3000';
+        $payload_waha = json_encode([
+            'chatId' => $target_jid,
+            'text' => $final_message,
+            'session' => 'default'
+        ]);
+
+        $ch = curl_init("{$waha_url}/api/sendText");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload_waha);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        $res_waha = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($http_code == 200 || $http_code == 201) {
+            $waha_sent = true;
+            if ($alarm_id && isset($pdo)) {
+                try {
+                    $upd = $pdo->prepare("UPDATE sunfra_custom_alarms SET status = 'sent' WHERE id = :id");
+                    $upd->execute([':id' => $alarm_id]);
+                } catch (\Exception $ex) {}
+            }
+        }
+    }
+
+    if (!$wants_json) {
+        header('Content-Type: text/html; charset=utf-8');
+        ?>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>WhatsApp Reminder Triggered</title>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+            <style>
+                body { background: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+                .card { background: #1e293b; border: 1px solid #10b981; border-radius: 16px; padding: 32px; text-align: center; max-width: 480px; width: 100%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
+                h2 { color: #10b981; margin-top: 0; font-size: 22px; }
+                .badge { display: inline-block; background: #064e3b; color: #34d399; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 16px; }
+                .box { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 16px; text-align: left; font-size: 14px; margin: 16px 0; color: #cbd5e1; }
+                .box strong { color: #38bdf8; }
+                a { display: inline-block; background: #0284c7; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 12px; }
+                a:hover { background: #0369a1; }
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                <h2>🚀 WhatsApp Reminder Triggered!</h2>
+                <div class="badge"><?php echo $waha_sent ? 'SENT IMMEDIATELY ✅' : 'QUEUED IN SCHEDULE 🕒'; ?></div>
+                
+                <div class="box">
+                    <p><strong>Target:</strong> <?php echo htmlspecialchars($target_jid); ?></p>
+                    <p><strong>Name:</strong> <?php echo htmlspecialchars($person_name ? $person_name : 'N/A'); ?></p>
+                    <p><strong>Trigger Time:</strong> <?php echo htmlspecialchars($trigger_time); ?></p>
+                    <p><strong>Message:</strong><br><?php echo nl2br(htmlspecialchars($final_message)); ?></p>
+                </div>
+
+                <a href="index.php">⬅ Send Another Reminder</a>
+            </div>
+        </body>
+        </html>
+        <?php
+        exit;
+    }
+
+    header('Content-Type: application/json; charset=utf-8');
+    http_response_code(200);
+    echo json_encode([
+        'status' => 'success',
+        'message' => $waha_sent ? 'Reminder triggered and sent to WhatsApp immediately!' : 'Reminder scheduled successfully for the background queue!',
+        'alarm_id' => $alarm_id,
+        'data' => [
+            'phone_input' => $raw_phone,
+            'target_jid' => $target_jid,
+            'person_name' => $person_name,
+            'message_text' => $final_message,
+            'trigger_time' => $trigger_time,
+            'frequency' => $frequency,
+            'repeat_interval' => $repeat_interval,
+            'immediate_whatsapp_sent' => $waha_sent
+        ]
+    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 // 2. Initialize Tables
 try {
     // MySQL syntax (Primary)
@@ -1178,87 +1594,13 @@ function get_group_display_name($group_id, $groups_map) {
 
 // 5. Simple REST API Router
 $input_json = json_decode(file_get_contents('php://input'), true);
-if (!is_array($input_json)) { $input_json = []; }
 $route = $_GET['api'] ?? $_GET['action'] ?? $input_json['action'] ?? $input_json['route'] ?? null;
-if (!$route && (isset($_GET['phone']) || isset($_POST['phone']) || isset($input_json['phone']))) {
-    $route = 'trigger_reminder';
-}
-
 if ($route && !in_array($route, ['app', 'view', 'dashboard', 'live', 'reminders_page', 'page'])) {
-    header("Content-Type: application/json; charset=utf-8");
+    header("Content-Type: application/json");
     $method = $_SERVER['REQUEST_METHOD'];
 
     try {
-        if ($route === 'trigger_reminder' || $route === 'trigger') {
-            $raw_phone = trim($input_json['phone'] ?? $_REQUEST['phone'] ?? '');
-            $person_name = trim($input_json['name'] ?? $_REQUEST['name'] ?? '');
-            $message_text = trim($input_json['message'] ?? $input_json['text'] ?? $_REQUEST['message'] ?? $_REQUEST['text'] ?? '');
-            $trigger_time_input = trim($input_json['trigger_time'] ?? $_REQUEST['trigger_time'] ?? '');
-            $frequency = strtolower(trim($input_json['frequency'] ?? $_REQUEST['frequency'] ?? 'once'));
-
-            if (empty($raw_phone) || empty($message_text)) {
-                http_response_code(400);
-                echo json_encode(['status' => 'error', 'message' => 'Missing required fields: phone and message parameters are required.'], JSON_PRETTY_PRINT);
-                exit;
-            }
-
-            $clean_target = preg_replace('/[^\d@a-zA-Z\.\-_]/', '', $raw_phone);
-            if (strpos($clean_target, '@g.us') !== false) {
-                $target_jid = $clean_target;
-                $target_type = 'group';
-            } else {
-                $digits = preg_replace('/[^\d]/', '', $clean_target);
-                if (strlen($digits) == 10) { $digits = '91' . $digits; }
-                $target_jid = $digits . '@c.us';
-                $target_type = 'employee';
-            }
-
-            date_default_timezone_set('Asia/Kolkata');
-            $trigger_time = (!empty($trigger_time_input) && strtotime($trigger_time_input) !== false) ? date('Y-m-d H:i:s', strtotime($trigger_time_input)) : date('Y-m-d H:i:s');
-            $final_message = $message_text;
-            if (!empty($person_name) && strpos(strtolower($message_text), strtolower($person_name)) === false) {
-                $final_message = "🔔 *Reminder for {$person_name}*\n\n" . $message_text;
-            }
-
-            $alarm_id = null;
-            if (isset($pdo) && $pdo) {
-                $stmt = $pdo->prepare("INSERT INTO sunfra_custom_alarms (target_type, whatsapp_target_id, report_type, frequency, repeat_interval, task_notes, trigger_time, status, created_at) VALUES (:target_type, :whatsapp_target_id, 'Custom API Reminder', :frequency, 'none', :task_notes, :trigger_time, 'pending', NOW())");
-                $stmt->execute([
-                    ':target_type' => $target_type,
-                    ':whatsapp_target_id' => $target_jid,
-                    ':frequency' => $frequency,
-                    ':task_notes' => $final_message,
-                    ':trigger_time' => $trigger_time
-                ]);
-                $alarm_id = $pdo->lastInsertId();
-
-                try {
-                    $stmt_unif = $pdo->prepare("INSERT INTO sunfra_unified_reminders (person_name, whatsapp_group_id, report_types, trigger_time, frequency, status, created_at) VALUES (:person_name, :whatsapp_group_id, :report_types, :trigger_time, :frequency, 'pending', NOW())");
-                    $stmt_unif->execute([
-                        ':person_name' => !empty($person_name) ? $person_name : 'Custom Reminder',
-                        ':whatsapp_group_id' => $target_jid,
-                        ':report_types' => $final_message,
-                        ':trigger_time' => $trigger_time,
-                        ':frequency' => $frequency
-                    ]);
-                } catch (\Exception $e_unif) {}
-            }
-
-            echo json_encode([
-                'status' => 'success',
-                'message' => 'Reminder created and scheduled for WhatsApp delivery!',
-                'alarm_id' => $alarm_id,
-                'data' => [
-                    'target_jid' => $target_jid,
-                    'name' => $person_name,
-                    'message' => $final_message,
-                    'trigger_time' => $trigger_time,
-                    'frequency' => $frequency
-                ]
-            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-            exit;
-        }
-        elseif ($route === 'temp_read_file' && $method === 'GET') {
+        if ($route === 'temp_read_file' && $method === 'GET') {
             header("Content-Type: text/plain");
             $f = $_GET['file'];
             $path = __DIR__ . '/' . $f;
@@ -1266,7 +1608,7 @@ if ($route && !in_array($route, ['app', 'view', 'dashboard', 'live', 'reminders_
                 echo file_get_contents($path);
             }
         }
-        elseif ($route === 'flocks' && $method === 'GET') {
+        if ($route === 'flocks' && $method === 'GET') {
             try {
                 $stmt = $pdo->query("SELECT * FROM sunfra_flocks WHERE status = 'active' ORDER BY id ASC");
                 $flocks = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -2472,24 +2814,6 @@ try {
                     <span id="waha-status-text" style="font-weight: 600;">Checking WAHA...</span>
                 </div>
             </header>
-            <?php if (!empty($api_trigger_status)): ?>
-            <div style="background: rgba(16, 185, 129, 0.15); border: 2px solid #10b981; border-radius: 14px; padding: 18px 24px; margin: 16px 0; color: #10b981; font-weight: 600; font-size: 15px; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2); display: flex; align-items: center; justify-content: space-between;">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <span style="font-size: 24px;">🚀</span>
-                    <div>
-                        <div style="font-size: 16px; font-weight: 700; color: #34d399; margin-bottom: 2px;">
-                            WhatsApp Reminder Triggered & Queued Successfully!
-                        </div>
-                        <div style="color: #cbd5e1; font-size: 13px; font-weight: 400;">
-                            Target: <strong><?= htmlspecialchars($api_trigger_status['target_jid']) ?></strong> | Message: "<em><?= htmlspecialchars($api_trigger_status['message_text']) ?></em>"
-                        </div>
-                    </div>
-                </div>
-                <span style="background: #064e3b; color: #34d399; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700;">
-                    <?= $api_trigger_status['waha_sent'] ? 'SENT IMMEDIATELY ✅' : 'QUEUED IN SCHEDULE 🕒' ?>
-                </span>
-            </div>
-            <?php endif; ?>
                 <h2 style="font-size: 1.2rem; margin-bottom: 1rem; color: var(--text-color);">Reminders Overview</h2>
                 <div class="stats-grid" style="margin-bottom: 2rem;">
                     <div class="card stat-card" onclick="document.querySelector('.nav-item[data-target=\'reminders_view\']').click()" style="cursor: pointer; margin-right: 0;" title="Go to Reminders">
