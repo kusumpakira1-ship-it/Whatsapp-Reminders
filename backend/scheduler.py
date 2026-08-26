@@ -2066,28 +2066,7 @@ def build_7_company_escalation_reports(db, now_ist):
         else:
             return f"• *{raw_name}* - {emoji}"
 
-<<<<<<< Updated upstream
-    # 1. Balaji Team Reports
-=======
-    # 1. Jataayu Jewellers Reports
-    j_items = [
-        ("Jataayu updates: Daily Work Update", check_report_submitted('daily work update', group_target='jataayu')),
-    ]
-    if is_sunday or is_monday:
-        j_items.append(("Jataayu Jewellers: Weekly P&L", check_report_submitted('weekly p&l', group_target='jataayu')))
-
-    # 2. Sunfra Hyperscale Reports
-    h_items = [
-        ("Sunfra Hyperscale: Daily Work Update", check_report_submitted('daily work update', group_target='hyperscale')),
-    ]
-
-    # 3. Monthly Rental Updates
-    r_items = []
-    if is_first_of_month or day_of_month <= 5:
-        r_items.append(("Monthly Rental: Rental Updates Monthly", check_report_submitted('rental updates', group_target='rental')))
-
-    # 4. Balaji Team Reports
->>>>>>> Stashed changes
+    # 1. Ai iOT Team Reports
     b_items = [
         ("Balaji (Approval Task): Report Review & Approval", check_approval(sender_name_target='balaji', group_target='balaji')),
         ("Balaji Team: Daily Work Update", check_report_submitted('daily work update', group_target='balaji')),
@@ -2153,10 +2132,7 @@ def build_7_company_escalation_reports(db, now_ist):
         ("Summary - Sunfra Feeds: Total Payables", check_report_submitted('total payables', group_target='feeds')),
         ("Summary - Sunfra Feeds: Total Receivables", check_report_submitted('total receivables', group_target='feeds')),
         ("Summary - Sunfra Feeds: Each Sales P&L", check_report_submitted('each sales p&l', group_target='feeds')),
-<<<<<<< Updated upstream
         ("Sunfra Feed Plant: Silo Empty and Cleaning", check_report_submitted('silo', group_target='feed plant')),
-=======
->>>>>>> Stashed changes
     ]
     if is_sunday or is_monday:
         feed_items.append(("Summary - Sunfra Feeds: Weekly P&L", check_report_submitted('weekly p&l', group_target='feeds')))
@@ -2977,6 +2953,14 @@ def scheduled_sunfra_pandl_job():
     except Exception as e:
         logger.error(f"Error in scheduled_sunfra_pandl_job: {e}")
 
+def scheduled_4company_pandl_job():
+    logger.info("Starting 9:30 PM 4-Company Daily P&L & Stock Report job...")
+    try:
+        from zoho_4company_pandl import generate_and_send_4company_pandl_report
+        generate_and_send_4company_pandl_report("917259510983@c.us")
+    except Exception as e:
+        logger.error(f"Error in scheduled_4company_pandl_job: {e}")
+
 def scheduled_egg_market_pdf_job():
     logger.info("Starting 9:30 PM Egg Price & Market Analysis PDF report job...")
     try:
@@ -3015,6 +2999,9 @@ def setup_scheduler():
 
     # Schedule Daily Sunfra P&L PDF report at 9:30 PM IST daily (ONLY to 7259510983, 8985779911, and 6364817749)
     scheduler.add_job(scheduled_sunfra_pandl_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+
+    # Schedule Daily 4-Company P&L & Stock Asset Report at 9:30 PM IST daily (to 7259510983)
+    scheduler.add_job(scheduled_4company_pandl_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_pandl_job")
 
     # Schedule Daily Egg Price & Market Analysis PDF report at 9:30 PM IST daily
     scheduler.add_job(scheduled_egg_market_pdf_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_market_pdf_job")
