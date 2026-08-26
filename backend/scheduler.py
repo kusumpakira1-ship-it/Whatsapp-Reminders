@@ -1916,16 +1916,16 @@ def build_7_company_escalation_reports(db, now_ist):
         })
 
     kw_map = {
-        'day book': ['day book', 'daybook', 'cash book', 'bank book'],
-        'daily sales': ['daily sales', 'sales', 'sale', 'egg sales', 'trays'],
-        'daily purchases': ['daily purchase', 'daily purchases', 'purchase', 'purchases', 'buy', 'bought', 'feed', 'kg', 'tons'],
-        'total payables': ['total payables', 'total payable', 'payable', 'payables', 'due to'],
-        'total receivables': ['total receivables', 'total receivable', 'receivable', 'receivables', 'due from'],
-        'ca statement': ['ca statement', 'ca', 'statement', 'audit', 'tally', 'balance sheet', 'otp'],
-        'average p&l': ['average p&l', 'p&l', 'pl', 'p and l', 'profit', 'loss'],
-        'each sales p&l': ['each sales p&l', 'p&l', 'pl', 'p and l', 'profit', 'loss'],
-        'profit & loss summary': ['profit & loss', 'p&l', 'pl', 'p and l', 'profit', 'loss'],
-        'daily work update': ['daily work update', 'work update', 'update', 'done', 'completed'],
+        'day book': ['day book', 'daybook', 'cash book', 'bank book', 'day book (', 'daybook.pdf'],
+        'daily sales': ['daily sales', 'sales', 'sale', 'egg sales', 'trays', 'sales by customer', 'sales by customer (', 'sales.pdf'],
+        'daily purchases': ['daily purchase', 'daily purchases', 'purchase', 'purchases', 'buy', 'bought', 'feed', 'kg', 'tons', 'purchases by vendor', 'purchases by vendor (', 'purchases.pdf'],
+        'total payables': ['total payables', 'total payable', 'payable', 'payables', 'due to', 'ap aging', 'payableee', 'payable.pdf', 'payables.pdf'],
+        'total receivables': ['total receivables', 'total receivable', 'receivable', 'receivables', 'due from', 'ar aging', 'receivable.pdf', 'receivables.pdf'],
+        'ca statement': ['ca statement', 'ca', 'statement', 'audit', 'tally', 'balance sheet', 'ca statement on', 'ca.pdf', 'otp'],
+        'average p&l': ['average p&l', 'p&l', 'pl', 'p and l', 'profit', 'loss', 'horizontal profit', 'p&l.pdf'],
+        'each sales p&l': ['each sales p&l', 'p&l', 'pl', 'p and l', 'profit', 'loss', 'each sales p&l.pdf'],
+        'profit & loss summary': ['profit & loss', 'p&l', 'pl', 'p and l', 'profit', 'loss', 'summary', 'p&l summary'],
+        'daily work update': ['daily work update', 'work update', 'update', 'done', 'completed', 'eod update', 'eod', 'report'],
         'stock': ['stock', 'website', 'website updates', 'ordering', 'update', 'updates', 'maize', 'soya', 'dorb', 'stonegrit', 'raw material'],
         'website updates': ['stock', 'website', 'website updates', 'ordering', 'update', 'updates', 'maize', 'soya', 'dorb', 'stonegrit', 'raw material']
     }
@@ -1980,6 +1980,9 @@ def build_7_company_escalation_reports(db, now_ist):
             if rkey in rep_lower:
                 search_kws.extend(syns)
 
+        is_weekly_item = ('weekly' in rep_lower)
+        pnl_synonyms = ['p&l', 'pl', 'p and l', 'profit', 'loss', 'p&l.pdf', 'profit & loss', 'profit and loss']
+
         for m in combined_msgs:
             m_text = m['text']
             m_sender = m['sender']
@@ -1990,11 +1993,26 @@ def build_7_company_escalation_reports(db, now_ist):
             snd_ok = not sender_target or (sender_target.lower() in m_sender)
 
             if grp_ok and snd_ok:
+                has_weekly_in_msg = ('weekly' in m_text)
                 for skw in search_kws:
-                    if skw in m_text:
+                    skw_lower = skw.lower()
+                    
+                    # Rule 1: If message says "weekly", do not match daily P&L
+                    if not is_weekly_item and has_weekly_in_msg and (skw_lower in pnl_synonyms or 'p&l' in skw_lower or 'profit' in skw_lower):
+                        continue
+                        
+                    # Rule 2: If report item is weekly p&l, message MUST contain "weekly"
+                    if is_weekly_item and not has_weekly_in_msg:
+                        continue
+
+                    if skw_lower in m_text:
                         return True
                 # Check for PDF or image attachments with report keywords
                 if ('.pdf' in m_text or '.jpg' in m_text or '.png' in m_text or '[image]' in m_text) and any(w in m_text for w in rep_lower.split()):
+                    if not is_weekly_item and has_weekly_in_msg:
+                        continue
+                    if is_weekly_item and not has_weekly_in_msg:
+                        continue
                     return True
 
         # 3. Check manual website toggles in UnifiedReminder & Task sub_reports_status
@@ -2048,7 +2066,28 @@ def build_7_company_escalation_reports(db, now_ist):
         else:
             return f"• *{raw_name}* - {emoji}"
 
+<<<<<<< Updated upstream
     # 1. Balaji Team Reports
+=======
+    # 1. Jataayu Jewellers Reports
+    j_items = [
+        ("Jataayu updates: Daily Work Update", check_report_submitted('daily work update', group_target='jataayu')),
+    ]
+    if is_sunday or is_monday:
+        j_items.append(("Jataayu Jewellers: Weekly P&L", check_report_submitted('weekly p&l', group_target='jataayu')))
+
+    # 2. Sunfra Hyperscale Reports
+    h_items = [
+        ("Sunfra Hyperscale: Daily Work Update", check_report_submitted('daily work update', group_target='hyperscale')),
+    ]
+
+    # 3. Monthly Rental Updates
+    r_items = []
+    if is_first_of_month or day_of_month <= 5:
+        r_items.append(("Monthly Rental: Rental Updates Monthly", check_report_submitted('rental updates', group_target='rental')))
+
+    # 4. Balaji Team Reports
+>>>>>>> Stashed changes
     b_items = [
         ("Balaji (Approval Task): Report Review & Approval", check_approval(sender_name_target='balaji', group_target='balaji')),
         ("Balaji Team: Daily Work Update", check_report_submitted('daily work update', group_target='balaji')),
@@ -2114,7 +2153,10 @@ def build_7_company_escalation_reports(db, now_ist):
         ("Summary - Sunfra Feeds: Total Payables", check_report_submitted('total payables', group_target='feeds')),
         ("Summary - Sunfra Feeds: Total Receivables", check_report_submitted('total receivables', group_target='feeds')),
         ("Summary - Sunfra Feeds: Each Sales P&L", check_report_submitted('each sales p&l', group_target='feeds')),
+<<<<<<< Updated upstream
         ("Sunfra Feed Plant: Silo Empty and Cleaning", check_report_submitted('silo', group_target='feed plant')),
+=======
+>>>>>>> Stashed changes
     ]
     if is_sunday or is_monday:
         feed_items.append(("Summary - Sunfra Feeds: Weekly P&L", check_report_submitted('weekly p&l', group_target='feeds')))
@@ -2158,6 +2200,28 @@ def build_7_company_escalation_reports(db, now_ist):
         base_offset = offsets.get(company_key, 0)
         return base_offset + today_failed_count
 
+    total_failed_today = 0
+    for title, items in sections_config:
+        if items:
+            total_failed_today += sum(1 for it in items if not it[1])
+
+    # Helper to calculate cumulative day-over-day failures per section
+    def get_cumulative_section_failed_count(sec_title, today_failed_cnt):
+        from zoho_service import get_setting, save_setting
+        import json
+        
+        hist_json = get_setting("cumulative_failure_history", "{}")
+        try:
+            hist = json.loads(hist_json)
+        except Exception:
+            hist = {}
+            
+        sec_hist = hist.setdefault(sec_title, {})
+        sec_hist[today_date_str] = today_failed_cnt
+        save_setting("cumulative_failure_history", json.dumps(hist))
+        
+        return sum(sec_hist.values())
+
     messages_930 = []
     combined_1159_lines = [f"📊 *Company-Wise Escalation Report (EOD Summary)*\n📅 *Date:* {today_date_str}\n"]
 
@@ -2168,6 +2232,8 @@ def build_7_company_escalation_reports(db, now_ist):
         missing_items = [it for it in items if not it[1]]
         failed_count = len(missing_items)
         total_count = len(items)
+
+        cum_failed_count = get_cumulative_section_failed_count(title, failed_count)
 
         if failed_count > 0:
             header_with_count = f"{title} (❌ {failed_count} Failed)"
@@ -2186,7 +2252,7 @@ def build_7_company_escalation_reports(db, now_ist):
         lines_930.append(f"\n🚨 *Total Failed: {total_cumulative_failed}*\n---")
         messages_930.append("\n".join(lines_930))
 
-        # Build 11:59 PM combined lines
+        # Build 11:59 PM combined lines (showing items and company cumulative failed count)
         sorted_items = sorted(items, key=lambda x: (1 if x[1] else 0, x[0]))
         lines_1159 = [header_with_count]
         for it in sorted_items:
@@ -2238,17 +2304,34 @@ def manager_escalation_job():
 
 
 def company_wise_escalation_job():
-    logger.info("Starting 11:59 PM Company-Wise Manager Escalation Check (1 Combined Message)...")
+    logger.info("Starting 11:59 PM Company-Wise Manager Escalation Check...")
     from datetime import datetime, timezone, timedelta
     IST = timezone(timedelta(hours=5, minutes=30))
     now_ist = datetime.now(IST).replace(tzinfo=None)
 
     db = SessionLocal()
     try:
-        _, combined_1159_text = build_7_company_escalation_reports(db, now_ist)
+        messages_930, combined_1159_text = build_7_company_escalation_reports(db, now_ist)
         for phone in ESCALATION_REPORT_PHONES:
             send_waha_message(phone, combined_1159_text)
             logger.info(f"Combined EOD Manager Escalation sent to {phone}")
+
+        for idx, msg in enumerate(messages_930, 1):
+            if "Corporate Company" in msg or "4️⃣" in msg:
+                send_waha_message("919066646784@c.us", msg)
+                logger.info(f"11:59 PM Escalation Msg (Corporate P&L) sent to 919066646784@c.us")
+
+            if "Sunfra Hyperscale" in msg or "2️⃣" in msg:
+                send_waha_message("918951520293@c.us", msg)
+                logger.info(f"11:59 PM Escalation Msg (Sunfra Hyperscale) sent to 918951520293@c.us")
+
+            if "Sunfra Feed" in msg or "5️⃣" in msg:
+                send_waha_message("918951520293@c.us", msg)
+                logger.info(f"11:59 PM Escalation Msg (Sunfra Feed) sent to 918951520293@c.us")
+
+            if "Sunfra Farms" in msg or "6️⃣" in msg:
+                send_waha_message("918985779911@c.us", msg)
+                logger.info(f"11:59 PM Escalation Msg (Sunfra Farms) sent to 918985779911@c.us")
     except Exception as e:
         logger.error(f"Error in company_wise_escalation_job: {e}")
     finally:
@@ -2903,6 +2986,19 @@ def scheduled_egg_market_pdf_job():
         logger.error(f"Error in scheduled_egg_market_pdf_job: {e}")
 
 
+def scheduled_vacancy_job():
+    logger.info("Starting scheduled vacancy summary report...")
+    try:
+        from vacancy_processor import generate_vacancy_summary
+        summary_text = generate_vacancy_summary()
+        phone = "917259510983@c.us"
+        from waha_service import send_waha_message
+        send_waha_message(phone, summary_text)
+        logger.info(f"Sent vacancy summary to {phone}")
+    except Exception as e:
+        logger.error(f"Error in scheduled_vacancy_job: {e}")
+
+
 def setup_scheduler():
 
     global scheduler
@@ -2971,6 +3067,9 @@ def setup_scheduler():
 
     # Schedule yearly report at 11:00 PM IST on Dec 31
     scheduler.add_job(scheduled_yearly_report_job, CronTrigger(month=12, day=31, hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    
+    # Schedule Daily Vacancy Summary at 10:00 AM IST
+    scheduler.add_job(scheduled_vacancy_job, CronTrigger(hour=10, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_vacancy_job")
     
     import os
     if os.getenv("USE_N8N", "false").lower() == "true":

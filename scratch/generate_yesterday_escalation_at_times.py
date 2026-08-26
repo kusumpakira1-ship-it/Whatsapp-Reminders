@@ -1,5 +1,5 @@
 """
-Generate yesterday's (2026-08-19) Escalation Reports at 09:30 PM and 11:59 PM
+Generate Escalation Reports at 09:30 PM and 11:59 PM for 20 Aug 2026 (Yesterday)
 """
 import sys
 sys.path.append(r'c:\Users\sunfra\Desktop\Whatsapp New Reminders\backend')
@@ -18,23 +18,25 @@ try:
     )
     cursor = conn.cursor()
     
-    # 1. Fetch raw messages from yesterday (2026-08-19)
+    target_date_str = '2026-08-20'
+
+    # 1. Fetch raw messages from target date
     cursor.execute("""
         SELECT id, sender, group_name, raw_text, timestamp 
         FROM sunfra_raw_messages 
-        WHERE DATE(timestamp) = '2026-08-19'
+        WHERE DATE(timestamp) = %s
         ORDER BY timestamp ASC
-    """)
+    """, (target_date_str,))
     raw_msgs = cursor.fetchall()
 
-    # 2. Fetch reminders active on yesterday
+    # 2. Fetch reminders
     cursor.execute("""
         SELECT id, person_name, person_phone, whatsapp_group_id, report_types, sub_reports_status, trigger_time, status 
         FROM sunfra_unified_reminders
     """)
     reminders = cursor.fetchall()
     
-    # 3. Fetch tasks active on yesterday
+    # 3. Fetch tasks
     cursor.execute("""
         SELECT id, task_name, task_type, assigned_person_name, assigned_person_phone, whatsapp_group_id, due_time, status 
         FROM sunfra_tasks
@@ -57,15 +59,15 @@ try:
     }
 
     def generate_report_at_cutoff(cutoff_time_str):
-        cutoff_dt = datetime.strptime(f"2026-08-19 {cutoff_time_str}", "%Y-%m-%d %H:%M:%S")
+        cutoff_dt = datetime.strptime(f"{target_date_str} {cutoff_time_str}", "%Y-%m-%d %H:%M:%S")
         msgs_cutoff = [m for m in raw_msgs if m[4] <= cutoff_dt]
         
         report_lines = []
-        report_lines.append(f"🚨 *Daily Escalation Report ({cutoff_time_str[:5]} IST - 19 Aug 2026)*")
+        report_lines.append(f"🚨 *Daily Escalation Report ({cutoff_time_str[:5]} IST - 20 Aug 2026)*")
         report_lines.append("The following is the update on yesterday's tasks and reports, organized by company:\n")
 
-        # Group by company
         corp_lines = []
+        feeds_lines = []
         farms_tasks_lines = []
         farms_reports_lines = []
 
@@ -111,7 +113,7 @@ try:
             elif '120363042907512705' in str(g_id): disp_name = "Accounts Poultry"
             elif '120363428748481277' in str(g_id): disp_name = "Summary - Sunfra Feeds"
             elif '120363406924564250' in str(g_id): disp_name = "Jataayu / Production Updates"
-            elif '120363429851145929' in str(g_id): disp_name = "Vendor Daily Invoices"
+            elif '120363429851145929' in str(g_id): disp_name = "Raw Material Prices & Orders"
 
             emoji = "✅" if all_done else ("🟡" if done_count > 0 else "❌")
             status_str = "Submitted" if all_done else (f"Partially Submitted ({done_count}/{total_count})" if done_count > 0 else "Not Submitted")
@@ -120,6 +122,8 @@ try:
             
             if "corporate" in str(g_id).lower() or "120363425581380088" in str(g_id) or "hyperscale" in str(g_id).lower() or "120363428881117777" in str(g_id):
                 corp_lines.append(line)
+            elif "feed" in str(g_id).lower() or "120363428748481277" in str(g_id) or "120363429851145929" in str(g_id) or "raw material" in str(disp_name).lower():
+                feeds_lines.append(line)
             else:
                 farms_reports_lines.append(line)
 
@@ -128,8 +132,6 @@ try:
             t_id, t_name, t_type, a_name, a_phone, g_id, due_time, status = t
             if a_name and 'supervisor' in a_name.lower(): continue
             if t_name and ('water' in t_name.lower() or 'mac:' in t_name.lower()): continue
-            
-            # Skip Wednesday Meeting Checklist tasks
             if 'wednesday' in str(t_name).lower() or 'meeting' in str(t_name).lower(): continue
 
             is_completed = (status == 'completed')
@@ -141,9 +143,14 @@ try:
 
         report_lines.append("🏢 *Corporate Company (P&L) Reports:*")
         report_lines.extend(corp_lines if corp_lines else ["- No corporate reports"])
+        
+        report_lines.append("\n🌾 *Sunfra Feeds Reports:*")
+        report_lines.extend(feeds_lines if feeds_lines else ["- No feeds reports"])
+        
         report_lines.append("\n🌾 *Sunfra Farms Tasks:*")
         report_lines.extend(farms_tasks_lines if farms_tasks_lines else ["- All tasks completed"])
-        report_lines.append("\n📊 *Sunfra Farms & Feeds Reports:*")
+        
+        report_lines.append("\n📊 *Sunfra Farms Reports:*")
         report_lines.extend(farms_reports_lines if farms_reports_lines else ["- All reports submitted"])
         
         return "\n".join(report_lines)
@@ -151,12 +158,12 @@ try:
     report_930 = generate_report_at_cutoff("21:30:00")
     report_1159 = generate_report_at_cutoff("23:59:59")
     
-    with open(r'c:\Users\sunfra\Desktop\Whatsapp New Reminders\scratch\escalation_930.txt', 'w', encoding='utf-8') as f:
+    with open(r'c:\Users\sunfra\Desktop\Whatsapp New Reminders\scratch\escalation_20aug_930.txt', 'w', encoding='utf-8') as f:
         f.write(report_930)
-    with open(r'c:\Users\sunfra\Desktop\Whatsapp New Reminders\scratch\escalation_1159.txt', 'w', encoding='utf-8') as f:
+    with open(r'c:\Users\sunfra\Desktop\Whatsapp New Reminders\scratch\escalation_20aug_1159.txt', 'w', encoding='utf-8') as f:
         f.write(report_1159)
 
-    print("Successfully generated 9:30 PM and 11:59 PM Escalation Reports for 19 Aug 2026!")
+    print("Successfully generated 9:30 PM and 11:59 PM Escalation Reports for 20 Aug 2026!")
 
     conn.close()
 except Exception as e:

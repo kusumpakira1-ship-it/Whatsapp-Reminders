@@ -401,6 +401,8 @@ try:
         if not comp_tasks and not comp_reports:
             continue
             
+        comp_failed = sum(1 for c, l in comp_tasks if not c) + sum(1 for s, l in comp_reports if not s)
+        
         if comp_tasks and comp_reports:
             report_msg_lines.append(f"🏢 *{comp} Tasks:*")
             comp_tasks.sort(key=lambda x: x[0])
@@ -411,19 +413,19 @@ try:
             comp_reports.sort(key=lambda x: x[0])
             for submitted_flag, line in comp_reports:
                 report_msg_lines.append(line)
-            report_msg_lines.append("")
+            report_msg_lines.append(f"🚨 *Total Failed: {comp_failed}*\n")
         elif comp_tasks:
             report_msg_lines.append(f"🏢 *{comp} Tasks:*")
             comp_tasks.sort(key=lambda x: x[0])
             for completed, line in comp_tasks:
                 report_msg_lines.append(line)
-            report_msg_lines.append("")
+            report_msg_lines.append(f"🚨 *Total Failed: {comp_failed}*\n")
         elif comp_reports:
             report_msg_lines.append(f"🏢 *{comp} Reports:*")
             comp_reports.sort(key=lambda x: x[0])
             for submitted_flag, line in comp_reports:
                 report_msg_lines.append(line)
-            report_msg_lines.append("")
+            report_msg_lines.append(f"🚨 *Total Failed: {comp_failed}*\n")
             
     final_msg = "\n".join(report_msg_lines).strip()
     

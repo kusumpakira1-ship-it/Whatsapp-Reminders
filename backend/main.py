@@ -15,6 +15,7 @@ from ai_processor import process_text, process_image, process_document
 from waha_service import download_waha_media, get_waha_chat_name, send_waha_message, send_waha_file
 from scheduler import setup_scheduler, scheduler, schedule_custom_alarm
 from config import settings
+from vacancy_processor import process_vacancy_message
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -218,6 +219,17 @@ def process_message_background(
     sender_name: str
 ):
     db = SessionLocal()
+    
+    try:
+        # Check for vacancy message first
+        if text and process_vacancy_message(text):
+            logger.info(f"Processed vacancy message {message_id}")
+            # we can continue or return? Wait, might as well let it save to raw messages JSON etc
+            pass
+            
+    except Exception as e:
+        logger.error(f"Error processing vacancy message: {e}")
+        
     try:
         raw_msg = db.query(RawMessage).filter(RawMessage.message_id == message_id).first()
         if not raw_msg:

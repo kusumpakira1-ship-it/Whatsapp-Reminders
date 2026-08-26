@@ -1375,6 +1375,9 @@ $update_keywords = [
                     $target_group_name = strtolower($all_groups[$r['whatsapp_group_id']]['name'] ?? '');
                 }
 
+                $display_grp_name = strtolower(get_group_display_name($r['whatsapp_group_id'] ?? '', $groups_map));
+                $person_name_lower = strtolower($r['person_name'] ?? '');
+
                 if ($clean_target_group_jid && (
                     strpos($clean_raw_group, $clean_target_group_jid) !== false || 
                     strpos($clean_target_group_jid, $clean_raw_group) !== false ||
@@ -1382,6 +1385,10 @@ $update_keywords = [
                 )) {
                     $group_matched = true;
                 } elseif ($target_group_name && (strpos($raw_group, $target_group_name) !== false || strpos($target_group_name, $raw_group) !== false)) {
+                    $group_matched = true;
+                } elseif ($display_grp_name && (strpos($raw_group, $display_grp_name) !== false || strpos($display_grp_name, $raw_group) !== false)) {
+                    $group_matched = true;
+                } elseif ($person_name_lower && strlen($person_name_lower) >= 3 && (strpos($raw_group, $person_name_lower) !== false || strpos($person_name_lower, $raw_group) !== false)) {
                     $group_matched = true;
                 } elseif (!empty($r['whatsapp_group_id']) && (strpos($raw_group, strtolower($r['whatsapp_group_id'])) !== false)) {
                     $group_matched = true;
@@ -1402,14 +1409,7 @@ $update_keywords = [
                     }
                 }
                  
-                $is_group_level = ($r['person_phone'] === '1234567890' || strpos(strtolower($r['person_name']), 'team') !== false);
-                 
-                // Valid if group matches OR sender/name matches OR no group specified for reminder
-                if ($is_group_level) {
-                    $valid_sender_or_group = $group_matched || (strpos($r['whatsapp_group_id'] ?? '', '120363430772426306') !== false && strpos($clean_raw_group, '120363430772426306') !== false);
-                } else {
-                    $valid_sender_or_group = $group_matched || $sender_matched || $name_matched || empty($clean_target_group_jid);
-                }
+                $valid_sender_or_group = $group_matched || $sender_matched || $name_matched || empty($clean_target_group_jid);
                 
                 if ($valid_sender_or_group) {
                     if (strpos($report, 'egg pricing') !== false) {
@@ -1477,6 +1477,7 @@ $update_keywords = [
                             'average p&l' => ['average p&l', 'p&l', 'pl', 'p and l', 'profit', 'loss', 'horizontal profit', 'p&l.pdf'],
                             'each sales p&l' => ['each sales p&l', 'p&l', 'pl', 'p and l', 'profit', 'loss', 'each sales p&l.pdf'],
                             'profit & loss summary' => ['profit & loss', 'p&l', 'pl', 'p and l', 'profit', 'loss', 'summary', 'p&l summary'],
+                            'weekly p&l' => ['weekly p&l', 'weekly pl', 'weekly p and l', 'weekly profit', 'weekly loss'],
                             'daily work update' => ['daily work update', 'work update', 'update', 'done', 'completed', 'eod update', 'eod', 'report'],
                             'stock' => ['stock', 'website', 'website updates', 'ordering', 'update', 'updates', 'maize', 'soya', 'dorb', 'stonegrit', 'raw material'],
                             'stock/website updates' => ['stock', 'website', 'website updates', 'ordering', 'update', 'updates', 'maize', 'soya', 'dorb', 'stonegrit', 'raw material']
@@ -1489,8 +1490,25 @@ $update_keywords = [
                         }
                         
                         $matched_kw = null;
+                        $is_weekly_item = (strpos($report, 'weekly') !== false);
+                        $has_weekly_in_msg = (strpos($raw_text_lower, 'weekly') !== false);
+                        $pnl_synonyms = ['p&l', 'pl', 'p and l', 'profit', 'loss', 'p&l.pdf', 'profit & loss', 'profit and loss'];
+
                         foreach ($expanded_kws as $kw) {
-                            if ($kw && strpos($raw_text_lower, strtolower($kw)) !== false) {
+                            if (!$kw) continue;
+                            $kw_lower = strtolower($kw);
+                            
+                            // Rule 1: If message says "weekly", do not match daily P&L
+                            if (!$is_weekly_item && $has_weekly_in_msg && (in_array($kw_lower, $pnl_synonyms) || strpos($kw_lower, 'p&l') !== false || strpos($kw_lower, 'profit') !== false)) {
+                                continue;
+                            }
+                            
+                            // Rule 2: If report item is weekly p&l, message MUST contain "weekly"
+                            if ($is_weekly_item && !$has_weekly_in_msg) {
+                                continue;
+                            }
+
+                            if (strpos($raw_text_lower, $kw_lower) !== false) {
                                 $matched_kw = $kw;
                                 break;
                             }

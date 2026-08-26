@@ -20,11 +20,11 @@ IST = timezone(timedelta(hours=5, minutes=30))
 
 def extract_physical_balances_from_whatsapp(exact_group_name: str):
     """
-    Parses WhatsApp messages ONLY from the 1 exact designated group for each company:
-    - 'Accounts Poultry' for Sunfra Farms
-    - 'Summary - Sunfra Feeds' for Sunfra Feeds
-    - 'Sunfra Corporate P&L' for Sunfra Corporate
-    to extract reported physical balances for Petty Cash and Bank.
+    Parses WhatsApp messages from the designated group and sender LIDs for each company:
+    - 'Accounts Poultry' / '184791135711366' for Sunfra Farms
+    - 'Summary - Sunfra Feeds' / '45586833240126' for Sunfra Feeds
+    - 'Sunfra Corporate P&L' / '56556230058144' for Sunfra Corporate
+    to extract reported physical balances for Petty Cash, Bank, Term Loan, and OD.
     """
     from sqlalchemy import or_, desc
     from models import Group, WhatsAppMessage
@@ -40,46 +40,42 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str):
         'sunfra_farm_od': None
     }
     try:
-        # Find exact group JIDs and exact name from sunfra_groups
-        target_name_lower = exact_group_name.strip().lower()
-        group_rows = db.query(Group).all()
-        target_jids = set()
-        for g in group_rows:
-            gname = (g.name or '').strip().lower()
-            gjid = (g.whatsapp_group_id or '').replace('@g.us', '').strip().lower()
-            if gname == target_name_lower or target_name_lower in gname:
-                if gjid:
-                    target_jids.add(gjid)
-                    target_jids.add(g.whatsapp_group_id.strip().lower())
-
-        kw_pattern = f"%{exact_group_name}%"
+        company_targets = {
+            'accounts poultry': ['accounts poultry', 'sunfra farms', '120363042907512705', '184791135711366'],
+            'summary - sunfra feeds': ['summary - sunfra feeds', 'sunfra feeds', 'feeds', '120363428748481277', '45586833240126'],
+            'sunfra corporate p&l': ['sunfra corporate p&l', 'sunfra corporate', 'corporate', '120363425581380088', '56556230058144']
+        }
         
-        # Fetch ONLY from the designated group in RawMessage
-        raw_msgs = db.query(RawMessage).filter(
-            or_(
-                RawMessage.group_name.ilike(kw_pattern),
-                RawMessage.group_name.in_(list(target_jids))
-            ) if target_jids else RawMessage.group_name.ilike(kw_pattern)
-        ).order_by(desc(RawMessage.timestamp)).limit(30).all()
+        target_name_lower = exact_group_name.strip().lower()
+        targets = company_targets.get(target_name_lower, [target_name_lower])
 
-        # Fetch ONLY from the designated group in WhatsAppMessage
-        wa_msgs = db.query(WhatsAppMessage).filter(
-            or_(
-                WhatsAppMessage.group_id.ilike(kw_pattern),
-                WhatsAppMessage.group_id.in_(list(target_jids))
-            ) if target_jids else WhatsAppMessage.group_id.ilike(kw_pattern)
-        ).order_by(desc(WhatsAppMessage.timestamp)).limit(30).all()
+        raw_msgs = db.query(RawMessage).order_by(desc(RawMessage.timestamp)).limit(3000).all()
+        wa_msgs = db.query(WhatsAppMessage).order_by(desc(WhatsAppMessage.timestamp)).limit(3000).all()
 
         combined = []
         for m in raw_msgs:
-            combined.append({'text': (m.raw_text or '').lower(), 'ts': m.timestamp})
+            grp = (m.group_name or '').lower()
+            snd = (m.sender or '').lower()
+            if any(t in grp or t in snd for t in targets):
+                combined.append({'text': (m.raw_text or '').lower(), 'ts': m.timestamp})
+                
         for m in wa_msgs:
-            combined.append({'text': (m.message_text or '').lower(), 'ts': m.timestamp})
+            grp = (m.group_id or '').lower()
+            snd = (m.sender_id or '').lower()
+            if any(t in grp or t in snd for t in targets):
+                combined.append({'text': (m.message_text or '').lower(), 'ts': m.timestamp})
 
-        combined.sort(key=lambda x: x['ts'], reverse=True)
+        now_ist = datetime.now(IST)
+        today_date = now_ist.date()
+        
+        # Filter to messages submitted TODAY ONLY
+        today_combined = [m for m in combined if m['ts'] and m['ts'].astimezone(IST).date() == today_date]
+        today_combined.sort(key=lambda x: x['ts'], reverse=True)
 
-        for m in combined:
+        for m in today_combined:
             text = m['text']
+            if not text:
+                continue
 
             # Extract Farm Petty Cash (Strict format: "Farm Petty Cash : 1000")
             if res['farm_petty_cash'] is None:
@@ -117,7 +113,7 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str):
                     except ValueError:
                         pass
 
-            # Extract Sunfra Indian Bank (Strict format: "Sunfra Indian Bank : 1000")
+            # 3. Extract Sunfra Indian Bank
             if res['sunfra_indian_bank'] is None:
                 ib_match = re.search(r'(?:indian\s*bank|sunfra\s*indian\s*bank)\s*[:=\-]\s*([\d,]+(?:\.\d+)?)', text)
                 if ib_match:
@@ -126,9 +122,9 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str):
                     except ValueError:
                         pass
 
-            # Extract Total Available Bank Balance (Strict format: "Bank Balance : 1000")
+            # 4. Extract Total Available Bank Balance / Bank Balance
             if res['bank_balance'] is None:
-                b_match = re.search(r'(?:total\s*available\s*bank|available\s*bank|bank\s*balance|total\s*bank)\s*[:=\-]\s*([\d,]+(?:\.\d+)?)', text)
+                b_match = re.search(r'(?:total\s*available\s*bank\s*balance|total\s*available\s*bank|available\s*bank\s*balance|available\s*bank|bank\s*balance|total\s*bank|bank)\s*[:=\-]\s*([\d,]+(?:\.\d+)?)', text)
                 if b_match:
                     try:
                         res['bank_balance'] = float(b_match.group(1).replace(',', ''))
@@ -153,7 +149,8 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str):
                         val = float(od_match.group(1).replace(',', ''))
                         res['sunfra_farm_od'] = -abs(val)
                     except ValueError:
-                        pass
+            if res['petty_cash'] is not None and (res['bank_balance'] is not None or res['sunfra_farms_bank'] is not None):
+                break
     except Exception as e:
         logger.error(f"Error extracting physical balances for group {exact_group_name}: {e}")
     finally:
@@ -246,14 +243,14 @@ def generate_and_send_zoho_reconciliation_report(recipient_phone: str = None) ->
         send_waha_message(target_phone, error_msg)
         return False
 
-    org_id = get_organization_id(access_token)
+    farms_org_id = "905812487"
     now_ist = datetime.now(IST)
     today_str = now_ist.strftime("%d %b %Y, %I:%M %p")
     
-    # 1. Fetch Zoho Balances & Receivables/Payables
-    accounts = get_chart_of_accounts(access_token, org_id)
-    receivables = get_receivables_summary(access_token, org_id)
-    payables = get_payables_summary(access_token, org_id)
+    # 1. Fetch Zoho Balances & Receivables/Payables for Sunfra Farms
+    accounts = get_chart_of_accounts(access_token, farms_org_id)
+    receivables = get_receivables_summary(access_token, farms_org_id)
+    payables = get_payables_summary(access_token, farms_org_id)
     
     # 2. Extract Physical Balances ONLY from WhatsApp Group 'Accounts Poultry'
     physical = extract_physical_balances_from_whatsapp('Accounts Poultry')
