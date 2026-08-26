@@ -121,8 +121,8 @@ def generate_4company_pandl_report():
         
         # Extract totals
         bank_total = float(accounts.get('total_bank_balance', 0.0) or 0.0) + float(accounts.get('petty_cash', 0.0) or 0.0)
-        rec_total = float(receivables_data.get('total_balance', 0.0) or 0.0)
-        pay_total = float(payables_data.get('total_balance', 0.0) or 0.0)
+        rec_total = float(receivables_data.get('total_amount', 0.0) or receivables_data.get('total_balance', 0.0) or 0.0)
+        pay_total = float(payables_data.get('total_amount', 0.0) or payables_data.get('total_balance', 0.0) or 0.0)
         
         # Calculate Net Position: (Stock + Receivables + Bank) - Payables
         net_position = (stock_val + rec_total + bank_total) - pay_total
@@ -133,12 +133,10 @@ def generate_4company_pandl_report():
         msg_lines.append(f"📦 *Stock Valuation:* *{format_currency(stock_val)}*")
         msg_lines.append(f"📋 *Payables:* *{format_currency(pay_total)}*")
         
-        # Negative Stock Items warning
+        # Negative Stock Items warning (List ALL items as requested)
         if neg_items:
-            neg_strs = [f"• {item_name}: *{qty:,.2f} units*" for item_name, qty in neg_items[:5]]
+            neg_strs = [f"• {item_name}: *{qty:,.2f} units*" for item_name, qty in neg_items]
             msg_lines.append(f"⚠️ *Negative Stock Warning ({len(neg_items)} items):*\n  " + "\n  ".join(neg_strs))
-            if len(neg_items) > 5:
-                msg_lines.append(f"  *(+ {len(neg_items) - 5} other negative stock items)*")
         else:
             msg_lines.append("⚠️ *Negative Stock:* *None* ✅")
             
