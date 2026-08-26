@@ -14,8 +14,11 @@ from models import Whitelist, RawMessage, ProcessedData, Group, Employee, System
 from ai_processor import process_text, process_image, process_document
 from waha_service import download_waha_media, get_waha_chat_name, send_waha_message, send_waha_file
 from scheduler import setup_scheduler, scheduler, schedule_custom_alarm
-from config import settings
-from vacancy_processor import process_vacancy_message
+try:
+    from vacancy_processor import process_vacancy_message
+except ImportError:
+    def process_vacancy_message(text):
+        return False
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
