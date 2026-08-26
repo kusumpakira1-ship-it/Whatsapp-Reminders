@@ -93,16 +93,7 @@ def check_and_dispatch_water_alerts():
                         dev_state["last_low_alert_ts"] = now_ts
                         dev_state["low_active"] = True
             elif water_level >= 50:
-                # Reset low water active state when water recovers to >= 50%
-                if dev_state.get("low_active"):
-                    logger.info(f"Water level recovered for {mac} ({water_level}%). Clearing low water alert state.")
-                    recovery_msg = (
-                        f"✅ *WATER LEVEL RECOVERED!*\n"
-                        f"📍 *Location:* {location}\n"
-                        f"💻 *Device:* {name} (`{mac}`)\n"
-                        f"💧 *Current Water Level:* *{water_level}%* (Recovered ≥ 50%)"
-                    )
-                    send_waha_message(TARGET_GROUP_JID, recovery_msg)
+                # Reset low water active state silently when water reaches >= 50%
                 dev_state["low_active"] = False
                 dev_state["last_low_alert_ts"] = 0
 
