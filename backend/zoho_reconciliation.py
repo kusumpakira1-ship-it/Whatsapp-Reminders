@@ -31,6 +31,8 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str):
     db = SessionLocal()
     res = {
         'petty_cash': None,
+        'farm_petty_cash': None,
+        'undeposited_funds': None,
         'sunfra_farms_bank': None,
         'sunfra_indian_bank': None,
         'bank_balance': None,
@@ -79,12 +81,30 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str):
         for m in combined:
             text = m['text']
 
+            # Extract Farm Petty Cash (Strict format: "Farm Petty Cash : 1000")
+            if res['farm_petty_cash'] is None:
+                fp_match = re.search(r'(?:farm\s*petty\s*cash)\s*[:=\-]\s*([\d,]+(?:\.\d+)?)', text)
+                if fp_match:
+                    try:
+                        res['farm_petty_cash'] = float(fp_match.group(1).replace(',', ''))
+                    except ValueError:
+                        pass
+
             # Extract Petty Cash / Cash in hand (Strict format: "Petty Cash : 1000" or "Cash in hand - 1000")
             if res['petty_cash'] is None:
-                p_match = re.search(r'(?:petty\s*cash|cash\s*in\s*hand|closing\s*cash|day\s*book)\s*[:=\-]\s*([\d,]+(?:\.\d+)?)', text)
+                p_match = re.search(r'(?<!farm\s)(?:petty\s*cash|cash\s*in\s*hand|closing\s*cash|day\s*book)\s*[:=\-]\s*([\d,]+(?:\.\d+)?)', text)
                 if p_match:
                     try:
                         res['petty_cash'] = float(p_match.group(1).replace(',', ''))
+                    except ValueError:
+                        pass
+
+            # Extract Undeposited Funds (Strict format: "Undeposited Funds : 1000")
+            if res['undeposited_funds'] is None:
+                uf_match = re.search(r'(?:undeposited\s*funds?)\s*[:=\-]\s*([\d,]+(?:\.\d+)?)', text)
+                if uf_match:
+                    try:
+                        res['undeposited_funds'] = float(uf_match.group(1).replace(',', ''))
                     except ValueError:
                         pass
 
@@ -115,9 +135,9 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str):
                     except ValueError:
                         pass
 
-            # Extract SBI Term Loan (Strict format: "SBI Term Loan : 22823573.77")
+            # Extract SBI Term Loan (e.g. "SBI TERM LOAN ACCOUNT: -22673573.77" or "SBI Term Loan : 22823573.77")
             if res['sbi_term_loan'] is None:
-                loan_match = re.search(r'(?:sbi\s*term\s*loan|term\s*loan)\s*[:=\-]\s*([\d,]+(?:\.\d+)?)', text)
+                loan_match = re.search(r'(?:sbi\s*term\s*loan(?:\s*account)?|term\s*loan(?:\s*account)?|5637)\s*[:=\-]?\s*(-?[\d,]+(?:\.\d+)?)', text)
                 if loan_match:
                     try:
                         val = float(loan_match.group(1).replace(',', ''))
@@ -125,18 +145,15 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str):
                     except ValueError:
                         pass
 
-            # Extract SUNFRA FARM OD (Strict format: "SUNFRA FARM OD : 19000")
+            # Extract SUNFRA FARM OD (e.g. "SUNFRA FARM OD: -27096358.90" or "SUNFRA FARM OD:-28712530.90")
             if res['sunfra_farm_od'] is None:
-                od_match = re.search(r'(?:sunfra\s*farm\s*od|od\s*balance|od-0718)\s*[:=\-]\s*([\d,]+(?:\.\d+)?)', text)
+                od_match = re.search(r'(?:sunfra\s*farm\s*od|farm\s*od|od\s*balance|od-0718|0718)\s*[:=\-]?\s*(-?[\d,]+(?:\.\d+)?)', text)
                 if od_match:
                     try:
                         val = float(od_match.group(1).replace(',', ''))
                         res['sunfra_farm_od'] = -abs(val)
                     except ValueError:
                         pass
-
-            if res['petty_cash'] is not None and res['bank_balance'] is not None:
-                break
     except Exception as e:
         logger.error(f"Error extracting physical balances for group {exact_group_name}: {e}")
     finally:
@@ -369,7 +386,11 @@ def generate_and_send_sunfra_corporate_reconciliation_report(recipient_phone: st
         f"📅 *Date:* {today_str}",
         "--------------------------------------------------",
         "💰 *Active Account Balances (Sunfra Corporate)*:",
-        format_reconciliation_block("Petty Cash (Cash In Hand)", physical.get('petty_cash'), accounts.get('petty_cash', 0.0)),
+        format_reconciliation_block("Farm Petty Cash", physical.get('farm_petty_cash'), accounts.get('farm_petty_cash', 0.0)),
+        "",
+        format_reconciliation_block("Petty Cash", physical.get('petty_cash'), accounts.get('petty_cash', 0.0)),
+        "",
+        format_reconciliation_block("Undeposited Funds", physical.get('undeposited_funds'), accounts.get('undeposited_funds', 0.0)),
         "",
         format_reconciliation_block("Total Available Bank Balance", physical.get('bank_balance'), accounts.get('total_bank_balance', 0.0)),
         "",

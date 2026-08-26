@@ -62,7 +62,7 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
       - MANAGER_PHONE=${MANAGER_PHONE}
-      - WAHA_URL=http://waha:3000
+      - WAHA_URL=http://host.docker.internal:3000
       - WAHA_SESSION=${WAHA_SESSION}
       - WAHA_API_KEY=${WAHA_API_KEY}
       - AI_PROVIDER=${AI_PROVIDER}

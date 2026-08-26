@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     DB_USER: str = os.getenv("DB_USER", "u632391467_yaswanth")
     DB_PASS: str = os.getenv("DB_PASS", "Yaswanth@2026Cc!")
     MANAGER_PHONE: str = os.getenv("MANAGER_PHONE", "917975209680")
-    WAHA_URL: str = os.getenv("WAHA_URL", "http://waha:3000")
+    WAHA_URL: str = os.getenv("WAHA_URL", "http://host.docker.internal:3000")
     WAHA_SESSION: str = os.getenv("WAHA_SESSION", "default")
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")

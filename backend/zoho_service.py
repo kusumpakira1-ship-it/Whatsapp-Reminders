@@ -136,6 +136,8 @@ def get_chart_of_accounts(access_token: str = None, org_id: str = None) -> dict:
         
     accounts = {
         "petty_cash": 0.0,
+        "farm_petty_cash": 0.0,
+        "undeposited_funds": 0.0,
         "sbi_term_loan": 0.0,
         "sunfra_farm_od": 0.0,
         "sunfra_farms_bank": 0.0,
@@ -159,8 +161,12 @@ def get_chart_of_accounts(access_token: str = None, org_id: str = None) -> dict:
                 balance = float(acc.get("bcy_balance", 0) or acc.get("balance", 0) or 0.0)
                 name_lower = acc_name.lower()
                 
-                if "petty cash" in name_lower:
+                if "farm petty cash" in name_lower or "farm_petty_cash" in name_lower:
+                    accounts["farm_petty_cash"] = balance
+                elif "petty cash" in name_lower:
                     accounts["petty_cash"] = balance
+                elif "undeposited" in name_lower:
+                    accounts["undeposited_funds"] = balance
                 elif "term loan" in name_lower:
                     accounts["sbi_term_loan"] = balance
                 elif "od" in name_lower or "overdraft" in name_lower:

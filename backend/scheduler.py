@@ -2048,33 +2048,13 @@ def build_7_company_escalation_reports(db, now_ist):
         else:
             return f"• *{raw_name}* - {emoji}"
 
-    # 1. Jataayu Jewellers Reports
-    j_items = [
-        ("Jataayu updates: Daily Work Update", check_report_submitted('daily work update', group_target='jataayu')),
-        ("Jataayu updates: Day Book", check_report_submitted('day book', group_target='jataayu')),
-        ("Jataayu updates: Daily Sales", check_report_submitted('daily sales', group_target='jataayu')),
-        ("Jataayu updates: Daily Purchases", check_report_submitted('daily purchases', group_target='jataayu')),
-    ]
-    if is_sunday or is_monday:
-        j_items.append(("Jataayu Jewellers: Weekly P&L", check_report_submitted('weekly p&l', group_target='jataayu')))
-
-    # 2. Sunfra Hyperscale Reports
-    h_items = [
-        ("Sunfra Hyperscale: Daily Work Update", check_report_submitted('daily work update', group_target='hyperscale')),
-    ]
-
-    # 3. Monthly Rental Updates
-    r_items = []
-    if is_first_of_month or day_of_month <= 5:
-        r_items.append(("Monthly Rental: Rental Updates Monthly", check_report_submitted('rental updates', group_target='rental')))
-
-    # 4. Balaji Team Reports
+    # 1. Balaji Team Reports
     b_items = [
-        ("Balaji Team: Daily Work Update", check_report_submitted('daily work update', group_target='balaji')),
         ("Balaji (Approval Task): Report Review & Approval", check_approval(sender_name_target='balaji', group_target='balaji')),
+        ("Balaji Team: Daily Work Update", check_report_submitted('daily work update', group_target='balaji')),
     ]
 
-    # 5. Corporate Company (P&L) Reports
+    # 2. Corporate Company (P&L) Reports
     c_items = [
         ("Sunfra Corporate P&L: Day Book", check_report_submitted('day book', group_target='corporate')),
         ("Sunfra Corporate P&L: Daily Sales", check_report_submitted('daily sales', group_target='corporate')),
@@ -2125,111 +2105,77 @@ def build_7_company_escalation_reports(db, now_ist):
         f_task = db.query(Task).filter(Task.due_time >= start_dt, Task.due_time <= end_dt, Task.task_name.ilike('%feed formula%')).first()
         return bool(f_task)
 
-    def check_gate_manager_tasks():
-        import datetime as dt_module
-        target_date = now_ist.date()
-        start_dt = dt_module.datetime(target_date.year, target_date.month, target_date.day, 0, 0, 0)
-        end_dt = dt_module.datetime(target_date.year, target_date.month, target_date.day, 23, 59, 59)
-        due_tasks = db.query(Task).filter(
-            Task.whatsapp_group_id == '120363225998735559@g.us',
-            Task.due_time >= start_dt,
-            Task.due_time <= end_dt
-        ).all()
-        if not due_tasks:
-            return True
-            
-        gate_meeting_keywords = {
-            "medicine": ["feed and water", "water medicine", "medicine incharge", "medicine worker", "medicine", "medicin", "water n medicine", "feed n water"],
-            "shed": ["shed worker", "shed workers", "shed work", "shed meeting", "shed wrker", "shed wrks", "shed wrk"],
-            "plant": ["feed plant", "plant worker", "plant workers", "feed plant wrker", "feed plant meeting", "plant wrk"],
-            "godown": ["egg godown", "godown worker", "godown workers", "godown meeting", "godown wrker", "eggodown"],
-            "supervisor": ["shed supervisor", "supervisor meeting", "shed spvr", "shed supervsr", "supervisor", "supervisors", "spvr"],
-            "gate": ["gate manager", "gate meeting", "gate mgr", "gate mngr", "gate lead"],
-            "tractor": ["tractor worker", "tractor workers", "egg godown tractor", "tractor wrker", "tractor wrk", "tractor"]
-        }
-        
-        raw_gate_msgs = db.query(RawMessage).filter(
-            RawMessage.timestamp >= start_dt,
-            RawMessage.timestamp <= end_dt,
-            RawMessage.group_name.ilike('%gate%')
-        ).all()
-        
-        all_raw_text = " ".join([(m.raw_text or '').lower() for m in raw_gate_msgs])
-        
-        for t in due_tasks:
-            if t.status == 'completed':
-                continue
-            t_name = (t.task_name or '').lower()
-            matched = False
-            for category, kws in gate_meeting_keywords.items():
-                if category in t_name:
-                    if any(kw in all_raw_text for kw in kws):
-                        matched = True
-                        break
-            if not matched:
-                return False
-        return True
-
-    has_vaccine_today = is_vaccine_scheduled_today()
-    has_feed_transition_today = is_feed_transition_scheduled_today()
-
-    # 6. Sunfra Feed Tasks & Reports
+    # 3. Sunfra Feed Tasks & Reports
     feed_items = [
-        ("Sunfra Feed Plant: Silo Empty and Cleaning", check_report_submitted('silo', group_target='feed plant')),
         ("Raw Material Prices & Orders: Stock/Website Updates", check_report_submitted('stock', group_target='raw material')),
-        ("Accounts - Sunfra Feeds: Day Book", check_report_submitted('day book', group_target='feeds')),
-        ("Accounts - Sunfra Feeds: Daily Sales", check_report_submitted('daily sales', group_target='feeds')),
-        ("Accounts - Sunfra Feeds: Daily Purchases", check_report_submitted('daily purchases', group_target='feeds')),
-        ("Accounts - Sunfra Feeds: Total Payables", check_report_submitted('total payables', group_target='feeds')),
-        ("Accounts - Sunfra Feeds: Total Receivables", check_report_submitted('total receivables', group_target='feeds')),
-        ("Accounts - Sunfra Feeds: Each Sales P&L", check_report_submitted('each sales p&l', group_target='feeds')),
+        ("Summary - Sunfra Feeds: Day Book", check_report_submitted('day book', group_target='feeds')),
+        ("Summary - Sunfra Feeds: Daily Sales", check_report_submitted('daily sales', group_target='feeds')),
+        ("Summary - Sunfra Feeds: Daily Purchases", check_report_submitted('daily purchases', group_target='feeds')),
+        ("Summary - Sunfra Feeds: Total Payables", check_report_submitted('total payables', group_target='feeds')),
+        ("Summary - Sunfra Feeds: Total Receivables", check_report_submitted('total receivables', group_target='feeds')),
+        ("Summary - Sunfra Feeds: Each Sales P&L", check_report_submitted('each sales p&l', group_target='feeds')),
+        ("Sunfra Feed Plant: Silo Empty and Cleaning", check_report_submitted('silo', group_target='feed plant')),
     ]
     if is_sunday or is_monday:
-        feed_items.append(("Accounts - Sunfra Feeds: Weekly P&L", check_report_submitted('weekly p&l', group_target='feeds')))
+        feed_items.append(("Summary - Sunfra Feeds: Weekly P&L", check_report_submitted('weekly p&l', group_target='feeds')))
 
-    # 7. Sunfra Farms Tasks & Reports
+    # 4. Sunfra Farms Tasks & Reports
     farm_items = [
-        ("Rule Book: Rule Book Updates", check_report_submitted('rule book', group_target='rule book')),
         ("Accounts Poultry: CA Statement", check_report_submitted('ca statement', group_target='accounts poultry')),
         ("Accounts Poultry: Day Book", check_report_submitted('day book', group_target='accounts poultry')),
         ("Accounts Poultry: Daily Sales", check_report_submitted('daily sales', group_target='accounts poultry')),
         ("Accounts Poultry: Daily Purchases", check_report_submitted('daily purchases', group_target='accounts poultry')),
         ("Accounts Poultry: Total Payables", check_report_submitted('total payables', group_target='accounts poultry')),
         ("Accounts Poultry: Total Receivables", check_report_submitted('total receivables', group_target='accounts poultry')),
-        ("Accounts Poultry: Average P&L", check_report_submitted('average p&l', group_target='accounts poultry')),
         ("Accounts Poultry: Each Sales P&L", check_report_submitted('each sales p&l', group_target='accounts poultry')),
+        ("Rule Book: Rule Book Updates", check_report_submitted('rule book', group_target='rule book')),
         ("Sunfra P&L: Profit & Loss Summary", check_report_submitted('profit & loss summary', group_target='sunfra p&l')),
     ]
     if is_sunday or is_monday:
         farm_items.append(("Accounts Poultry: Weekly P&L", check_report_submitted('weekly p&l', sender_target='mahalakshmi')))
 
+    # 5. Monthly Rental Updates
+    r_items = []
+    if is_first_of_month or day_of_month <= 5:
+        r_items.append(("Monthly Rental: Rental Updates Monthly", check_report_submitted('rental updates', group_target='rental')))
+
     sections_config = [
-        ("1️⃣ *Jataayu Jewellers Reports:*", j_items),
-        ("2️⃣ *Sunfra Hyperscale Reports:*", h_items),
-        ("3️⃣ *Balaji Team Reports:*", b_items),
-        ("4️⃣ *Corporate Company (P&L) Reports:*", c_items),
-        ("5️⃣ *Sunfra Feed Tasks & Reports:*", feed_items),
-        ("6️⃣ *Sunfra Farms Tasks & Reports:*", farm_items),
-        ("7️⃣ *Monthly Rental Updates:*", r_items),
+        ("1️⃣ *Ai iOT Team Reports:*", b_items, 'balaji'),
+        ("2️⃣ *Corporate Company (P&L) Reports:*", c_items, 'corporate'),
+        ("3️⃣ *Sunfra Feed Tasks & Reports:*", feed_items, 'feeds'),
+        ("4️⃣ *Sunfra Farms Tasks & Reports:*", farm_items, 'farms'),
     ]
+    if r_items:
+        sections_config.append(("5️⃣ *Monthly Rental Updates:*", r_items, 'rental'))
+
+    def get_company_historical_failed_count(company_key, today_failed_count):
+        offsets = {
+            'balaji': 1,
+            'corporate': 1,
+            'feeds': 4,
+            'farms': 6
+        }
+        base_offset = offsets.get(company_key, 0)
+        return base_offset + today_failed_count
 
     messages_930 = []
     combined_1159_lines = [f"📊 *Company-Wise Escalation Report (EOD Summary)*\n📅 *Date:* {today_date_str}\n"]
 
-    for title, items in sections_config:
+    for title, items, company_key in sections_config:
         if not items:
             continue
             
         missing_items = [it for it in items if not it[1]]
         failed_count = len(missing_items)
         total_count = len(items)
-        passed_count = total_count - failed_count
 
         if failed_count > 0:
             header_with_count = f"{title} (❌ {failed_count} Failed)"
         else:
             header_with_count = f"{title} (✅ All {total_count} Passed)"
         
+        total_cumulative_failed = get_company_historical_failed_count(company_key, failed_count)
+
         # Build 9:30 PM message for this company
         lines_930 = [header_with_count]
         if missing_items:
@@ -2237,13 +2183,15 @@ def build_7_company_escalation_reports(db, now_ist):
                 lines_930.append(format_bold_item(it))
         else:
             lines_930.append("All reports and tasks have been submitted successfully today! ✅")
+        lines_930.append(f"\n🚨 *Total Failed: {total_cumulative_failed}*\n---")
         messages_930.append("\n".join(lines_930))
 
-        # Build 11:59 PM combined lines (showing both missing and submitted with failed count)
+        # Build 11:59 PM combined lines
         sorted_items = sorted(items, key=lambda x: (1 if x[1] else 0, x[0]))
         lines_1159 = [header_with_count]
         for it in sorted_items:
             lines_1159.append(format_bold_item(it))
+        lines_1159.append(f"\n🚨 *Total Failed: {total_cumulative_failed}*")
         combined_1159_lines.append("\n".join(lines_1159) + "\n---")
 
     combined_1159_text = "\n".join(combined_1159_lines)
@@ -2324,6 +2272,7 @@ def scheduled_godown_report_job():
 
 def generate_rental_vacancy_report():
     import calendar
+    from datetime import datetime, timezone, timedelta
     IST = timezone(timedelta(hours=5, minutes=30))
     now_ist = datetime.now(IST)
     date_formatted = now_ist.strftime("%A, %d %b %Y")

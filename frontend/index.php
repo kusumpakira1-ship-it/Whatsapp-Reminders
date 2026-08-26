@@ -22,18 +22,6 @@ if (function_exists('opcache_reset')) { @opcache_reset(); }
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
-// Route API & Standalone Quick Reminder Triggers
-$req_uri = strtolower($_SERVER['REQUEST_URI'] ?? '');
-if ((isset($_GET['action']) && $_GET['action'] === 'trigger_reminder') || strpos($req_uri, 'trigger_reminder') !== false || (isset($_GET['phone']) && isset($_GET['message']))) {
-    if (file_exists(__DIR__ . '/trigger_reminder.php')) {
-        require_once __DIR__ . '/trigger_reminder.php';
-        exit;
-    } elseif (file_exists(dirname(__DIR__) . '/trigger_reminder.php')) {
-        require_once dirname(__DIR__) . '/trigger_reminder.php';
-        exit;
-    }
-}
-
 // 1. Database Connection with Persistent Pooling & Fallback Protection
 try {
     if (file_exists('../database.php')) {
