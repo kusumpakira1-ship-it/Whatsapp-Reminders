@@ -3084,5 +3084,9 @@ def setup_scheduler():
         # Schedule database polling for unified reminders every 1 minute
         scheduler.add_job(poll_and_execute_unified_reminders, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="poll_unified_reminders_job")
         
+    # Schedule Water Telemetry & Device OFF monitoring every 5 minutes
+    from water_monitoring import check_and_dispatch_water_alerts
+    scheduler.add_job(check_and_dispatch_water_alerts, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="water_monitoring_job")
+
     scheduler.start()
     logger.info("APScheduler started.")
