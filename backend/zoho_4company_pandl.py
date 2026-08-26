@@ -116,7 +116,7 @@ def fetch_today_sales_and_purchases(access_token: str, org_id: str, today_date_s
         if res_exp.status_code == 200:
             exps = res_exp.json().get("expenses", [])
             purch_count += len(exps)
-            today_purchases += sum(float(e.get("amount", 0) or 0.0) for e in exps)
+            today_purchases += sum(float(e.get("total", 0) or e.get("amount", 0) or e.get("biller_amount", 0) or 0.0) for e in exps)
     except Exception as e:
         logger.error(f"Error fetching today sales/purchases for org {org_id}: {e}")
         
@@ -133,7 +133,7 @@ def format_currency(val):
 def generate_4company_pandl_report():
     """
     Generates the 4-Company Daily P&L Report for Today (Today's Sales minus Today's Purchases/Expenses)
-    along with Stock Valuation, Receivables, Payables, and Negative Stock Items.
+    along with Stock Valuation, Receivables, Payables, Net Financial Position, and Negative Stock Items.
     """
     now_ist = datetime.now(IST)
     today_date_str = now_ist.strftime("%Y-%m-%d")
@@ -169,17 +169,23 @@ def generate_4company_pandl_report():
         rec_total = float(receivables_data.get('total_amount', 0.0) or receivables_data.get('total_balance', 0.0) or 0.0)
         pay_total = float(payables_data.get('total_amount', 0.0) or payables_data.get('total_balance', 0.0) or 0.0)
         
+        # Overall Net Position = (Stock + Receivables + Bank) - Payables
+        net_financial_position = (stock_val + rec_total + bank_total) - pay_total
+        
         msg_lines.append(f"{emoji} *{name}*")
         msg_lines.append(f"📈 *Today's Sales:* *{format_currency(today_sales)}* ({sales_cnt} invoices)")
         msg_lines.append(f"📋 *Today's Costs/Purchases:* *{format_currency(today_costs)}* ({cost_cnt} items)")
         
         pl_status = "✅ Daily Profit" if today_daily_pl >= 0 else "⚠️ Daily Loss"
-        msg_lines.append(f"🧮 *TODAY'S DAILY P&L:* *{format_currency(today_daily_pl)}* ({pl_status})")
+        msg_lines.append(f"🧮 *TODAY'S DAILY NET P&L:* *{format_currency(today_daily_pl)}* ({pl_status})")
         msg_lines.append("--------------------------------------------------")
         msg_lines.append(f"📦 *Stock Valuation:* *{format_currency(stock_val)}*")
         msg_lines.append(f"💰 *Bank & Cash Balance:* *{format_currency(bank_total)}*")
         msg_lines.append(f"📈 *Total Receivables:* *{format_currency(rec_total)}*")
         msg_lines.append(f"📋 *Total Payables:* *{format_currency(pay_total)}*")
+        
+        net_pos_status = "✅ Profit" if net_financial_position >= 0 else "⚠️ Deficit"
+        msg_lines.append(f"⚖️ *Overall Net Financial Position:* *{format_currency(net_financial_position)}* ({net_pos_status})")
         
         # Negative Stock Items warning (List ALL items as requested)
         if neg_items:
