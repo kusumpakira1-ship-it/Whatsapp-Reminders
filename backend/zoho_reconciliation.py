@@ -20,14 +20,14 @@ IST = timezone(timedelta(hours=5, minutes=30))
 
 def extract_physical_balances_from_whatsapp(exact_group_name: str):
     """
-    Parses WhatsApp messages from the designated group and sender LIDs for each company:
-    - 'Accounts Poultry' / '184791135711366' for Sunfra Farms
-    - 'Summary - Sunfra Feeds' / '45586833240126' for Sunfra Feeds
-    - 'Sunfra Corporate P&L' / '56556230058144' for Sunfra Corporate
+    Parses WhatsApp messages from designated group names and sender LIDs for each company:
+    - 'Accounts Poultry' for Sunfra Farms
+    - 'Summary - Sunfra Feeds' / 'Accounts - Sunfra Feeds' for Sunfra Feeds
+    - 'Sunfra Corporate P&L' for Sunfra Corporate
     to extract reported physical balances for Petty Cash, Bank, Term Loan, and OD.
     """
-    from sqlalchemy import or_, desc
-    from models import Group, WhatsAppMessage
+    from sqlalchemy import desc
+    from models import RawMessage, WhatsAppMessage
     db = SessionLocal()
     res = {
         'petty_cash': None,
@@ -41,8 +41,8 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str):
     }
     try:
         company_targets = {
-            'accounts poultry': ['accounts poultry', 'sunfra farms', '120363042907512705', '184791135711366'],
-            'summary - sunfra feeds': ['summary - sunfra feeds', 'sunfra feeds', 'feeds', '120363428748481277', '45586833240126'],
+            'accounts poultry': ['accounts poultry', 'sunfra farms', 'payments - sunfra farms', '120363042907512705', '184791135711366'],
+            'summary - sunfra feeds': ['summary - sunfra feeds', 'accounts - sunfra feeds', 'sunfra feeds', 'payments - sunfra feeds', 'feeds', '120363428748481277', '45586833240126'],
             'sunfra corporate p&l': ['sunfra corporate p&l', 'sunfra corporate', 'corporate', '120363425581380088', '56556230058144']
         }
         
@@ -57,18 +57,18 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str):
             grp = (m.group_name or '').lower()
             snd = (m.sender or '').lower()
             if any(t in grp or t in snd for t in targets):
-                combined.append({'text': (m.raw_text or '').lower(), 'ts': m.timestamp})
+                combined.append({'text': m.raw_text or '', 'ts': m.timestamp})
                 
         for m in wa_msgs:
             grp = (m.group_id or '').lower()
             snd = (m.sender_id or '').lower()
             if any(t in grp or t in snd for t in targets):
-                combined.append({'text': (m.message_text or '').lower(), 'ts': m.timestamp})
+                combined.append({'text': m.message_text or '', 'ts': m.timestamp})
 
         now_ist = datetime.now(IST)
         today_date = now_ist.date()
         
-        # Filter to messages submitted TODAY ONLY
+        # Filter strictly to messages posted TODAY ONLY per user explicit directive
         today_combined = [m for m in combined if m['ts'] and m['ts'].astimezone(IST).date() == today_date]
         today_combined.sort(key=lambda x: x['ts'], reverse=True)
 
@@ -77,63 +77,63 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str):
             if not text:
                 continue
 
-            # Extract Farm Petty Cash (Strict format: "Farm Petty Cash : 1000")
+            # Extract Farm Petty Cash
             if res['farm_petty_cash'] is None:
-                fp_match = re.search(r'(?:farm\s*petty\s*cash)\s*[:=\-]\s*([\d,]+(?:\.\d+)?)', text)
+                fp_match = re.search(r'(?:farm\s*petty\s*cash|farm\s*cash|farm\s*pettycash)\s*[:=\-]?\s*(?:₹|rs\.?|inr)?\s*(-?[\d,]+(?:\.\d+)?)\s*(?:/\-)?', text, re.I)
                 if fp_match:
                     try:
                         res['farm_petty_cash'] = float(fp_match.group(1).replace(',', ''))
                     except ValueError:
                         pass
 
-            # Extract Petty Cash / Cash in hand (Strict format: "Petty Cash : 1000" or "Cash in hand - 1000")
+            # Extract Petty Cash / Cash in hand / Day Book
             if res['petty_cash'] is None:
-                p_match = re.search(r'(?<!farm\s)(?:petty\s*cash|cash\s*in\s*hand|closing\s*cash|day\s*book)\s*[:=\-]\s*([\d,]+(?:\.\d+)?)', text)
+                p_match = re.search(r'(?<!farm\s)(?:petty\s*cash|pettycash|cash\s*in\s*hand|closing\s*cash|cash\s*balance|cash\s*bal|day\s*book|daybook)\s*[:=\-]?\s*(?:₹|rs\.?|inr)?\s*(-?[\d,]+(?:\.\d+)?)\s*(?:/\-)?', text, re.I)
                 if p_match:
                     try:
                         res['petty_cash'] = float(p_match.group(1).replace(',', ''))
                     except ValueError:
                         pass
 
-            # Extract Undeposited Funds (Strict format: "Undeposited Funds : 1000")
+            # Extract Undeposited Funds
             if res['undeposited_funds'] is None:
-                uf_match = re.search(r'(?:undeposited\s*funds?)\s*[:=\-]\s*([\d,]+(?:\.\d+)?)', text)
+                uf_match = re.search(r'(?:undeposited\s*funds?|undeposited\s*fund|undeposited)\s*[:=\-]?\s*(?:₹|rs\.?|inr)?\s*(-?[\d,]+(?:\.\d+)?)\s*(?:/\-)?', text, re.I)
                 if uf_match:
                     try:
                         res['undeposited_funds'] = float(uf_match.group(1).replace(',', ''))
                     except ValueError:
                         pass
 
-            # Extract SUNFRA FARMS Bank (Strict format: "SUNFRA FARMS Bank : 861742.99")
+            # Extract SUNFRA FARMS Bank
             if res['sunfra_farms_bank'] is None:
-                sf_match = re.search(r'(?:sunfra\s*farms?\s*bank|farms?\s*bank)\s*[:=\-]\s*([\d,]+(?:\.\d+)?)', text)
+                sf_match = re.search(r'(?:sunfra\s*farms?\s*bank|farms?\s*bank|sunfra\s*farm\s*bank|farm\s*bank|sunfra\s*bank)\s*[:=\-]?\s*(?:₹|rs\.?|inr)?\s*(-?[\d,]+(?:\.\d+)?)\s*(?:/\-)?', text, re.I)
                 if sf_match:
                     try:
                         res['sunfra_farms_bank'] = float(sf_match.group(1).replace(',', ''))
                     except ValueError:
                         pass
 
-            # 3. Extract Sunfra Indian Bank
+            # Extract Sunfra Indian Bank
             if res['sunfra_indian_bank'] is None:
-                ib_match = re.search(r'(?:indian\s*bank|sunfra\s*indian\s*bank)\s*[:=\-]\s*([\d,]+(?:\.\d+)?)', text)
+                ib_match = re.search(r'(?:indian\s*bank|sunfra\s*indian\s*bank|indian\s*bank\s*bal)\s*[:=\-]?\s*(?:₹|rs\.?|inr)?\s*(-?[\d,]+(?:\.\d+)?)\s*(?:/\-)?', text, re.I)
                 if ib_match:
                     try:
                         res['sunfra_indian_bank'] = float(ib_match.group(1).replace(',', ''))
                     except ValueError:
                         pass
 
-            # 4. Extract Total Available Bank Balance / Bank Balance
+            # Extract Total Available Bank Balance / Bank Balance
             if res['bank_balance'] is None:
-                b_match = re.search(r'(?:total\s*available\s*bank\s*balance|total\s*available\s*bank|available\s*bank\s*balance|available\s*bank|bank\s*balance|total\s*bank|bank)\s*[:=\-]\s*([\d,]+(?:\.\d+)?)', text)
+                b_match = re.search(r'(?:total\s*available\s*bank\s*balance|total\s*available\s*bank|available\s*bank\s*balance|available\s*bank|bank\s*balance|bank\s*bal|total\s*bank|feeds\s*bank|corporate\s*bank)\s*[:=\-]?\s*(?:₹|rs\.?|inr)?\s*(-?[\d,]+(?:\.\d+)?)\s*(?:/\-)?', text, re.I)
                 if b_match:
                     try:
                         res['bank_balance'] = float(b_match.group(1).replace(',', ''))
                     except ValueError:
                         pass
 
-            # Extract SBI Term Loan (e.g. "SBI TERM LOAN ACCOUNT: -22673573.77" or "SBI Term Loan : 22823573.77")
+            # Extract SBI Term Loan
             if res['sbi_term_loan'] is None:
-                loan_match = re.search(r'(?:sbi\s*term\s*loan(?:\s*account)?|term\s*loan(?:\s*account)?|5637)\s*[:=\-]?\s*(-?[\d,]+(?:\.\d+)?)', text)
+                loan_match = re.search(r'(?:sbi\s*term\s*loan(?:\s*account)?|term\s*loan(?:\s*account)?|sbi\s*loan|loan\s*account|5637)\s*[:=\-]?\s*(?:₹|rs\.?|inr)?\s*(-?[\d,]+(?:\.\d+)?)\s*(?:/\-)?', text, re.I)
                 if loan_match:
                     try:
                         val = float(loan_match.group(1).replace(',', ''))
@@ -141,16 +141,16 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str):
                     except ValueError:
                         pass
 
-            # Extract SUNFRA FARM OD (e.g. "SUNFRA FARM OD: -27096358.90" or "SUNFRA FARM OD:-28712530.90")
+            # Extract SUNFRA FARM OD
             if res['sunfra_farm_od'] is None:
-                od_match = re.search(r'(?:sunfra\s*farm\s*od|farm\s*od|od\s*balance|od-0718|0718)\s*[:=\-]?\s*(-?[\d,]+(?:\.\d+)?)', text)
+                od_match = re.search(r'(?:sunfra\s*farm\s*od|farm\s*od|od\s*balance|od\s*bal|od-0718|0718)\s*[:=\-]?\s*(?:₹|rs\.?|inr)?\s*(-?[\d,]+(?:\.\d+)?)\s*(?:/\-)?', text, re.I)
                 if od_match:
                     try:
                         val = float(od_match.group(1).replace(',', ''))
                         res['sunfra_farm_od'] = -abs(val)
                     except ValueError:
-            if res['petty_cash'] is not None and (res['bank_balance'] is not None or res['sunfra_farms_bank'] is not None):
-                break
+                        pass
+
     except Exception as e:
         logger.error(f"Error extracting physical balances for group {exact_group_name}: {e}")
     finally:
@@ -158,37 +158,59 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str):
     return res
 
 
-def format_reconciliation_block(name: str, physical_val: float, zoho_val: float):
-    def fmt_curr(val):
+def format_indian_currency(val, show_symbol=True) -> str:
+    try:
         v = float(val or 0.0)
-        if v < 0:
-            return f"-Rs. {abs(v):,.2f}"
-        return f"Rs. {v:,.2f}"
+    except (ValueError, TypeError):
+        v = 0.0
+    
+    is_negative = v < 0
+    v = abs(v)
+    
+    s = f"{v:.2f}"
+    integer_part, decimal_part = s.split('.')
+    
+    if len(integer_part) > 3:
+        last_three = integer_part[-3:]
+        other_digits = integer_part[:-3]
+        groups = []
+        while len(other_digits) > 2:
+            groups.insert(0, other_digits[-2:])
+            other_digits = other_digits[:-2]
+        if other_digits:
+            groups.insert(0, other_digits)
+        formatted_int = ",".join(groups) + "," + last_three
+    else:
+        formatted_int = integer_part
+        
+    formatted_val = f"{formatted_int}.{decimal_part}"
+    prefix = "-" if is_negative else ""
+    symbol = "Rs. " if show_symbol else ""
+    return f"{prefix}{symbol}{formatted_val}"
 
+
+def format_reconciliation_block(name: str, physical_val: float, zoho_val: float):
     if physical_val is None:
-        return f"• *{name}*:\n  Physical: *Not Updated*  Zoho: *{fmt_curr(zoho_val)}* ⚠️"
+        return f"• *{name}*:\n  Physical: *Not Updated Today*  Zoho: *{format_indian_currency(zoho_val)}* ⚠️"
     else:
         diff = physical_val - zoho_val
         if abs(diff) < 0.01:
-            return f"• *{name}*:\n  Physical: *{fmt_curr(physical_val)}*  Zoho: *{fmt_curr(zoho_val)}* ✅"
+            return f"• *{name}*:\n  Physical: *{format_indian_currency(physical_val)}*  Zoho: *{format_indian_currency(zoho_val)}* ✅"
         else:
             diff_sign = "+" if diff > 0 else "-"
-            return f"• *{name}*:\n  Physical: *{fmt_curr(physical_val)}*  Zoho: *{fmt_curr(zoho_val)}* ⚠️ (Diff: {diff_sign}Rs. {abs(diff):,.2f})"
+            return f"• *{name}*:\n  Physical: *{format_indian_currency(physical_val)}*  Zoho: *{format_indian_currency(zoho_val)}* ⚠️ (Diff: {diff_sign}{format_indian_currency(abs(diff))})"
 
 
 def format_receivables_breakdown(receivables_dict: dict):
-    def fmt_curr(val):
-        v = float(val or 0.0)
-        if v < 0:
-            return f"-Rs. {abs(v):,.2f}"
-        return f"Rs. {v:,.2f}"
-
     cnt = receivables_dict.get("count", 0) if isinstance(receivables_dict, dict) else 0
     tot = receivables_dict.get("total_amount", 0.0) if isinstance(receivables_dict, dict) else float(receivables_dict or 0.0)
-    details = receivables_dict.get("details", []) if isinstance(receivables_dict, dict) else []
+    details = list(receivables_dict.get("details", [])) if isinstance(receivables_dict, dict) else []
+
+    # Sort in descending order of OD (aging_days), then balance
+    details.sort(key=lambda x: (x.get("aging_days", 0), x.get("balance", 0.0)), reverse=True)
 
     lines = [f"📈 *Customer Receivables Breakdown*:"]
-    lines.append(f"• Total Pending: *{cnt} Invoices* | Balance: *{fmt_curr(tot)}*")
+    lines.append(f"• Total Pending: *{cnt} Invoices* | Balance: *{format_indian_currency(tot)}*")
 
     if details:
         total_items = len(details)
@@ -197,22 +219,19 @@ def format_receivables_breakdown(receivables_dict: dict):
             amt = item.get("balance", 0.0)
             days = item.get("aging_days", 0)
             connector = "└" if idx == total_items else "├"
-            lines.append(f"  {connector} {idx}. *{c_name}*: *{fmt_curr(amt)}* (OD {days})")
+            lines.append(f"  {connector} {idx}. *{c_name}*: *{format_indian_currency(amt)}* (OD {days})")
     return "\n".join(lines)
 
 
 def format_payables_breakdown(payables_dict: dict):
-    def fmt_curr(val):
-        v = float(val or 0.0)
-        if v < 0:
-            return f"-Rs. {abs(v):,.2f}"
-        return f"Rs. {v:,.2f}"
-
     cnt = payables_dict.get("count", 0) if isinstance(payables_dict, dict) else 0
     tot = payables_dict.get("total_amount", 0.0) if isinstance(payables_dict, dict) else float(payables_dict or 0.0)
-    details = payables_dict.get("details", []) if isinstance(payables_dict, dict) else []
+    details = list(payables_dict.get("details", [])) if isinstance(payables_dict, dict) else []
 
-    lines = [f"📋 *Vendor Payables Summary*: *{cnt} Pending Bills* | Balance: *{fmt_curr(tot)}*"]
+    # Sort in descending order of OD (aging_days), then balance
+    details.sort(key=lambda x: (x.get("aging_days", 0), x.get("balance", 0.0)), reverse=True)
+
+    lines = [f"📋 *Vendor Payables Summary*: *{cnt} Pending Bills* | Balance: *{format_indian_currency(tot)}*"]
 
     if details:
         total_items = len(details)
@@ -221,7 +240,7 @@ def format_payables_breakdown(payables_dict: dict):
             amt = item.get("balance", 0.0)
             days = item.get("aging_days", 0)
             connector = "└" if idx == total_items else "├"
-            lines.append(f"  {connector} {idx}. *{v_name}*: *{fmt_curr(amt)}* (OD {days})")
+            lines.append(f"  {connector} {idx}. *{v_name}*: *{format_indian_currency(amt)}* (OD {days})")
     return "\n".join(lines)
 
 
@@ -245,7 +264,7 @@ def generate_and_send_zoho_reconciliation_report(recipient_phone: str = None) ->
 
     farms_org_id = "905812487"
     now_ist = datetime.now(IST)
-    today_str = now_ist.strftime("%d %b %Y, %I:%M %p")
+    today_str = now_ist.strftime("%d %b %Y")
     
     # 1. Fetch Zoho Balances & Receivables/Payables for Sunfra Farms
     accounts = get_chart_of_accounts(access_token, farms_org_id)
@@ -269,6 +288,8 @@ def generate_and_send_zoho_reconciliation_report(recipient_phone: str = None) ->
         "💰 *Active Account Balances (Sunfra Farms)*:",
         format_reconciliation_block("Petty Cash", physical.get('petty_cash'), accounts.get('petty_cash', 0.0)),
         "",
+        format_reconciliation_block("Undeposited Funds", physical.get('undeposited_funds'), accounts.get('undeposited_funds', 0.0)),
+        "",
         format_reconciliation_block("SUNFRA FARMS Bank", physical.get('sunfra_farms_bank'), accounts.get('sunfra_farms_bank', 0.0)),
         "",
         format_reconciliation_block("Sunfra Indian Bank", physical.get('sunfra_indian_bank'), accounts.get('sunfra_indian_bank', 0.0)),
@@ -285,6 +306,14 @@ def generate_and_send_zoho_reconciliation_report(recipient_phone: str = None) ->
     report_text = "\n".join(msg_lines)
     logger.info(f"Sending Zoho Reconciliation Report to {target_phone}...")
     success = send_waha_message(target_phone, report_text)
+    
+    # Also dispatch Feeds and Corporate Reconciliation Reports to target recipient
+    try:
+        generate_and_send_sunfra_feeds_reconciliation_report(target_phone)
+        generate_and_send_sunfra_corporate_reconciliation_report(target_phone)
+    except Exception as e_sub:
+        logger.error(f"Error sending Feeds/Corporate reconciliation reports: {e_sub}")
+        
     return success
 
 
@@ -307,7 +336,7 @@ def generate_and_send_sunfra_feeds_reconciliation_report(recipient_phone: str = 
 
     feeds_org_id = "932776276"
     now_ist = datetime.now(IST)
-    today_str = now_ist.strftime("%d %b %Y, %I:%M %p")
+    today_str = now_ist.strftime("%d %b %Y")
     
     # 1. Fetch Zoho Balances for Sunfra Feeds
     accounts = get_chart_of_accounts(access_token, feeds_org_id)
@@ -362,7 +391,7 @@ def generate_and_send_sunfra_corporate_reconciliation_report(recipient_phone: st
 
     corp_org_id = "929124131"
     now_ist = datetime.now(IST)
-    today_str = now_ist.strftime("%d %b %Y, %I:%M %p")
+    today_str = now_ist.strftime("%d %b %Y")
     
     # 1. Fetch Zoho Balances for Sunfra Corporate
     accounts = get_chart_of_accounts(access_token, corp_org_id)

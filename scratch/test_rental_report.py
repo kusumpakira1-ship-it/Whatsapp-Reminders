@@ -115,8 +115,7 @@ def generate_rental_vacancy_report():
         f"• *Empty/Vacant:* {total_vacant_units} Units\n\n"
         f"💰 *FINANCIAL VACANCY LOSS*\n"
         f"• *Daily Loss Today:* ₹{total_daily_loss:,}\n"
-        f"• *MTD Loss ({month_name} 1-{day_num}):* ₹{mtd_loss:,}\n"
-        f"• *Projected Monthly Loss:* ₹{projected_monthly_loss:,}\n\n"
+        f"• *MTD Loss ({month_name} 1-{day_num}):* ₹{mtd_loss:,}\n\n"
         f"📍 *VACANT ROOMS DETAILS*\n"
         + "\n\n".join(property_blocks)
     )

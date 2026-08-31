@@ -259,7 +259,7 @@ def get_receivables_summary(access_token: str = None, org_id: str = None) -> dic
                     "date": inv_date_str,
                     "aging_days": aging_days
                 })
-            summary["details"].sort(key=lambda x: x["balance"], reverse=True)
+            summary["details"].sort(key=lambda x: (x.get("aging_days", 0), x.get("balance", 0.0)), reverse=True)
     except Exception as e:
         logger.error(f"Error fetching Zoho receivables: {e}")
         
@@ -303,7 +303,7 @@ def get_payables_summary(access_token: str = None, org_id: str = None) -> dict:
                     "date": bill_date_str,
                     "aging_days": aging_days
                 })
-            summary["details"].sort(key=lambda x: x["balance"], reverse=True)
+            summary["details"].sort(key=lambda x: (x.get("aging_days", 0), x.get("balance", 0.0)), reverse=True)
     except Exception as e:
         logger.error(f"Error fetching Zoho payables: {e}")
         

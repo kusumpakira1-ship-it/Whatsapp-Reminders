@@ -4,7 +4,7 @@ import re
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from report_generator import generate_daily_reports, generate_custom_report
-from waha_service import send_waha_message, send_waha_file, get_session_status, get_session_qr
+from waha_service import send_waha_message, send_waha_file, get_session_status, get_session_qr, get_waha_url
 from config import settings
 from apscheduler.triggers.date import DateTrigger
 from apscheduler.triggers.interval import IntervalTrigger
@@ -167,7 +167,7 @@ def get_all_waha_groups_map() -> dict:
     import os
     waha_groups_map = {}
     try:
-        waha_url = f"{settings.WAHA_URL}/api/{settings.WAHA_SESSION}/groups"
+        waha_url = f"{get_waha_url()}/api/{settings.WAHA_SESSION}/groups"
         headers = {"Accept": "application/json"}
         api_key = os.getenv("WAHA_API_KEY", "123")
         if api_key:
@@ -908,17 +908,26 @@ def get_next_occurrence(base_time, frequency):
     from datetime import timezone
     IST = timezone(timedelta(hours=5, minutes=30))
     now_ist = datetime.now(IST).replace(tzinfo=None)
+    freq = str(frequency or '').lower().strip()
     while next_time <= now_ist:
-        if frequency == 'weekly':
+        if freq == 'weekly':
             next_time += timedelta(days=7)
-        elif frequency == 'monthly':
+        elif freq in ('mon-sat', 'mon_to_sat', 'mon_sat'):
+            next_time += timedelta(days=1)
+            if next_time.weekday() == 6:  # Sunday -> jump to Monday
+                next_time += timedelta(days=1)
+        elif freq in ('mon-fri', 'mon_to_fri', 'weekdays', 'weekday'):
+            next_time += timedelta(days=1)
+            while next_time.weekday() in (5, 6):  # Sat & Sun -> jump to Monday
+                next_time += timedelta(days=1)
+        elif freq == 'monthly':
             import calendar
             month = next_time.month - 1 + 1
             year = next_time.year + month // 12
             month = month % 12 + 1
             day = min(next_time.day, calendar.monthrange(year, month)[1])
             next_time = next_time.replace(year=year, month=month, day=day)
-        elif frequency == 'yearly':
+        elif freq == 'yearly':
             try:
                 next_time = next_time.replace(year=next_time.year + 1)
             except ValueError:
@@ -1044,6 +1053,11 @@ def poll_and_execute_unified_reminders():
                 group_names_by_id[jid] = name
         
         for r in pending:
+            freq = str(r.frequency or '').lower().strip()
+            if now_ist.weekday() == 6 and freq in ('mon-sat', 'mon_to_sat', 'mon_sat', 'mon-fri', 'mon_to_fri', 'weekdays', 'weekday'):
+                logger.info(f"Skipping reminder ID {r.id} ({r.person_name}) because today is Sunday (Weekly Off) and frequency is '{r.frequency}'.")
+                continue
+
             phones = [p.strip() for p in str(r.person_phone or '').split(',') if p.strip()]
             names = [n.strip() for n in str(r.person_name or '').split(',') if n.strip()]
             
@@ -1772,6 +1786,11 @@ def poll_and_remind_tasks_job():
         # In-memory tracking: only alert once per interval window (NOT every poll cycle)
         tasks = db.query(Task).filter(Task.status == 'overdue').all()
         for t in tasks:
+            freq = str(t.frequency or '').lower().strip()
+            if now_ist.weekday() == 6 and freq in ('mon-sat', 'mon_to_sat', 'mon_sat', 'mon-fri', 'mon_to_fri', 'weekdays', 'weekday'):
+                logger.info(f"Skipping task reminder ID {t.id} ('{t.task_name}') because today is Sunday (Weekly Off) and frequency is '{t.frequency}'.")
+                continue
+
             diff = now_ist - t.due_time
             if diff.total_seconds() < 0:
                 continue
@@ -1916,18 +1935,22 @@ def build_7_company_escalation_reports(db, now_ist):
         })
 
     kw_map = {
-        'day book': ['day book', 'daybook', 'cash book', 'bank book', 'day book (', 'daybook.pdf'],
-        'daily sales': ['daily sales', 'sales', 'sale', 'egg sales', 'trays', 'sales by customer', 'sales by customer (', 'sales.pdf'],
-        'daily purchases': ['daily purchase', 'daily purchases', 'purchase', 'purchases', 'buy', 'bought', 'feed', 'kg', 'tons', 'purchases by vendor', 'purchases by vendor (', 'purchases.pdf'],
-        'total payables': ['total payables', 'total payable', 'payable', 'payables', 'due to', 'ap aging', 'payableee', 'payable.pdf', 'payables.pdf'],
-        'total receivables': ['total receivables', 'total receivable', 'receivable', 'receivables', 'due from', 'ar aging', 'receivable.pdf', 'receivables.pdf'],
-        'ca statement': ['ca statement', 'ca', 'statement', 'audit', 'tally', 'balance sheet', 'ca statement on', 'ca.pdf', 'otp'],
-        'average p&l': ['average p&l', 'p&l', 'pl', 'p and l', 'profit', 'loss', 'horizontal profit', 'p&l.pdf'],
-        'each sales p&l': ['each sales p&l', 'p&l', 'pl', 'p and l', 'profit', 'loss', 'each sales p&l.pdf'],
-        'profit & loss summary': ['profit & loss', 'p&l', 'pl', 'p and l', 'profit', 'loss', 'summary', 'p&l summary'],
-        'daily work update': ['daily work update', 'work update', 'update', 'done', 'completed', 'eod update', 'eod', 'report'],
-        'stock': ['stock', 'website', 'website updates', 'ordering', 'update', 'updates', 'maize', 'soya', 'dorb', 'stonegrit', 'raw material'],
-        'website updates': ['stock', 'website', 'website updates', 'ordering', 'update', 'updates', 'maize', 'soya', 'dorb', 'stonegrit', 'raw material']
+        'day book': ['day book', 'daybook', 'day-book', 'day_book', 'daybk', 'cash book', 'cashbook', 'cash-book', 'bank book', 'bankbook', 'day book (', 'daybook.pdf', 'daybook pdf', 'daily daybook', 'daily day book', 'db update', 'daybook update', 'day book update'],
+        'daily sales': ['daily sales', 'sales', 'sale', 'sales report', 'sales rport', 'sale report', 'sales update', 'sales updates', 'daily sale', 'egg sales', 'egg sale', 'salex', 'trays', 'sales.pdf', 'sales pdf', 'sales by customer', 'sales by customer (', 'sales statement', 'sale statement'],
+        'daily purchases': ['daily purchase', 'daily purchases', 'purchase', 'purchases', 'purchse', 'purchse report', 'purchase report', 'purchases report', 'purchase update', 'purchase rport', 'purchases update', 'buy', 'bought', 'feed purchase', 'maize purchase', 'soya purchase', 'kg', 'tons', 'purchases by vendor', 'purchases by vendor (', 'purchases.pdf', 'purchase pdf', 'purchases pdf'],
+        'total payables': ['total payables', 'total payable', 'payable', 'payables', 'payble', 'payables report', 'payable report', 'payables update', 'payble update', 'due to', 'ap aging', 'ap-aging', 'ap_aging', 'payableee', 'payable.pdf', 'payables.pdf', 'payable pdf', 'payables pdf'],
+        'total receivables': ['total receivables', 'total receivable', 'receivable', 'receivables', 'recevable', 'receivables report', 'receivable report', 'receivables update', 'recevable update', 'due from', 'ar aging', 'ar-aging', 'ar_aging', 'receivable.pdf', 'receivables.pdf', 'receivable pdf', 'receivables pdf'],
+        'ca statement': ['ca statement', 'ca', 'ca-statement', 'ca_statement', 'ca statment', 'ca stmnt', 'statement', 'audit', 'tally', 'balance sheet', 'ca statement on', 'ca.pdf', 'ca pdf', 'ca report', 'audit report', 'otp'],
+        'average p&l': ['average p&l', 'p&l', 'p & l', 'pl', 'p and l', 'profit & loss', 'profit and loss', 'profit loss', 'p/l', 'p/l report', 'pandl', 'p&l report', 'p&l statement', 'pl report', 'p&l.pdf', 'p&l pdf', 'pl pdf'],
+        'each sales p&l': ['each sales p&l', 'each sale p&l', 'sales p&l', 'each sales pl', 'each sale pl', 'sales pl', 'each sales profit', 'p&l', 'p & l', 'pl', 'p and l', 'profit & loss', 'profit and loss', 'each sales p&l.pdf', 'each sales pl pdf'],
+        'profit & loss summary': ['profit & loss summary', 'profit & loss', 'profit and loss', 'p&l', 'p & l', 'pl', 'p and l', 'p&l summary', 'profit loss summary', 'pl summary'],
+        'daily work update': ['daily work update', 'work update', 'work updates', 'wrk update', 'work rport', 'daily update', 'daily updates', 'work report', 'work reports', 'daily work report', 'daily work reports', 'eod update', 'eod updates', 'eod report', 'eod reports', 'today work', "today's work", 'tasks done', 'task done', 'work done', 'done', 'completed'],
+        'stock': ['stock', 'stocks', 'stk', 'website', 'website updates', 'website update', 'ordering', 'stock update', 'stock updates', 'maize', 'soya', 'dorb', 'stonegrit', 'raw material', 'raw materials', 'raw material prices', 'updates'],
+        'website updates': ['stock', 'stocks', 'stk', 'website', 'website updates', 'website update', 'ordering', 'stock update', 'stock updates', 'maize', 'soya', 'dorb', 'stonegrit', 'raw material', 'raw materials', 'raw material prices', 'updates'],
+        'rental updates': ['rental updates', 'rental update', 'rental', 'rentals', 'rntal', 'vacant', 'vacant rooms', 'vacant flats', 'list of vacant', 'vacancies', 'vacancy'],
+        'rental': ['rental updates', 'rental update', 'rental', 'rentals', 'rntal', 'vacant', 'vacant rooms', 'vacant flats', 'list of vacant', 'vacancies', 'vacancy'],
+        'rule book': ['rule book', 'rulebook', 'rule-book', 'rule book updates', 'rulebook update', 'rulebook updates', 'rule book update'],
+        'silo empty and cleaning': ['silo empty', 'silo cleaning', 'silo empty and cleaning', 'silo cleaned', 'silo clean', 'silo status']
     }
 
     def check_approval(sender_name_target=None, group_target=None):
@@ -1960,7 +1983,47 @@ def build_7_company_escalation_reports(db, now_ist):
             if group_target_lower and (group_target_lower in gname or gname in group_target_lower):
                 target_jids.update(jids)
 
+        # 0. Check manual website toggles (sub_reports_status) FIRST for explicit Done or Undone overrides
+        for r in reminders_today_all:
+            r_group = (r.whatsapp_group_id or '').lower()
+            grp_ok = not group_target or (group_target_lower in r_group) or any(jid in r_group for jid in target_jids)
+            if grp_ok and r.sub_reports_status:
+                try:
+                    sub_dict = json.loads(r.sub_reports_status)
+                    if isinstance(sub_dict, dict):
+                        for k, v in sub_dict.items():
+                            val_str = str(v).lower()
+                            k_lower = k.lower()
+                            if rep_lower == k_lower or rep_lower in k_lower or k_lower in rep_lower:
+                                if val_str in ['done', 'completed', 'submitted', 'ok', '1', 'true']:
+                                    return True
+                                elif val_str in ['pending', 'undone', 'false', '0']:
+                                    # Explicit manual undone override: force pending
+                                    return False
+                except Exception:
+                    pass
+
+        for t in tasks_today_all:
+            t_name = (t.task_name or '').lower()
+            t_group = (t.whatsapp_group_id or '').lower()
+            grp_ok = not group_target or (group_target_lower in t_group) or any(jid in t_group for jid in target_jids)
+            if grp_ok and t.sub_reports_status:
+                try:
+                    sub_dict = json.loads(t.sub_reports_status)
+                    if isinstance(sub_dict, dict):
+                        for k, v in sub_dict.items():
+                            val_str = str(v).lower()
+                            k_lower = k.lower()
+                            if rep_lower == k_lower or rep_lower in k_lower or k_lower in rep_lower:
+                                if val_str in ['done', 'completed', 'submitted', 'ok', '1', 'true']:
+                                    return True
+                                elif val_str in ['pending', 'undone', 'false', '0']:
+                                    return False
+                except Exception:
+                    pass
+
         # 1. Check ProcessedData table for today
+        is_weekly_item = ('weekly' in rep_lower or 'week' in rep_lower)
         for p in processed_today_all:
             p_cat = (p.category or '').lower()
             p_notes = (p.notes or '').lower()
@@ -1971,6 +2034,11 @@ def build_7_company_escalation_reports(db, now_ist):
             snd_ok = (not sender_target or sender_target.lower() in p_sender)
             
             if grp_ok and snd_ok:
+                has_weekly_in_msg = any(w in (p_cat + " " + p_notes) for w in ['weekly', 'week', 'weeekly', 'wkly', 'wk'])
+                if is_weekly_item and not has_weekly_in_msg:
+                    continue
+                if not is_weekly_item and has_weekly_in_msg and ('p&l' in rep_lower or 'profit' in rep_lower or 'pl' in rep_lower):
+                    continue
                 if rep_lower in p_cat or rep_lower in p_notes or any(w in p_notes for w in rep_lower.split()):
                     return True
 
@@ -1980,7 +2048,6 @@ def build_7_company_escalation_reports(db, now_ist):
             if rkey in rep_lower:
                 search_kws.extend(syns)
 
-        is_weekly_item = ('weekly' in rep_lower)
         pnl_synonyms = ['p&l', 'pl', 'p and l', 'profit', 'loss', 'p&l.pdf', 'profit & loss', 'profit and loss']
 
         for m in combined_msgs:
@@ -1993,46 +2060,29 @@ def build_7_company_escalation_reports(db, now_ist):
             snd_ok = not sender_target or (sender_target.lower() in m_sender)
 
             if grp_ok and snd_ok:
-                has_weekly_in_msg = ('weekly' in m_text)
+                has_weekly_in_msg = any(w in m_text for w in ['weekly', 'week', 'weeekly', 'wkly', 'wk'])
                 for skw in search_kws:
                     skw_lower = skw.lower()
                     
-                    # Rule 1: If message says "weekly", do not match daily P&L
+                    # Rule 1: If message says "weekly"/"week", do not match daily/each sales P&L
                     if not is_weekly_item and has_weekly_in_msg and (skw_lower in pnl_synonyms or 'p&l' in skw_lower or 'profit' in skw_lower):
                         continue
                         
-                    # Rule 2: If report item is weekly p&l, message MUST contain "weekly"
+                    # Rule 2: If report item is weekly p&l, message MUST contain "weekly"/"week"/"weeekly"
                     if is_weekly_item and not has_weekly_in_msg:
                         continue
 
                     if skw_lower in m_text:
                         return True
-                # Check for PDF or image attachments with report keywords
-                if ('.pdf' in m_text or '.jpg' in m_text or '.png' in m_text or '[image]' in m_text) and any(w in m_text for w in rep_lower.split()):
+                # Check for PDF or image attachments with exact report keywords
+                if ('.pdf' in m_text or '.jpg' in m_text or '.png' in m_text or '[image]' in m_text) and any(skw in m_text for skw in search_kws):
                     if not is_weekly_item and has_weekly_in_msg:
                         continue
                     if is_weekly_item and not has_weekly_in_msg:
                         continue
                     return True
 
-        # 3. Check manual website toggles in UnifiedReminder & Task sub_reports_status
-        for r in reminders_today_all:
-            r_group = (r.whatsapp_group_id or '').lower()
-            grp_ok = not group_target or (group_target_lower in r_group) or any(jid in r_group for jid in target_jids)
-            if grp_ok and r.sub_reports_status:
-                try:
-                    sub_dict = json.loads(r.sub_reports_status)
-                    if isinstance(sub_dict, dict):
-                        for k, v in sub_dict.items():
-                            val_str = str(v).lower()
-                            if val_str in ['done', 'completed', 'submitted', 'ok', '1', 'true']:
-                                k_lower = k.lower()
-                                if rep_lower == k_lower or rep_lower in k_lower or k_lower in rep_lower:
-                                    return True
-                except Exception:
-                    pass
-
-        # 4. Check Task table for today's completed tasks
+        # 3. Check Task table for today's completed tasks
         for t in tasks_today_all:
             t_name = (t.task_name or '').lower()
             t_group = (t.whatsapp_group_id or '').lower()
@@ -2040,18 +2090,6 @@ def build_7_company_escalation_reports(db, now_ist):
             if grp_ok:
                 if t.status == 'completed' and (rep_lower in t_name or any(w in t_name for w in rep_lower.split())):
                     return True
-                if t.sub_reports_status:
-                    try:
-                        sub_dict = json.loads(t.sub_reports_status)
-                        if isinstance(sub_dict, dict):
-                            for k, v in sub_dict.items():
-                                val_str = str(v).lower()
-                                if val_str in ['done', 'completed', 'submitted', 'ok', '1', 'true']:
-                                    k_lower = k.lower()
-                                    if rep_lower == k_lower or rep_lower in k_lower or k_lower in rep_lower:
-                                        return True
-                    except Exception:
-                        pass
 
         return False
 
@@ -2068,7 +2106,7 @@ def build_7_company_escalation_reports(db, now_ist):
 
     # 1. Ai iOT Team Reports
     b_items = [
-        ("Balaji (Approval Task): Report Review & Approval", check_approval(sender_name_target='balaji', group_target='balaji')),
+        ("Balaji (Approval Task): Report Review & Approval", check_approval(sender_name_target='balaji')),
         ("Balaji Team: Daily Work Update", check_report_submitted('daily work update', group_target='balaji')),
     ]
 
@@ -2177,28 +2215,55 @@ def build_7_company_escalation_reports(db, now_ist):
         return base_offset + today_failed_count
 
     total_failed_today = 0
-    for title, items in sections_config:
+    for title, items, company_key in sections_config:
         if items:
             total_failed_today += sum(1 for it in items if not it[1])
 
-    # Helper to calculate cumulative day-over-day failures per section
-    def get_cumulative_section_failed_count(sec_title, today_failed_cnt):
+    def get_company_failure_counts(company_key, today_failed_count):
         from zoho_service import get_setting, save_setting
         import json
+        from datetime import timedelta
         
-        hist_json = get_setting("cumulative_failure_history", "{}")
+        offsets = {
+            'balaji': 4,
+            'corporate': 19,
+            'feeds': 25,
+            'farms': 16
+        }
+        base_offset = offsets.get(company_key, 0) if now_ist.month == 8 and now_ist.year == 2026 else 0
+
+        hist_json = get_setting("daily_company_failure_history", "{}")
         try:
             hist = json.loads(hist_json)
         except Exception:
             hist = {}
             
-        sec_hist = hist.setdefault(sec_title, {})
-        sec_hist[today_date_str] = today_failed_cnt
-        save_setting("cumulative_failure_history", json.dumps(hist))
+        comp_hist = hist.setdefault(company_key, {})
+        comp_hist[today_date_str] = today_failed_count
+        save_setting("daily_company_failure_history", json.dumps(hist))
         
-        return sum(sec_hist.values())
+        monday_of_week = now_ist.date() - timedelta(days=now_ist.weekday())
+        weekly_count = 0
+        cur_d = monday_of_week
+        while cur_d <= now_ist.date():
+            d_str = cur_d.strftime("%d %b %Y")
+            weekly_count += comp_hist.get(d_str, 0)
+            cur_d += timedelta(days=1)
+            
+        first_of_month = now_ist.date().replace(day=1)
+        monthly_count = base_offset
+        cur_m = first_of_month
+        while cur_m <= now_ist.date():
+            d_str = cur_m.strftime("%d %b %Y")
+            if d_str != today_date_str:
+                monthly_count += comp_hist.get(d_str, 0)
+            cur_m += timedelta(days=1)
+        monthly_count += today_failed_count
+                
+        return today_failed_count, weekly_count, monthly_count
 
     messages_930 = []
+    messages_1159 = []
     combined_1159_lines = [f"📊 *Company-Wise Escalation Report (EOD Summary)*\n📅 *Date:* {today_date_str}\n"]
 
     for title, items, company_key in sections_config:
@@ -2207,72 +2272,65 @@ def build_7_company_escalation_reports(db, now_ist):
             
         missing_items = [it for it in items if not it[1]]
         failed_count = len(missing_items)
-        total_count = len(items)
-
-        cum_failed_count = get_cumulative_section_failed_count(title, failed_count)
-
-        if failed_count > 0:
-            header_with_count = f"{title} (❌ {failed_count} Failed)"
-        else:
-            header_with_count = f"{title} (✅ All {total_count} Passed)"
+        header_title = title.strip()
         
-        total_cumulative_failed = get_company_historical_failed_count(company_key, failed_count)
+        today_cnt, weekly_cnt, monthly_cnt = get_company_failure_counts(company_key, failed_count)
+        
+        footer_lines = [
+            f"🚨 *Total Failed Today: {today_cnt}*",
+            f"📅 *Total Failed this Week: {weekly_cnt}*",
+            f"🗓️ *Total Failed this Month: {monthly_cnt}*"
+        ]
+            
+        footer_str = "\n".join(footer_lines)
 
         # Build 9:30 PM message for this company
-        lines_930 = [header_with_count]
+        lines_930 = [header_title]
         if missing_items:
             for it in sorted(missing_items, key=lambda x: x[0]):
                 lines_930.append(format_bold_item(it))
         else:
             lines_930.append("All reports and tasks have been submitted successfully today! ✅")
-        lines_930.append(f"\n🚨 *Total Failed: {total_cumulative_failed}*\n---")
+        lines_930.append(f"\n{footer_str}\n---")
         messages_930.append("\n".join(lines_930))
 
-        # Build 11:59 PM combined lines (showing items and company cumulative failed count)
+        # Build 11:59 PM per-company message
         sorted_items = sorted(items, key=lambda x: (1 if x[1] else 0, x[0]))
-        lines_1159 = [header_with_count]
+        lines_1159 = [f"{header_title} — 📊 *EOD Summary*\n📅 *Date:* {today_date_str}"]
         for it in sorted_items:
             lines_1159.append(format_bold_item(it))
-        lines_1159.append(f"\n🚨 *Total Failed: {total_cumulative_failed}*")
-        combined_1159_lines.append("\n".join(lines_1159) + "\n---")
+        lines_1159.append(f"\n{footer_str}")
+        msg_1159_str = "\n".join(lines_1159)
+        messages_1159.append(msg_1159_str)
+
+        # Build 11:59 PM combined lines
+        combined_1159_lines.append(f"{header_title}")
+        for it in sorted_items:
+            combined_1159_lines.append(format_bold_item(it))
+        combined_1159_lines.append(f"\n{footer_str}\n---")
 
     combined_1159_text = "\n".join(combined_1159_lines)
-    return messages_930, combined_1159_text
+    return messages_930, messages_1159, combined_1159_text
 
 
 def manager_escalation_job():
-    logger.info("Starting 9:30 PM Manager Escalation Check (7 Separate Messages)...")
+    logger.info("Starting 9:30 PM Manager Escalation Check (Per-Company Messages to 7259510983 ONLY)...")
     from datetime import datetime, timezone, timedelta
     IST = timezone(timedelta(hours=5, minutes=30))
     now_ist = datetime.now(IST).replace(tzinfo=None)
 
+    if now_ist.weekday() == 6:  # Sunday is weekly off
+        logger.info("Today is Sunday (Weekly Off). Skipping 9:30 PM Manager Escalation Report.")
+        return
+
     db = SessionLocal()
     try:
-        messages_930, _ = build_7_company_escalation_reports(db, now_ist)
+        res_esc = build_7_company_escalation_reports(db, now_ist)
+        messages_930 = res_esc[0]
         for idx, msg in enumerate(messages_930, 1):
             for phone in ESCALATION_REPORT_PHONES:
                 send_waha_message(phone, msg)
-                logger.info(f"Manager Escalation Msg {idx}/7 sent to {phone}")
-            
-            # Also send Corporate Company (P&L) report (Message 4) to 9066646784
-            if "Corporate Company" in msg or "4️⃣" in msg:
-                send_waha_message("919066646784@c.us", msg)
-                logger.info(f"Manager Escalation Msg {idx}/7 (Corporate P&L) also sent to 919066646784@c.us")
-
-            # Also send Sunfra Hyperscale Reports (Message 2) to 8951520293
-            if "Sunfra Hyperscale" in msg or "2️⃣" in msg:
-                send_waha_message("918951520293@c.us", msg)
-                logger.info(f"Manager Escalation Msg {idx}/7 (Sunfra Hyperscale) also sent to 918951520293@c.us")
-
-            # Also send Sunfra Feed Tasks & Reports (Message 5) to 8951520293
-            if "Sunfra Feed" in msg or "5️⃣" in msg:
-                send_waha_message("918951520293@c.us", msg)
-                logger.info(f"Manager Escalation Msg {idx}/7 (Sunfra Feed) also sent to 918951520293@c.us")
-
-            # Also send Sunfra Farms Tasks & Reports (Message 6) to 8985779911
-            if "Sunfra Farms" in msg or "6️⃣" in msg:
-                send_waha_message("918985779911@c.us", msg)
-                logger.info(f"Manager Escalation Msg {idx}/7 (Sunfra Farms) also sent to 918985779911@c.us")
+                logger.info(f"Manager Escalation Msg {idx}/{len(messages_930)} sent to {phone}")
     except Exception as e:
         logger.error(f"Error in manager_escalation_job: {e}")
     finally:
@@ -2280,34 +2338,23 @@ def manager_escalation_job():
 
 
 def company_wise_escalation_job():
-    logger.info("Starting 11:59 PM Company-Wise Manager Escalation Check...")
+    logger.info("Starting 11:59 PM Company-Wise Manager Escalation Check (Per-Company Messages to 7259510983 ONLY)...")
     from datetime import datetime, timezone, timedelta
     IST = timezone(timedelta(hours=5, minutes=30))
     now_ist = datetime.now(IST).replace(tzinfo=None)
 
+    if now_ist.weekday() == 6:  # Sunday is weekly off
+        logger.info("Today is Sunday (Weekly Off). Skipping 11:59 PM Company-Wise Manager Escalation Report.")
+        return
+
     db = SessionLocal()
     try:
-        messages_930, combined_1159_text = build_7_company_escalation_reports(db, now_ist)
-        for phone in ESCALATION_REPORT_PHONES:
-            send_waha_message(phone, combined_1159_text)
-            logger.info(f"Combined EOD Manager Escalation sent to {phone}")
-
-        for idx, msg in enumerate(messages_930, 1):
-            if "Corporate Company" in msg or "4️⃣" in msg:
-                send_waha_message("919066646784@c.us", msg)
-                logger.info(f"11:59 PM Escalation Msg (Corporate P&L) sent to 919066646784@c.us")
-
-            if "Sunfra Hyperscale" in msg or "2️⃣" in msg:
-                send_waha_message("918951520293@c.us", msg)
-                logger.info(f"11:59 PM Escalation Msg (Sunfra Hyperscale) sent to 918951520293@c.us")
-
-            if "Sunfra Feed" in msg or "5️⃣" in msg:
-                send_waha_message("918951520293@c.us", msg)
-                logger.info(f"11:59 PM Escalation Msg (Sunfra Feed) sent to 918951520293@c.us")
-
-            if "Sunfra Farms" in msg or "6️⃣" in msg:
-                send_waha_message("918985779911@c.us", msg)
-                logger.info(f"11:59 PM Escalation Msg (Sunfra Farms) sent to 918985779911@c.us")
+        res_esc = build_7_company_escalation_reports(db, now_ist)
+        messages_1159 = res_esc[1]
+        for msg in messages_1159:
+            for phone in ESCALATION_REPORT_PHONES:
+                send_waha_message(phone, msg)
+                logger.info(f"11:59 PM Per-Company Escalation sent to {phone}")
     except Exception as e:
         logger.error(f"Error in company_wise_escalation_job: {e}")
     finally:
@@ -2435,8 +2482,7 @@ def generate_rental_vacancy_report():
         f"• *Empty/Vacant:* {total_vacant_units} Units\n\n"
         f"💰 *FINANCIAL VACANCY LOSS*\n"
         f"• *Daily Loss Today:* ₹{total_daily_loss:,}\n"
-        f"• *MTD Loss ({month_name} 1-{day_num}):* ₹{mtd_loss:,}\n"
-        f"• *Projected Monthly Loss:* ₹{projected_monthly_loss:,}\n\n"
+        f"• *MTD Loss ({month_name} 1-{day_num}):* ₹{mtd_loss:,}\n\n"
         f"📍 *VACANT ROOMS DETAILS*\n"
         + "\n\n".join(property_blocks)
     )
@@ -2928,8 +2974,8 @@ def send_monday_weekly_feed_reminder_job():
 
 
 def scheduled_zoho_reconciliation_job():
-    logger.info("Starting 10:00 PM Zoho Reconciliation Reports dispatch for Farms, Feeds & Corporate...")
-    recipients = ["917259510983@c.us", "917204021105@c.us"]
+    logger.info("Starting 10:00 PM Zoho Reconciliation Reports dispatch (7259510983 ONLY)...")
+    recipients = ["917259510983@c.us"]
     try:
         from zoho_reconciliation import (
             generate_and_send_zoho_reconciliation_report,
@@ -2948,18 +2994,42 @@ def scheduled_sunfra_pandl_job():
     logger.info("Starting 9:30 PM Sunfra P&L Report generation...")
     try:
         from sunfra_pandl_report import generate_and_send_sunfra_pandl_report
-        # Dispatches at 9:30 PM IST to ONLY 7259510983, 8985779911, and 6364817749 per user explicit directive
-        generate_and_send_sunfra_pandl_report(["917259510983@c.us", "918985779911@c.us", "916364817749@c.us"])
+        # Dispatches at 9:30 PM IST to ONLY 7259510983 per user explicit directive
+        generate_and_send_sunfra_pandl_report(["917259510983@c.us"])
     except Exception as e:
         logger.error(f"Error in scheduled_sunfra_pandl_job: {e}")
 
 def scheduled_4company_pandl_job():
-    logger.info("Starting 9:30 PM 4-Company Daily P&L & Stock Report job...")
+    logger.info("Starting 10:00 PM 4-Company Daily P&L & Stock Report job...")
     try:
         from zoho_4company_pandl import generate_and_send_4company_pandl_report
         generate_and_send_4company_pandl_report("917259510983@c.us")
     except Exception as e:
         logger.error(f"Error in scheduled_4company_pandl_job: {e}")
+
+def scheduled_4company_weekly_pandl_job():
+    logger.info("Starting Saturday 11:59 PM 4-Company Weekly P&L & Stock Report job...")
+    try:
+        from zoho_4company_pandl import generate_and_send_4company_weekly_pandl_report
+        generate_and_send_4company_weekly_pandl_report("917259510983@c.us")
+    except Exception as e:
+        logger.error(f"Error in scheduled_4company_weekly_pandl_job: {e}")
+
+def scheduled_4company_monthly_pandl_job():
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST)
+    tomorrow = now_ist.date() + timedelta(days=1)
+    if tomorrow.day != 1:
+        # Not the last day of the month
+        return
+
+    logger.info("Starting Last-Day-of-Month 11:59 PM 4-Company Monthly P&L & Stock Report job...")
+    try:
+        from zoho_4company_pandl import generate_and_send_4company_monthly_pandl_report
+        generate_and_send_4company_monthly_pandl_report("917259510983@c.us")
+    except Exception as e:
+        logger.error(f"Error in scheduled_4company_monthly_pandl_job: {e}")
 
 def scheduled_egg_market_pdf_job():
     logger.info("Starting 9:30 PM Egg Price & Market Analysis PDF report job...")
@@ -3000,8 +3070,8 @@ def setup_scheduler():
     # Schedule Daily Sunfra P&L PDF report at 9:30 PM IST daily (ONLY to 7259510983, 8985779911, and 6364817749)
     scheduler.add_job(scheduled_sunfra_pandl_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600)
 
-    # Schedule Daily 4-Company P&L & Stock Asset Report at 9:30 PM IST daily (to 7259510983)
-    scheduler.add_job(scheduled_4company_pandl_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_pandl_job")
+    # Schedule Daily 4-Company P&L & Stock Asset Report at 10:00 PM IST daily (to 7259510983)
+    scheduler.add_job(scheduled_4company_pandl_job, CronTrigger(hour=22, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_pandl_job")
 
     # Schedule Daily Egg Price & Market Analysis PDF report at 9:30 PM IST daily
     scheduler.add_job(scheduled_egg_market_pdf_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_market_pdf_job")
@@ -3040,11 +3110,21 @@ def setup_scheduler():
     # Combined 10:00 PM Dispatcher: Daily Egg Summary PDF, Escalation Alert, and Daily Farm Report
     scheduler.add_job(send_all_10pm_daily_reports_job, CronTrigger(hour=22, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
-    # Schedule Daily Manager Escalation Report at 9:30 PM IST everyday
-    scheduler.add_job(manager_escalation_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="manager_escalation_job")
+    # Schedule Daily Comprehensive Farm Performance Summary Report at 11:55 PM IST
+    from daily_farm_summary import send_daily_farm_summary_1155pm_job
+    scheduler.add_job(send_daily_farm_summary_1155pm_job, CronTrigger(hour=23, minute=55, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="daily_farm_summary_1155pm_job")
     
-    # Schedule Daily Manager Escalation Report (Company-wise) at 11:59 PM IST everyday
-    scheduler.add_job(company_wise_escalation_job, CronTrigger(hour=23, minute=59, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="company_wise_escalation_job")
+    # Schedule Daily Manager Escalation Report at 9:30 PM IST (Mon-Sat, Sunday skip)
+    scheduler.add_job(manager_escalation_job, CronTrigger(day_of_week='mon-sat', hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="manager_escalation_job")
+    
+    # Schedule Daily Manager Escalation Report (Company-wise) at 11:59 PM IST (Mon-Sat, Sunday skip)
+    scheduler.add_job(company_wise_escalation_job, CronTrigger(day_of_week='mon-sat', hour=23, minute=59, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="company_wise_escalation_job")
+    
+    # Schedule Weekly 4-Company P&L & Stock Report every Saturday at 11:59 PM IST (to 7259510983)
+    scheduler.add_job(scheduled_4company_weekly_pandl_job, CronTrigger(day_of_week='sat', hour=23, minute=59, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_weekly_pandl_job")
+
+    # Schedule Monthly 4-Company P&L & Stock Report on last day of every month at 11:59 PM IST (to 7259510983)
+    scheduler.add_job(scheduled_4company_monthly_pandl_job, CronTrigger(hour=23, minute=59, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_monthly_pandl_job")
     
     # Schedule weekly report at 11:00 PM IST on Sunday
     scheduler.add_job(scheduled_weekly_report_job, CronTrigger(day_of_week='sun', hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
@@ -3074,6 +3154,10 @@ def setup_scheduler():
     # Schedule Water Telemetry & Device OFF monitoring every 5 minutes
     from water_monitoring import check_and_dispatch_water_alerts
     scheduler.add_job(check_and_dispatch_water_alerts, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="water_monitoring_job")
+
+    # Schedule Water Flow & Indicator Telemetry 4-Hour OFF monitoring every 5 minutes
+    from water_flow_farm_monitoring import check_and_dispatch_water_flow_farm_alerts
+    scheduler.add_job(check_and_dispatch_water_flow_farm_alerts, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="water_flow_farm_monitoring_job")
 
     scheduler.start()
     logger.info("APScheduler started.")

@@ -3425,11 +3425,11 @@ try {
                     if (!rep) return '';
                     const st = subStatus[rep];
                     const isDone = (st === 'done') || (st !== 'pending' && r.is_submitted);
-                    const safeRep = rep.replace(/'/g, "\\'");
+                    const safeRep = encodeURIComponent(rep);
                     if (isDone) {
-                        return `<button type="button" onclick="confirmToggleSubReport(${r.id}, '${safeRep}', 'pending')" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; padding:4px 10px; border-radius:16px; cursor:pointer; font-weight:600; font-size:0.75rem; margin:2px; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05); user-select:none; outline:none;" title="Click to revert to Pending (Undone)">🟢 ${rep}</button>`;
+                        return `<button type="button" onclick="confirmToggleSubReport(${r.id}, decodeURIComponent('${safeRep}'), 'pending')" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; padding:4px 10px; border-radius:16px; cursor:pointer; font-weight:600; font-size:0.75rem; margin:2px; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05); user-select:none; outline:none;" title="Click to revert to Pending (Undone)">🟢 ${rep}</button>`;
                     } else {
-                        return `<button type="button" onclick="confirmToggleSubReport(${r.id}, '${safeRep}', 'done')" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; padding:4px 10px; border-radius:16px; cursor:pointer; font-weight:600; font-size:0.75rem; margin:2px; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05); user-select:none; outline:none;" title="Click to mark Done">🔴 ${rep}</button>`;
+                        return `<button type="button" onclick="confirmToggleSubReport(${r.id}, decodeURIComponent('${safeRep}'), 'done')" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; padding:4px 10px; border-radius:16px; cursor:pointer; font-weight:600; font-size:0.75rem; margin:2px; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05); user-select:none; outline:none;" title="Click to mark Done">🔴 ${rep}</button>`;
                     }
                 }).join(' ') : '<span style="color:var(--text-secondary)">Custom Notes Only</span>';
                 
@@ -3485,13 +3485,6 @@ try {
         }
 
         async function confirmToggleSubReport(reminderId, reportName, targetStatus) {
-            const isDone = (targetStatus === 'done');
-            const msg = isDone 
-                ? `Are you sure you want to mark "${reportName}" as DONE?` 
-                : `Do you want to revert "${reportName}" back to PENDING (Undone)?`;
-            
-            if (!confirm(msg)) return;
-            
             try {
                 const res = await fetch(API_URL + 'sub_report_status', {
                     method: 'POST',
@@ -3513,6 +3506,7 @@ try {
                 alert("Network error updating report status.");
             }
         }
+        const toggleSubReport = confirmToggleSubReport;
 
         async function resetAllSubReports(reminderId) {
             if (!confirm("Do you want to reset all sub-reports for this item back to PENDING?")) return;
@@ -3530,36 +3524,6 @@ try {
                 }
             } catch(e) {
                 console.error(e);
-            }
-        }
-
-        async function confirmToggleSubReport(reminderId, reportName, targetStatus) {
-            const isDone = (targetStatus === 'done');
-            const msg = isDone 
-                ? `Are you sure you want to mark "${reportName}" as DONE?` 
-                : `Do you want to revert "${reportName}" back to PENDING (Undone)?`;
-            
-            if (!confirm(msg)) return;
-            
-            try {
-                const res = await fetch(API_URL + 'sub_report_status', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        reminder_id: reminderId,
-                        report_name: reportName,
-                        status: targetStatus
-                    })
-                });
-                const data = await res.json();
-                if (data.status === 'success' || res.ok) {
-                    fetchReminders();
-                } else {
-                    alert("Error updating report status: " + (data.message || 'Error'));
-                }
-            } catch(e) {
-                console.error(e);
-                alert("Network error updating report status.");
             }
         }
 

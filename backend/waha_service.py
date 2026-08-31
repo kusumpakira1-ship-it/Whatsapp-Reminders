@@ -1,11 +1,20 @@
 import os
 import requests
 import logging
-from config import settings
+try:
+    from backend.config import settings
+except ImportError:
+    from config import settings
 
 logger = logging.getLogger(__name__)
 
 BLOCKED_PHONES = ['9346763549', '919346763549']
+
+def get_waha_url() -> str:
+    url = getattr(settings, 'WAHA_URL', '') or os.getenv("WAHA_URL", "http://localhost:3000")
+    if os.name == 'nt' or not os.path.exists("/.dockerenv"):
+        url = url.replace("host.docker.internal", "localhost")
+    return url.rstrip("/")
 
 def send_waha_message(chat_id: str, text: str, session: str = None, mentions: list = None) -> bool:
     """Send a text message via WAHA."""
@@ -17,7 +26,7 @@ def send_waha_message(chat_id: str, text: str, session: str = None, mentions: li
     if not chat_id.endswith('@c.us') and not chat_id.endswith('@g.us') and not chat_id.endswith('@lid'):
         chat_id += '@c.us'
 
-    url = f"{settings.WAHA_URL}/api/sendText"
+    url = f"{get_waha_url()}/api/sendText"
     payload = {
         "chatId": chat_id,
         "text": text,
@@ -50,7 +59,7 @@ def send_waha_file(chat_id: str, file_path: str, caption: str = "", session: str
     if not chat_id.endswith('@c.us') and not chat_id.endswith('@g.us') and not chat_id.endswith('@lid'):
         chat_id += '@c.us'
 
-    url = f"{settings.WAHA_URL}/api/sendFile"
+    url = f"{get_waha_url()}/api/sendFile"
     
     headers = {"Accept": "application/json"}
     api_key = os.getenv("WAHA_API_KEY", "123")
@@ -61,7 +70,7 @@ def send_waha_file(chat_id: str, file_path: str, caption: str = "", session: str
         filename = os.path.basename(file_path)
         
         # 1. Upload to Hostinger FTP for public HTTPS access
-        file_url = f"http://fastapi_backend:8000/media/reports/{filename}"
+        file_url = f"https://sunfragroup.com/kusum/Whatsapp_Rem/reports/{filename}"
         try:
             import ftplib
             host = "145.223.17.70"
@@ -70,12 +79,18 @@ def send_waha_file(chat_id: str, file_path: str, caption: str = "", session: str
             ftp = ftplib.FTP()
             ftp.connect(host, 21, timeout=10)
             ftp.login(user, passwd)
-            try: ftp.cwd('Whatsapp_Rem')
-            except Exception: pass
-            try: ftp.mkd('reports')
-            except Exception: pass
-            try: ftp.cwd('reports')
-            except Exception: pass
+            try:
+                ftp.cwd('/Whatsapp_Rem')
+            except Exception:
+                pass
+            try:
+                ftp.mkd('reports')
+            except Exception:
+                pass
+            try:
+                ftp.cwd('/Whatsapp_Rem/reports')
+            except Exception:
+                pass
             
             with open(file_path, 'rb') as f:
                 ftp.storbinary(f"STOR {filename}", f)
@@ -229,7 +244,8 @@ def get_waha_chat_name(chat_id: str) -> str:
 
 def get_session_status(session: str) -> str:
     """Fetch the status of a WAHA session."""
-    url = f"{settings.WAHA_URL}/api/sessions/{session}"
+    base_url = get_waha_url()
+    url = f"{base_url}/api/sessions/{session}"
     headers = {"Accept": "application/json"}
     api_key = os.getenv("WAHA_API_KEY", "123")
     if api_key:
@@ -245,7 +261,7 @@ def get_session_status(session: str) -> str:
     
     # Fallback to GET /api/sessions list
     try:
-        url_all = f"{settings.WAHA_URL}/api/sessions"
+        url_all = f"{base_url}/api/sessions"
         resp = requests.get(url_all, headers=headers, timeout=5)
         if resp.status_code == 200:
             for s in resp.json():
@@ -258,7 +274,8 @@ def get_session_status(session: str) -> str:
 
 def get_session_qr(session: str) -> str:
     """Download the QR code image for a WAHA session and return the local file path."""
-    url = f"{settings.WAHA_URL}/api/{session}/auth/qr?format=image"
+    base_url = get_waha_url()
+    url = f"{base_url}/api/{session}/auth/qr?format=image"
     headers = {"Accept": "image/png"}
     api_key = os.getenv("WAHA_API_KEY", "123")
     if api_key:

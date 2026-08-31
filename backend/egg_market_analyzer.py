@@ -562,7 +562,7 @@ def send_daily_egg_market_pdf_job():
         
         generate_egg_market_pdf(analysis, pdf_path, date_str)
         
-        target_phones = ["917975209680@c.us", "917259510983@c.us", "916364817749@c.us"]
+        target_phones = ["917259510983@c.us"]
         caption = f"📊 *Egg Price & Market Analysis Report*\nDate: {date_str}"
         
         for target_phone in target_phones:

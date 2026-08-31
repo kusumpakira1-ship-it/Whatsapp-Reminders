@@ -403,34 +403,42 @@ try:
             
         comp_failed = sum(1 for c, l in comp_tasks if not c) + sum(1 for s, l in comp_reports if not s)
         
-        if comp_tasks and comp_reports:
-            report_msg_lines.append(f"🏢 *{comp} Tasks:*")
+        # ---- Begin per-company block ----
+        comp_block_lines = []
+        comp_block_lines.append(f"🚨 *Company-Wise Escalation Report (EOD Summary)*")
+        comp_block_lines.append(f"📅 *Date:* {now_ist.strftime('%d %b %Y')}")
+        comp_block_lines.append("")
+        # Add tasks and reports for this company
+        if comp_tasks:
+            comp_block_lines.append(f"🏢 *{comp} Tasks:*")
             comp_tasks.sort(key=lambda x: x[0])
-            for completed, line in comp_tasks:
-                report_msg_lines.append(line)
-            report_msg_lines.append("")
-            report_msg_lines.append("*Reports:*")
+            for _, line in comp_tasks:
+                comp_block_lines.append(line)
+            comp_block_lines.append("")
+        if comp_reports:
+            comp_block_lines.append("*Reports:*")
             comp_reports.sort(key=lambda x: x[0])
-            for submitted_flag, line in comp_reports:
-                report_msg_lines.append(line)
-            report_msg_lines.append(f"🚨 *Total Failed: {comp_failed}*\n")
-        elif comp_tasks:
-            report_msg_lines.append(f"🏢 *{comp} Tasks:*")
-            comp_tasks.sort(key=lambda x: x[0])
-            for completed, line in comp_tasks:
-                report_msg_lines.append(line)
-            report_msg_lines.append(f"🚨 *Total Failed: {comp_failed}*\n")
-        elif comp_reports:
-            report_msg_lines.append(f"🏢 *{comp} Reports:*")
-            comp_reports.sort(key=lambda x: x[0])
-            for submitted_flag, line in comp_reports:
-                report_msg_lines.append(line)
-            report_msg_lines.append(f"🚨 *Total Failed: {comp_failed}*\n")
+            for _, line in comp_reports:
+                comp_block_lines.append(line)
+        comp_block_lines.append(f"🚨 *Total Failed: {comp_failed}*\n")
+        # Append to the overall report
+        report_msg_lines.extend(comp_block_lines)
+        # Store per-company string (remove trailing newlines)
+        company_key = comp
+        # Map repository categories to user-friendly names
+        if company_key == "Jataayu Jewellers":
+            company_key = "Ai iOT Team"
+        elif company_key == "Corporate Company (P&L)":
+            company_key = "Corporate Company"
+        
+        per_company_reports[company_key] = "\n".join(comp_block_lines).strip()
+        # ---- End per-company block ----
             
     final_msg = "\n".join(report_msg_lines).strip()
     
     with open("/app/escalation_report.txt", "w", encoding="utf-8") as f_out:
         f_out.write(final_msg)
+    print(final_msg)
     print("SUCCESS")
 
 except Exception as e:

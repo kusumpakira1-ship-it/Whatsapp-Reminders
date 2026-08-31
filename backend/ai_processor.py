@@ -4,23 +4,12 @@ import requests
 import typing_extensions as typing
 from config import settings
 import re
-import google.generativeai as genai
-from PIL import Image
-import io
-
 try:
-    import pypdf
+    import google.generativeai as genai
+    if settings.GEMINI_API_KEY:
+        genai.configure(api_key=settings.GEMINI_API_KEY)
 except ImportError:
-    pypdf = None
-
-try:
-    import pytesseract
-except ImportError:
-    pytesseract = None
-
-# Configure Gemini API if configured
-if settings.GEMINI_API_KEY:
-    genai.configure(api_key=settings.GEMINI_API_KEY)
+    genai = None
 
 class FarmExtraction(typing.TypedDict):
     shead_name: str

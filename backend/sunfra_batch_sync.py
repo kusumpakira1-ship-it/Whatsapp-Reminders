@@ -72,21 +72,23 @@ def sync_flocks_from_sunfra_web():
             m_hatch = re.search(r'Hatch Date:\s*([0-9]{1,2}\s+[A-Za-z]{3},\s+[0-9]{4})', clean_text, re.IGNORECASE)
             m_chicks = re.search(r'No\. of Chicks:\s*(\d+)', clean_text, re.IGNORECASE)
 
-            if m_shed and m_hatch:
+            if m_shed:
                 shed_name = m_shed.group(1).strip()
-                hatch_str = m_hatch.group(1).strip() # e.g. "04 Jul, 2026"
+                hatch_str = m_hatch.group(1).strip() if m_hatch else None
                 live_birds = int(m_live.group(1)) if m_live else 0
                 running_weeks = int(m_weeks.group(1)) if m_weeks else 0
                 batch_id = m_batch.group(1).strip() if m_batch else None
                 no_of_chicks = int(m_chicks.group(1)) if m_chicks else 0
 
-                try:
-                    hatch_date = datetime.datetime.strptime(hatch_str, "%d %b, %Y").date()
-                except Exception as pe:
-                    logger.error(f"Failed to parse hatch date '{hatch_str}': {pe}")
-                    continue
+                hatch_date = None
+                age_days = 0
+                if hatch_str:
+                    try:
+                        hatch_date = datetime.datetime.strptime(hatch_str, "%d %b, %Y").date()
+                        age_days = (today - hatch_date).days + 1
+                    except Exception as pe:
+                        logger.error(f"Failed to parse hatch date '{hatch_str}': {pe}")
 
-                age_days = (today - hatch_date).days + 1
                 status_str = 'active' if live_birds > 0 else 'inactive'
 
                 # Upsert into sunfra_flocks table
