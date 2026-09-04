@@ -95,6 +95,11 @@ def _evaluate_device_off_alert(device_type, mac, ts_str, now_ist, now_ts, state)
         diff_seconds = 999999
         diff_hours = 999.0
 
+    # Skip historical records from previous days (only evaluate today's live telemetry)
+    if 'updated_dt' in locals() and updated_dt.date() != now_ist.date():
+        logger.info(f"Skipping past-day telemetry record for {mac} ({ts_str})")
+        return
+
     dev_state = state.setdefault(mac, {
         "last_off_alert_ts": 0,
         "off_active": False
@@ -123,10 +128,9 @@ def _evaluate_device_off_alert(device_type, mac, ts_str, now_ist, now_ts, state)
                 )
 
             logger.info(f"Sending {device_type.upper()} OFF Alert for {mac} to {TARGET_GROUP_JID}...")
-            sent = send_waha_message(TARGET_GROUP_JID, msg)
-            if sent:
-                dev_state["last_off_alert_ts"] = now_ts
-                dev_state["off_active"] = True
+            dev_state["last_off_alert_ts"] = now_ts
+            dev_state["off_active"] = True
+            send_waha_message(TARGET_GROUP_JID, msg)
     else:
         if dev_state.get("off_active"):
             logger.info(f"Device {mac} back online (last telemetry {ts_str}). Clearing OFF alert state.")

@@ -40,14 +40,18 @@ def send_waha_message(chat_id: str, text: str, session: str = None, mentions: li
     if api_key:
         headers["X-Api-Key"] = api_key
     
-    try:
-        response = requests.post(url, json=payload, headers=headers, timeout=30)
-        if response.status_code not in (200, 201):
-            print(f"WAHA sendText failed: {response.status_code} - {response.text}")
-        return response.status_code in (200, 201)
-    except Exception as e:
-        print(f"Failed to send WAHA message: {e}")
-        return False
+    import time
+    for attempt in range(3):
+        try:
+            response = requests.post(url, json=payload, headers=headers, timeout=45)
+            if response.status_code in (200, 201):
+                return True
+            else:
+                print(f"WAHA sendText attempt {attempt+1} failed: {response.status_code} - {response.text}")
+        except Exception as e:
+            print(f"WAHA sendText attempt {attempt+1} error: {e}")
+        time.sleep(1)
+    return False
 
 def send_waha_file(chat_id: str, file_path: str, caption: str = "", session: str = None) -> bool:
     """Send a file (PDF/Image/Excel) via WAHA using public HTTPS URL hosted on Hostinger for 100% reliable WhatsApp delivery."""

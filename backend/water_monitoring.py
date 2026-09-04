@@ -1,17 +1,26 @@
 import os
 import json
 import logging
-import requests
+import pymysql
 from datetime import datetime, timezone, timedelta
 from waha_service import send_waha_message
 
 logger = logging.getLogger(__name__)
 
 TARGET_GROUP_JID = "120363409544891824@g.us"
-TELEMETRY_API_URL = "https://sunfragroup.com/kusum/Whatsapp_Rem/frontend/index.php?api=get_devices"
+TARGET_PHONE = "917259510983@c.us"
 STATE_FILE_PATH = os.path.join(os.path.dirname(__file__), "water_monitoring_state.json")
 
 IST = timezone(timedelta(hours=5, minutes=30))
+
+DB_CONFIG = {
+    'host': '145.223.17.70',
+    'user': 'u632391467_kusumpakira',
+    'password': 'Kusum@2026Bb!',
+    'database': 'u632391467_kusumpakira',
+    'cursorclass': pymysql.cursors.DictCursor,
+    'connect_timeout': 10
+}
 
 def load_monitoring_state():
     if os.path.exists(STATE_FILE_PATH):
@@ -35,17 +44,28 @@ def check_and_dispatch_water_alerts():
     now_ts = now_ist.timestamp()
     
     try:
-        resp = requests.get(TELEMETRY_API_URL, timeout=15)
-        if resp.status_code != 200:
-            logger.error(f"Telemetry API returned HTTP {resp.status_code}")
-            return False
+        conn = pymysql.connect(**DB_CONFIG)
+        cur = conn.cursor()
         
-        data = resp.json()
-        if not data.get("success"):
-            logger.error(f"Telemetry API error response: {data}")
-            return False
+        # Get latest reading per MAC for our water monitoring devices
+        query = """
+            SELECT r1.*
+            FROM device_readings r1
+            INNER JOIN (
+                SELECT mac_address, MAX(id) AS max_id
+                FROM device_readings
+                WHERE mac_address IN ('C4-4F-33-24-7C-59', '40-91-51-C8-0C-C8')
+                GROUP BY mac_address
+            ) r2 ON r1.id = r2.max_id
+        """
+        cur.execute(query)
+        devices = cur.fetchall()
+        conn.close()
+        
+        if not devices:
+            logger.warning("No water monitoring devices found in database.")
+            return True
 
-        devices = data.get("devices", [])
         state = load_monitoring_state()
         
         for dev in devices:
@@ -53,21 +73,30 @@ def check_and_dispatch_water_alerts():
             if not mac:
                 continue
                 
-            name = dev.get("name", "Level_sensor")
-            location = dev.get("location", "Unknown Location")
+            # Standardize location names
+            if mac == '40-91-51-C8-0C-C8':
+                location = 'Kadubeesanahalli'
+            elif mac == 'C4-4F-33-24-7C-59':
+                location = 'Spice garden'
+            else:
+                location = dev.get("location") or "Unknown Location"
+                
+            name = "Level_sensor"
             water_level = int(dev.get("water_level", 0))
-            status = str(dev.get("status", "ON")).upper()
-            updated_at_str = dev.get("updated_at", "")
+            status = str(dev.get("status") or "ON").upper()
+            ts = dev.get("timestamp")
             
-            # Parse updated_at timestamp
-            try:
-                updated_dt = datetime.strptime(updated_at_str, "%Y-%m-%d %H:%M:%S").replace(tzinfo=IST)
-                diff_seconds = (now_ist - updated_dt).total_seconds()
-                diff_hours = diff_seconds / 3600.0
-            except Exception:
-                diff_seconds = 999999
-                diff_hours = 999.0
-            
+            if isinstance(ts, datetime):
+                updated_dt = ts.replace(tzinfo=IST) if ts.tzinfo is None else ts.astimezone(IST)
+            elif isinstance(ts, str):
+                updated_dt = datetime.strptime(ts, "%Y-%m-%d %H:%M:%S").replace(tzinfo=IST)
+            else:
+                updated_dt = now_ist
+                
+            updated_at_str = updated_dt.strftime("%Y-%m-%d %H:%M:%S")
+            diff_seconds = (now_ist - updated_dt).total_seconds()
+            diff_hours = diff_seconds / 3600.0
+
             dev_state = state.setdefault(mac, {
                 "last_low_alert_ts": 0,
                 "low_active": False,
@@ -75,48 +104,42 @@ def check_and_dispatch_water_alerts():
                 "off_active": False
             })
             
-            # ─── RULE 1: Water Level <= 25% Alert (Repeat every 30 mins until >= 50%) ───
+            # ─── RULE 1: Water Level <= 25% Alert (Send STRICTLY ONCE to Group) ───
             if water_level <= 25:
-                last_low_ts = dev_state.get("last_low_alert_ts", 0)
-                # Send alert if never sent or 30 minutes (1800 sec) have passed
-                if (now_ts - last_low_ts) >= 1800:
+                if not dev_state.get("low_active"):
                     alert_msg = (
-                        f"⚠️ *WATER LEVEL LOW ALERT!*\n\n"
-                        f"*Location:* {location}\n"
-                        f"*Device:* {name} (`{mac}`)\n"
-                        f"*Current Water Level:* *{water_level}%* (CRITICAL ≤ 25%)\n"
-                        f"*Last Telemetry:* {updated_at_str}"
+                        f"⚠️ WATER LEVEL LOW ALERT!\n\n"
+                        f"Location: {location}\n"
+                        f"Device: {name} ({mac})\n"
+                        f"Current Water Level: {water_level}% (CRITICAL ≤ 25%)\n"
+                        f"Last Telemetry: {updated_at_str}"
                     )
-                    logger.info(f"Sending Low Water Alert for {mac} to {TARGET_GROUP_JID}...")
+                    logger.info(f"Sending Low Water Alert for {mac} ({location}) STRICTLY ONCE to Group ({TARGET_GROUP_JID})...")
                     sent = send_waha_message(TARGET_GROUP_JID, alert_msg)
-                    if sent:
-                        dev_state["last_low_alert_ts"] = now_ts
+                    if sent or True:
                         dev_state["low_active"] = True
+                        dev_state["last_low_alert_ts"] = now_ts
             elif water_level >= 50:
-                # Reset low water active state silently when water reaches >= 50%
+                # Clear low water alert state silently when water reaches >= 50%
                 dev_state["low_active"] = False
                 dev_state["last_low_alert_ts"] = 0
 
-            # ─── RULE 2: Device OFF Alert (Data > 4 hours old or status == OFF) ───
+            # ─── RULE 2: Device OFF / Disconnected Alert (Send STRICTLY ONCE to Group) ───
             is_off = (status == "OFF") or (diff_hours > 4.0)
             if is_off:
-                last_off_ts = dev_state.get("last_off_alert_ts", 0)
-                # Send OFF alert if never sent or 4 hours (14400 sec) have passed
-                if (now_ts - last_off_ts) >= 14400:
-                    off_reason = "Status reported OFF" if status == "OFF" else f"No data received for {diff_hours:.1f} hours (> 4 hrs)"
+                if not dev_state.get("off_active"):
                     off_msg = (
-                        f"🔴 *DEVICE OFF / OFFLINE ALERT!* ⚠️\n"
-                        f"📍 *Location:* {location}\n"
-                        f"💻 *Device:* {name} (`{mac}`)\n"
-                        f"⚠️ *Reason:* {off_reason}\n"
-                        f"📅 *Last Telemetry:* {updated_at_str}\n"
-                        f"⚡ *Power Status:* Device is OFF / Disconnected"
+                        f"🔴 DEVICE OFF / DISCONNECTED ALERT!\n\n"
+                        f"Location: {location}\n"
+                        f"Device: {name} ({mac})\n"
+                        f"Status: DISCONNECTED / NO DATA FOR > 4 HOURS\n"
+                        f"Last Telemetry: {updated_at_str}"
                     )
-                    logger.info(f"Sending Device OFF Alert for {mac} to {TARGET_GROUP_JID}...")
+                    logger.info(f"Sending Device OFF Alert for {mac} ({location}) STRICTLY ONCE to Group ({TARGET_GROUP_JID})...")
                     sent = send_waha_message(TARGET_GROUP_JID, off_msg)
-                    if sent:
-                        dev_state["last_off_alert_ts"] = now_ts
+                    if sent or True:
                         dev_state["off_active"] = True
+                        dev_state["last_off_alert_ts"] = now_ts
             else:
                 if dev_state.get("off_active"):
                     logger.info(f"Device {mac} back online. Clearing OFF alert state.")

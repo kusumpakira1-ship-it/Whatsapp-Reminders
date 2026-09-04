@@ -17,7 +17,9 @@ $options = [
 $pdo = null;
 try {
     $pdo = new PDO($dsn, $user, $pass, $options);
-} catch (\PDOException $e) {
+    $pdo->query("SELECT 1");
+} catch (\Exception $e) {
+    $pdo = null;
     // If MySQL hourly connection quota (1226) or connection fails, fallback seamlessly to SQLite
     $sqlite_paths = [
         __DIR__ . '/whatsapp_reminders.sqlite',
@@ -25,12 +27,14 @@ try {
         dirname(__DIR__) . '/whatsapp_reminders.sqlite'
     ];
     foreach ($sqlite_paths as $spath) {
-        try {
-            $pdo = new PDO('sqlite:' . $spath);
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-            break;
-        } catch (\PDOException $sqle) {}
+        if (file_exists($spath)) {
+            try {
+                $pdo = new PDO('sqlite:' . $spath);
+                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+                break;
+            } catch (\Exception $sqle) {}
+        }
     }
 }
 

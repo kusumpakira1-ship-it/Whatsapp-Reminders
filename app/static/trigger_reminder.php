@@ -1,7 +1,7 @@
 <?php
 /**
  * Standalone API Endpoint & Browser Link: Trigger Custom WhatsApp Reminder
- * URL: https://sunfragroup.com/kusum/Whatsapp_Rem/app/static/trigger_reminder.php
+ * URL: https://sunfragroup.com/kusum/Whatsapp_Rem/trigger_reminder.php
  * 
  * Works as:
  * 1. Web Page Form (when opened in browser without query params)
@@ -144,63 +144,22 @@ try {
         PDO::ATTR_PERSISTENT => true
     ]);
 
-    $stmt = $pdo->prepare("INSERT INTO sunfra_custom_alarms (target_type, whatsapp_target_id, report_type, frequency, repeat_interval, task_notes, trigger_time, status, created_at) VALUES (:target_type, :whatsapp_target_id, :report_type, :frequency, :repeat_interval, :task_notes, :trigger_time, 'pending', NOW())");
-    $stmt->execute([
-        ':target_type' => $target_type,
-        ':whatsapp_target_id' => $target_jid,
-        ':report_type' => 'Custom API Reminder',
-        ':frequency' => $frequency,
-        ':repeat_interval' => $repeat_interval,
+    // Save strictly ONCE in sunfra_unified_reminders for single dispatch by scheduler
+    $stmt_unif = $pdo->prepare("INSERT INTO sunfra_unified_reminders (person_name, person_phone, whatsapp_group_id, report_types, task_notes, trigger_time, frequency, repeat_interval, status, created_at) VALUES (:person_name, :person_phone, :whatsapp_group_id, :report_types, :task_notes, :trigger_time, :frequency, :repeat_interval, 'pending', NOW())");
+    $stmt_unif->execute([
+        ':person_name' => !empty($person_name) ? $person_name : 'Custom Reminder',
+        ':person_phone' => !empty($raw_phone) ? $raw_phone : '',
+        ':whatsapp_group_id' => $target_jid,
+        ':report_types' => !empty($report_type) ? $report_type : 'Custom Reminder',
         ':task_notes' => $final_message,
-        ':trigger_time' => $trigger_time
+        ':trigger_time' => $trigger_time,
+        ':frequency' => $frequency,
+        ':repeat_interval' => $repeat_interval
     ]);
-    $alarm_id = $pdo->lastInsertId();
-
-    try {
-        $stmt_unif = $pdo->prepare("INSERT INTO sunfra_unified_reminders (person_name, whatsapp_group_id, report_types, trigger_time, frequency, status, created_at) VALUES (:person_name, :whatsapp_group_id, :report_types, :trigger_time, :frequency, 'pending', NOW())");
-        $stmt_unif->execute([
-            ':person_name' => !empty($person_name) ? $person_name : 'Custom Reminder',
-            ':whatsapp_group_id' => $target_jid,
-            ':report_types' => $final_message,
-            ':trigger_time' => $trigger_time,
-            ':frequency' => $frequency
-        ]);
-    } catch (\Exception $e_unif) {}
-
 } catch (\Exception $e) {}
 
-// Immediate WAHA Dispatch
-$waha_sent = false;
-$now_ts = time();
-$trigger_ts = strtotime($trigger_time);
-if (abs($now_ts - $trigger_ts) <= 120) {
-    $waha_url = getenv('WAHA_URL') ? getenv('WAHA_URL') : 'http://localhost:3000';
-    $payload_waha = json_encode([
-        'chatId' => $target_jid,
-        'text' => $final_message,
-        'session' => 'default'
-    ]);
-
-    $ch = curl_init("{$waha_url}/api/sendText");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload_waha);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'X-Api-Key: 123']);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    $res_waha = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-
-    if ($http_code == 200 || $http_code == 201) {
-        $waha_sent = true;
-        if ($alarm_id && isset($pdo)) {
-            try {
-                $upd = $pdo->prepare("UPDATE sunfra_custom_alarms SET status = 'sent' WHERE id = :id");
-                $upd->execute([':id' => $alarm_id]);
-            } catch (\Exception $ex) {}
-        }
-    }
-}
+// 7. Saved cleanly into database for single-instance dispatch by python scheduler
+$waha_sent = true;
 
 // HTML Response for Browser Requests
 if (!$wants_json) {

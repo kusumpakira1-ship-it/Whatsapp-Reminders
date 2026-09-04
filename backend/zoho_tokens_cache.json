@@ -1,0 +1,6 @@
+{
+  "zoho_access_token": "1000.1f43900b766ebaf2d3d32f2aa0a98d31.8b95128fb83b2ddfecc2a13fa0ef9432",
+  "zoho_refresh_token": "1000.088eac4092a2f9dd006592db134dbf1a.e23317aa4e765955ab70ed1db6765183",
+  "zoho_access_expiry": "1788456601.6957438",
+  "daily_company_failure_history": "{\"balaji\": {\"29 Aug 2026\": 1, \"28 Aug 2026\": 0, \"31 Aug 2026\": 2, \"01 Sep 2026\": 0, \"02 Sep 2026\": 1, \"03 Sep 2026\": 1}, \"corporate\": {\"29 Aug 2026\": 0, \"28 Aug 2026\": 0, \"31 Aug 2026\": 6, \"01 Sep 2026\": 6, \"02 Sep 2026\": 1, \"03 Sep 2026\": 2}, \"feeds\": {\"29 Aug 2026\": 7, \"28 Aug 2026\": 2, \"31 Aug 2026\": 9, \"01 Sep 2026\": 2, \"02 Sep 2026\": 1, \"03 Sep 2026\": 1}, \"farms\": {\"29 Aug 2026\": 2, \"28 Aug 2026\": 1, \"31 Aug 2026\": 10, \"01 Sep 2026\": 0, \"02 Sep 2026\": 3, \"03 Sep 2026\": 3}, \"rental\": {\"01 Sep 2026\": 0, \"02 Sep 2026\": 0, \"03 Sep 2026\": 0}}"
+}

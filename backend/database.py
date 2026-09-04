@@ -10,9 +10,9 @@ DATABASE_URL = f"mysql+pymysql://{settings.DB_USER}:{encoded_password}@{settings
 engine = create_engine(
     DATABASE_URL, 
     pool_pre_ping=True, 
-    pool_recycle=180, 
-    pool_size=2, 
-    max_overflow=0
+    pool_recycle=300, 
+    pool_size=5, 
+    max_overflow=10
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -22,25 +22,40 @@ import time
 import logging
 logger = logging.getLogger(__name__)
 
+sqlite_engine = create_engine("sqlite:///whatsapp_reminders.sqlite", connect_args={"check_same_thread": False})
+SqliteSession = sessionmaker(autocommit=False, autoflush=False, bind=sqlite_engine)
+
 def get_db():
+    db = None
     try:
         db = SessionLocal()
         db.execute(text("SELECT 1"))
         yield db
     except Exception as e:
-        logger.warning(f"MySQL connection issue ({e}). Trying SQLite fallback...")
+        if db:
+            try: db.close()
+            except Exception: pass
+        logger.warning(f"MySQL connection unavailable ({e}). Using SQLite fallback session...")
         try:
-            sqlite_engine = create_engine("sqlite:///whatsapp_reminders.sqlite")
-            SqliteSession = sessionmaker(autocommit=False, autoflush=False, bind=sqlite_engine)
             db = SqliteSession()
             yield db
         except Exception as sqle:
             logger.error(f"SQLite fallback failed: {sqle}")
             raise e
     finally:
-        try:
-            db.close()
-        except Exception:
-            pass
+        if db:
+            try: db.close()
+            except Exception: pass
+
+def get_db_session():
+    """Returns a valid DB session (MySQL if available, or SQLite fallback if MySQL connection limit reached)."""
+    try:
+        db = SessionLocal()
+        db.execute(text("SELECT 1"))
+        return db
+    except Exception as e:
+        logger.warning(f"MySQL unavailable ({e}). Using SQLite fallback session...")
+        return SqliteSession()
+
 
 

@@ -1,53 +1,61 @@
 {
   "08-3A-8D-D3-72-1F": {
-    "last_off_alert_ts": 1788123000.009643,
+    "last_off_alert_ts": 1788438900.0402,
     "off_active": false
   },
   "34-3B-80-1D-16-F0": {
-    "last_off_alert_ts": 0,
-    "off_active": false
+    "last_off_alert_ts": 1788286500.025789,
+    "off_active": true
   },
   "5C-26-14-C4-0A-24": {
-    "last_off_alert_ts": 0,
-    "off_active": false
+    "last_off_alert_ts": 1788286500.025789,
+    "off_active": true
   },
   "5D-7E-24-33-4F-C4": {
-    "last_off_alert_ts": 0,
-    "off_active": false
+    "last_off_alert_ts": 1788286500.025789,
+    "off_active": true
   },
   "68-14-5F-0F-F0-A4": {
-    "last_off_alert_ts": 0,
-    "off_active": false
+    "last_off_alert_ts": 1788286500.025789,
+    "off_active": true
   },
   "88-F6-64-A5-05-28": {
-    "last_off_alert_ts": 0,
-    "off_active": false
+    "last_off_alert_ts": 1788286500.025789,
+    "off_active": true
   },
   "94-FD-BA-3B-01-5C": {
-    "last_off_alert_ts": 0,
-    "off_active": false
+    "last_off_alert_ts": 1788286500.025789,
+    "off_active": true
   },
   "A0-F4-66-7C-E5-A4": {
-    "last_off_alert_ts": 0,
-    "off_active": false
+    "last_off_alert_ts": 1788286500.025789,
+    "off_active": true
   },
   "B8-39-60-F5-76-30": {
-    "last_off_alert_ts": 0,
-    "off_active": false
+    "last_off_alert_ts": 1788286500.025789,
+    "off_active": true
   },
   "D8-3A-80-1D-16-F0": {
-    "last_off_alert_ts": 0,
-    "off_active": false
+    "last_off_alert_ts": 1788286500.025789,
+    "off_active": true
   },
   "DC-7A-57-DF-94-8C": {
-    "last_off_alert_ts": 0,
-    "off_active": false
+    "last_off_alert_ts": 1788286500.025789,
+    "off_active": true
   },
   "F1-51-DC-2D-E6-B4": {
+    "last_off_alert_ts": 1788286500.025789,
+    "off_active": true
+  },
+  "F4-5F-90-BD-97-10": {
     "last_off_alert_ts": 0,
     "off_active": false
   },
-  "F4-5F-90-BD-97-10": {
+  "50-5C-F9-54-94-34": {
+    "last_off_alert_ts": 0,
+    "off_active": false
+  },
+  "04-BA-5F-0F-F0-A4": {
     "last_off_alert_ts": 0,
     "off_active": false
   }

@@ -1,35 +1,33 @@
-"""
-Test different query params to bypass Hostinger CDN edge cache
-"""
-import sys, time, requests
+import urllib.request
+import sys
+import time
+
 sys.stdout.reconfigure(encoding='utf-8')
 
-test_params = [
-    "?nocache=true",
-    "?purge=1",
-    "?bypass=true",
-    f"?cb={int(time.time())}",
-    f"?v={int(time.time())}&nocache=1",
-    "?api=temp_read_file"
-]
-
-base = "https://sunfragroup.com/kusum/Whatsapp_Rem/frontend/index.php"
-
+url = f"https://sunfragroup.com/kusum/Whatsapp_Rem/index.php?nocache=1&cb={time.time()}"
 headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
     'Pragma': 'no-cache',
+    'Expires': '0',
+    'Hostinger-Bypass-CDN': '1',
     'X-Hostinger-CDN-Cache': 'bypass',
     'CDN-Cache-Control': 'no-store'
 }
 
-for p in test_params:
-    url = base + p
-    try:
-        r = requests.get(url, headers=headers, timeout=10)
-        html = r.text
-        has_undone = "resetAllSubReports" in html
-        cdn_status = r.headers.get('x-hcdn-cache-status', 'NONE')
-        print(f"URL: {p} => Length: {len(html)} | HasUndone: {has_undone} | CDN-Status: {cdn_status}")
-    except Exception as e:
-        print(f"Error {p}: {e}")
+print("Testing CDN bypass request to:", url)
+req = urllib.request.Request(url, headers=headers)
+try:
+    with urllib.request.urlopen(req, timeout=15) as resp:
+        html = resp.read().decode('utf-8', errors='ignore')
+        print(f"HTTP Body Length: {len(html)} bytes")
+        has_mon_sat = 'value="mon-sat"' in html or 'Mon to Sat' in html
+        has_mon_fri = 'value="mon-fri"' in html or 'Mon to Fri' in html
+        print(f"Contains 'Mon to Sat': {has_mon_sat}")
+        print(f"Contains 'Mon to Fri': {has_mon_fri}")
+        if has_mon_sat and has_mon_fri:
+            print("SUCCESS: Fresh code retrieved from live server!")
+        else:
+            print("Response length:", len(html))
+except Exception as e:
+    print("Fetch error:", e)

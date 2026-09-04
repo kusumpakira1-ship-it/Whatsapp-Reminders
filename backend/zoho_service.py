@@ -12,20 +12,57 @@ domain_suffix = settings.ZOHO_DOMAIN.replace("zoho.", "")
 ZOHO_ACCOUNTS_URL = f"https://accounts.zoho.{domain_suffix}"
 ZOHO_BOOKS_API_URL = f"https://www.zohoapis.{domain_suffix}/books/v3"
 
-def get_setting(key: str, default: str = "") -> str:
-    db = SessionLocal()
+_local_cache = {}
+CACHE_FILE = os.path.join(os.path.dirname(__file__), 'zoho_tokens_cache.json')
+
+def _load_file_cache():
+    if os.path.exists(CACHE_FILE):
+        try:
+            import json
+            with open(CACHE_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {}
+
+def _save_file_cache(data):
     try:
+        import json
+        with open(CACHE_FILE, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2)
+    except Exception:
+        pass
+
+def get_setting(key: str, default: str = "") -> str:
+    if key in _local_cache:
+        return _local_cache[key]
+    file_c = _load_file_cache()
+    if key in file_c:
+        _local_cache[key] = file_c[key]
+        return file_c[key]
+    try:
+        from database import get_db_session
+        db = get_db_session()
         s = db.query(SystemSetting).filter(SystemSetting.key == key).first()
-        return s.value if s and s.value else default
+        val = s.value if s and s.value else default
+        db.close()
+        if val:
+            _local_cache[key] = val
+            file_c[key] = val
+            _save_file_cache(file_c)
+        return val
     except Exception as e:
         logger.error(f"Error fetching system setting '{key}': {e}")
-        return default
-    finally:
-        db.close()
+        return file_c.get(key, default)
 
 def save_setting(key: str, value: str):
-    db = SessionLocal()
+    _local_cache[key] = value
+    file_c = _load_file_cache()
+    file_c[key] = value
+    _save_file_cache(file_c)
     try:
+        from database import get_db_session
+        db = get_db_session()
         s = db.query(SystemSetting).filter(SystemSetting.key == key).first()
         if not s:
             s = SystemSetting(key=key, value=value)
@@ -33,10 +70,9 @@ def save_setting(key: str, value: str):
         else:
             s.value = value
         db.commit()
+        db.close()
     except Exception as e:
         logger.error(f"Error saving system setting '{key}': {e}")
-    finally:
-        db.close()
 
 def get_zoho_auth_url(redirect_uri: str = None) -> str:
     """Returns the authorization URL for initial Zoho Books OAuth setup."""
@@ -70,13 +106,22 @@ def exchange_grant_code(grant_code: str, redirect_uri: str = None) -> dict:
         return {"error": str(e)}
 
 def get_access_token() -> str:
-    """Retrieves valid access_token, refreshing it if expired."""
+    """Retrieves valid access_token, refreshing it only if expired or missing."""
+    import time
     cached_access = get_setting("zoho_access_token")
+    expiry_str = get_setting("zoho_access_expiry", "0")
+    try:
+        expiry_ts = float(expiry_str)
+    except Exception:
+        expiry_ts = 0
+
+    if cached_access and time.time() < (expiry_ts - 60):
+        return cached_access
+
     refresh_token = get_setting("zoho_refresh_token", os.getenv("ZOHO_REFRESH_TOKEN", ""))
-    
     if not refresh_token:
         logger.warning("No Zoho refresh_token found. Please authorize Zoho Books OAuth.")
-        return ""
+        return cached_access or ""
 
     url = f"{ZOHO_ACCOUNTS_URL}/oauth/v2/token"
     params = {
@@ -90,7 +135,9 @@ def get_access_token() -> str:
         data = res.json()
         if "access_token" in data:
             new_access = data["access_token"]
+            expires_in = data.get("expires_in", 3600)
             save_setting("zoho_access_token", new_access)
+            save_setting("zoho_access_expiry", str(time.time() + expires_in))
             return new_access
         else:
             logger.error(f"Failed to refresh Zoho token: {data}")
@@ -98,6 +145,19 @@ def get_access_token() -> str:
     except Exception as e:
         logger.error(f"Error calling Zoho token refresh API: {e}")
         return cached_access
+
+def zoho_get(url: str, headers: dict, timeout=20, max_retries=3):
+    import time
+    hdrs = dict(headers)
+    hdrs["Connection"] = "close"
+    last_err = None
+    for attempt in range(max_retries):
+        try:
+            return requests.get(url, headers=hdrs, timeout=timeout)
+        except Exception as e:
+            last_err = e
+            time.sleep(0.3)
+    raise last_err
 
 def get_organization_id(access_token: str = None) -> str:
     """Auto-detects the primary Zoho Books Organization ID."""
@@ -113,7 +173,7 @@ def get_organization_id(access_token: str = None) -> str:
     url = f"{ZOHO_BOOKS_API_URL}/organizations"
     headers = {"Authorization": f"Zoho-oauthtoken {access_token}"}
     try:
-        res = requests.get(url, headers=headers, timeout=30)
+        res = zoho_get(url, headers=headers, timeout=30)
         data = res.json()
         if res.status_code == 200 and "organizations" in data and len(data["organizations"]) > 0:
             org_id = str(data["organizations"][0]["organization_id"])
@@ -143,7 +203,10 @@ def get_chart_of_accounts(access_token: str = None, org_id: str = None) -> dict:
         "sunfra_farms_bank": 0.0,
         "sunfra_indian_bank": 0.0,
         "sunfra_feeds_bank": 0.0,
+        "varadhi_agros_bank": 0.0,
         "total_bank_balance": 0.0,
+        "total_cash_balance": 0.0,
+        "total_bank_and_cash": 0.0,
         "details": []
     }
     if not access_token or not org_id:
@@ -153,37 +216,50 @@ def get_chart_of_accounts(access_token: str = None, org_id: str = None) -> dict:
     headers = {"Authorization": f"Zoho-oauthtoken {access_token}"}
     
     try:
-        res = requests.get(url, headers=headers, timeout=30)
+        res = zoho_get(url, headers=headers, timeout=30)
         data = res.json()
         if res.status_code == 200 and "bankaccounts" in data:
             for acc in data["bankaccounts"]:
                 acc_name = acc.get("account_name", "")
+                acc_type = str(acc.get("account_type", "")).lower()
                 balance = float(acc.get("bcy_balance", 0) or acc.get("balance", 0) or 0.0)
                 name_lower = acc_name.lower()
                 
-                if "farm petty cash" in name_lower or "farm_petty_cash" in name_lower:
-                    accounts["farm_petty_cash"] = balance
-                elif "petty cash" in name_lower:
-                    accounts["petty_cash"] = balance
-                elif "undeposited" in name_lower:
-                    accounts["undeposited_funds"] = balance
-                elif "term loan" in name_lower:
+                # Check loans/OD liabilities
+                if "term loan" in name_lower:
                     accounts["sbi_term_loan"] = balance
                 elif "od" in name_lower or "overdraft" in name_lower:
                     accounts["sunfra_farm_od"] = balance
+                # Cash accounts
+                elif "farm petty cash" in name_lower or "farm_petty_cash" in name_lower:
+                    accounts["farm_petty_cash"] = balance
+                    accounts["total_cash_balance"] += balance
+                elif "petty cash" in name_lower:
+                    accounts["petty_cash"] = balance
+                    accounts["total_cash_balance"] += balance
+                elif "undeposited" in name_lower:
+                    accounts["undeposited_funds"] = balance
+                    accounts["total_cash_balance"] += balance
+                # Bank accounts
                 elif "indian bank" in name_lower:
                     accounts["sunfra_indian_bank"] = balance
                     accounts["total_bank_balance"] += balance
-                elif "sunfra feeds" in name_lower or "feeds" in name_lower or "feed" in name_lower:
+                elif "sunfra feeds" in name_lower:
                     accounts["sunfra_feeds_bank"] = balance
                     accounts["total_bank_balance"] += balance
                 elif "sunfra farms" in name_lower or "sunfra farm" in name_lower:
                     accounts["sunfra_farms_bank"] = balance
                     accounts["total_bank_balance"] += balance
+                elif "varadhi" in name_lower:
+                    accounts["varadhi_agros_bank"] = balance
+                    accounts["total_bank_balance"] += balance
+                elif acc_type == "cash":
+                    accounts["total_cash_balance"] += balance
                 else:
                     accounts["total_bank_balance"] += balance
                     
                 accounts["details"].append({"name": acc_name, "balance": balance})
+            accounts["total_bank_and_cash"] = accounts["total_bank_balance"] + accounts["total_cash_balance"]
     except Exception as e:
         logger.error(f"Error fetching Zoho bank accounts: {e}")
         
@@ -204,7 +280,7 @@ def get_egg_godown_stock(access_token: str = None, org_id: str = None) -> dict:
     stock_info = {"total_eggs": 0, "total_trays": 0.0, "items": []}
     
     try:
-        res = requests.get(url, headers=headers, timeout=30)
+        res = zoho_get(url, headers=headers, timeout=30)
         data = res.json()
         if res.status_code == 200 and "items" in data:
             for item in data["items"]:
@@ -236,7 +312,7 @@ def get_receivables_summary(access_token: str = None, org_id: str = None) -> dic
     headers = {"Authorization": f"Zoho-oauthtoken {access_token}"}
     
     try:
-        res = requests.get(url, headers=headers, timeout=30)
+        res = zoho_get(url, headers=headers, timeout=30)
         data = res.json()
         if res.status_code == 200 and "invoices" in data:
             summary["count"] = len(data["invoices"])
@@ -280,7 +356,7 @@ def get_payables_summary(access_token: str = None, org_id: str = None) -> dict:
     headers = {"Authorization": f"Zoho-oauthtoken {access_token}"}
     
     try:
-        res = requests.get(url, headers=headers, timeout=30)
+        res = zoho_get(url, headers=headers, timeout=30)
         data = res.json()
         if res.status_code == 200 and "bills" in data:
             summary["count"] = len(data["bills"])
@@ -327,7 +403,7 @@ def get_today_zoho_sales_out(access_token: str = None, org_id: str = None) -> di
     headers = {"Authorization": f"Zoho-oauthtoken {access_token}"}
     
     try:
-        res = requests.get(url, headers=headers, timeout=30)
+        res = zoho_get(url, headers=headers, timeout=30)
         data = res.json()
         if res.status_code == 200 and "invoices" in data:
             invoices = data["invoices"]

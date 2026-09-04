@@ -1,8 +1,9 @@
 import os
 import glob
 import pandas as pd
+import logging
 from datetime import datetime, date, timedelta, timezone
-from database import SessionLocal
+from database import get_db_session
 from models import ProcessedData, EggGodownInventory, RawMessage
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
@@ -11,9 +12,10 @@ from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, HRFlowable
 
 IST = timezone(timedelta(hours=5, minutes=30))
+logger = logging.getLogger(__name__)
 
 def generate_godown_report():
-    db = SessionLocal()
+    db = get_db_session()
     now_ist = datetime.now(IST)
     today_dt = now_ist.date()
     yesterday_dt = today_dt - timedelta(days=1)

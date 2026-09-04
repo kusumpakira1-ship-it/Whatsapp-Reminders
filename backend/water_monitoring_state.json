@@ -1,13 +1,13 @@
 {
   "40-91-51-C8-0C-C8": {
-    "last_low_alert_ts": 0,
-    "low_active": false,
-    "last_off_alert_ts": 0,
-    "off_active": false
+    "last_low_alert_ts": 1788257401.294877,
+    "low_active": true,
+    "last_off_alert_ts": 1788270600.038506,
+    "off_active": true
   },
   "C4-4F-33-24-7C-59": {
-    "last_low_alert_ts": 0,
-    "low_active": false,
+    "last_low_alert_ts": 1788443400.026932,
+    "low_active": true,
     "last_off_alert_ts": 0,
     "off_active": false
   }

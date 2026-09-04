@@ -7,7 +7,10 @@
 if (function_exists('opcache_invalidate')) { @opcache_invalidate(__FILE__, true); }
 if (function_exists('opcache_reset')) { @opcache_reset(); }
 @header("X-LiteSpeed-Purge: *");
-@header("Cache-Control: no-cache, no-store, must-revalidate, max-age=0");
+@header("X-Hostinger-CDN-Cache: bypass");
+@header("CDN-Cache-Control: no-store");
+@header("X-LiteSpeed-Cache-Control: no-cache, no-store, must-revalidate");
+@header("Cache-Control: no-cache, no-store, must-revalidate, max-age=0, s-maxage=0");
 @header("Pragma: no-cache");
 @header("Expires: 0");
 ini_set('display_errors', 0);
@@ -20,16 +23,29 @@ try {
     } elseif (file_exists(__DIR__ . '/database.php')) {
         require_once __DIR__ . '/database.php';
     }
-} catch (Exception $e) {}
+    if (isset($pdo) && $pdo) {
+        $pdo->query("SELECT 1");
+    }
+} catch (Exception $e) {
+    $pdo = null;
+}
 
 if (!isset($pdo) || !$pdo) {
-    try {
-        $pdo = new PDO('sqlite:' . __DIR__ . '/whatsapp_reminders.sqlite', null, null, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-        ]);
-    } catch (PDOException $e) {
-        // Fallback initialized
+    $sqlite_candidates = [
+        __DIR__ . '/whatsapp_reminders.sqlite',
+        dirname(__DIR__) . '/whatsapp_reminders.sqlite',
+        dirname(dirname(__DIR__)) . '/whatsapp_reminders.sqlite'
+    ];
+    foreach ($sqlite_candidates as $sc) {
+        if (file_exists($sc)) {
+            try {
+                $pdo = new PDO('sqlite:' . $sc, null, null, [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+                ]);
+                break;
+            } catch (Exception $e) {}
+        }
     }
 }
 
@@ -1295,6 +1311,16 @@ if ($route && !in_array($route, ['app', 'view', 'dashboard', 'live'])) {
                 while ($dt <= $now) {
                     if ($freq === 'daily') {
                         $dt->modify('+1 day');
+                    } elseif ($freq === 'mon-sat' || $freq === 'mon_sat' || $freq === 'mon_to_sat') {
+                        $dt->modify('+1 day');
+                        if ($dt->format('N') == 7) { // Sunday -> jump to Monday
+                            $dt->modify('+1 day');
+                        }
+                    } elseif ($freq === 'mon-fri' || $freq === 'mon_fri' || $freq === 'mon_to_fri' || $freq === 'weekdays' || $freq === 'weekday') {
+                        $dt->modify('+1 day');
+                        while (in_array((int)$dt->format('N'), [6, 7])) { // Sat/Sun -> jump to Monday
+                            $dt->modify('+1 day');
+                        }
                     } elseif ($freq === 'weekly') {
                         $dt->modify('+7 days');
                     } elseif ($freq === 'monthly') {
@@ -1906,14 +1932,14 @@ try {
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.65) !important;
-            backdrop-filter: blur(4px);
+            background: rgba(15, 23, 42, 0.45) !important;
+            backdrop-filter: blur(6px);
             z-index: 99999 !important;
             align-items: center;
             justify-content: center;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.2s ease;
+            transition: opacity 0.25s ease;
         }
 
         .modal.active {
@@ -1923,12 +1949,19 @@ try {
         }
 
         .modal-content {
-            width: 450px;
+            width: 480px;
+            max-width: 92vw;
             max-height: 90vh;
             overflow-y: auto;
             overflow-x: hidden;
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 20px !important;
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05) !important;
+            padding: 2.25rem !important;
             transform: scale(0.95);
             transition: transform 0.3s ease;
+            color: #0f172a !important;
         }
         
         .modal-content::-webkit-scrollbar {
@@ -1938,35 +1971,37 @@ try {
             background: transparent;
         }
         .modal-content::-webkit-scrollbar-thumb {
-            background: rgba(59, 130, 246, 0.3);
+            background: #cbd5e1;
             border-radius: 4px;
         }
         .modal-content::-webkit-scrollbar-thumb:hover {
-            background: rgba(59, 130, 246, 0.5);
+            background: #94a3b8;
         }
         
         .modal.active .modal-content { transform: scale(1); }
-        .modal-content h3 { margin-bottom: 2rem; font-size: 1.4rem; color: var(--text-primary); }
+        .modal-content h3 { margin-bottom: 1.5rem; font-size: 1.35rem; font-weight: 700; color: #0f172a !important; }
 
-        .form-group { margin-bottom: 1.5rem; }
-        .form-group label { display: block; margin-bottom: 0.6rem; color: var(--text-secondary); font-size: 0.95rem; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: #334155 !important; font-size: 0.9rem; font-weight: 600 !important; }
         
         .form-group input, .form-group select, .form-group textarea {
             width: 100%;
-            padding: 0.85rem 1rem;
-            border-radius: 8px;
-            border: 1px solid rgba(0,0,0,0.1);
-            background: rgba(255,255,255,0.8);
-            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1 !important;
+            background: #ffffff !important;
+            color: #0f172a !important;
             font-family: inherit;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
         }
 
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-            background: #fff;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+            background: #ffffff !important;
         }
 
         .modal-actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2.5rem; }
@@ -2358,9 +2393,9 @@ try {
                     </div>
 
                     <!-- Search bar and members checkbox container -->
-                    <input type="text" id="memberSearchInput" placeholder="Search members..." oninput="filterMembersList()" style="width: 100%; padding: 0.6rem; margin-bottom: 0.5rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); font-size: 0.9rem; background: white; color: var(--text-primary); box-sizing: border-box;">
+                    <input type="text" id="memberSearchInput" placeholder="Search members..." oninput="filterMembersList()" style="width: 100%; padding: 0.6rem; margin-bottom: 0.5rem; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.9rem; background: #ffffff; color: #0f172a; box-sizing: border-box;">
                     
-                    <div id="membersCheckboxContainer" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 180px; overflow-y: auto; padding: 0.75rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; background: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">
+                    <div id="membersCheckboxContainer" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 180px; overflow-y: auto; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 10px; background: #ffffff; margin-bottom: 0.5rem;">
                         <!-- Checkboxes populated dynamically -->
                     </div>
                 </div>
@@ -2372,10 +2407,10 @@ try {
                     </div>
                     
                     <!-- Form to add new custom report type (initially hidden) -->
-                    <div id="customReportFormContainer" style="display: none; background: rgba(0,0,0,0.03); padding: 0.75rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05); margin-bottom: 0.75rem; gap: 0.5rem; flex-direction: column;">
+                    <div id="customReportFormContainer" style="display: none; background: #f8fafc; padding: 0.75rem; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 0.75rem; gap: 0.5rem; flex-direction: column;">
                         <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Add Custom Report Type</div>
                         <div style="display: flex; gap: 0.5rem;">
-                            <input type="text" id="newReportTypeInput" placeholder="Add custom report type..." style="flex: 1; padding: 0.5rem; font-size: 0.9rem; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); background: white;">
+                            <input type="text" id="newReportTypeInput" placeholder="Add custom report type..." style="flex: 1; padding: 0.5rem; font-size: 0.9rem; border-radius: 6px; border: 1px solid #cbd5e1; background: white;">
                         </div>
                         <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.25rem;">
                             <button type="button" class="btn btn-secondary" onclick="hideAddCustomReportForm()" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 6px;">Cancel</button>
@@ -2383,7 +2418,7 @@ try {
                         </div>
                     </div>
 
-                    <div id="reportCheckboxesContainer" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 150px; overflow-y: auto; padding: 0.5rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; background: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">
+                    <div id="reportCheckboxesContainer" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 150px; overflow-y: auto; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 10px; background: #ffffff; margin-bottom: 0.5rem;">
                         <!-- Checkboxes populated dynamically -->
                     </div>
                 </div>
@@ -2414,6 +2449,8 @@ try {
                     <select id="remFrequency" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; background: transparent; color: var(--text-primary);">
                         <option value="once">Once</option>
                         <option value="daily" selected>Daily</option>
+                        <option value="mon-sat">Mon to Sat</option>
+                        <option value="mon-fri">Mon to Fri</option>
                         <option value="weekly">Weekly</option>
                         <option value="monthly">Monthly</option>
                         <option value="yearly">Yearly</option>
@@ -3259,7 +3296,7 @@ try {
                     <td>${groupText}</td>
                     <td>${reportsText}</td>
                     <td>${r.task_notes}</td>
-                    <td style="text-transform: capitalize; font-weight: 500;">${r.frequency || 'daily'}</td>
+                    <td style="font-weight: 500;">${r.frequency === 'mon-sat' ? 'Mon to Sat' : (r.frequency === 'mon-fri' ? 'Mon to Fri' : (r.frequency ? r.frequency.charAt(0).toUpperCase() + r.frequency.slice(1) : 'Daily'))}</td>
                     <td style="text-transform: capitalize; font-weight: 500; color: #b45309;">${r.repeat_interval && r.repeat_interval !== 'none' ? r.repeat_interval : 'None'}</td>
                     <td>${formatDateTime(r.trigger_time)}</td>
                     <td><span class="badge ${badgeClass}">${r.status}</span></td>

@@ -12,13 +12,20 @@ from zoho_service import (
     get_payables_summary,
     get_today_zoho_sales_out
 )
-from database import SessionLocal
+from database import SessionLocal, get_db_session
 from models import ProcessedData, RawMessage
+from zoho_4company_pandl import (
+    fetch_today_sales_and_purchases,
+    fetch_inventory_stock_data,
+    fetch_egg_stock_count,
+    fetch_historical_net_positions,
+    fetch_balance_sheet_cash_and_equivalents
+)
 
 logger = logging.getLogger(__name__)
 IST = timezone(timedelta(hours=5, minutes=30))
 
-def extract_physical_balances_from_whatsapp(exact_group_name: str):
+def extract_physical_balances_from_whatsapp(exact_group_name: str, target_date: str = None):
     """
     Parses WhatsApp messages from designated group names and sender LIDs for each company:
     - 'Accounts Poultry' for Sunfra Farms
@@ -28,7 +35,7 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str):
     """
     from sqlalchemy import desc
     from models import RawMessage, WhatsAppMessage
-    db = SessionLocal()
+    db = get_db_session()
     res = {
         'petty_cash': None,
         'farm_petty_cash': None,
@@ -65,10 +72,16 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str):
             if any(t in grp or t in snd for t in targets):
                 combined.append({'text': m.message_text or '', 'ts': m.timestamp})
 
-        now_ist = datetime.now(IST)
-        today_date = now_ist.date()
+        if target_date:
+            if isinstance(target_date, str):
+                today_date = datetime.strptime(target_date, "%Y-%m-%d").date()
+            else:
+                today_date = target_date
+        else:
+            now_ist = datetime.now(IST)
+            today_date = now_ist.date()
         
-        # Filter strictly to messages posted TODAY ONLY per user explicit directive
+        # Filter strictly to messages posted on target date per user directive
         today_combined = [m for m in combined if m['ts'] and m['ts'].astimezone(IST).date() == today_date]
         today_combined.sort(key=lambda x: x['ts'], reverse=True)
 
@@ -241,50 +254,79 @@ def format_payables_breakdown(payables_dict: dict):
             days = item.get("aging_days", 0)
             connector = "└" if idx == total_items else "├"
             lines.append(f"  {connector} {idx}. *{v_name}*: *{format_indian_currency(amt)}* (OD {days})")
+    else:
+        lines.append("  └ *No pending vendor bills* ✅")
     return "\n".join(lines)
 
 
-def generate_and_send_zoho_reconciliation_report(recipient_phone: str = None) -> bool:
-    """Fetches live Zoho Books balances, reconciles with WhatsApp farm data, and sends exclusively to recipient."""
+def format_today_sales_purchases_breakdown(today_sales, today_purchases, sales_cnt, purch_cnt, sales_list, purch_list) -> str:
+    lines = [
+        "📊 *Today's Sales & Purchases*:",
+        f"• Today's Sales: *{format_indian_currency(today_sales)}* ({sales_cnt} invoices)"
+    ]
+    if sales_list:
+        for idx, (cust, no, amt) in enumerate(sales_list, 1):
+            conn = "└" if idx == len(sales_list) else "├"
+            inv_str = f" ({no})" if no else ""
+            lines.append(f"  {conn} {idx}. *{cust}*{inv_str}: *{format_indian_currency(amt)}*")
+            
+    lines.append(f"• Today's Purchases/Costs: *{format_indian_currency(today_purchases)}* ({purch_cnt} items)")
+    if purch_list:
+        for idx, (vend, no, amt) in enumerate(purch_list, 1):
+            conn = "└" if idx == len(purch_list) else "├"
+            bill_str = f" ({no})" if no else ""
+            lines.append(f"  {conn} {idx}. *{vend}*{bill_str}: *{format_indian_currency(amt)}*")
+            
+    return "\n".join(lines)
+
+
+def generate_and_send_zoho_reconciliation_report(recipient_phone: str = None, target_date: str = None) -> bool:
+    """Fetches live Zoho Books balances for Sunfra Farms and dispatches its consolidated Daily Comprehensive Report."""
     target_phone = recipient_phone or settings.ZOHO_RECIPIENT_PHONE or "917259510983"
     if not target_phone.endswith("@c.us") and not target_phone.endswith("@g.us"):
         target_phone = f"{target_phone}@c.us"
         
-    logger.info(f"Generating Zoho Reconciliation Report for target recipient {target_phone}...")
+    logger.info(f"Generating Consolidated Sunfra Farms Report for recipient {target_phone}...")
     
     access_token = get_access_token()
     if not access_token:
         error_msg = (
             "⚠️ *Zoho Books Integration Alert*\n\n"
-            "Unable to connect to Zoho Books API because no valid OAuth token was found.\n"
-            "Please complete 1-time Zoho authorization using your Client ID and Client Secret."
+            "Unable to connect to Zoho Books API because no valid OAuth token was found."
         )
         send_waha_message(target_phone, error_msg)
         return False
 
     farms_org_id = "905812487"
-    now_ist = datetime.now(IST)
-    today_str = now_ist.strftime("%d %b %Y")
+    if target_date:
+        today_date_str = target_date
+        today_str = datetime.strptime(target_date, "%Y-%m-%d").strftime("%d %b %Y")
+    else:
+        now_ist = datetime.now(IST)
+        today_str = now_ist.strftime("%d %b %Y")
+        today_date_str = now_ist.strftime("%Y-%m-%d")
     
-    # 1. Fetch Zoho Balances & Receivables/Payables for Sunfra Farms
+    # 1. Fetch Zoho Balances & Data for Sunfra Farms
     accounts = get_chart_of_accounts(access_token, farms_org_id)
     receivables = get_receivables_summary(access_token, farms_org_id)
     payables = get_payables_summary(access_token, farms_org_id)
+    sales_total, purch_total, sales_cnt, purch_cnt, sales_list, purch_list = fetch_today_sales_and_purchases(access_token, farms_org_id, today_date_str)
+    stock_val, neg_items = fetch_inventory_stock_data(access_token, farms_org_id)
     
-    # 2. Extract Physical Balances ONLY from WhatsApp Group 'Accounts Poultry'
-    physical = extract_physical_balances_from_whatsapp('Accounts Poultry')
-    
-    def fmt_curr(val):
-        v = float(val or 0.0)
-        if v < 0:
-            return f"-Rs. {abs(v):,.2f}"
-        return f"Rs. {v:,.2f}"
+    # 2. Extract Physical Balances from WhatsApp Group 'Accounts Poultry'
+    physical = extract_physical_balances_from_whatsapp('Accounts Poultry', today_date_str)
 
-    # 3. Format WhatsApp Message Report
+    # 3. Calculate Overall Net Financial Position
+    bank_and_cash_total, bs_cash, bs_bank = fetch_balance_sheet_cash_and_equivalents(access_token, farms_org_id)
+    rec_total = receivables.get('total_receivable', 0.0) or receivables.get('total_amount', 0.0)
+    pay_total = payables.get('total_payable', 0.0) or payables.get('total_amount', 0.0)
+    net_financial_position = (stock_val + rec_total + bank_and_cash_total) - pay_total
+
+    # 4. Assemble Consolidated Message
     msg_lines = [
-        "🌾 *Sunfra Farms Reports & Balances*",
+        "🌾 *Sunfra Farms — Daily Comprehensive Report*",
         f"📅 *Date:* {today_str}",
-        "--------------------------------------------------",
+        "==================================================",
         "💰 *Active Account Balances (Sunfra Farms)*:",
         format_reconciliation_block("Petty Cash", physical.get('petty_cash'), accounts.get('petty_cash', 0.0)),
         "",
@@ -298,32 +340,59 @@ def generate_and_send_zoho_reconciliation_report(recipient_phone: str = None) ->
         "",
         format_reconciliation_block("SUNFRA FARM OD-0718 (0718)", physical.get('sunfra_farm_od'), accounts.get('sunfra_farm_od', 0.0)),
         "",
+        format_today_sales_purchases_breakdown(sales_total, purch_total, sales_cnt, purch_cnt, sales_list, purch_list),
+        "",
         format_receivables_breakdown(receivables),
         "",
-        format_payables_breakdown(payables)
+        format_payables_breakdown(payables),
+        "--------------------------------------------------",
+        f"📦 *Stock Valuation (Inventory Asset):* *{format_indian_currency(stock_val)}*"
     ]
 
+    egg_stock_count = fetch_egg_stock_count(access_token, farms_org_id)
+    if egg_stock_count > 0:
+        lakhs = egg_stock_count / 100000.0
+        highlight = " 🔴" if egg_stock_count > 250000 else ""
+        msg_lines.append(f"  • *Egg Stock:* *{lakhs:.2f} Lakhs eggs* ({int(egg_stock_count):,} eggs){highlight}")
+
+    msg_lines.append(f"💰 *Bank & Cash Balance:* *{format_indian_currency(bank_and_cash_total)}*")
+    net_pos_status = "✅ Profit" if net_financial_position >= 0 else "⚠️ Deficit"
+    msg_lines.append(f"⚖️ *Overall Net Financial Position:* *{format_indian_currency(net_financial_position)}* ({net_pos_status})")
+    
+    hist_positions = fetch_historical_net_positions(access_token, farms_org_id, net_financial_position, today_date_str)
+    hist_lines = [f"  • {lbl}: *{format_indian_currency(pos)}*" for lbl, pos in hist_positions]
+    msg_lines.append("📊 *Net Position Breakdown (History):*\n" + "\n".join(hist_lines))
+
+    if neg_items:
+        neg_strs = [f"• {item_name}: *{qty:,.2f} units*" for item_name, qty in neg_items]
+        msg_lines.append(f"⚠️ *Negative Stock Warning ({len(neg_items)} items):*\n  " + "\n  ".join(neg_strs))
+    else:
+        msg_lines.append("⚠️ *Negative Stock:* *None* ✅")
+        
+    msg_lines.append("==================================================")
+
     report_text = "\n".join(msg_lines)
-    logger.info(f"Sending Zoho Reconciliation Report to {target_phone}...")
+    logger.info(f"Sending Consolidated Sunfra Farms Report to {target_phone}...")
     success = send_waha_message(target_phone, report_text)
     
-    # Also dispatch Feeds and Corporate Reconciliation Reports to target recipient
+    # Also dispatch Feeds, Corporate, and Indus Consolidated Reports to target recipient
     try:
-        generate_and_send_sunfra_feeds_reconciliation_report(target_phone)
-        generate_and_send_sunfra_corporate_reconciliation_report(target_phone)
+        generate_and_send_sunfra_feeds_reconciliation_report(target_phone, today_date_str)
+        generate_and_send_sunfra_corporate_reconciliation_report(target_phone, today_date_str)
+        generate_and_send_indus_reconciliation_report(target_phone, today_date_str)
     except Exception as e_sub:
-        logger.error(f"Error sending Feeds/Corporate reconciliation reports: {e_sub}")
+        logger.error(f"Error sending Feeds/Corporate/Indus consolidated reports: {e_sub}")
         
     return success
 
 
-def generate_and_send_sunfra_feeds_reconciliation_report(recipient_phone: str = None) -> bool:
-    """Fetches live Zoho Books balances for Sunfra Feeds and reconciles ONLY with WhatsApp group 'Summary - Sunfra Feeds'."""
+def generate_and_send_sunfra_feeds_reconciliation_report(recipient_phone: str = None, target_date: str = None) -> bool:
+    """Fetches live Zoho Books balances for Sunfra Feeds and dispatches its consolidated Daily Comprehensive Report."""
     target_phone = recipient_phone or settings.ZOHO_RECIPIENT_PHONE or "917259510983"
     if not target_phone.endswith("@c.us") and not target_phone.endswith("@g.us"):
         target_phone = f"{target_phone}@c.us"
         
-    logger.info(f"Generating Sunfra Feeds Zoho Reconciliation Report for target recipient {target_phone}...")
+    logger.info(f"Generating Consolidated Sunfra Feeds Report for recipient {target_phone}...")
     
     access_token = get_access_token()
     if not access_token:
@@ -335,50 +404,78 @@ def generate_and_send_sunfra_feeds_reconciliation_report(recipient_phone: str = 
         return False
 
     feeds_org_id = "932776276"
-    now_ist = datetime.now(IST)
-    today_str = now_ist.strftime("%d %b %Y")
+    if target_date:
+        today_date_str = target_date
+        today_str = datetime.strptime(target_date, "%Y-%m-%d").strftime("%d %b %Y")
+    else:
+        now_ist = datetime.now(IST)
+        today_str = now_ist.strftime("%d %b %Y")
+        today_date_str = now_ist.strftime("%Y-%m-%d")
     
-    # 1. Fetch Zoho Balances for Sunfra Feeds
+    # 1. Fetch Zoho Balances & Data for Sunfra Feeds
     accounts = get_chart_of_accounts(access_token, feeds_org_id)
     receivables = get_receivables_summary(access_token, feeds_org_id)
     payables = get_payables_summary(access_token, feeds_org_id)
+    sales_total, purch_total, sales_cnt, purch_cnt, sales_list, purch_list = fetch_today_sales_and_purchases(access_token, feeds_org_id, today_date_str)
+    stock_val, neg_items = fetch_inventory_stock_data(access_token, feeds_org_id)
     
-    # 2. Extract Physical Balances ONLY from WhatsApp Group 'Summary - Sunfra Feeds'
-    physical = extract_physical_balances_from_whatsapp('Summary - Sunfra Feeds')
-    
-    def fmt_curr(val):
-        v = float(val or 0.0)
-        if v < 0:
-            return f"-Rs. {abs(v):,.2f}"
-        return f"Rs. {v:,.2f}"
+    # 2. Extract Physical Balances from WhatsApp Group 'Summary - Sunfra Feeds'
+    physical = extract_physical_balances_from_whatsapp('Summary - Sunfra Feeds', today_date_str)
 
+    # 3. Calculate Overall Net Financial Position
+    bank_and_cash_total, bs_cash, bs_bank = fetch_balance_sheet_cash_and_equivalents(access_token, feeds_org_id)
+    rec_total = receivables.get('total_receivable', 0.0) or receivables.get('total_amount', 0.0)
+    pay_total = payables.get('total_payable', 0.0) or payables.get('total_amount', 0.0)
+    net_financial_position = (stock_val + rec_total + bank_and_cash_total) - pay_total
+
+    # 4. Assemble Consolidated Message
     msg_lines = [
-        "🏭 *Company: Sunfra Feeds*",
+        "🐔 *Sunfra Feeds — Daily Comprehensive Report*",
         f"📅 *Date:* {today_str}",
-        "--------------------------------------------------",
+        "==================================================",
         "💰 *Active Account Balances (Sunfra Feeds)*:",
         format_reconciliation_block("Petty Cash", physical.get('petty_cash'), accounts.get('petty_cash', 0.0)),
         "",
         format_reconciliation_block("Sunfra Feeds Bank Account", physical.get('bank_balance'), accounts.get('total_bank_balance', 0.0)),
         "",
+        format_today_sales_purchases_breakdown(sales_total, purch_total, sales_cnt, purch_cnt, sales_list, purch_list),
+        "",
         format_receivables_breakdown(receivables),
         "",
-        format_payables_breakdown(payables)
+        format_payables_breakdown(payables),
+        "--------------------------------------------------",
+        f"📦 *Stock Valuation (Inventory Asset):* *{format_indian_currency(stock_val)}*",
+        f"💰 *Bank & Cash Balance:* *{format_indian_currency(bank_and_cash_total)}*"
     ]
 
+    net_pos_status = "✅ Profit" if net_financial_position >= 0 else "⚠️ Deficit"
+    msg_lines.append(f"⚖️ *Overall Net Financial Position:* *{format_indian_currency(net_financial_position)}* ({net_pos_status})")
+    
+    hist_positions = fetch_historical_net_positions(access_token, feeds_org_id, net_financial_position, today_date_str)
+    hist_lines = [f"  • {lbl}: *{format_indian_currency(pos)}*" for lbl, pos in hist_positions]
+    msg_lines.append("📊 *Net Position Breakdown (History):*\n" + "\n".join(hist_lines))
+
+    if neg_items:
+        neg_strs = [f"• {item_name}: *{qty:,.2f} units*" for item_name, qty in neg_items]
+        msg_lines.append(f"⚠️ *Negative Stock Warning ({len(neg_items)} items):*\n  " + "\n  ".join(neg_strs))
+    else:
+        msg_lines.append("⚠️ *Negative Stock:* *None* ✅")
+        
+    msg_lines.append("==================================================")
+
     report_text = "\n".join(msg_lines)
-    logger.info(f"Sending Sunfra Feeds Reconciliation Report to {target_phone}...")
+    logger.info(f"Sending Consolidated Sunfra Feeds Report to {target_phone}...")
     success = send_waha_message(target_phone, report_text)
     return success
 
 
-def generate_and_send_sunfra_corporate_reconciliation_report(recipient_phone: str = None) -> bool:
-    """Fetches live Zoho Books balances for Sunfra Corporate and reconciles ONLY with WhatsApp group 'Sunfra Corporate P&L'."""
+def generate_and_send_sunfra_corporate_reconciliation_report(recipient_phone: str = None, target_date: str = None) -> bool:
+    """Fetches live Zoho Books balances for Sunfra Corporate and dispatches its consolidated Daily Comprehensive Report."""
     target_phone = recipient_phone or settings.ZOHO_RECIPIENT_PHONE or "917259510983"
     if not target_phone.endswith("@c.us") and not target_phone.endswith("@g.us"):
         target_phone = f"{target_phone}@c.us"
         
-    logger.info(f"Generating Sunfra Corporate Zoho Reconciliation Report for target recipient {target_phone}...")
+    logger.info(f"Generating Consolidated Sunfra Corporate Report for recipient {target_phone}...")
     
     access_token = get_access_token()
     if not access_token:
@@ -390,27 +487,35 @@ def generate_and_send_sunfra_corporate_reconciliation_report(recipient_phone: st
         return False
 
     corp_org_id = "929124131"
-    now_ist = datetime.now(IST)
-    today_str = now_ist.strftime("%d %b %Y")
+    if target_date:
+        today_date_str = target_date
+        today_str = datetime.strptime(target_date, "%Y-%m-%d").strftime("%d %b %Y")
+    else:
+        now_ist = datetime.now(IST)
+        today_str = now_ist.strftime("%d %b %Y")
+        today_date_str = now_ist.strftime("%Y-%m-%d")
     
-    # 1. Fetch Zoho Balances for Sunfra Corporate
+    # 1. Fetch Zoho Balances & Data for Sunfra Corporate
     accounts = get_chart_of_accounts(access_token, corp_org_id)
     receivables = get_receivables_summary(access_token, corp_org_id)
     payables = get_payables_summary(access_token, corp_org_id)
+    sales_total, purch_total, sales_cnt, purch_cnt, sales_list, purch_list = fetch_today_sales_and_purchases(access_token, corp_org_id, today_date_str)
+    stock_val, neg_items = fetch_inventory_stock_data(access_token, corp_org_id)
     
-    # 2. Extract Physical Balances ONLY from WhatsApp Group 'Sunfra Corporate P&L'
-    physical = extract_physical_balances_from_whatsapp('Sunfra Corporate P&L')
-    
-    def fmt_curr(val):
-        v = float(val or 0.0)
-        if v < 0:
-            return f"-Rs. {abs(v):,.2f}"
-        return f"Rs. {v:,.2f}"
+    # 2. Extract Physical Balances from WhatsApp Group 'Sunfra Corporate P&L'
+    physical = extract_physical_balances_from_whatsapp('Sunfra Corporate P&L', today_date_str)
 
+    # 3. Calculate Overall Net Financial Position
+    bank_and_cash_total, bs_cash, bs_bank = fetch_balance_sheet_cash_and_equivalents(access_token, corp_org_id)
+    rec_total = receivables.get('total_receivable', 0.0) or receivables.get('total_amount', 0.0)
+    pay_total = payables.get('total_payable', 0.0) or payables.get('total_amount', 0.0)
+    net_financial_position = (stock_val + rec_total + bank_and_cash_total) - pay_total
+
+    # 4. Assemble Consolidated Message
     msg_lines = [
-        "🏢 *Company: Sunfra Corporate*",
+        "🏢 *Sunfra Corporate — Daily Comprehensive Report*",
         f"📅 *Date:* {today_str}",
-        "--------------------------------------------------",
+        "==================================================",
         "💰 *Active Account Balances (Sunfra Corporate)*:",
         format_reconciliation_block("Farm Petty Cash", physical.get('farm_petty_cash'), accounts.get('farm_petty_cash', 0.0)),
         "",
@@ -420,12 +525,112 @@ def generate_and_send_sunfra_corporate_reconciliation_report(recipient_phone: st
         "",
         format_reconciliation_block("Total Available Bank Balance", physical.get('bank_balance'), accounts.get('total_bank_balance', 0.0)),
         "",
+        format_today_sales_purchases_breakdown(sales_total, purch_total, sales_cnt, purch_cnt, sales_list, purch_list),
+        "",
         format_receivables_breakdown(receivables),
         "",
-        format_payables_breakdown(payables)
+        format_payables_breakdown(payables),
+        "--------------------------------------------------",
+        f"📦 *Stock Valuation (Inventory Asset):* *{format_indian_currency(stock_val)}*"
     ]
 
+    egg_stock_count = fetch_egg_stock_count(access_token, corp_org_id)
+    if egg_stock_count > 0:
+        lakhs = egg_stock_count / 100000.0
+        msg_lines.append(f"  • *Egg Stock:* *{lakhs:.2f} Lakhs eggs* ({int(egg_stock_count):,} eggs)")
+
+    msg_lines.append(f"💰 *Bank & Cash Balance:* *{format_indian_currency(bank_and_cash_total)}*")
+    net_pos_status = "✅ Profit" if net_financial_position >= 0 else "⚠️ Deficit"
+    msg_lines.append(f"⚖️ *Overall Net Financial Position:* *{format_indian_currency(net_financial_position)}* ({net_pos_status})")
+    
+    hist_positions = fetch_historical_net_positions(access_token, corp_org_id, net_financial_position, today_date_str)
+    hist_lines = [f"  • {lbl}: *{format_indian_currency(pos)}*" for lbl, pos in hist_positions]
+    msg_lines.append("📊 *Net Position Breakdown (History):*\n" + "\n".join(hist_lines))
+
+    if neg_items:
+        neg_strs = [f"• {item_name}: *{qty:,.2f} units*" for item_name, qty in neg_items]
+        msg_lines.append(f"⚠️ *Negative Stock Warning ({len(neg_items)} items):*\n  " + "\n  ".join(neg_strs))
+    else:
+        msg_lines.append("⚠️ *Negative Stock:* *None* ✅")
+        
+    msg_lines.append("==================================================")
+
     report_text = "\n".join(msg_lines)
-    logger.info(f"Sending Sunfra Corporate Reconciliation Report to {target_phone}...")
+    logger.info(f"Sending Consolidated Sunfra Corporate Report to {target_phone}...")
+    success = send_waha_message(target_phone, report_text)
+    return success
+
+
+def generate_and_send_indus_reconciliation_report(recipient_phone: str = None, target_date: str = None) -> bool:
+    """Fetches live Zoho Books balances for Indus and dispatches its consolidated Daily Comprehensive Report (Without Active Account Balances)."""
+    target_phone = recipient_phone or settings.ZOHO_RECIPIENT_PHONE or "917259510983"
+    if not target_phone.endswith("@c.us") and not target_phone.endswith("@g.us"):
+        target_phone = f"{target_phone}@c.us"
+        
+    logger.info(f"Generating Consolidated Indus Report for recipient {target_phone}...")
+    
+    access_token = get_access_token()
+    if not access_token:
+        error_msg = (
+            "⚠️ *Zoho Books Integration Alert (Indus)*\n\n"
+            "Unable to connect to Zoho Books API because no valid OAuth token was found."
+        )
+        send_waha_message(target_phone, error_msg)
+        return False
+
+    indus_org_id = "893416886"
+    if target_date:
+        today_date_str = target_date
+        today_str = datetime.strptime(target_date, "%Y-%m-%d").strftime("%d %b %Y")
+    else:
+        now_ist = datetime.now(IST)
+        today_str = now_ist.strftime("%d %b %Y")
+        today_date_str = now_ist.strftime("%Y-%m-%d")
+    
+    # 1. Fetch Zoho Balances & Data for Indus
+    accounts = get_chart_of_accounts(access_token, indus_org_id)
+    receivables = get_receivables_summary(access_token, indus_org_id)
+    payables = get_payables_summary(access_token, indus_org_id)
+    sales_total, purch_total, sales_cnt, purch_cnt, sales_list, purch_list = fetch_today_sales_and_purchases(access_token, indus_org_id, today_date_str)
+    stock_val, neg_items = fetch_inventory_stock_data(access_token, indus_org_id)
+
+    # 2. Calculate Overall Net Financial Position
+    bank_and_cash_total, bs_cash, bs_bank = fetch_balance_sheet_cash_and_equivalents(access_token, indus_org_id)
+    rec_total = receivables.get('total_receivable', 0.0) or receivables.get('total_amount', 0.0)
+    pay_total = payables.get('total_payable', 0.0) or payables.get('total_amount', 0.0)
+    net_financial_position = (stock_val + rec_total + bank_and_cash_total) - pay_total
+
+    # 3. Assemble Consolidated Message (Without Active Account Balances for Indus)
+    msg_lines = [
+        "⚡ *Indus — Daily Comprehensive Report*",
+        f"📅 *Date:* {today_str}",
+        "==================================================",
+        format_today_sales_purchases_breakdown(sales_total, purch_total, sales_cnt, purch_cnt, sales_list, purch_list),
+        "",
+        format_receivables_breakdown(receivables),
+        "",
+        format_payables_breakdown(payables),
+        "--------------------------------------------------",
+        f"📦 *Stock Valuation (Inventory Asset):* *{format_indian_currency(stock_val)}*",
+        f"💰 *Bank & Cash Balance:* *{format_indian_currency(bank_and_cash_total)}*"
+    ]
+
+    net_pos_status = "✅ Profit" if net_financial_position >= 0 else "⚠️ Deficit"
+    msg_lines.append(f"⚖️ *Overall Net Financial Position:* *{format_indian_currency(net_financial_position)}* ({net_pos_status})")
+    
+    hist_positions = fetch_historical_net_positions(access_token, indus_org_id, net_financial_position, today_date_str)
+    hist_lines = [f"  • {lbl}: *{format_indian_currency(pos)}*" for lbl, pos in hist_positions]
+    msg_lines.append("📊 *Net Position Breakdown (History):*\n" + "\n".join(hist_lines))
+
+    if neg_items:
+        neg_strs = [f"• {item_name}: *{qty:,.2f} units*" for item_name, qty in neg_items]
+        msg_lines.append(f"⚠️ *Negative Stock Warning ({len(neg_items)} items):*\n  " + "\n  ".join(neg_strs))
+    else:
+        msg_lines.append("⚠️ *Negative Stock:* *None* ✅")
+        
+    msg_lines.append("==================================================")
+
+    report_text = "\n".join(msg_lines)
+    logger.info(f"Sending Consolidated Indus Report to {target_phone}...")
     success = send_waha_message(target_phone, report_text)
     return success

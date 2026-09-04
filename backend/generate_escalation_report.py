@@ -298,7 +298,7 @@ try:
                     submitted = True
                     break
             elif is_rule_book:
-                rule_kws = ["rule book", "rule", "rules", "point", "points", "policy", "guideline", "godown rule", "farm rule", "addition"]
+                rule_kws = ["rule book", "rulebook", "rule-book", "rule book updates", "rulebook update", "rulebook updates", "rule book update", "godown rule book", "farm rule book"]
                 if any(kw in text_lower for kw in rule_kws):
                     submitted = True
                     break
