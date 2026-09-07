@@ -1708,6 +1708,19 @@ def poll_and_remind_tasks_job():
                     if 'shed worker' in tn and ('shed worker' in msg or 'shed workers' in msg or ('shed' in msg and 'worker' in msg)):
                         if not any(x in msg for x in ['godown', 'plant', 'supervisor', 'medicine', 'incharge']): return True
                     return False
+                elif 'tank' in tn or 'cleaning' in tn:
+                    has_clean_kw = any(w in msg for w in ['clean', 'cleaned', 'done', 'completed', 'finish', 'finished', 'ok done', 'complete'])
+                    if not has_clean_kw:
+                        return False
+                    if 'tank a' in tn:
+                        if 'tank b' in msg and 'tank a' not in msg:
+                            return False
+                        return True
+                    elif 'tank b' in tn:
+                        if 'tank a' in msg and 'tank b' not in msg:
+                            return False
+                        return True
+                    return True
                 else:
                     return has_completion and has_identifier_match
 
@@ -1915,6 +1928,14 @@ def poll_and_remind_tasks_job():
                                 f"Target Shed/Flock: *{target_shed}*\n\n"
                                 f"Please complete this work and reply to this message with *\"updated\"* & *\"approved\"* once finished."
                             )
+                        elif 'tank' in t.task_name.lower() or 'cleaning' in t.task_name.lower():
+                            msg = (
+                                f"⏰ *{t.task_name.upper()}* 🧼\n\n"
+                                f"Hi Team,\n"
+                                f"The task *\"{t.task_name}\"* is currently pending / overdue.\n\n"
+                                f"Please clean the tank and reply to this message with *\"cleaned\"* or *\"done\"* once finished.\n\n"
+                                f"Thank you! 🌱"
+                            )
                         else:
                             msg = (
                                 f"⚠️ *Task Overdue Alert*\n\n"
@@ -1983,10 +2004,10 @@ def build_7_company_escalation_reports(db, now_ist):
         'daily sales': ['daily sales', 'sales', 'sale', 'sales report', 'sales rport', 'sale report', 'sales update', 'sales updates', 'daily sale', 'egg sales', 'egg sale', 'salex', 'trays', 'sales.pdf', 'sales pdf', 'sales by customer', 'sales by customer (', 'sales statement', 'sale statement'],
         'daily purchases': ['daily purchase', 'daily purchases', 'purchase', 'purchases', 'purchse', 'purchse report', 'purchase report', 'purchases report', 'purchase update', 'purchase rport', 'purchases update', 'buy', 'bought', 'feed purchase', 'maize purchase', 'soya purchase', 'kg', 'tons', 'purchases by vendor', 'purchases by vendor (', 'purchases.pdf', 'purchase pdf', 'purchases pdf'],
         'total payables': ['total payables', 'total payable', 'payable', 'payables', 'payble', 'payables report', 'payable report', 'payables update', 'payble update', 'due to', 'ap aging', 'ap-aging', 'ap_aging', 'payableee', 'payable.pdf', 'payables.pdf', 'payable pdf', 'payables pdf'],
-        'total receivables': ['total receivables', 'total receivable', 'receivable', 'receivables', 'recevable', 'receivables report', 'receivable report', 'receivables update', 'recevable update', 'due from', 'ar aging', 'ar-aging', 'ar_aging', 'receivable.pdf', 'receivables.pdf', 'receivable pdf', 'receivables pdf'],
+        'total receivables': ['total receivables', 'total receivable', 'receivable', 'receivables', 'recevable', 'recievables', 'recievable', 'recievables.pdf', 'recievable.pdf', 'receivables report', 'receivable report', 'receivables update', 'recevable update', 'due from', 'ar aging', 'ar-aging', 'ar_aging', 'receivable.pdf', 'receivables.pdf', 'receivable pdf', 'receivables pdf'],
         'ca statement': ['ca statement', 'ca', 'ca-statement', 'ca_statement', 'ca statment', 'ca stmnt', 'statement', 'audit', 'tally', 'balance sheet', 'ca statement on', 'ca.pdf', 'ca pdf', 'ca report', 'audit report', 'otp'],
         'average p&l': ['average p&l', 'avg p&l', 'average pl', 'avg pl'],
-        'each sales p&l': ['each sales p&l', 'each sale p&l', 'sales p&l', 'each sales pl', 'each sale pl', 'sales pl', 'each sales profit', 'each sales p&l.pdf', 'each sales pl pdf', 'each sales', 'each sale', 'sales p&l.pdf', 'sales pl.pdf'],
+        'each sales p&l': ['each sales p&l', 'each sale p&l', 'sales p&l', 'each sales pl', 'each sale pl', 'sales pl', 'each sales profit', 'each sales p&l.pdf', 'each sales pl pdf', 'each sales', 'each sale', 'sales p&l.pdf', 'sales pl.pdf', 'sales by customer', 'sales by customer (', 'p&l'],
         'profit & loss summary': ['profit & loss summary', 'profit & loss', 'profit and loss', 'p&l', 'p & l', 'pl', 'p and l', 'p&l summary', 'profit loss summary', 'pl summary', 'profit loss'],
         'daily work update': ['daily work update', 'work update', 'work updates', 'wrk update', 'work rport', 'daily update', 'daily updates', 'work report', 'work reports', 'daily work report', 'daily work reports', 'eod update', 'eod updates', 'eod report', 'eod reports', 'today work', "today's work", 'tasks done', 'task done', 'work done', 'done', 'completed'],
         'stock': ['stock', 'stocks', 'stk', 'website', 'website updates', 'website update', 'ordering', 'stock update', 'stock updates', 'maize', 'soya', 'dorb', 'stonegrit', 'raw material', 'raw materials', 'raw material prices', 'updates'],
@@ -3135,8 +3156,8 @@ def setup_scheduler():
     # Schedule Daily Sunfra P&L PDF report at 9:30 PM IST daily (to 7259510983, 8985779911, and 6364817749)
     scheduler.add_job(scheduled_sunfra_pandl_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
-    # Schedule Monday Weekly Feed Formula update reminder at 8:00 AM IST on Mondays
-    scheduler.add_job(send_monday_weekly_feed_reminder_job, CronTrigger(day_of_week='mon', hour=8, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    # Schedule Monday Weekly Feed Formula update reminder at 8:00 AM IST on Mondays (REMOVED per user request)
+    # scheduler.add_job(send_monday_weekly_feed_reminder_job, CronTrigger(day_of_week='mon', hour=8, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
 
     # Schedule Feed stage transition check daily at 8:00 AM IST
     scheduler.add_job(check_feed_change_transitions_job, CronTrigger(hour=8, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
@@ -3165,7 +3186,8 @@ def setup_scheduler():
     # Schedule 4 Consolidated Company Reports daily at 6:50 PM IST (to 7259510983)
     scheduler.add_job(scheduled_4company_consolidated_reports_job, CronTrigger(hour=18, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_reports_650pm_job")
 
-    # Schedule Egg Production vs Godown Stock Cross-Check daily at 9:30 PM IST (to 7259510983)
+    # Schedule Egg Production vs Godown Stock Cross-Check daily at 7:03 PM IST & 9:30 PM IST (to 7259510983)
+    scheduler.add_job(scheduled_egg_production_crosscheck_job, CronTrigger(hour=19, minute=3, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_production_crosscheck_703pm_job")
     scheduler.add_job(scheduled_egg_production_crosscheck_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_production_crosscheck_job")
 
     # Combined 10:00 PM Dispatcher: 4 Consolidated Company Reports, Daily Rental Loss, and Company-Wise Escalation

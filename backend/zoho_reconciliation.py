@@ -267,14 +267,20 @@ def format_today_sales_purchases_breakdown(today_sales, today_purchases, sales_c
     if sales_list:
         for idx, (cust, no, amt) in enumerate(sales_list, 1):
             conn = "└" if idx == len(sales_list) else "├"
-            inv_str = f" ({no})" if no else ""
+            clean_no = str(no).strip() if no else ""
+            if clean_no.isdigit() and len(clean_no) > 8:
+                clean_no = ""
+            inv_str = f" ({clean_no})" if clean_no else ""
             lines.append(f"  {conn} {idx}. *{cust}*{inv_str}: *{format_indian_currency(amt)}*")
             
     lines.append(f"• Today's Purchases/Costs: *{format_indian_currency(today_purchases)}* ({purch_cnt} items)")
     if purch_list:
         for idx, (vend, no, amt) in enumerate(purch_list, 1):
             conn = "└" if idx == len(purch_list) else "├"
-            bill_str = f" ({no})" if no else ""
+            clean_no = str(no).strip() if no else ""
+            if clean_no.isdigit() and len(clean_no) > 8:
+                clean_no = ""
+            bill_str = f" ({clean_no})" if clean_no else ""
             lines.append(f"  {conn} {idx}. *{vend}*{bill_str}: *{format_indian_currency(amt)}*")
             
     return "\n".join(lines)
@@ -375,13 +381,25 @@ def generate_and_send_zoho_reconciliation_report(recipient_phone: str = None, ta
     logger.info(f"Sending Consolidated Sunfra Farms Report to {target_phone}...")
     success = send_waha_message(target_phone, report_text)
     
-    # Also dispatch Feeds, Corporate, and Indus Consolidated Reports to target recipient
+    # Also dispatch Feeds, Corporate, and Indus Consolidated Reports to target recipient with isolated error handling & delays
+    import time
     try:
+        time.sleep(2)
         generate_and_send_sunfra_feeds_reconciliation_report(target_phone, today_date_str)
+    except Exception as e_sub:
+        logger.error(f"Error sending Feeds consolidated report: {e_sub}")
+        
+    try:
+        time.sleep(2)
         generate_and_send_sunfra_corporate_reconciliation_report(target_phone, today_date_str)
+    except Exception as e_sub:
+        logger.error(f"Error sending Corporate consolidated report: {e_sub}")
+        
+    try:
+        time.sleep(2)
         generate_and_send_indus_reconciliation_report(target_phone, today_date_str)
     except Exception as e_sub:
-        logger.error(f"Error sending Feeds/Corporate/Indus consolidated reports: {e_sub}")
+        logger.error(f"Error sending Indus consolidated report: {e_sub}")
         
     return success
 

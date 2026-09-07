@@ -273,7 +273,9 @@ def fetch_today_sales_and_purchases(access_token: str, org_id: str, today_date_s
             exps = res_exp.json().get("expenses", [])
             for e in exps:
                 vend = e.get("vendor_name") or e.get("biller_name") or e.get("account_name") or "Expense"
-                no = e.get("reference_number") or e.get("expense_id") or ""
+                no = e.get("reference_number") or ""
+                if str(no).strip().isdigit() and len(str(no).strip()) > 8:
+                    no = ""
                 amt = float(e.get("total", 0) or e.get("amount", 0) or e.get("biller_amount", 0) or 0.0)
                 purch_list.append((vend, no, amt))
                 today_purchases += amt
