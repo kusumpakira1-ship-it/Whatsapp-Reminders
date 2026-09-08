@@ -37,6 +37,8 @@ backend/media/*
 !backend/media/.gitkeep
 backend/media/reports/*
 !backend/media/reports/.gitkeep
+backend/*_state.json
+backend/zoho_tokens_cache.json
 waha_data/
 
 # OS / IDE
