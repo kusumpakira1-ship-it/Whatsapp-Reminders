@@ -200,5 +200,16 @@ class BookStandard(Base):
     created_at = Column(DateTime, default=func.now())
 
 
+class DailyNetPositionHistory(Base):
+    __tablename__ = "sunfra_daily_net_position_history"
+    id = Column(Integer, primary_key=True, index=True)
+    org_id = Column(String(50), index=True, nullable=False)
+    company_name = Column(String(100), nullable=True)
+    date = Column(Date, index=True, nullable=False)
+    net_position = Column(DECIMAL(18, 2), nullable=False)
+    created_at = Column(DateTime, default=func.now())
+
+
+
 
 

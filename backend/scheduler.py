@@ -1156,8 +1156,9 @@ def poll_and_execute_unified_reminders():
                     elif "profit" in report or "p&l" in report or "p and l" in report:
                         categories = ['sales', 'expense', 'purchase']
                         
-                    is_rule_book = "rule book" in report.lower() or "rule" in report.lower()
-                    is_update_report = any(w in report.lower() for w in ["update", "eod", "daily report", "work update", "work report"]) and "egg pricing" not in report.lower() and not is_rule_book
+                    is_approval_task = "approval" in report.lower() or "review" in report.lower() or "balaji" in report.lower() or "approve" in report.lower()
+                    is_rule_book = ("rule book" in report.lower() or "rule" in report.lower()) and not is_approval_task
+                    is_update_report = any(w in report.lower() for w in ["update", "eod", "daily report", "work update", "work report"]) and "egg pricing" not in report.lower() and not is_rule_book and not is_approval_task
                     update_keywords = [
                          "update", "updates", "work report", "work update", "work updates",
                          "daily update", "daily updates", "daily work update", "daily work updates",
@@ -1194,6 +1195,12 @@ def poll_and_execute_unified_reminders():
                                 if time_keyword and time_keyword in sub_notes_lower and any(w in sub_notes_lower for w in ["egg", "price", "pricing"]):
                                     submitted = True
                                     break
+                            elif is_approval_task:
+                                sub_notes_lower = str(sub.notes or '').lower()
+                                approval_kws = ["reviewed", "review completed", "reviewed and approved", "approved", "approve", "report approved", "review done", "reviewed done"]
+                                if any(akw in sub_notes_lower.split() or akw in sub_notes_lower for akw in approval_kws):
+                                    submitted = True
+                                    break
                             elif is_update_report:
                                 sub_notes_lower = str(sub.notes or '').lower()
                                 if any(kw in sub_notes_lower for kw in update_keywords) or any(df in sub_notes_lower for df in date_formats):
@@ -1210,135 +1217,124 @@ def poll_and_execute_unified_reminders():
 
                     # Fallback: also check raw messages for exact keyword matches
                     if not submitted:
-                        raw_keywords = []
-                        if is_rule_book:
-                            raw_keywords = ["rule book", "rule", "rules", "point", "points", "policy", "guideline", "godown rule", "farm rule", "addition", "update", "updates"]
-                        elif is_update_report:
-                            raw_keywords = update_keywords + date_formats
-                        else:
-                            for key, kws in REPORT_KEYWORDS.items():
-                                if key in report.lower():
-                                    raw_keywords = kws
-                                    break
-                            if not raw_keywords:
-                                raw_keywords = [w.lower() for w in report.split() if len(w) > 3]
+                        if is_approval_task:
+                            approval_kws = ["reviewed", "review completed", "reviewed and approved", "approved", "approve", "report approved", "review done", "reviewed done"]
+                            for raw_msg in raw_messages:
+                                raw_text_lower = str(raw_msg.raw_text or '').lower()
+                                clean_raw_jid = msg_jids.get(raw_msg.message_id, '').replace('@g.us', '').strip()
+                                clean_target_jid = r.whatsapp_group_id.replace('@g.us', '').strip() if r.whatsapp_group_id else ''
 
-                        group_name = group_names_by_id.get(r.whatsapp_group_id)
-                        for raw_msg in raw_messages:
-                            raw_text_lower = str(raw_msg.raw_text or '').lower()
-                            clean_raw_jid = msg_jids.get(raw_msg.message_id, '').replace('@g.us', '').strip()
-                            clean_target_jid = r.whatsapp_group_id.replace('@g.us', '').strip() if r.whatsapp_group_id else ''
-
-                            if clean_target_jid:
-                                valid_match = (clean_raw_jid == clean_target_jid)
-                            else:
-                                alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
-                                match_sender_raw = clean_phone in str(raw_msg.sender) or alt_phone in str(raw_msg.sender)
-                                match_name = False
-                                if not match_sender_raw and r.person_name and raw_msg.sender:
-                                    import difflib
-                                    sender_name_part = clean_name_string(raw_msg.sender.split(' (')[0])
-                                    t_names = [clean_name_string(n) for n in r.person_name.split(',')]
-                                    for t_name in t_names:
-                                        if len(sender_name_part) >= 3 and len(t_name) >= 3:
-                                            ratio = difflib.SequenceMatcher(None, sender_name_part, t_name).ratio()
-                                            if ratio > 0.75 or sender_name_part in t_name or t_name in sender_name_part:
-                                                match_name = True
-                                                break
-                                valid_match = match_sender_raw or match_name
-                            
-                            if valid_match:
-                                # Overrides for Hyperscale and P&L groups
-                                is_hyperscale = clean_target_jid and "120363428417403024" in clean_target_jid
-                                is_p_and_l = clean_target_jid and "120363427856964756" in clean_target_jid
-                                if is_hyperscale:
-                                    has_today = "today" in raw_text_lower
-                                    has_photo = getattr(raw_msg, 'message_type', '') == 'image' or getattr(raw_msg, 'media_path', None) is not None
-                                    has_standard = any(kw.lower() in raw_text_lower for kw in raw_keywords)
-                                    if has_today or has_photo or has_standard:
-                                        submitted = True
-                                        logger.info(f"Hyperscale override raw match for '{report}' from {raw_msg.sender}.")
-                                        break
-                                elif is_p_and_l:
-                                    has_photo = getattr(raw_msg, 'message_type', '') == 'image' or getattr(raw_msg, 'media_path', None) is not None
-                                    has_spec_phrases = any(phrase in raw_text_lower for phrase in ["report submitted", "submitted profit summary", "profit summary"])
-                                    has_standard = any(kw.lower() in raw_text_lower for kw in raw_keywords)
-                                    is_for_yesterday = "yesterday" in raw_text_lower
-                                    if (has_photo or has_spec_phrases or has_standard) and not is_for_yesterday:
-                                        submitted = True
-                                        logger.info(f"P&L override raw match for '{report}' from {raw_msg.sender}.")
-                                        break
-
-                                if "egg pricing" in report.lower():
-                                    time_keyword = "morning" if "morning" in report.lower() else "afternoon" if "afternoon" in report.lower() else "evening" if "evening" in report.lower() else None
-                                    has_price_number = bool(re.search(r'\d{3}', raw_text_lower))
-                                    is_time_match = False
-                                    
-                                    # Extract hour from text if mentioned in the format like '8:44' or '13:20'
-                                    raw_msg_hour = raw_msg.timestamp.hour
-                                    match_time = re.search(r'\b(\d{1,2}):(\d{2})\b', raw_text_lower)
-                                    if match_time:
-                                        try:
-                                            raw_msg_hour = int(match_time.group(1))
-                                        except Exception:
-                                            pass
-                                            
-                                    if time_keyword == 'morning' and (raw_msg_hour < 12 or 'morning' in raw_text_lower or 'veh kol' in raw_text_lower) and 'ppr rate' not in raw_text_lower and 'closing' not in raw_text_lower:
-                                        is_time_match = True
-                                    elif time_keyword == 'afternoon' and (12 <= raw_msg_hour < 17 or 'afternoon' in raw_text_lower or 'ppr rate' in raw_text_lower) and 'closing' not in raw_text_lower:
-                                        is_time_match = True
-                                    elif time_keyword == 'evening' and (raw_msg_hour >= 17 or 'evening' in raw_text_lower or 'closing' in raw_text_lower or '18:' in raw_text_lower or '19:' in raw_text_lower):
-                                        is_time_match = True
-
-                                    if is_time_match and has_price_number and any(w in raw_text_lower for w in ["egg", "price", "pricing", "ppr rate", "closing", "veh kol"]):
-                                        submitted = True
-                                        logger.info(f"Egg pricing raw message match for '{report}' from {raw_msg.sender} — skipping reminder.")
-                                        # Send confirmation to the group/chat
-                                        # Always prioritize the assigned whatsapp_group_id if specified!
-                                        target_report_chat = r.whatsapp_group_id
-                                        if not target_report_chat and raw_msg.group_name:
-                                            grp = db.query(Group).filter(Group.name == raw_msg.group_name).first()
-                                            if grp: target_report_chat = grp.whatsapp_group_id
-                                        if not target_report_chat and raw_msg.sender:
-                                            target_report_chat = raw_msg.sender.split(' (')[1].replace(')', '') if '(' in raw_msg.sender else raw_msg.sender
-                                        if target_report_chat:
-                                            # Disabled: user requested no reply back messages in group
-                                            pass
-                                        break
-                                elif is_rule_book:
-                                    rule_kws = ["rule book", "rule", "rules", "point", "points", "policy", "guideline", "godown rule", "farm rule", "addition"]
-                                    if any(kw in raw_text_lower for kw in rule_kws):
-                                        submitted = True
-                                        logger.info(f"Rule Book raw message match for '{report}' from {raw_msg.sender} — skipping reminder.")
-                                        # Always prioritize the assigned whatsapp_group_id if specified!
-                                        target_report_chat = r.whatsapp_group_id
-                                        if not target_report_chat and raw_msg.group_name:
-                                            grp = db.query(Group).filter(Group.name == raw_msg.group_name).first()
-                                            if grp: target_report_chat = grp.whatsapp_group_id
-                                        if not target_report_chat and raw_msg.sender:
-                                            target_report_chat = raw_msg.sender.split(' (')[1].replace(')', '') if '(' in raw_msg.sender else raw_msg.sender
-                                        if target_report_chat:
-                                            # Disabled: user requested no reply back messages in group
-                                            pass
-                                        break
+                                if clean_target_jid:
+                                    valid_match = (clean_raw_jid == clean_target_jid)
                                 else:
-                                    is_stock_website = any(w in raw_text_lower for w in ["website update", "website updates", "stock update", "stock updates", "stock/website"])
-                                    if is_stock_website and "stock" not in report.lower() and "website" not in report.lower():
-                                        pass
-                                    elif any(kw.lower() in raw_text_lower for kw in raw_keywords):
+                                    valid_match = ('balaji' in str(raw_msg.sender).lower() or '9493928388' in str(raw_msg.sender) or '242695733772318' in str(raw_msg.sender))
+
+                                if valid_match:
+                                    is_approver = ('balaji' in str(raw_msg.sender).lower() or '9493928388' in str(raw_msg.sender) or '242695733772318' in str(raw_msg.sender) or 'kusum' in str(raw_msg.sender).lower())
+                                    has_approval_word = any(akw in raw_text_lower.split() or akw in raw_text_lower for akw in approval_kws)
+                                    if is_approver and has_approval_word and "why" not in raw_text_lower and "?" not in raw_text_lower:
                                         submitted = True
-                                        logger.info(f"Raw message keyword match for '{report}' from {raw_msg.sender} — skipping reminder.")
-                                        # Always prioritize the assigned whatsapp_group_id if specified!
-                                        target_report_chat = r.whatsapp_group_id
-                                        if not target_report_chat and raw_msg.group_name:
-                                            grp = db.query(Group).filter(Group.name == raw_msg.group_name).first()
-                                            if grp: target_report_chat = grp.whatsapp_group_id
-                                        if not target_report_chat and raw_msg.sender:
-                                            target_report_chat = raw_msg.sender.split(' (')[1].replace(')', '') if '(' in raw_msg.sender else raw_msg.sender
-                                        if target_report_chat:
-                                            # Disabled: user requested no reply back messages in group
-                                            pass
+                                        logger.info(f"Approval task explicitly approved by {raw_msg.sender}: {raw_text_lower[:50]}")
                                         break
+                        else:
+                            raw_keywords = []
+                            if is_rule_book:
+                                raw_keywords = ["rule book", "rulebook", "rule-book", "rule book updates", "rulebook update", "rulebook updates", "rule book update"]
+                            elif is_update_report:
+                                raw_keywords = update_keywords + date_formats
+                            else:
+                                for key, kws in REPORT_KEYWORDS.items():
+                                    if key in report.lower():
+                                        raw_keywords = kws
+                                        break
+                                if not raw_keywords:
+                                    raw_keywords = [w.lower() for w in report.split() if len(w) > 3]
+
+                            group_name = group_names_by_id.get(r.whatsapp_group_id)
+                            for raw_msg in raw_messages:
+                                raw_text_lower = str(raw_msg.raw_text or '').lower()
+                                clean_raw_jid = msg_jids.get(raw_msg.message_id, '').replace('@g.us', '').strip()
+                                clean_target_jid = r.whatsapp_group_id.replace('@g.us', '').strip() if r.whatsapp_group_id else ''
+
+                                if clean_target_jid:
+                                    valid_match = (clean_raw_jid == clean_target_jid)
+                                else:
+                                    alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
+                                    match_sender_raw = clean_phone in str(raw_msg.sender) or alt_phone in str(raw_msg.sender)
+                                    match_name = False
+                                    if not match_sender_raw and r.person_name and raw_msg.sender:
+                                        import difflib
+                                        sender_name_part = clean_name_string(raw_msg.sender.split(' (')[0])
+                                        t_names = [clean_name_string(n) for n in r.person_name.split(',')]
+                                        for t_name in t_names:
+                                            if len(sender_name_part) >= 3 and len(t_name) >= 3:
+                                                ratio = difflib.SequenceMatcher(None, sender_name_part, t_name).ratio()
+                                                if ratio > 0.75 or sender_name_part in t_name or t_name in sender_name_part:
+                                                    match_name = True
+                                                    break
+                                    valid_match = match_sender_raw or match_name
+                                
+                                if valid_match:
+                                    # Overrides for Hyperscale and P&L groups
+                                    is_hyperscale = clean_target_jid and "120363428417403024" in clean_target_jid
+                                    is_p_and_l = clean_target_jid and "120363427856964756" in clean_target_jid
+                                    if is_hyperscale:
+                                        has_today = "today" in raw_text_lower
+                                        has_photo = getattr(raw_msg, 'message_type', '') == 'image' or getattr(raw_msg, 'media_path', None) is not None
+                                        has_standard = any(kw.lower() in raw_text_lower for kw in raw_keywords)
+                                        if has_today or has_photo or has_standard:
+                                            submitted = True
+                                            logger.info(f"Hyperscale override raw match for '{report}' from {raw_msg.sender}.")
+                                            break
+                                    elif is_p_and_l:
+                                        has_photo = getattr(raw_msg, 'message_type', '') == 'image' or getattr(raw_msg, 'media_path', None) is not None
+                                        has_spec_phrases = any(phrase in raw_text_lower for phrase in ["report submitted", "submitted profit summary", "profit summary"])
+                                        has_standard = any(kw.lower() in raw_text_lower for kw in raw_keywords)
+                                        is_for_yesterday = "yesterday" in raw_text_lower
+                                        if (has_photo or has_spec_phrases or has_standard) and not is_for_yesterday:
+                                            submitted = True
+                                            logger.info(f"P&L override raw match for '{report}' from {raw_msg.sender}.")
+                                            break
+
+                                    if "egg pricing" in report.lower():
+                                        time_keyword = "morning" if "morning" in report.lower() else "afternoon" if "afternoon" in report.lower() else "evening" if "evening" in report.lower() else None
+                                        has_price_number = bool(re.search(r'\d{3}', raw_text_lower))
+                                        is_time_match = False
+                                        
+                                        # Extract hour from text if mentioned in the format like '8:44' or '13:20'
+                                        raw_msg_hour = raw_msg.timestamp.hour
+                                        match_time = re.search(r'\b(\d{1,2}):(\d{2})\b', raw_text_lower)
+                                        if match_time:
+                                            try:
+                                                raw_msg_hour = int(match_time.group(1))
+                                            except Exception:
+                                                pass
+                                                
+                                        if time_keyword == 'morning' and (raw_msg_hour < 12 or 'morning' in raw_text_lower or 'veh kol' in raw_text_lower) and 'ppr rate' not in raw_text_lower and 'closing' not in raw_text_lower:
+                                            is_time_match = True
+                                        elif time_keyword == 'afternoon' and (12 <= raw_msg_hour < 17 or 'afternoon' in raw_text_lower or 'ppr rate' in raw_text_lower) and 'closing' not in raw_text_lower:
+                                            is_time_match = True
+                                        elif time_keyword == 'evening' and (raw_msg_hour >= 17 or 'evening' in raw_text_lower or 'closing' in raw_text_lower or '18:' in raw_text_lower or '19:' in raw_text_lower):
+                                            is_time_match = True
+
+                                        if is_time_match and has_price_number and any(w in raw_text_lower for w in ["egg", "price", "pricing", "ppr rate", "closing", "veh kol"]):
+                                            submitted = True
+                                            logger.info(f"Egg pricing raw message match for '{report}' from {raw_msg.sender} — skipping reminder.")
+                                            break
+                                    elif is_rule_book:
+                                        rule_kws = ["rule book", "rulebook", "rule-book", "rule book updates", "rulebook update", "rulebook updates", "rule book update"]
+                                        if any(kw in raw_text_lower for kw in rule_kws):
+                                            submitted = True
+                                            logger.info(f"Rule Book raw message match for '{report}' from {raw_msg.sender} — skipping reminder.")
+                                            break
+                                    else:
+                                        is_stock_website = any(w in raw_text_lower for w in ["website update", "website updates", "stock update", "stock updates", "stock/website"])
+                                        if is_stock_website and "stock" not in report.lower() and "website" not in report.lower():
+                                            pass
+                                        elif any(kw.lower() in raw_text_lower for kw in raw_keywords):
+                                            submitted = True
+                                            logger.info(f"Raw message keyword match for '{report}' from {raw_msg.sender} — skipping reminder.")
+                                            break
 
                     if not submitted:
                         missing_reports.append(report)
@@ -1646,6 +1642,11 @@ def get_interval_minutes(interval):
     if interval.endswith('h'):
         try: return int(interval[:-1]) * 60
         except: return 0
+    if interval.endswith('d'):
+        try: return int(interval[:-1]) * 24 * 60
+        except: return 0
+    if interval == 'daily':
+        return 24 * 60
     return 0
 
 
@@ -1708,19 +1709,17 @@ def poll_and_remind_tasks_job():
                     if 'shed worker' in tn and ('shed worker' in msg or 'shed workers' in msg or ('shed' in msg and 'worker' in msg)):
                         if not any(x in msg for x in ['godown', 'plant', 'supervisor', 'medicine', 'incharge']): return True
                     return False
+                elif 'tank a' in tn:
+                    has_clean_kw = any(w in msg for w in ['clean', 'cleaned', 'done', 'completed', 'finish', 'finished', 'complete', 'ok'])
+                    has_tank_a = 'tank a' in msg or 'tanka' in msg or 'tank-a' in msg
+                    return has_clean_kw and has_tank_a
+                elif 'tank b' in tn:
+                    has_clean_kw = any(w in msg for w in ['clean', 'cleaned', 'done', 'completed', 'finish', 'finished', 'complete', 'ok'])
+                    has_tank_b = 'tank b' in msg or 'tankb' in msg or 'tank-b' in msg
+                    return has_clean_kw and has_tank_b
                 elif 'tank' in tn or 'cleaning' in tn:
                     has_clean_kw = any(w in msg for w in ['clean', 'cleaned', 'done', 'completed', 'finish', 'finished', 'ok done', 'complete'])
-                    if not has_clean_kw:
-                        return False
-                    if 'tank a' in tn:
-                        if 'tank b' in msg and 'tank a' not in msg:
-                            return False
-                        return True
-                    elif 'tank b' in tn:
-                        if 'tank a' in msg and 'tank b' not in msg:
-                            return False
-                        return True
-                    return True
+                    return has_clean_kw and has_identifier_match
                 else:
                     return has_completion and has_identifier_match
 
@@ -1857,6 +1856,10 @@ def poll_and_remind_tasks_job():
             
             should_remind = False
             if interval_min > 0:
+                # For daily intervals (>= 24h), only trigger during the scheduled hour (e.g. 11:00 AM)
+                if interval_min >= 1440 and now_ist.hour != t.due_time.hour:
+                    continue
+
                 last_alert_marker = f"[OVERDUE_ALERT_AT:"
                 already_alerted_recently = False
                 if t.completion_details and last_alert_marker in t.completion_details:
@@ -1928,12 +1931,28 @@ def poll_and_remind_tasks_job():
                                 f"Target Shed/Flock: *{target_shed}*\n\n"
                                 f"Please complete this work and reply to this message with *\"updated\"* & *\"approved\"* once finished."
                             )
+                        elif 'tank a' in t.task_name.lower():
+                            msg = (
+                                f"⏰ *TANK A CLEANING REMINDER* 🧼\n\n"
+                                f"Hi Team,\n"
+                                f"The task *\"Tank A Cleaning Reminder\"* is pending / overdue.\n\n"
+                                f"Please clean Tank A and reply to this group with *\"tank a cleaned\"* or *\"tank a done\"* once finished.\n\n"
+                                f"Thank you! 🌱"
+                            )
+                        elif 'tank b' in t.task_name.lower():
+                            msg = (
+                                f"⏰ *TANK B CLEANING REMINDER* 🧼\n\n"
+                                f"Hi Team,\n"
+                                f"The task *\"Tank B Cleaning Reminder\"* is pending / overdue.\n\n"
+                                f"Please clean Tank B and reply to this group with *\"tank b cleaned\"* or *\"tank b done\"* once finished.\n\n"
+                                f"Thank you! 🌱"
+                            )
                         elif 'tank' in t.task_name.lower() or 'cleaning' in t.task_name.lower():
                             msg = (
                                 f"⏰ *{t.task_name.upper()}* 🧼\n\n"
                                 f"Hi Team,\n"
                                 f"The task *\"{t.task_name}\"* is currently pending / overdue.\n\n"
-                                f"Please clean the tank and reply to this message with *\"cleaned\"* or *\"done\"* once finished.\n\n"
+                                f"Please complete this work and reply to this message with *\"cleaned\"* or *\"done\"* once finished.\n\n"
                                 f"Thank you! 🌱"
                             )
                         else:
@@ -3156,8 +3175,8 @@ def setup_scheduler():
     # Schedule Daily Sunfra P&L PDF report at 9:30 PM IST daily (to 7259510983, 8985779911, and 6364817749)
     scheduler.add_job(scheduled_sunfra_pandl_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
-    # Schedule Monday Weekly Feed Formula update reminder at 8:00 AM IST on Mondays (REMOVED per user request)
-    # scheduler.add_job(send_monday_weekly_feed_reminder_job, CronTrigger(day_of_week='mon', hour=8, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    # Schedule Monday Weekly Feed Formula update reminder at 11:00 AM IST on Mondays (Starts 14th Sep 2026)
+    scheduler.add_job(send_monday_weekly_feed_reminder_job, CronTrigger(day_of_week='mon', hour=11, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="send_monday_weekly_feed_reminder_job")
 
     # Schedule Feed stage transition check daily at 8:00 AM IST
     scheduler.add_job(check_feed_change_transitions_job, CronTrigger(hour=8, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
@@ -3212,8 +3231,8 @@ def setup_scheduler():
     # Schedule yearly report at 11:00 PM IST on Dec 31
     scheduler.add_job(scheduled_yearly_report_job, CronTrigger(month=12, day=31, hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
     
-    # Schedule Daily Vacancy Summary at 10:00 AM IST
-    scheduler.add_job(scheduled_vacancy_job, CronTrigger(hour=10, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_vacancy_job")
+    # Schedule Daily Vacancy Summary at 10:00 AM IST (Disabled per user directive - sent at 10:00 PM only)
+    # scheduler.add_job(scheduled_vacancy_job, CronTrigger(hour=10, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_vacancy_job")
     
     import os
     if os.getenv("USE_N8N", "false").lower() == "true":

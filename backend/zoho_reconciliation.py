@@ -48,9 +48,9 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str, target_date: 
     }
     try:
         company_targets = {
-            'accounts poultry': ['accounts poultry', 'sunfra farms', 'payments - sunfra farms', '120363042907512705', '184791135711366'],
-            'summary - sunfra feeds': ['summary - sunfra feeds', 'accounts - sunfra feeds', 'sunfra feeds', 'payments - sunfra feeds', 'feeds', '120363428748481277', '45586833240126'],
-            'sunfra corporate p&l': ['sunfra corporate p&l', 'sunfra corporate', 'corporate', '120363425581380088', '56556230058144']
+            'accounts poultry': ['accounts poultry', '120363042907512705'],
+            'summary - sunfra feeds': ['summary - sunfra feeds', '120363428748481277'],
+            'sunfra corporate p&l': ['sunfra corporate p&l', '120363425581380088']
         }
         
         target_name_lower = exact_group_name.strip().lower()
@@ -62,14 +62,12 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str, target_date: 
         combined = []
         for m in raw_msgs:
             grp = (m.group_name or '').lower()
-            snd = (m.sender or '').lower()
-            if any(t in grp or t in snd for t in targets):
+            if any(t in grp for t in targets):
                 combined.append({'text': m.raw_text or '', 'ts': m.timestamp})
                 
         for m in wa_msgs:
             grp = (m.group_id or '').lower()
-            snd = (m.sender_id or '').lower()
-            if any(t in grp or t in snd for t in targets):
+            if any(t in grp for t in targets):
                 combined.append({'text': m.message_text or '', 'ts': m.timestamp})
 
         if target_date:
@@ -81,8 +79,16 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str, target_date: 
             now_ist = datetime.now(IST)
             today_date = now_ist.date()
         
-        # Filter strictly to messages posted on target date per user directive
-        today_combined = [m for m in combined if m['ts'] and m['ts'].astimezone(IST).date() == today_date]
+        def get_report_date(ts):
+            if not ts:
+                return None
+            ts_ist = ts.replace(tzinfo=timezone.utc).astimezone(IST) if ts.tzinfo is None else ts.astimezone(IST)
+            if ts_ist.hour < 6:
+                return (ts_ist - timedelta(days=1)).date()
+            return ts_ist.date()
+
+        # Filter strictly to messages posted for target date per user directive
+        today_combined = [m for m in combined if get_report_date(m['ts']) == today_date]
         today_combined.sort(key=lambda x: x['ts'], reverse=True)
 
         for m in today_combined:
@@ -286,6 +292,56 @@ def format_today_sales_purchases_breakdown(today_sales, today_purchases, sales_c
     return "\n".join(lines)
 
 
+def format_loans_breakdown(access_token: str, org_id: str) -> str:
+    """
+    Retrieves all active loan, overdraft, and borrowing liability accounts directly from the Zoho Balance Sheet API,
+    and formats them as a clean bulleted breakdown for reconciliation reports.
+    """
+    from zoho_service import ZOHO_BOOKS_API_URL, zoho_get
+    url_bs = f"{ZOHO_BOOKS_API_URL}/reports/balancesheet?organization_id={org_id}"
+    headers = {"Authorization": f"Zoho-oauthtoken {access_token}"}
+    loans = []
+    seen = set()
+    
+    try:
+        res = zoho_get(url_bs, headers=headers, timeout=20)
+        if res.status_code == 200:
+            bs_data = res.json()
+            
+            def extract(node):
+                if isinstance(node, dict):
+                    name_str = (node.get('name') or node.get('account_name') or '').strip()
+                    n_low = name_str.lower()
+                    atype = str(node.get('account_type', '')).lower()
+                    amt = float(node.get('total', 0) or node.get('balance', 0) or node.get('amount', 0) or 0.0)
+                    
+                    skip_keywords = ['accounts payable', 'liabilities', 'current liabilities', 'non current liabilities', 'other liabilities', 'liabilities & equities', 'equities', 'equity', 'finished goods', 'total']
+                    if name_str and not any(n_low == k for k in skip_keywords):
+                        is_loan = any(k in n_low for k in ['loan', 'od', 'overdraft', 'borrowing', 'sbi term']) or ('loan' in atype or 'borrowing' in atype)
+                        if is_loan and abs(amt) > 0.01 and n_low not in seen:
+                            seen.add(n_low)
+                            loans.append((name_str, amt))
+                            
+                    for k, v in node.items():
+                        if isinstance(v, (dict, list)):
+                            extract(v)
+                elif isinstance(node, list):
+                    for item in node:
+                        extract(item)
+            extract(bs_data)
+    except Exception as e:
+        logger.error(f"Error fetching balance sheet loans for org {org_id}: {e}")
+        
+    if not loans:
+        return "💳 *Loans & Liabilities:* *None* ✅"
+        
+    lines = [f"💳 *Loans & Liabilities ({len(loans)} active):*"]
+    for lname, amt in loans:
+        formatted_amt = format_indian_currency(amt)
+        lines.append(f"  • *{lname}*: *{formatted_amt}*")
+    return "\n".join(lines)
+
+
 def generate_and_send_zoho_reconciliation_report(recipient_phone: str = None, target_date: str = None) -> bool:
     """Fetches live Zoho Books balances for Sunfra Farms and dispatches its consolidated Daily Comprehensive Report."""
     target_phone = recipient_phone or settings.ZOHO_RECIPIENT_PHONE or "917259510983"
@@ -365,7 +421,7 @@ def generate_and_send_zoho_reconciliation_report(recipient_phone: str = None, ta
     net_pos_status = "✅ Profit" if net_financial_position >= 0 else "⚠️ Deficit"
     msg_lines.append(f"⚖️ *Overall Net Financial Position:* *{format_indian_currency(net_financial_position)}* ({net_pos_status})")
     
-    hist_positions = fetch_historical_net_positions(access_token, farms_org_id, net_financial_position, today_date_str)
+    hist_positions = fetch_historical_net_positions(access_token, farms_org_id, net_financial_position, today_date_str, "Sunfra Farms")
     hist_lines = [f"  • {lbl}: *{format_indian_currency(pos)}*" for lbl, pos in hist_positions]
     msg_lines.append("📊 *Net Position Breakdown (History):*\n" + "\n".join(hist_lines))
 
@@ -375,6 +431,8 @@ def generate_and_send_zoho_reconciliation_report(recipient_phone: str = None, ta
     else:
         msg_lines.append("⚠️ *Negative Stock:* *None* ✅")
         
+    msg_lines.append("")
+    msg_lines.append(format_loans_breakdown(access_token, farms_org_id))
     msg_lines.append("==================================================")
 
     report_text = "\n".join(msg_lines)
@@ -469,7 +527,7 @@ def generate_and_send_sunfra_feeds_reconciliation_report(recipient_phone: str = 
     net_pos_status = "✅ Profit" if net_financial_position >= 0 else "⚠️ Deficit"
     msg_lines.append(f"⚖️ *Overall Net Financial Position:* *{format_indian_currency(net_financial_position)}* ({net_pos_status})")
     
-    hist_positions = fetch_historical_net_positions(access_token, feeds_org_id, net_financial_position, today_date_str)
+    hist_positions = fetch_historical_net_positions(access_token, feeds_org_id, net_financial_position, today_date_str, "Sunfra Feeds")
     hist_lines = [f"  • {lbl}: *{format_indian_currency(pos)}*" for lbl, pos in hist_positions]
     msg_lines.append("📊 *Net Position Breakdown (History):*\n" + "\n".join(hist_lines))
 
@@ -479,6 +537,8 @@ def generate_and_send_sunfra_feeds_reconciliation_report(recipient_phone: str = 
     else:
         msg_lines.append("⚠️ *Negative Stock:* *None* ✅")
         
+    msg_lines.append("")
+    msg_lines.append(format_loans_breakdown(access_token, feeds_org_id))
     msg_lines.append("==================================================")
 
     report_text = "\n".join(msg_lines)
@@ -561,7 +621,7 @@ def generate_and_send_sunfra_corporate_reconciliation_report(recipient_phone: st
     net_pos_status = "✅ Profit" if net_financial_position >= 0 else "⚠️ Deficit"
     msg_lines.append(f"⚖️ *Overall Net Financial Position:* *{format_indian_currency(net_financial_position)}* ({net_pos_status})")
     
-    hist_positions = fetch_historical_net_positions(access_token, corp_org_id, net_financial_position, today_date_str)
+    hist_positions = fetch_historical_net_positions(access_token, corp_org_id, net_financial_position, today_date_str, "Sunfra Corporate")
     hist_lines = [f"  • {lbl}: *{format_indian_currency(pos)}*" for lbl, pos in hist_positions]
     msg_lines.append("📊 *Net Position Breakdown (History):*\n" + "\n".join(hist_lines))
 
@@ -571,6 +631,8 @@ def generate_and_send_sunfra_corporate_reconciliation_report(recipient_phone: st
     else:
         msg_lines.append("⚠️ *Negative Stock:* *None* ✅")
         
+    msg_lines.append("")
+    msg_lines.append(format_loans_breakdown(access_token, corp_org_id))
     msg_lines.append("==================================================")
 
     report_text = "\n".join(msg_lines)
@@ -636,7 +698,7 @@ def generate_and_send_indus_reconciliation_report(recipient_phone: str = None, t
     net_pos_status = "✅ Profit" if net_financial_position >= 0 else "⚠️ Deficit"
     msg_lines.append(f"⚖️ *Overall Net Financial Position:* *{format_indian_currency(net_financial_position)}* ({net_pos_status})")
     
-    hist_positions = fetch_historical_net_positions(access_token, indus_org_id, net_financial_position, today_date_str)
+    hist_positions = fetch_historical_net_positions(access_token, indus_org_id, net_financial_position, today_date_str, "Indus")
     hist_lines = [f"  • {lbl}: *{format_indian_currency(pos)}*" for lbl, pos in hist_positions]
     msg_lines.append("📊 *Net Position Breakdown (History):*\n" + "\n".join(hist_lines))
 
@@ -646,6 +708,8 @@ def generate_and_send_indus_reconciliation_report(recipient_phone: str = None, t
     else:
         msg_lines.append("⚠️ *Negative Stock:* *None* ✅")
         
+    msg_lines.append("")
+    msg_lines.append(format_loans_breakdown(access_token, indus_org_id))
     msg_lines.append("==================================================")
 
     report_text = "\n".join(msg_lines)

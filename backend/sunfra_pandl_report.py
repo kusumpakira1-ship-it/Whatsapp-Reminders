@@ -1,5 +1,6 @@
 import os
 import re
+import time
 import json
 import logging
 import requests
@@ -217,23 +218,77 @@ def generate_and_send_sunfra_pandl_report(recipient_phone = None, target_date_st
             logger.info("No P&L data rows found for today yet.")
             return False
 
+        # Fetch Period Profits (Week and Month)
+        monday_dt = dt_obj - timedelta(days=dt_obj.weekday())
+        monday_str = monday_dt.strftime("%Y-%m-%d")
+        week_profit = fetch_period_profit(session, monday_str, target_date_str)
+
+        month_start_str = dt_obj.strftime("%Y-%m-01")
+        month_profit = fetch_period_profit(session, month_start_str, target_date_str)
+        month_name = dt_obj.strftime("%b")
+
+        today_icon = "🟢" if tot_profit >= 0 else "🔴"
+        week_icon = "🟢" if week_profit >= 0 else "🔴"
+        month_icon = "🟢" if month_profit >= 0 else "🔴"
+
+        today_formatted = format_indian_currency(tot_profit)
+        week_formatted = format_indian_currency(week_profit)
+        month_formatted = format_indian_currency(month_profit)
+
+        summary_text = (
+            f"{today_icon} Today P/L: {today_formatted}\n"
+            f"{week_icon} This Week P/L: {week_formatted}\n"
+            f"{month_icon} {month_name} Month P/L: {month_formatted}"
+        )
+
         # 1. Generate PDF
         media_dir = "/app/media/reports" if os.path.exists("/app") else os.path.join(os.path.dirname(__file__), "media", "reports")
         os.makedirs(media_dir, exist_ok=True)
         pdf_file = os.path.join(media_dir, f"Sunfra_PL_Report_{target_date_str}.pdf")
         generate_pandl_pdf(display_date, table_rows, pdf_file)
 
-        # 2. Dispatch ONLY PDF file to all target recipients
+        # 2. Dispatch PDF file FIRST, then the separate text summary message to all target recipients
         success_count = 0
         for rec in recipients:
-            status = send_waha_file(rec, pdf_file, caption=f"Sunfra Farms P&L Report ({display_date}).pdf")
+            # First send the PDF document
+            status = send_waha_file(rec, pdf_file, caption="")
             if status:
                 success_count += 1
-            logger.info(f"Sunfra P&L PDF dispatched successfully to {rec}")
+            # Delay to guarantee WhatsApp receives and orders the PDF first
+            time.sleep(1)
+            # Then send the separate message with Today, This Week, and Month P/L
+            send_waha_message(rec, summary_text)
+            logger.info(f"Sunfra P&L (PDF first, then separate summary message) dispatched successfully to {rec}")
         return success_count > 0
     except Exception as e:
         logger.error(f"Error generating Sunfra P&L report: {e}")
         return False
+
+def format_indian_currency(val: float) -> str:
+    val_int = round(val)
+    is_neg = val_int < 0
+    val_str = str(abs(val_int))
+    if len(val_str) <= 3:
+        res = val_str
+    else:
+        last3 = val_str[-3:]
+        rest = val_str[:-3]
+        groups = []
+        while len(rest) > 2:
+            groups.insert(0, rest[-2:])
+            rest = rest[:-2]
+        if rest:
+            groups.insert(0, rest)
+        res = ",".join(groups) + "," + last3
+    prefix = "-" if is_neg else ""
+    return f"{prefix}{res}/-"
+
+def fetch_period_profit(session, from_date_str: str, to_date_str: str) -> float:
+    try:
+        url = f"https://sunfra.com/farm/sunfra/profit_and_loss_details/profit_loss_json.php?from_date={from_date_str}&to_date={to_date_str}&client_id=1"
+        res = session.get(url, timeout=20).json()
+        raw = res.get('data', [])
+        return sum(float(r.get('profit', 0) or 0) for r in raw)
     except Exception as e:
-        logger.error(f"Error generating Sunfra P&L report: {e}")
-        return False
+        logger.error(f"Error fetching period P&L ({from_date_str} to {to_date_str}): {e}")
+        return 0.0

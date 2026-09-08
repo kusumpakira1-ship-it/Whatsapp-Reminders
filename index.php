@@ -593,12 +593,14 @@ $update_keywords = [
             $categories = ['sales', 'expense', 'purchase'];
         }
         
-        $is_rule_book = (strpos(strtolower($report), 'rule book') !== false || strpos(strtolower($report), 'rule') !== false);
+        $is_approval_task = (strpos(strtolower($report), 'approval') !== false || strpos(strtolower($report), 'review') !== false || strpos(strtolower($report), 'balaji') !== false || strpos(strtolower($report), 'approve') !== false);
+        $is_rule_book = ((strpos(strtolower($report), 'rule book') !== false || strpos(strtolower($report), 'rule') !== false) && !$is_approval_task);
 
         $is_update_report = (
             (strpos(strtolower($report), 'update') !== false || strpos(strtolower($report), 'eod') !== false || strpos(strtolower($report), 'daily report') !== false || strpos(strtolower($report), 'work report') !== false)
             && strpos(strtolower($report), 'egg pricing') === false
             && !$is_rule_book
+            && !$is_approval_task
         );
 
         $REPORT_KEYWORDS = [
@@ -611,12 +613,14 @@ $update_keywords = [
             'profit'     => ['p&l report', 'p&l statement', 'profit loss', 'p and l update', 'profit summary', 'profit', 'p&l', 'p and l', 'p/l', 'summary'],
             'p&l'        => ['p&l report', 'p&l statement', 'profit loss', 'p and l update', 'profit summary', 'profit', 'p&l', 'p and l', 'p/l', 'summary'],
             'p and l'    => ['p&l report', 'p&l statement', 'profit loss', 'p and l update', 'profit summary', 'profit', 'p&l', 'p and l', 'p/l', 'summary'],
-            'rule book'  => ['rule book', 'rule', 'rules', 'point', 'points', 'policy', 'guideline', 'godown rule', 'farm rule', 'addition', 'update', 'updates'],
+            'rule book'  => ['rule book', 'rulebook', 'rule-book', 'rule book updates', 'rulebook update', 'rulebook updates', 'rule book update'],
         ];
         
         $raw_keywords = [];
-        if ($is_rule_book) {
-            $raw_keywords = ['rule book', 'rule', 'rules', 'point', 'points', 'policy', 'guideline', 'godown rule', 'farm rule', 'addition', 'update', 'updates'];
+        if ($is_approval_task) {
+            $raw_keywords = [];
+        } elseif ($is_rule_book) {
+            $raw_keywords = ['rule book', 'rulebook', 'rule-book', 'rule book updates', 'rulebook update', 'rulebook updates', 'rule book update'];
         } elseif ($is_update_report) {
             $raw_keywords = array_merge($update_keywords, $date_formats);
         } else {
@@ -627,11 +631,13 @@ $update_keywords = [
                 }
             }
         }
-        foreach (explode(',', $report) as $comma_part) {
-            foreach (explode('/', $comma_part) as $slash_part) {
-                $trimmed = trim($slash_part);
-                if ($trimmed !== '') {
-                    $raw_keywords[] = $trimmed;
+        if (!$is_approval_task) {
+            foreach (explode(',', $report) as $comma_part) {
+                foreach (explode('/', $comma_part) as $slash_part) {
+                    $trimmed = trim($slash_part);
+                    if ($trimmed !== '') {
+                        $raw_keywords[] = $trimmed;
+                    }
                 }
             }
         }
@@ -846,8 +852,23 @@ $update_keywords = [
                             $report_match_msg = "WhatsApp message matched egg pricing rules: \"{$truncated_text}\" by {$raw_msg['sender']} at {$time_display}";
                             break;
                         }
+                    } elseif ($is_approval_task) {
+                        $approval_kws = ['reviewed', 'review completed', 'reviewed and approved', 'approved', 'approve', 'report approved', 'review done', 'reviewed done'];
+                        $is_approver = (strpos(strtolower($raw_msg['sender'] ?? ''), 'balaji') !== false || strpos($raw_msg['sender'] ?? '', '9493928388') !== false || strpos($raw_msg['sender'] ?? '', '242695733772318') !== false || strpos(strtolower($raw_msg['sender'] ?? ''), 'kusum') !== false);
+                        $has_app = false;
+                        foreach ($approval_kws as $akw) {
+                            if (strpos($raw_text_lower, $akw) !== false) { $has_app = true; break; }
+                        }
+                        if ($is_approver && $has_app && strpos($raw_text_lower, 'why') === false && strpos($raw_text_lower, '?') === false) {
+                            $report_submitted = true;
+                            $truncated_text = strlen($raw_msg['raw_text']) > 40 ? substr($raw_msg['raw_text'], 0, 40) . '...' : $raw_msg['raw_text'];
+                            $raw_dt = new DateTime($raw_msg['timestamp'], new DateTimeZone('Asia/Kolkata'));
+                            $time_display = $raw_dt->format('g:i A');
+                            $report_match_msg = "WhatsApp message matched approval by {$raw_msg['sender']}: \"{$truncated_text}\" at {$time_display}";
+                            break;
+                        }
                     } elseif ($is_rule_book) {
-                        $rule_book_kws = ['rule book', 'rule', 'rules', 'point', 'points', 'policy', 'guideline', 'godown rule', 'farm rule', 'addition'];
+                        $rule_book_kws = ['rule book', 'rulebook', 'rule-book', 'rule book updates', 'rulebook update', 'rulebook updates', 'rule book update'];
                         $matched_kw = null;
                         foreach ($rule_book_kws as $kw) {
                             if (strpos($raw_text_lower, $kw) !== false) {

@@ -193,14 +193,56 @@ def fetch_egg_stock_count(access_token: str, org_id: str):
     return total_eggs
 
 
-def fetch_historical_net_positions(access_token: str, org_id: str, today_net_pos: float, today_date_str: str):
+def save_or_update_daily_net_position(org_id: str, target_date, net_pos: float, company_name: str = None, allow_overwrite: bool = False):
     """
-    Calculates historical Net Positions for: today, -1 day, -2 days, -1 week, -2 weeks, -1 month, -2 months, -1 year.
+    Saves daily Net Position for an organization in MySQL database.
+    If a record already exists for (org_id, target_date), it is LOCKED/IMMUTABLE
+    and will NOT be overwritten unless allow_overwrite=True is explicitly passed.
     """
+    from database import get_db_session
+    from models import DailyNetPositionHistory
+    db = get_db_session()
+    try:
+        existing = db.query(DailyNetPositionHistory).filter(
+            DailyNetPositionHistory.org_id == str(org_id),
+            DailyNetPositionHistory.date == target_date
+        ).first()
+        if existing:
+            if allow_overwrite:
+                existing.net_position = float(net_pos)
+                if company_name:
+                    existing.company_name = company_name
+        else:
+            rec = DailyNetPositionHistory(
+                org_id=str(org_id),
+                company_name=company_name,
+                date=target_date,
+                net_position=float(net_pos)
+            )
+            db.add(rec)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error storing net position in DB for org {org_id} on {target_date}: {e}")
+    finally:
+        db.close()
+
+
+def fetch_historical_net_positions(access_token: str, org_id: str, today_net_pos: float, today_date_str: str, company_name: str = None):
+    """
+    Retrieves locked historical Net Positions directly from MySQL database (sunfra_daily_net_position_history).
+    Guarantees that backdated edits in Zoho Books will NEVER alter past historical records.
+    """
+    from database import get_db_session
+    from models import DailyNetPositionHistory
+
     try:
         today_dt = datetime.strptime(today_date_str, "%Y-%m-%d").date()
     except Exception:
         today_dt = datetime.now(IST).date()
+        
+    # Save today's net position into MySQL DB (first time only; locked thereafter)
+    save_or_update_daily_net_position(org_id, today_dt, today_net_pos, company_name, allow_overwrite=False)
         
     intervals = [
         ("-1 Day", 1),
@@ -214,17 +256,37 @@ def fetch_historical_net_positions(access_token: str, org_id: str, today_net_pos
     
     today_formatted = today_dt.strftime("%d %b")
     historical = [(f"Today ({today_formatted})", today_net_pos)]
-    for label, days_back in intervals:
-        target_dt = today_dt - timedelta(days=days_back)
-        date_formatted = target_dt.strftime("%d %b %Y") if days_back >= 365 else target_dt.strftime("%d %b")
-        display_label = f"{label} ({date_formatted})"
-        
-        start_str = target_dt.strftime("%Y-%m-%d")
-        end_str = today_dt.strftime("%Y-%m-%d")
-        sales, purch, _, _ = fetch_range_sales_and_purchases(access_token, org_id, start_str, end_str)
-        net_change = sales - purch
-        past_net = today_net_pos - net_change
-        historical.append((display_label, past_net))
+    
+    db = get_db_session()
+    try:
+        for label, days_back in intervals:
+            target_dt = today_dt - timedelta(days=days_back)
+            date_formatted = target_dt.strftime("%d %b %Y") if days_back >= 365 else target_dt.strftime("%d %b")
+            display_label = f"{label} ({date_formatted})"
+            
+            # Retrieve frozen snapshot directly from MySQL DB
+            row = db.query(DailyNetPositionHistory).filter(
+                DailyNetPositionHistory.org_id == str(org_id),
+                DailyNetPositionHistory.date == target_dt
+            ).first()
+            
+            if row:
+                past_net = float(row.net_position)
+            else:
+                # Initial calculation for missing past date & permanently cache in DB
+                start_str = target_dt.strftime("%Y-%m-%d")
+                end_str = today_dt.strftime("%Y-%m-%d")
+                sales, purch, _, _ = fetch_range_sales_and_purchases(access_token, org_id, start_str, end_str)
+                net_change = sales - purch
+                past_net = today_net_pos - net_change
+                
+                save_or_update_daily_net_position(org_id, target_dt, past_net, company_name, allow_overwrite=False)
+                
+            historical.append((display_label, past_net))
+    except Exception as e:
+        logger.error(f"Error fetching historical net positions from DB: {e}")
+    finally:
+        db.close()
         
     return historical
 
