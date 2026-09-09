@@ -977,6 +977,9 @@ def build_reminder_body(reports: list) -> str:
     if not reports:
         return "Please submit today's reports so the daily records can be completed accurately."
     
+    if any("approval" in rep.lower() or "review" in rep.lower() for rep in reports):
+        return "Please review and approve today's report in the group so daily records can be completed accurately."
+
     formatted_reports = [format_report_name(rep) for rep in reports]
     
     if len(formatted_reports) == 1:
@@ -1365,7 +1368,7 @@ def poll_and_execute_unified_reminders():
                         group_body = build_reminder_body(all_missing)
                         
                     group_msg = (
-                        "⏰ Reminder\n\n"
+                        "⏰ *Reminder*\n\n"
                         f"Hi {name_tags},\n\n"
                         f"{group_body}\n\n"
                         "Thank you! 🌱"
@@ -1381,7 +1384,7 @@ def poll_and_execute_unified_reminders():
                             private_body = build_reminder_body(p['missing_reports'])
                         
                         private_msg = (
-                            "⏰ Reminder\n\n"
+                            "⏰ *Reminder*\n\n"
                             f"Hi *{p['name']}*,\n\n"
                             f"{private_body}\n\n"
                             "Thank you! 🌱"
@@ -3130,14 +3133,44 @@ def scheduled_4company_monthly_pandl_job():
     except Exception as e:
         logger.error(f"Error in scheduled_4company_monthly_pandl_job: {e}")
 
-def scheduled_egg_production_crosscheck_job():
-    """Dispatches the Daily Egg Production vs Godown Stock Cross-Check Report at 9:30 PM IST to Kusum (7259510983)."""
-    logger.info("Executing 9:30 PM Daily Egg Production vs Godown Stock Cross-Check Job...")
+def scheduled_egg_production_crosscheck_650pm_job():
+    """Dispatches the Evening Egg Production vs Godown Stock Cross-Check Report at 6:50 PM IST to 7259510983 ONLY."""
+    logger.info("Executing 6:50 PM Evening Egg Production vs Godown Stock Cross-Check Job (to 7259510983)...")
     try:
-        from egg_production_crosscheck import generate_and_send_egg_production_crosscheck_report
-        generate_and_send_egg_production_crosscheck_report("917259510983@c.us")
+        from egg_production_crosscheck import generate_egg_production_crosscheck_report
+        from waha_service import send_waha_message
+        report_text = generate_egg_production_crosscheck_report()
+        send_waha_message("917259510983@c.us", report_text)
+        logger.info("Evening 6:50 PM Egg Production Cross-Check Report sent to 917259510983@c.us")
     except Exception as e:
-        logger.error(f"Error in scheduled_egg_production_crosscheck_job: {e}")
+        logger.error(f"Error in scheduled_egg_production_crosscheck_650pm_job: {e}")
+
+def scheduled_egg_production_crosscheck_930pm_job():
+    """Dispatches the Daily Egg Production vs Godown Stock Cross-Check Report at 9:30 PM IST to 7259510983, 8985779911, and 6364817749."""
+    logger.info("Executing 9:30 PM Daily Egg Production vs Godown Stock Cross-Check Job (to 3 admins)...")
+    try:
+        from egg_production_crosscheck import generate_egg_production_crosscheck_report
+        from waha_service import send_waha_message
+        report_text = generate_egg_production_crosscheck_report()
+        recipients = ["917259510983@c.us", "918985779911@c.us", "916364817749@c.us"]
+        for phone in recipients:
+            send_waha_message(phone, report_text)
+            logger.info(f"9:30 PM Egg Production Cross-Check Report sent to {phone}")
+    except Exception as e:
+        logger.error(f"Error in scheduled_egg_production_crosscheck_930pm_job: {e}")
+
+def scheduled_daily_attendance_summary_job():
+    """Dispatches the Daily Sunfra Community Attendance Summary at 9:30 PM IST to Kusum (7259510983)."""
+    logger.info("Executing 9:30 PM Daily Sunfra Community Attendance Summary Job...")
+    try:
+        from attendance_tracker import evaluate_attendance_for_date, generate_attendance_summary_message
+        from waha_service import send_waha_message
+        data = evaluate_attendance_for_date()
+        summary_msg = generate_attendance_summary_message(data)
+        send_waha_message("917259510983@c.us", summary_msg)
+        logger.info("Daily Attendance Summary successfully sent to 917259510983@c.us at 9:30 PM")
+    except Exception as e:
+        logger.error(f"Error in scheduled_daily_attendance_summary_job: {e}")
 
 def scheduled_egg_market_pdf_job():
     logger.info("Starting 9:30 PM Egg Price & Market Analysis PDF report job...")
@@ -3205,9 +3238,13 @@ def setup_scheduler():
     # Schedule 4 Consolidated Company Reports daily at 6:50 PM IST (to 7259510983)
     scheduler.add_job(scheduled_4company_consolidated_reports_job, CronTrigger(hour=18, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_reports_650pm_job")
 
-    # Schedule Egg Production vs Godown Stock Cross-Check daily at 7:03 PM IST & 9:30 PM IST (to 7259510983)
-    scheduler.add_job(scheduled_egg_production_crosscheck_job, CronTrigger(hour=19, minute=3, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_production_crosscheck_703pm_job")
-    scheduler.add_job(scheduled_egg_production_crosscheck_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_production_crosscheck_job")
+    # Schedule Egg Production vs Godown Stock Cross-Check daily at 6:50 PM IST (to 7259510983 ONLY) & 9:30 PM IST (to 3 admins)
+    scheduler.add_job(scheduled_egg_production_crosscheck_650pm_job, CronTrigger(hour=18, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_production_crosscheck_650pm_job")
+    scheduler.add_job(scheduled_egg_production_crosscheck_930pm_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_production_crosscheck_930pm_job")
+
+    # Schedule Daily Sunfra Community Attendance Summary daily at 7:05 PM IST & 9:30 PM IST (to 7259510983)
+    scheduler.add_job(scheduled_daily_attendance_summary_job, CronTrigger(hour=19, minute=5, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_705pm_job")
+    scheduler.add_job(scheduled_daily_attendance_summary_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_job")
 
     # Combined 10:00 PM Dispatcher: 4 Consolidated Company Reports, Daily Rental Loss, and Company-Wise Escalation
     scheduler.add_job(send_all_10pm_daily_reports_job, CronTrigger(hour=22, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)

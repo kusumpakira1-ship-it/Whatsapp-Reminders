@@ -699,7 +699,7 @@ async def waha_webhook(request: Request, background_tasks: BackgroundTasks):
 
     # Only process message events
     event = payload.get("event")
-    if event not in ("message", "message.any"):
+    if event not in ("message", "message.any", "message.create", "message.upsert"):
         return {"status": "ignored event"}
 
     msg = payload.get("payload", {})
@@ -712,11 +712,6 @@ async def waha_webhook(request: Request, background_tasks: BackgroundTasks):
     
     logger.info(f"Incoming message from {sender} (fromMe={msg.get('fromMe')}). Body: '{text}'")
     
-    # Early ignore checks before opening database connections
-    if msg.get("fromMe", False) and not text.startswith('!'):
-        logger.info(f"Ignoring message sent by bot itself from processing: {message_id}")
-        return {"status": "ignored fromMe"}
-        
     if sender == "status@broadcast" or sender.endswith("@newsletter"):
         logger.info(f"Ignoring status/channel message from processing: {sender}")
         return {"status": "ignored status/channel"}
@@ -724,20 +719,33 @@ async def waha_webhook(request: Request, background_tasks: BackgroundTasks):
     is_group = '@g.us' in sender
     group_id = sender if is_group else None
 
-    # Prefer participantAlt (real phone JID) over participant (may be LID)
-    raw_participant = msg.get("participant", sender) if is_group else sender
-    participant_alt = msg.get("_data", {}).get("key", {}).get("participantAlt", "") or ""
-    # Use participantAlt if it looks like a real phone JID (contains @s.whatsapp.net)
-    sender_phone = participant_alt if "@s.whatsapp.net" in participant_alt else raw_participant
-    for domain in ('@c.us', '@s.whatsapp.net', '@lid'):
-        sender_phone = sender_phone.replace(domain, '')
+    # Handle messages from the host account itself (Kusum / 7975209680)
+    is_from_me = msg.get("fromMe", False)
+    if is_from_me:
+        # If it's an automated bot reminder / alert message sent by scheduler, skip saving
+        if text.startswith(('⏰', '🔔', '⚠️', '🔴', '🟢', '📄', '📊', '📈', '🥚', '🏢', '📋')):
+            logger.info(f"Ignoring automated bot dispatch from processing: {message_id}")
+            return {"status": "ignored automated fromMe"}
+        
+        # For manual messages posted by Kusum (e.g. Login, Logout, reports) in groups
+        sender_phone = str(settings.MANAGER_PHONE or "917975209680")
+        sender_name = "Kusum"
+    else:
+        # Prefer participantAlt (real phone JID) over participant (may be LID)
+        raw_participant = msg.get("participant", sender) if is_group else sender
+        participant_alt = msg.get("_data", {}).get("key", {}).get("participantAlt", "") or ""
+        # Use participantAlt if it looks like a real phone JID (contains @s.whatsapp.net)
+        sender_phone = participant_alt if "@s.whatsapp.net" in participant_alt else raw_participant
+        for domain in ('@c.us', '@s.whatsapp.net', '@lid'):
+            sender_phone = sender_phone.replace(domain, '')
+
+        sender_name = msg.get("pushName") or msg.get("_data", {}).get("pushName") or msg.get("_data", {}).get("notifyName") or ""
+        if sender_name.startswith('~'):
+            sender_name = sender_name[1:]
+        sender_name = sender_name.strip()
+
     if group_id:
         group_id = group_id.replace('@g.us', '')
-
-    sender_name = msg.get("pushName") or msg.get("_data", {}).get("pushName") or msg.get("_data", {}).get("notifyName") or ""
-    if sender_name.startswith('~'):
-        sender_name = sender_name[1:]
-    sender_name = sender_name.strip()
     
     if is_group:
         group_name_str = msg.get("groupName") or msg.get("_data", {}).get("groupName") or msg.get("chat", {}).get("name")
@@ -807,6 +815,9 @@ async def waha_webhook(request: Request, background_tasks: BackgroundTasks):
         return {"status": "error saving raw"}
     finally:
         db.close()
+
+    if is_from_me and not text.startswith('!'):
+        return {"status": "saved fromMe message"}
 
     def handle_report_command(range_type_arg: str, sender_arg: str):
         try:

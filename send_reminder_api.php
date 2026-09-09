@@ -159,7 +159,7 @@ try {
 
     // Save to Database strictly ONCE in sunfra_unified_reminders to prevent duplicate sends
     $unif_id = null;
-    try {
+    try {    
         $stmt_unif = $pdo->prepare("INSERT INTO sunfra_unified_reminders (person_name, person_phone, whatsapp_group_id, report_types, task_notes, trigger_time, frequency, repeat_interval, status, created_at) VALUES (:person_name, :person_phone, :whatsapp_group_id, :report_types, :task_notes, :trigger_time, :frequency, :repeat_interval, 'pending', NOW())");
         $stmt_unif->execute([
             ':person_name' => !empty($person_name) ? $person_name : 'Custom Reminder',

@@ -116,7 +116,7 @@ if (isset($_GET['api'])) {
         $now = date('Y-m-d H:i:s');
         $levels = [0, 25, 50, 75, 100];
         try {
-            $devices = [['C4-4F-33-24-7C-59', 'Spice garden'], ['40-91-51-C8-0C-C8', 'Kadubeesanahalli']];
+            $devices = [['C4-4F-33-24-7C-59', 'Spice garden']];
             foreach ($devices as $dev) {
                 $mac = $dev[0];
                 $loc = $dev[1];
@@ -601,7 +601,6 @@ if (isset($_GET['api'])) {
         <select class="form-control" id="filter-mac">
           <option value="">All MAC Addresses</option>
           <option value="C4-4F-33-24-7C-59">C4-4F-33-24-7C-59 (Spice garden)</option>
-          <option value="40-91-51-C8-0C-C8">40-91-51-C8-0C-C8 (Kadubeesanahalli)</option>
         </select>
       </div>
     </div>
