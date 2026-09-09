@@ -3242,7 +3242,8 @@ def setup_scheduler():
     scheduler.add_job(scheduled_egg_production_crosscheck_650pm_job, CronTrigger(hour=18, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_production_crosscheck_650pm_job")
     scheduler.add_job(scheduled_egg_production_crosscheck_930pm_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_production_crosscheck_930pm_job")
 
-    # Schedule Daily Sunfra Community Attendance Summary daily at 7:05 PM IST & 9:30 PM IST (to 7259510983)
+    # Schedule Daily Sunfra Community Attendance Summary daily at 1:00 PM IST, 7:05 PM IST & 9:30 PM IST (to 7259510983)
+    scheduler.add_job(scheduled_daily_attendance_summary_job, CronTrigger(hour=13, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_1pm_job")
     scheduler.add_job(scheduled_daily_attendance_summary_job, CronTrigger(hour=19, minute=5, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_705pm_job")
     scheduler.add_job(scheduled_daily_attendance_summary_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_job")
 
