@@ -48,7 +48,7 @@ COMMUNITY_EMPLOYEES = [
             {"name": "Krishna", "phone": "9182535260", "aliases": ["krishna", "chaitanya bandaru", "96074157031436", "9182535260", "919182535260"]},
             {"name": "Nisha", "phone": "9740828621", "aliases": ["nisha", "nisha_subbayya", "125795330740245", "9740828621", "919740828621"]},
             {"name": "Ravi Teja", "phone": "7981745785", "aliases": ["ravi teja", "ravi", "159313775583316", "7981745785", "917981745785"]},
-            {"name": "Thanuja", "phone": "8978331872", "aliases": ["thanuja", "8978331872", "918978331872"]},
+            {"name": "Thanuja", "phone": "8978331872", "aliases": ["thanuja", "thota thanuja", "125889819983939", "8978331872", "918978331872"]},
             {"name": "Aishwarya", "phone": "8495004826", "aliases": ["aishwarya", "8495004826", "918495004826"]},
         ]
     },
@@ -56,6 +56,7 @@ COMMUNITY_EMPLOYEES = [
         "group": "Sunfra HR Team",
         "employees": [
             {"name": "Parvati", "phone": "7995452523", "aliases": ["parvati", "paru bavisetti", "245225503076572", "7995452523", "917995452523"]},
+            {"name": "Bhanushree", "phone": "9901497574", "aliases": ["bhanushree", "bhanushree n.t", "bhanu", "81991244460218", "9901497574", "919901497574"]},
         ]
     },
     {
@@ -104,6 +105,7 @@ def evaluate_attendance_for_date(target_date_str: str = None) -> dict:
 
         group_records = []
         tot_present = 0
+        tot_half_day_present = 0
         tot_half_day = 0
         tot_leave = 0
         tot_absent = 0
@@ -199,6 +201,11 @@ def evaluate_attendance_for_date(target_date_str: str = None) -> dict:
                     status_badge = "🔵 On Leave"
                     detail = f"Leave message at {leave_time.strftime('%I:%M %p')}"
                     tot_leave += 1
+                elif leave_time and login_time:
+                    status_type = "half_day_leave"
+                    status_badge = "⚪ Half Day Present"
+                    detail = f"Login at {login_time.strftime('%I:%M %p')} | Leave at {leave_time.strftime('%I:%M %p')}"
+                    tot_half_day_present += 1
                 elif not login_time and not logout_time:
                     status_type = "absent"
                     status_badge = "🔴 Absent"
@@ -247,6 +254,7 @@ def evaluate_attendance_for_date(target_date_str: str = None) -> dict:
             "date": target_date_str,
             "total_employees": tot_employees,
             "total_present": tot_present,
+            "total_half_day_present": tot_half_day_present,
             "total_half_day": tot_half_day,
             "total_leave": tot_leave,
             "total_absent": tot_absent,
@@ -270,6 +278,8 @@ def generate_attendance_summary_message(data: dict) -> str:
         for emp in g['employees']:
             if emp['status_type'] == 'present':
                 lines.append(f"  • *{emp['name']}*: 🟢 Present")
+            elif emp['status_type'] == 'half_day_leave':
+                lines.append(f"  • *{emp['name']}*: ⚪ Half Day Present")
             elif emp['status_type'] == 'half_day_late':
                 lines.append(f"  • *{emp['name']}*: 🟡 Half Day (Late Login)")
             elif emp['status_type'] == 'half_day_no_logout':
@@ -286,6 +296,7 @@ def generate_attendance_summary_message(data: dict) -> str:
         f"📊 *OVERALL STATS:*",
         f"👥 Total Employees: *{data['total_employees']}*",
         f"🟢 Present (Full Day): *{data['total_present']}*",
+        f"⚪ Half Day Present: *{data.get('total_half_day_present', 0)}*",
         f"🟡 Half Day: *{data['total_half_day']}*",
         f"🔵 On Leave: *{data.get('total_leave', 0)}*",
         f"🔴 Absent: *{data['total_absent']}*",

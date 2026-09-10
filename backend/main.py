@@ -716,8 +716,9 @@ async def waha_webhook(request: Request, background_tasks: BackgroundTasks):
         logger.info(f"Ignoring status/channel message from processing: {sender}")
         return {"status": "ignored status/channel"}
 
-    is_group = '@g.us' in sender
-    group_id = sender if is_group else None
+    target_chat_jid = str(msg.get("to") or msg.get("chatId") or msg.get("from") or msg.get("_data", {}).get("key", {}).get("remoteJid") or "")
+    is_group = '@g.us' in sender or '@g.us' in target_chat_jid
+    group_id = sender if '@g.us' in sender else (target_chat_jid if '@g.us' in target_chat_jid else None)
 
     # Handle messages from the host account itself (Kusum / 7975209680)
     is_from_me = msg.get("fromMe", False)
@@ -744,15 +745,14 @@ async def waha_webhook(request: Request, background_tasks: BackgroundTasks):
             sender_name = sender_name[1:]
         sender_name = sender_name.strip()
 
-    if group_id:
-        group_id = group_id.replace('@g.us', '')
+    group_id_clean = group_id.replace('@g.us', '') if group_id else None
     
     if is_group:
         group_name_str = msg.get("groupName") or msg.get("_data", {}).get("groupName") or msg.get("chat", {}).get("name")
-        if not group_name_str:
-            group_name_str = get_waha_chat_name(sender)
-            if group_name_str == sender:
-                group_name_str = group_id
+        if not group_name_str and group_id:
+            group_name_str = get_waha_chat_name(group_id)
+            if group_name_str == group_id:
+                group_name_str = group_id_clean
         
         display_sender = f"[{group_name_str}] {sender_name} ({sender_phone})" if sender_name else f"[{group_name_str}] {sender_phone}"
     else:
