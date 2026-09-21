@@ -1,0 +1,63 @@
+=== RAW MESSAGES MATCHING LAKSHMI ===
+[2026-09-19 09:21:22] Sender: [Team] mahalakshmi (184791135711366) | Group: Team | Text: Egg Godown Stock:  Katta Trays  🥚 
+
+*Today Loading Details* 
+
+Lokesh 50 katta  42 gms 2.85 per egg
+ 
+
+
+
+*Tomorrow Loading Details:*  
+ *Shankar naidu 2000 trays 60 gms 65 cutting 
+
+
+ * Loading rates*
+
+HPT: 510(+20)
+HYD: 530(+10)
+NKL: 550(-10)
+BWL:543(+5)
+KOL:620(+15)
+MYS:610(0)
+
+*Paper Rates*
+
+CHE: 620 (0)
+BLR: 600(0)
+HPT: 540(0)
+HYD: 540(+5)
+NKL: 560(0)
+MYS:610(0)
+BWL: 543(+5)
+[2026-09-19 10:42:20] Sender: [120363429481469212] mahalakshmi (184791135711366) | Group: 120363429481469212 | Text: Logged in
+[2026-09-19 11:15:35] Sender: [Payments - Sunfra Feeds] 🕺🕺 (45586833240126) | Group: Payments - Sunfra Feeds | Text: Bike petrol amount refund to Mahalakshmi
+[2026-09-19 11:18:32] Sender: [Payments - Sunfra Farms] mahalakshmi (184791135711366) | Group: Payments - Sunfra Farms | Text: loan to flavour cafe
+[2026-09-19 13:16:56] Sender: [Payments - Sunfra Farms] mahalakshmi (184791135711366) | Group: Payments - Sunfra Farms | Text: 
+[2026-09-19 13:16:57] Sender: [Payments - Sunfra Farms] mahalakshmi (184791135711366) | Group: Payments - Sunfra Farms | Text: bike petrol
+[2026-09-19 13:18:54] Sender: [120363429948387845] mahalakshmi (184791135711366) | Group: 120363429948387845 | Text: 
+[2026-09-19 13:18:55] Sender: [Payments - Sunfra Feeds] mahalakshmi (184791135711366) | Group: Payments - Sunfra Feeds | Text: bike petrol for prasanth 
+( has gone to get food for drivers)
+[2026-09-19 13:50:08] Sender: [Sunfra Farms] mahalakshmi (184791135711366) | Group: Sunfra Farms | Text: Out for lunch
+[2026-09-19 14:59:55] Sender: [Payments - Sunfra Farms] mahalakshmi (184791135711366) | Group: Payments - Sunfra Farms | Text: 
+[2026-09-19 14:59:56] Sender: [Payments - Sunfra Farms] mahalakshmi (184791135711366) | Group: Payments - Sunfra Farms | Text: payment for farm diesel
+[2026-09-19 15:10:31] Sender: [Payments - Sunfra Farms] mahalakshmi (184791135711366) | Group: Payments - Sunfra Farms | Text: diesel for farm
+[2026-09-19 15:11:45] Sender: [Payments - Sunfra Farms] mahalakshmi (184791135711366) | Group: Payments - Sunfra Farms | Text: 
+[2026-09-19 15:45:19] Sender: [Payments - Sunfra Feeds] 🕺🕺 (45586833240126) | Group: Payments - Sunfra Feeds | Text: Bike petrol amount to refund to mahalakshmi
+[2026-09-19 17:03:11] Sender: [Sunfra Farms] mahalakshmi (184791135711366) | Group: Sunfra Farms | Text: Back
+[2026-09-19 17:38:41] Sender: [Payments - Sunfra Farms] mahalakshmi (184791135711366) | Group: Payments - Sunfra Farms | Text: Payment for Sunfra feeds 
+feed 23000* 31.823044=731930
+[2026-09-19 17:39:17] Sender: [Payments - Sunfra Farms] mahalakshmi (184791135711366) | Group: Payments - Sunfra Farms | Text: Payment for sunfra feeds 
+water medicine :  15 *587.80=8817
+[2026-09-19 17:39:49] Sender: [Payments - Sunfra Farms] mahalakshmi (184791135711366) | Group: Payments - Sunfra Farms | Text: payment for motor repair 
+3 shed water spraying motor repair
+[2026-09-19 17:42:59] Sender: [Payments - Sunfra Farms] mahalakshmi (184791135711366) | Group: Payments - Sunfra Farms | Text: payment for pruthvi 
+purchase of pvc items for bore
+[2026-09-19 17:42:59] Sender: [Payments - Sunfra Farms] mahalakshmi (184791135711366) | Group: Payments - Sunfra Farms | Text: 
+[2026-09-19 17:48:27] Sender: [Payments - Sunfra Farms] mahalakshmi (184791135711366) | Group: Payments - Sunfra Farms | Text: payment for Akshay ( for farm visit )
+shared expenses through mail 
+Rs: 1810
+
+=== WA MESSAGES MATCHING LAKSHMI ===
+[2026-09-19 11:15:35] Sender: 45586833240126 | Group: 120363429948387845@g.us | Text: Bike petrol amount refund to Mahalakshmi
+[2026-09-19 15:45:19] Sender: 45586833240126 | Group: 120363429948387845@g.us | Text: Bike petrol amount to refund to mahalakshmi

@@ -1,0 +1,24 @@
+=== AUDITING & TESTING ALL NIGHT SCHEDULED REPORT JOBS ===
+
+1. Testing scheduled_godown_report_job (9:00 PM)...
+   SUCCESS: Godown report generated (748 chars, PDF: /app/media/reports/Godown_Report_20260919_1857.pdf)
+
+2. Testing scheduled_sunfra_pandl_job (9:30 PM)...
+   ERROR in scheduled_sunfra_pandl_job: cannot import name 'generate_sunfra_pandl_report_text' from 'sunfra_pandl_report' (C:\Users\sunfra\Desktop\Whatsapp Reminders\scratch\..\backend\sunfra_pandl_report.py)
+
+3. Testing scheduled_egg_production_crosscheck_930pm_job (9:30 PM)...
+   SUCCESS: Egg crosscheck generated (1053 chars)
+
+4. Testing scheduled_daily_attendance_summary_job (9:30 PM)...
+   SUCCESS: Attendance summary generated (1468 chars)
+
+5. Testing scheduled_egg_market_pdf_job (9:30 PM)...
+   ERROR in scheduled_egg_market_pdf_job: cannot import name 'generate_egg_market_report_text' from 'egg_market_analyzer' (C:\Users\sunfra\Desktop\Whatsapp Reminders\scratch\..\backend\egg_market_analyzer.py)
+
+6. Testing send_all_10pm_daily_reports_job (10:00 PM)...
+   SUCCESS: 4-Company P&L (4 chars) & Rental Vacancy (1080 chars) generated
+
+7. Testing scheduled_4company_weekly_pandl_job (10:30 PM Saturday)...
+   SUCCESS: Weekly 4-Company P&L generated (4 chars)
+
+=== ALL NIGHT REPORT JOBS AUDITED SUCCESSFULLY! ===

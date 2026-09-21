@@ -1,0 +1,155 @@
+=== CONSOLIDATED SUMMARY ===
+📋 *Daily Attendance Report*
+📅 *Date:* 19 Sep 2026
+==================================================
+
+🏢 *AI & IOT*
+  • *Akshay*: 🟡 Half Day (No Logout)
+  • *Kusum*: 🟡 Half Day (No Logout)
+  • *Poornima*: 🟡 Half Day (No Logout)
+  • *Ramya*: 🟡 Half Day (No Logout)
+
+🏢 *Sunfra OLX CEE*
+  • *Asif*: 🔴 Absent
+  • *Prasanna*: 🔴 Absent
+  • *Yashaswini*: 🔴 Absent
+
+🏢 *Jataayu*
+  • *Roopa*: 🟡 Half Day (Late Login & No Logout)
+
+🏢 *Sunfra Corporate*
+  • *Divya*: 🔴 Absent
+  • *Prajwal*: 🔴 Absent
+
+🏢 *Sunfra Mudah*
+  • *Aishwarya*: 🔴 Absent
+  • *Akshay*: 🟢 Present
+  • *Bharath*: 🔴 Absent
+  • *Krishna*: 🔴 Absent
+  • *Lakshmi*: 🔴 Absent
+  • *Nisha*: 🔴 Absent
+  • *Ravi Teja*: 🔴 Absent
+  • *Thanuja*: 🔴 Absent
+
+🏢 *Sunfra HR Team*
+  • *Bhanushree*: 🟡 Half Day (No Logout)
+  • *Parvati*: 🟡 Half Day (No Logout)
+
+🏢 *Indus*
+  • *Girija*: 🔴 Absent
+  • *Jagadish*: 🟡 Half Day (No Logout)
+
+🏢 *Sunfra Farms*
+  • *Mahalakshmi*: 🟡 Half Day (No Logout)
+
+🏢 *Sunfra Feeds*
+  • *Venkat*: 🟡 Half Day (No Logout)
+
+🏢 *Management Team*
+  • *Balaji*: 🟡 Half Day (No Logout)
+  • *Nani*: 🟡 Half Day (No Logout)
+  • *Nikhil*: 🟡 Half Day (No Logout)
+  • *Prasad*: 🔴 Absent
+  • *Prathiba*: 🟡 Half Day (No Logout)
+  • *Vamsi*: 🟡 Half Day (No Logout)
+
+🏢 *Tendered*
+  • *Ganga*: 🔴 Absent
+
+==================================================
+📊 *OVERALL STATS:*
+👥 Total Employees: *31*
+🟢 Present (Full Day): *1*
+⚪ Half Day Present: *0*
+🟡 Half Day: *15*
+🔵 On Leave: *0*
+🔴 Absent: *15*
+==================================================
+
+=== COMPANY-WISE REPORTS ===
+
+--- AI & IOT ---
+📋 *AI & IOT Attendance Report*
+📅 *Date:* 19 Sep 2026
+
+  • *Akshay*: 🟡 Half Day (No Logout)
+  • *Kusum*: 🟡 Half Day (No Logout)
+  • *Poornima*: 🟡 Half Day (No Logout)
+  • *Ramya*: 🟡 Half Day (No Logout)
+
+--- Sunfra OLX CEE ---
+📋 *Sunfra OLX CEE Attendance Report*
+📅 *Date:* 19 Sep 2026
+
+  • *Asif*: 🔴 Absent
+  • *Prasanna*: 🔴 Absent
+  • *Yashaswini*: 🔴 Absent
+
+--- Jataayu ---
+📋 *Jataayu Attendance Report*
+📅 *Date:* 19 Sep 2026
+
+  • *Roopa*: 🟡 Half Day (Late Login & No Logout)
+
+--- Sunfra Corporate ---
+📋 *Sunfra Corporate Attendance Report*
+📅 *Date:* 19 Sep 2026
+
+  • *Divya*: 🔴 Absent
+  • *Prajwal*: 🔴 Absent
+
+--- Sunfra Mudah ---
+📋 *Sunfra Mudah Attendance Report*
+📅 *Date:* 19 Sep 2026
+
+  • *Aishwarya*: 🔴 Absent
+  • *Akshay*: 🟢 Present
+  • *Bharath*: 🔴 Absent
+  • *Krishna*: 🔴 Absent
+  • *Lakshmi*: 🔴 Absent
+  • *Nisha*: 🔴 Absent
+  • *Ravi Teja*: 🔴 Absent
+  • *Thanuja*: 🔴 Absent
+
+--- Sunfra HR Team ---
+📋 *Sunfra HR Team Attendance Report*
+📅 *Date:* 19 Sep 2026
+
+  • *Bhanushree*: 🟡 Half Day (No Logout)
+  • *Parvati*: 🟡 Half Day (No Logout)
+
+--- Indus ---
+📋 *Indus Attendance Report*
+📅 *Date:* 19 Sep 2026
+
+  • *Girija*: 🔴 Absent
+  • *Jagadish*: 🟡 Half Day (No Logout)
+
+--- Sunfra Farms ---
+📋 *Sunfra Farms Attendance Report*
+📅 *Date:* 19 Sep 2026
+
+  • *Mahalakshmi*: 🟡 Half Day (No Logout)
+
+--- Sunfra Feeds ---
+📋 *Sunfra Feeds Attendance Report*
+📅 *Date:* 19 Sep 2026
+
+  • *Venkat*: 🟡 Half Day (No Logout)
+
+--- Management Team ---
+📋 *Management Team Attendance Report*
+📅 *Date:* 19 Sep 2026
+
+  • *Balaji*: 🟡 Half Day (No Logout)
+  • *Nani*: 🟡 Half Day (No Logout)
+  • *Nikhil*: 🟡 Half Day (No Logout)
+  • *Prasad*: 🔴 Absent
+  • *Prathiba*: 🟡 Half Day (No Logout)
+  • *Vamsi*: 🟡 Half Day (No Logout)
+
+--- Tendered ---
+📋 *Tendered Attendance Report*
+📅 *Date:* 19 Sep 2026
+
+  • *Ganga*: 🔴 Absent

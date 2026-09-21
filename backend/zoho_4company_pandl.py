@@ -93,9 +93,9 @@ def fetch_balance_sheet_cash_and_equivalents(access_token: str, org_id: str):
                 if isinstance(node, dict):
                     n = (node.get("name") or node.get("account_name") or "").lower().strip()
                     t = float(node.get("total", 0) or node.get("balance", 0) or node.get("amount", 0) or 0.0)
-                    if n == "cash":
+                    if n in ["cash", "petty cash", "cash in hand", "cash account"]:
                         totals["cash"] = t
-                    elif n == "bank":
+                    elif n in ["bank", "bank accounts", "bank account"] or ("bank" in n and "account" in n and "charge" not in n and "fee" not in n):
                         totals["bank"] = t
                     for k, v in node.items():
                         if isinstance(v, (dict, list)):
@@ -153,12 +153,11 @@ def fetch_inventory_stock_data(access_token: str, org_id: str):
 
 def fetch_egg_stock_count(access_token: str, org_id: str):
     """
-    Calculates Egg Stock quantity directly from the main 'EGGS' item on hand.
+    Calculates total Egg Stock quantity across all valid egg items on hand (e.g. EGGS, Classic Egg - White Eggs Lic, Classic Egg-White Eggs, etc.).
     """
     url = f"{ZOHO_BOOKS_API_URL}/items?organization_id={org_id}"
     headers = {"Authorization": f"Zoho-oauthtoken {access_token}"}
     total_eggs = 0.0
-    main_found = False
     try:
         page = 1
         has_more = True
@@ -173,19 +172,11 @@ def fetch_egg_stock_count(access_token: str, org_id: str):
                 unit = (it.get("unit", "") or "").upper().strip()
                 stock = float(it.get("actual_available_stock", 0.0) or it.get("stock_on_hand", 0.0) or 0.0)
                 
-                # Priority 1: Main 'EGGS' item
-                if name_u == 'EGGS':
+                is_egg = ('EGG' in name_u or (name_u.startswith('SHEAD') and 'FEED' not in name_u)) and ('CONSUMPTION' not in name_u and 'TRANSPORT' not in name_u)
+                if is_egg and stock != 0:
                     count = stock * 30 if ('TRY' in unit or 'TRAY' in unit) else stock
-                    total_eggs = count
-                    main_found = True
-                    break
-                elif not main_found:
-                    is_egg = ('EGG' in name_u or (name_u.startswith('SHEAD') and 'FEED' not in name_u)) and ('CONSUMPTION' not in name_u and 'TRANSPORT' not in name_u and 'TRAY' not in name_u)
-                    if is_egg and stock != 0:
-                        count = stock * 30 if ('TRY' in unit or 'TRAY' in unit) else stock
-                        total_eggs += count
-            if main_found:
-                break
+                    total_eggs += count
+
             has_more = data.get("page_context", {}).get("has_more_page", False)
             page += 1
     except Exception as e:
@@ -241,8 +232,8 @@ def fetch_historical_net_positions(access_token: str, org_id: str, today_net_pos
     except Exception:
         today_dt = datetime.now(IST).date()
         
-    # Save today's net position into MySQL DB (first time only; locked thereafter)
-    save_or_update_daily_net_position(org_id, today_dt, today_net_pos, company_name, allow_overwrite=False)
+    # Save today's net position into MySQL DB (allow overwrite during current day so EOD final figures lock accurately)
+    save_or_update_daily_net_position(org_id, today_dt, today_net_pos, company_name, allow_overwrite=True)
         
     intervals = [
         ("-1 Day", 1),

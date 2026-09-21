@@ -3,11 +3,11 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     DB_HOST: str = os.getenv("DB_HOST", "145.223.17.70")
-    DB_NAME: str = os.getenv("DB_NAME", "u632391467_yaswanth")
-    DB_USER: str = os.getenv("DB_USER", "u632391467_yaswanth")
-    DB_PASS: str = os.getenv("DB_PASS", "Yaswanth@2026Cc!")
+    DB_NAME: str = os.getenv("DB_NAME", "u632391467_kusumpakira")
+    DB_USER: str = os.getenv("DB_USER", "u632391467_kusumpakira")
+    DB_PASS: str = os.getenv("DB_PASS", "Kusum@2026Bb!")
     MANAGER_PHONE: str = os.getenv("MANAGER_PHONE", "917975209680")
-    WAHA_URL: str = os.getenv("WAHA_URL", "http://localhost:3000" if (os.name == 'nt' or not os.path.exists("/.dockerenv")) else "http://host.docker.internal:3000")
+    WAHA_URL: str = os.getenv("WAHA_URL", "http://localhost:3000")
     WAHA_SESSION: str = os.getenv("WAHA_SESSION", "default")
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")

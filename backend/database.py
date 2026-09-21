@@ -11,8 +11,9 @@ engine = create_engine(
     DATABASE_URL, 
     pool_pre_ping=True, 
     pool_recycle=300, 
-    pool_size=5, 
-    max_overflow=10
+    pool_size=2, 
+    max_overflow=0,
+    connect_args={"connect_timeout": 3}
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -23,6 +24,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 sqlite_engine = create_engine("sqlite:///whatsapp_reminders.sqlite", connect_args={"check_same_thread": False})
+Base.metadata.create_all(bind=sqlite_engine)
 SqliteSession = sessionmaker(autocommit=False, autoflush=False, bind=sqlite_engine)
 
 def get_db():
@@ -37,6 +39,7 @@ def get_db():
             except Exception: pass
         logger.warning(f"MySQL connection unavailable ({e}). Using SQLite fallback session...")
         try:
+            Base.metadata.create_all(bind=sqlite_engine)
             db = SqliteSession()
             yield db
         except Exception as sqle:
@@ -55,6 +58,7 @@ def get_db_session():
         return db
     except Exception as e:
         logger.warning(f"MySQL unavailable ({e}). Using SQLite fallback session...")
+        Base.metadata.create_all(bind=sqlite_engine)
         return SqliteSession()
 
 

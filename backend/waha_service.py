@@ -129,10 +129,17 @@ def send_waha_file(chat_id: str, file_path: str, caption: str = "", session: str
         response = requests.post(url, json=payload, headers=headers, timeout=60)
         if response.status_code not in (200, 201):
             logger.error(f"WAHA sendFile failed: {response.status_code} - {response.text}")
-        return response.status_code in (200, 201)
+            # Guaranteed Fallback: Send public HTTPS link via text message
+            fallback_text = f"{caption}\n\n📄 *Download Report PDF:* {file_url}" if caption else f"📄 *Download Report PDF:* {file_url}"
+            return send_waha_message(chat_id, fallback_text, session=session)
+        return True
     except Exception as e:
         logger.error(f"Failed to send WAHA file: {e}")
-        return False
+        try:
+            fallback_text = f"{caption}\n\n📄 *Download Report PDF:* {file_url}" if caption else f"📄 *Download Report PDF:* {file_url}"
+            return send_waha_message(chat_id, fallback_text, session=session)
+        except Exception:
+            return False
 
 def download_waha_media(message_id: str, media_url: str = None, mimetype: str = None, filename: str = None) -> str:
     """Download media from WAHA and save it locally."""

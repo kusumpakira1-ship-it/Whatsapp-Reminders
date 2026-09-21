@@ -210,6 +210,29 @@ class DailyNetPositionHistory(Base):
     created_at = Column(DateTime, default=func.now())
 
 
+class DailyAttendance(Base):
+    __tablename__ = "sunfra_attendance_logs"
+    id = Column(Integer, primary_key=True, index=True)
+    date = Column(Date, index=True, nullable=False)
+    employee_name = Column(String(100), index=True, nullable=False)
+    phone_number = Column(String(50), nullable=True)
+    company_name = Column(String(100), index=True, nullable=False)
+    group_id = Column(String(255), index=True, nullable=True)
+    login_time = Column(String(20), nullable=True)
+    lunch_start_time = Column(String(20), nullable=True)
+    lunch_end_time = Column(String(20), nullable=True)
+    break_start_time = Column(String(20), nullable=True)
+    break_end_time = Column(String(20), nullable=True)
+    logout_time = Column(String(20), nullable=True)
+    total_break_minutes = Column(Integer, default=0)
+    net_hours = Column(DECIMAL(5, 2), default=0.00)
+    status_type = Column(String(50), default="absent")
+    status_badge = Column(String(100), default="🔴 Absent")
+    detail = Column(Text, nullable=True)
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+
+
 
 
 

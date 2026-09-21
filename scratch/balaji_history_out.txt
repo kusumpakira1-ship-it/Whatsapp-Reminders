@@ -1,0 +1,2427 @@
+=== RAW MESSAGES FOR BALAJI HISTORY ===
+[2026-09-18 22:50:02] Sender: [120363428872126006] Balaji Reddy (242695733772318) | Group: 120363428872126006 | Text: Hi @210693999599858 @147635256201243 
+I have done the transaction and its showing in order please check once
+[2026-09-18 22:11:48] Sender: [Sunfra Group Of Companies] Kusum (917259510983) | Group: Sunfra Group Of Companies | Text: 1️⃣ *Ai iOT Team Reports:* — 📊 *EOD Summary*
+📅 *Date:* 18 Sep 2026
+• Balaji (Approval Task): *Report Review & Approval* - ❌
+• Balaji Team: *Daily Work Update* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 6*
+🗓️ *Total Failed this Month: 16*
+[2026-09-18 22:06:43] Sender: [Sunfra Group Of Companies] Kusum (917259510983) | Group: Sunfra Group Of Companies | Text: ⚡ *Indus — Daily Comprehensive Report*
+📅 *Date:* 18 Sep 2026
+==================================================
+📊 *Today's Sales & Purchases*:
+• Today's Sales: *Rs. 10,68,420.00* (1 invoices)
+  └ 1. *Raj Farms* (26/27-110): *Rs. 10,68,420.00*
+• Today's Purchases/Costs: *Rs. 1,062.00* (1 items)
+  └ 1. *Jai Majisa Enterprises* (ME/26-27/131): *Rs. 1,062.00*
+
+📈 *Customer Receivables Breakdown*:
+• Total Pending: *35 Invoices* | Balance: *Rs. 25,48,282.00*
+  ├ 1. *J Leela Prasad*: *Rs. 1,08,873.00* (OD 410)
+  ├ 2. *J Leela Prasad*: *Rs. 89,843.00* (OD 410)
+  ├ 3. *Mr. Kumar poultry farm marripalli*: *Rs. 6,408.00* (OD 337)
+  ├ 4. *Deepika Poultry Farm*: *Rs. 3,796.00* (OD 306)
+  ├ 5. *Padmavathi Poultry*: *Rs. 78,080.00* (OD 299)
+  ├ 6. *Padmavathi Poultry*: *Rs. 43,750.00* (OD 298)
+  ├ 7. *DINESH POULTRY FARM*: *Rs. 36,423.00* (OD 266)
+  ├ 8. *Akshaya Poultry Farm*: *Rs. 69,776.00* (OD 252)
+  ├ 9. *Balaji Poultry Farm*: *Rs. 59,006.00* (OD 246)
+  ├ 10. *Mr. Ramki G M*: *Rs. 26,876.00* (OD 223)
+  ├ 11. *Devaki Poultry Farms*: *Rs. 98,544.00* (OD 219)
+  ├ 12. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 206)
+  ├ 13. *Mr. R G Jayakumar Sir*: *Rs. 62,864.00* (OD 206)
+  ├ 14. *Jagadamba Poultry farm*: *Rs. 53,750.00* (OD 206)
+  ├ 15. *Siddalingappa S Yalagi*: *Rs. 58,604.00* (OD 200)
+  ├ 16. *Cheranth Poultry Farm*: *Rs. 39,051.00* (OD 200)
+  ├ 17. *Balaji Poultry Farms*: *Rs. 78,750.00* (OD 196)
+  ├ 18. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 196)
+  ├ 19. *Mr. Subramanyam Reddy Garu*: *Rs. 16,880.00* (OD 193)
+  ├ 20. *Devaki Poultry Farms*: *Rs. 9,000.00* (OD 144)
+  ├ 21. *Madhusudhan Reddy*: *Rs. 12,383.00* (OD 142)
+  ├ 22. *Devaki Poultry Farms*: *Rs. 2,23,680.00* (OD 137)
+  ├ 23. *Sadiq Poultry Farm*: *Rs. 32,399.00* (OD 125)
+  ├ 24. *Sri Gayatri Poultry Farm*: *Rs. 30,384.00* (OD 115)
+  ├ 25. *Mr. Vishwas Raj Sir*: *Rs. 1,250.00* (OD 84)
+  ├ 26. *Shanmuga Poultry Farm*: *Rs. 16,290.00* (OD 81)
+  ├ 27. *Sai Srinivasa Poultry Farm*: *Rs. 20,487.00* (OD 71)
+  ├ 28. *Sri Gayatri Poultry Farm*: *Rs. 64,625.00* (OD 63)
+  ├ 29. *Kannaiah Naidu Garu*: *Rs. 1,83,549.00* (OD 50)
+  ├ 30. *Sri Durga Poultry Farm*: *Rs. 27,824.00* (OD 42)
+  ├ 31. *Sri Durga Poultry Farm*: *Rs. 41,050.00* (OD 39)
+  ├ 32. *Amma Agro Farms*: *Rs. 4,05,600.00* (OD 38)
+  ├ 33. *Amma Agro Farms*: *Rs. 2,68,426.00* (OD 30)
+  ├ 34. *Prasanna Venkateshwara Poultry Farm*: *Rs. 2,592.00* (OD 24)
+  └ 35. *Amma Agro Farms*: *Rs. 1,19,969.00* (OD 14)
+
+📋 *Vendor Payables Summary*: *40 Pending Bills* | Balance: *Rs. 23,75,759.15*
+  ├ 1. *Inderson Bright Industry*: *Rs. 730.00* (OD 464)
+  ├ 2. *Sri Sai Poultry*: *Rs. 2.00* (OD 463)
+  ├ 3. *Karni Enterprises*: *Rs. 27,480.00* (OD 371)
+  ├ 4. *Karni Enterprises*: *Rs. 2,023.00* (OD 358)
+  ├ 5. *Ranga Reddy Engg.Works*: *Rs. 8,418.00* (OD 353)
+  ├ 6. *Karni Enterprises*: *Rs. 7,014.00* (OD 340)
+  ├ 7. *Karni Enterprises*: *Rs. 6,702.00* (OD 332)
+  ├ 8. *Karni Enterprises*: *Rs. 8,195.97* (OD 310)
+  ├ 9. *Progressive Power Solutions*: *Rs. 80,995.00* (OD 306)
+  ├ 10. *Macfos Limited*: *Rs. 38,128.00* (OD 302)
+  ├ 11. *S.N Engg Works*: *Rs. 4,455.00* (OD 302)
+  ├ 12. *Dream Polymers*: *Rs. 1,598.00* (OD 302)
+  ├ 13. *Macfos Limited*: *Rs. 7,350.00* (OD 271)
+  ├ 14. *Macfos Limited*: *Rs. 773.00* (OD 270)
+  ├ 15. *Sharma Alloy Steels*: *Rs. 3,292.00* (OD 258)
+  ├ 16. *Chowdary Enterprises*: *Rs. 5,552.00* (OD 252)
+  ├ 17. *Cosmos Coal and Steel trading & Co.*: *Rs. 641.00* (OD 224)
+  ├ 18. *G K Fabrication Works*: *Rs. 20,562.00* (OD 220)
+  ├ 19. *G K Fabrication Works*: *Rs. 48,144.00* (OD 211)
+  ├ 20. *Akshara Siri Steel Traders*: *Rs. 710.00* (OD 208)
+  ├ 21. *Dazzle Robotics Pvt Ltd*: *Rs. 2,014.00* (OD 202)
+  ├ 22. *ZOHO CORPORATION PRIVATE LIMITED*: *Rs. 547.52* (OD 201)
+  ├ 23. *Universal Aluminium*: *Rs. 6,388.16* (OD 199)
+  ├ 24. *Bheeshma Metals*: *Rs. 59.50* (OD 193)
+  ├ 25. *Dream Polymers*: *Rs. 1,598.00* (OD 188)
+  ├ 26. *G.N Poultry Equipments*: *Rs. 4,125.00* (OD 175)
+  ├ 27. *Shiva Shakthi Moulding*: *Rs. 15,000.00* (OD 157)
+  ├ 28. *Sree Bhanu Industries*: *Rs. 28,966.00* (OD 134)
+  ├ 29. *Chowdary Enterprises*: *Rs. 39.00* (OD 115)
+  ├ 30. *S.N Engg Works*: *Rs. 25,000.00* (OD 112)
+  ├ 31. *PARNIKA ENTERPRISES*: *Rs. 2,06,500.00* (OD 86)
+  ├ 32. *Sree Bhanu Industries*: *Rs. 25,265.00* (OD 65)
+  ├ 33. *Lotus Engineering*: *Rs. 4,559.00* (OD 55)
+  ├ 34. *JAINEX LIMITED*: *Rs. 5,91,878.00* (OD 24)
+  ├ 35. *Lotus Engineering*: *Rs. 5,465.00* (OD 24)
+  ├ 36. *Excel Engineering Enterprises*: *Rs. 1,888.00* (OD 17)
+  ├ 37. *Sabitha Engg.Corp*: *Rs. 233.00* (OD 15)
+  ├ 38. *JAINEX LIMITED*: *Rs. 6,25,240.00* (OD 14)
+  ├ 39. *JAINEX LIMITED*: *Rs. 5,57,167.00* (OD 6)
+  └ 40. *Jai Majisa Enterprises*: *Rs. 1,062.00* (OD 0)
+--------------------------------------------------
+📦 *Stock Valuation (Inventory Asset):* *Rs. 1,21,44,323.03*
+💰 *Bank & Cash Balance:* *Rs. 24,63,750.55*
+⚖️ *Overall Net Financial Position:* *Rs. 1,47,80,596.43* (✅ Profit)
+📊 *Net Position Breakdown (History):*
+  • Today (18 Sep): *Rs. 1,47,80,596.43*
+  • -1 Day (17 Sep): *Rs. 1,48,64,107.47*
+  • -2 Days (16 Sep): *Rs. 1,51,88,716.09*
+  • -1 Week (11 Sep): *Rs. 1,97,47,406.31*
+  • -2 Weeks (04 Sep): *Rs. 1,96,18,444.73*
+  • -1 Month (19 Aug): *Rs. 1,62,20,971.71*
+  • -2 Months (20 Jul): *Rs. 82,25,317.12*
+  • -1 Year (18 Sep 2025): *-Rs. 3,83,78,338.15*
+⚠️ *Negative Stock Warning (2 items):*
+  • 15HP Horizontal Mixer With 10HP Grinder With Elevators: *-1.00 units*
+  • 2MM 120GSM - Printed: *-146.43 units*
+
+💳 *Loans & Liabilities (5 active):*
+  • *Proddutur Ravi Advance*: *Rs. 12,000.00*
+  • *Ram Pramodh Advance*: *Rs. 2,000.00*
+  • *ELECTRODE HOLDER ARCON 600 AMPS HD*: *Rs. 2,969.48*
+  • *Loan from Sunfra Farms*: *Rs. 5,00,000.00*
+  • *Sundaram Finance Loan*: *Rs. 12,45,778.00*
+==================================================
+[2026-09-18 22:02:14] Sender: Kusum (917259510983) | Group: None | Text: 1️⃣ *Ai iOT Team Reports:* — 📊 *EOD Summary*
+📅 *Date:* 18 Sep 2026
+• Balaji (Approval Task): *Report Review & Approval* - ❌
+• Balaji Team: *Daily Work Update* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 6*
+🗓️ *Total Failed this Month: 16*
+[2026-09-18 22:02:10] Sender: Kusum (917259510983) | Group: None | Text: ⚡ *Indus — Daily Comprehensive Report*
+📅 *Date:* 18 Sep 2026
+==================================================
+📊 *Today's Sales & Purchases*:
+• Today's Sales: *Rs. 10,68,420.00* (1 invoices)
+  └ 1. *Raj Farms* (26/27-110): *Rs. 10,68,420.00*
+• Today's Purchases/Costs: *Rs. 1,062.00* (1 items)
+  └ 1. *Jai Majisa Enterprises* (ME/26-27/131): *Rs. 1,062.00*
+
+📈 *Customer Receivables Breakdown*:
+• Total Pending: *35 Invoices* | Balance: *Rs. 25,48,282.00*
+  ├ 1. *J Leela Prasad*: *Rs. 1,08,873.00* (OD 410)
+  ├ 2. *J Leela Prasad*: *Rs. 89,843.00* (OD 410)
+  ├ 3. *Mr. Kumar poultry farm marripalli*: *Rs. 6,408.00* (OD 337)
+  ├ 4. *Deepika Poultry Farm*: *Rs. 3,796.00* (OD 306)
+  ├ 5. *Padmavathi Poultry*: *Rs. 78,080.00* (OD 299)
+  ├ 6. *Padmavathi Poultry*: *Rs. 43,750.00* (OD 298)
+  ├ 7. *DINESH POULTRY FARM*: *Rs. 36,423.00* (OD 266)
+  ├ 8. *Akshaya Poultry Farm*: *Rs. 69,776.00* (OD 252)
+  ├ 9. *Balaji Poultry Farm*: *Rs. 59,006.00* (OD 246)
+  ├ 10. *Mr. Ramki G M*: *Rs. 26,876.00* (OD 223)
+  ├ 11. *Devaki Poultry Farms*: *Rs. 98,544.00* (OD 219)
+  ├ 12. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 206)
+  ├ 13. *Mr. R G Jayakumar Sir*: *Rs. 62,864.00* (OD 206)
+  ├ 14. *Jagadamba Poultry farm*: *Rs. 53,750.00* (OD 206)
+  ├ 15. *Siddalingappa S Yalagi*: *Rs. 58,604.00* (OD 200)
+  ├ 16. *Cheranth Poultry Farm*: *Rs. 39,051.00* (OD 200)
+  ├ 17. *Balaji Poultry Farms*: *Rs. 78,750.00* (OD 196)
+  ├ 18. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 196)
+  ├ 19. *Mr. Subramanyam Reddy Garu*: *Rs. 16,880.00* (OD 193)
+  ├ 20. *Devaki Poultry Farms*: *Rs. 9,000.00* (OD 144)
+  ├ 21. *Madhusudhan Reddy*: *Rs. 12,383.00* (OD 142)
+  ├ 22. *Devaki Poultry Farms*: *Rs. 2,23,680.00* (OD 137)
+  ├ 23. *Sadiq Poultry Farm*: *Rs. 32,399.00* (OD 125)
+  ├ 24. *Sri Gayatri Poultry Farm*: *Rs. 30,384.00* (OD 115)
+  ├ 25. *Mr. Vishwas Raj Sir*: *Rs. 1,250.00* (OD 84)
+  ├ 26. *Shanmuga Poultry Farm*: *Rs. 16,290.00* (OD 81)
+  ├ 27. *Sai Srinivasa Poultry Farm*: *Rs. 20,487.00* (OD 71)
+  ├ 28. *Sri Gayatri Poultry Farm*: *Rs. 64,625.00* (OD 63)
+  ├ 29. *Kannaiah Naidu Garu*: *Rs. 1,83,549.00* (OD 50)
+  ├ 30. *Sri Durga Poultry Farm*: *Rs. 27,824.00* (OD 42)
+  ├ 31. *Sri Durga Poultry Farm*: *Rs. 41,050.00* (OD 39)
+  ├ 32. *Amma Agro Farms*: *Rs. 4,05,600.00* (OD 38)
+  ├ 33. *Amma Agro Farms*: *Rs. 2,68,426.00* (OD 30)
+  ├ 34. *Prasanna Venkateshwara Poultry Farm*: *Rs. 2,592.00* (OD 24)
+  └ 35. *Amma Agro Farms*: *Rs. 1,19,969.00* (OD 14)
+
+📋 *Vendor Payables Summary*: *40 Pending Bills* | Balance: *Rs. 23,75,759.15*
+  ├ 1. *Inderson Bright Industry*: *Rs. 730.00* (OD 464)
+  ├ 2. *Sri Sai Poultry*: *Rs. 2.00* (OD 463)
+  ├ 3. *Karni Enterprises*: *Rs. 27,480.00* (OD 371)
+  ├ 4. *Karni Enterprises*: *Rs. 2,023.00* (OD 358)
+  ├ 5. *Ranga Reddy Engg.Works*: *Rs. 8,418.00* (OD 353)
+  ├ 6. *Karni Enterprises*: *Rs. 7,014.00* (OD 340)
+  ├ 7. *Karni Enterprises*: *Rs. 6,702.00* (OD 332)
+  ├ 8. *Karni Enterprises*: *Rs. 8,195.97* (OD 310)
+  ├ 9. *Progressive Power Solutions*: *Rs. 80,995.00* (OD 306)
+  ├ 10. *Macfos Limited*: *Rs. 38,128.00* (OD 302)
+  ├ 11. *S.N Engg Works*: *Rs. 4,455.00* (OD 302)
+  ├ 12. *Dream Polymers*: *Rs. 1,598.00* (OD 302)
+  ├ 13. *Macfos Limited*: *Rs. 7,350.00* (OD 271)
+  ├ 14. *Macfos Limited*: *Rs. 773.00* (OD 270)
+  ├ 15. *Sharma Alloy Steels*: *Rs. 3,292.00* (OD 258)
+  ├ 16. *Chowdary Enterprises*: *Rs. 5,552.00* (OD 252)
+  ├ 17. *Cosmos Coal and Steel trading & Co.*: *Rs. 641.00* (OD 224)
+  ├ 18. *G K Fabrication Works*: *Rs. 20,562.00* (OD 220)
+  ├ 19. *G K Fabrication Works*: *Rs. 48,144.00* (OD 211)
+  ├ 20. *Akshara Siri Steel Traders*: *Rs. 710.00* (OD 208)
+  ├ 21. *Dazzle Robotics Pvt Ltd*: *Rs. 2,014.00* (OD 202)
+  ├ 22. *ZOHO CORPORATION PRIVATE LIMITED*: *Rs. 547.52* (OD 201)
+  ├ 23. *Universal Aluminium*: *Rs. 6,388.16* (OD 199)
+  ├ 24. *Bheeshma Metals*: *Rs. 59.50* (OD 193)
+  ├ 25. *Dream Polymers*: *Rs. 1,598.00* (OD 188)
+  ├ 26. *G.N Poultry Equipments*: *Rs. 4,125.00* (OD 175)
+  ├ 27. *Shiva Shakthi Moulding*: *Rs. 15,000.00* (OD 157)
+  ├ 28. *Sree Bhanu Industries*: *Rs. 28,966.00* (OD 134)
+  ├ 29. *Chowdary Enterprises*: *Rs. 39.00* (OD 115)
+  ├ 30. *S.N Engg Works*: *Rs. 25,000.00* (OD 112)
+  ├ 31. *PARNIKA ENTERPRISES*: *Rs. 2,06,500.00* (OD 86)
+  ├ 32. *Sree Bhanu Industries*: *Rs. 25,265.00* (OD 65)
+  ├ 33. *Lotus Engineering*: *Rs. 4,559.00* (OD 55)
+  ├ 34. *JAINEX LIMITED*: *Rs. 5,91,878.00* (OD 24)
+  ├ 35. *Lotus Engineering*: *Rs. 5,465.00* (OD 24)
+  ├ 36. *Excel Engineering Enterprises*: *Rs. 1,888.00* (OD 17)
+  ├ 37. *Sabitha Engg.Corp*: *Rs. 233.00* (OD 15)
+  ├ 38. *JAINEX LIMITED*: *Rs. 6,25,240.00* (OD 14)
+  ├ 39. *JAINEX LIMITED*: *Rs. 5,57,167.00* (OD 6)
+  └ 40. *Jai Majisa Enterprises*: *Rs. 1,062.00* (OD 0)
+--------------------------------------------------
+📦 *Stock Valuation (Inventory Asset):* *Rs. 1,21,44,323.03*
+💰 *Bank & Cash Balance:* *Rs. 24,63,750.55*
+⚖️ *Overall Net Financial Position:* *Rs. 1,47,80,596.43* (✅ Profit)
+📊 *Net Position Breakdown (History):*
+  • Today (18 Sep): *Rs. 1,47,80,596.43*
+  • -1 Day (17 Sep): *Rs. 1,48,64,107.47*
+  • -2 Days (16 Sep): *Rs. 1,51,88,716.09*
+  • -1 Week (11 Sep): *Rs. 1,97,47,406.31*
+  • -2 Weeks (04 Sep): *Rs. 1,96,18,444.73*
+  • -1 Month (19 Aug): *Rs. 1,62,20,971.71*
+  • -2 Months (20 Jul): *Rs. 82,25,317.12*
+  • -1 Year (18 Sep 2025): *-Rs. 3,83,78,338.15*
+⚠️ *Negative Stock Warning (2 items):*
+  • 15HP Horizontal Mixer With 10HP Grinder With Elevators: *-1.00 units*
+  • 2MM 120GSM - Printed: *-146.43 units*
+
+💳 *Loans & Liabilities (5 active):*
+  • *Proddutur Ravi Advance*: *Rs. 12,000.00*
+  • *Ram Pramodh Advance*: *Rs. 2,000.00*
+  • *ELECTRODE HOLDER ARCON 600 AMPS HD*: *Rs. 2,969.48*
+  • *Loan from Sunfra Farms*: *Rs. 5,00,000.00*
+  • *Sundaram Finance Loan*: *Rs. 12,45,778.00*
+==================================================
+[2026-09-18 22:02:02] Sender: Kusum (917259510983) | Group: None | Text: 1️⃣ *Ai iOT Team Reports:* — 📊 *EOD Summary*
+📅 *Date:* 18 Sep 2026
+• Balaji (Approval Task): *Report Review & Approval* - ❌
+• Balaji Team: *Daily Work Update* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 6*
+🗓️ *Total Failed this Month: 16*
+[2026-09-18 22:01:59] Sender: Kusum (917259510983) | Group: None | Text: ⚡ *Indus — Daily Comprehensive Report*
+📅 *Date:* 18 Sep 2026
+==================================================
+📊 *Today's Sales & Purchases*:
+• Today's Sales: *Rs. 10,68,420.00* (1 invoices)
+  └ 1. *Raj Farms* (26/27-110): *Rs. 10,68,420.00*
+• Today's Purchases/Costs: *Rs. 1,062.00* (1 items)
+  └ 1. *Jai Majisa Enterprises* (ME/26-27/131): *Rs. 1,062.00*
+
+📈 *Customer Receivables Breakdown*:
+• Total Pending: *35 Invoices* | Balance: *Rs. 25,48,282.00*
+  ├ 1. *J Leela Prasad*: *Rs. 1,08,873.00* (OD 410)
+  ├ 2. *J Leela Prasad*: *Rs. 89,843.00* (OD 410)
+  ├ 3. *Mr. Kumar poultry farm marripalli*: *Rs. 6,408.00* (OD 337)
+  ├ 4. *Deepika Poultry Farm*: *Rs. 3,796.00* (OD 306)
+  ├ 5. *Padmavathi Poultry*: *Rs. 78,080.00* (OD 299)
+  ├ 6. *Padmavathi Poultry*: *Rs. 43,750.00* (OD 298)
+  ├ 7. *DINESH POULTRY FARM*: *Rs. 36,423.00* (OD 266)
+  ├ 8. *Akshaya Poultry Farm*: *Rs. 69,776.00* (OD 252)
+  ├ 9. *Balaji Poultry Farm*: *Rs. 59,006.00* (OD 246)
+  ├ 10. *Mr. Ramki G M*: *Rs. 26,876.00* (OD 223)
+  ├ 11. *Devaki Poultry Farms*: *Rs. 98,544.00* (OD 219)
+  ├ 12. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 206)
+  ├ 13. *Mr. R G Jayakumar Sir*: *Rs. 62,864.00* (OD 206)
+  ├ 14. *Jagadamba Poultry farm*: *Rs. 53,750.00* (OD 206)
+  ├ 15. *Siddalingappa S Yalagi*: *Rs. 58,604.00* (OD 200)
+  ├ 16. *Cheranth Poultry Farm*: *Rs. 39,051.00* (OD 200)
+  ├ 17. *Balaji Poultry Farms*: *Rs. 78,750.00* (OD 196)
+  ├ 18. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 196)
+  ├ 19. *Mr. Subramanyam Reddy Garu*: *Rs. 16,880.00* (OD 193)
+  ├ 20. *Devaki Poultry Farms*: *Rs. 9,000.00* (OD 144)
+  ├ 21. *Madhusudhan Reddy*: *Rs. 12,383.00* (OD 142)
+  ├ 22. *Devaki Poultry Farms*: *Rs. 2,23,680.00* (OD 137)
+  ├ 23. *Sadiq Poultry Farm*: *Rs. 32,399.00* (OD 125)
+  ├ 24. *Sri Gayatri Poultry Farm*: *Rs. 30,384.00* (OD 115)
+  ├ 25. *Mr. Vishwas Raj Sir*: *Rs. 1,250.00* (OD 84)
+  ├ 26. *Shanmuga Poultry Farm*: *Rs. 16,290.00* (OD 81)
+  ├ 27. *Sai Srinivasa Poultry Farm*: *Rs. 20,487.00* (OD 71)
+  ├ 28. *Sri Gayatri Poultry Farm*: *Rs. 64,625.00* (OD 63)
+  ├ 29. *Kannaiah Naidu Garu*: *Rs. 1,83,549.00* (OD 50)
+  ├ 30. *Sri Durga Poultry Farm*: *Rs. 27,824.00* (OD 42)
+  ├ 31. *Sri Durga Poultry Farm*: *Rs. 41,050.00* (OD 39)
+  ├ 32. *Amma Agro Farms*: *Rs. 4,05,600.00* (OD 38)
+  ├ 33. *Amma Agro Farms*: *Rs. 2,68,426.00* (OD 30)
+  ├ 34. *Prasanna Venkateshwara Poultry Farm*: *Rs. 2,592.00* (OD 24)
+  └ 35. *Amma Agro Farms*: *Rs. 1,19,969.00* (OD 14)
+
+📋 *Vendor Payables Summary*: *40 Pending Bills* | Balance: *Rs. 23,75,759.15*
+  ├ 1. *Inderson Bright Industry*: *Rs. 730.00* (OD 464)
+  ├ 2. *Sri Sai Poultry*: *Rs. 2.00* (OD 463)
+  ├ 3. *Karni Enterprises*: *Rs. 27,480.00* (OD 371)
+  ├ 4. *Karni Enterprises*: *Rs. 2,023.00* (OD 358)
+  ├ 5. *Ranga Reddy Engg.Works*: *Rs. 8,418.00* (OD 353)
+  ├ 6. *Karni Enterprises*: *Rs. 7,014.00* (OD 340)
+  ├ 7. *Karni Enterprises*: *Rs. 6,702.00* (OD 332)
+  ├ 8. *Karni Enterprises*: *Rs. 8,195.97* (OD 310)
+  ├ 9. *Progressive Power Solutions*: *Rs. 80,995.00* (OD 306)
+  ├ 10. *Macfos Limited*: *Rs. 38,128.00* (OD 302)
+  ├ 11. *S.N Engg Works*: *Rs. 4,455.00* (OD 302)
+  ├ 12. *Dream Polymers*: *Rs. 1,598.00* (OD 302)
+  ├ 13. *Macfos Limited*: *Rs. 7,350.00* (OD 271)
+  ├ 14. *Macfos Limited*: *Rs. 773.00* (OD 270)
+  ├ 15. *Sharma Alloy Steels*: *Rs. 3,292.00* (OD 258)
+  ├ 16. *Chowdary Enterprises*: *Rs. 5,552.00* (OD 252)
+  ├ 17. *Cosmos Coal and Steel trading & Co.*: *Rs. 641.00* (OD 224)
+  ├ 18. *G K Fabrication Works*: *Rs. 20,562.00* (OD 220)
+  ├ 19. *G K Fabrication Works*: *Rs. 48,144.00* (OD 211)
+  ├ 20. *Akshara Siri Steel Traders*: *Rs. 710.00* (OD 208)
+  ├ 21. *Dazzle Robotics Pvt Ltd*: *Rs. 2,014.00* (OD 202)
+  ├ 22. *ZOHO CORPORATION PRIVATE LIMITED*: *Rs. 547.52* (OD 201)
+  ├ 23. *Universal Aluminium*: *Rs. 6,388.16* (OD 199)
+  ├ 24. *Bheeshma Metals*: *Rs. 59.50* (OD 193)
+  ├ 25. *Dream Polymers*: *Rs. 1,598.00* (OD 188)
+  ├ 26. *G.N Poultry Equipments*: *Rs. 4,125.00* (OD 175)
+  ├ 27. *Shiva Shakthi Moulding*: *Rs. 15,000.00* (OD 157)
+  ├ 28. *Sree Bhanu Industries*: *Rs. 28,966.00* (OD 134)
+  ├ 29. *Chowdary Enterprises*: *Rs. 39.00* (OD 115)
+  ├ 30. *S.N Engg Works*: *Rs. 25,000.00* (OD 112)
+  ├ 31. *PARNIKA ENTERPRISES*: *Rs. 2,06,500.00* (OD 86)
+  ├ 32. *Sree Bhanu Industries*: *Rs. 25,265.00* (OD 65)
+  ├ 33. *Lotus Engineering*: *Rs. 4,559.00* (OD 55)
+  ├ 34. *JAINEX LIMITED*: *Rs. 5,91,878.00* (OD 24)
+  ├ 35. *Lotus Engineering*: *Rs. 5,465.00* (OD 24)
+  ├ 36. *Excel Engineering Enterprises*: *Rs. 1,888.00* (OD 17)
+  ├ 37. *Sabitha Engg.Corp*: *Rs. 233.00* (OD 15)
+  ├ 38. *JAINEX LIMITED*: *Rs. 6,25,240.00* (OD 14)
+  ├ 39. *JAINEX LIMITED*: *Rs. 5,57,167.00* (OD 6)
+  └ 40. *Jai Majisa Enterprises*: *Rs. 1,062.00* (OD 0)
+--------------------------------------------------
+📦 *Stock Valuation (Inventory Asset):* *Rs. 1,21,44,323.03*
+💰 *Bank & Cash Balance:* *Rs. 24,63,750.55*
+⚖️ *Overall Net Financial Position:* *Rs. 1,47,80,596.43* (✅ Profit)
+📊 *Net Position Breakdown (History):*
+  • Today (18 Sep): *Rs. 1,47,80,596.43*
+  • -1 Day (17 Sep): *Rs. 1,48,64,107.47*
+  • -2 Days (16 Sep): *Rs. 1,51,88,716.09*
+  • -1 Week (11 Sep): *Rs. 1,97,47,406.31*
+  • -2 Weeks (04 Sep): *Rs. 1,96,18,444.73*
+  • -1 Month (19 Aug): *Rs. 1,62,20,971.71*
+  • -2 Months (20 Jul): *Rs. 82,25,317.12*
+  • -1 Year (18 Sep 2025): *-Rs. 3,83,78,338.15*
+⚠️ *Negative Stock Warning (2 items):*
+  • 15HP Horizontal Mixer With 10HP Grinder With Elevators: *-1.00 units*
+  • 2MM 120GSM - Printed: *-146.43 units*
+
+💳 *Loans & Liabilities (5 active):*
+  • *Proddutur Ravi Advance*: *Rs. 12,000.00*
+  • *Ram Pramodh Advance*: *Rs. 2,000.00*
+  • *ELECTRODE HOLDER ARCON 600 AMPS HD*: *Rs. 2,969.48*
+  • *Loan from Sunfra Farms*: *Rs. 5,00,000.00*
+  • *Sundaram Finance Loan*: *Rs. 12,45,778.00*
+==================================================
+[2026-09-18 20:16:36] Sender: [Management Team] Balaji Reddy (242695733772318) | Group: Management Team | Text: Log out
+[2026-09-18 19:43:17] Sender: [Ai iOT Team] Poorna (207627359363311) | Group: Ai iOT Team | Text: Hi Team,
+I am Poornima 
+Today's work Update, 
+* Worked on the new requirement for the Veman Reddy order, where five motors need to be monitored and a message should be sent whenever any motor switches OFF. Discussed the requirement with Balaji Sir and Vedant Sir for clarification.
+* Researched the motor status monitoring approach and confirmed that the current ZMPT101B voltage sensor is suitable for single-phase voltage measurement. Since the motors are three-phase, further research is required to select a suitable three-phase monitoring method.
+* Reviewed possible solutions for three-phase motor monitoring, including using contactor auxiliary contacts for ON/OFF status and three-phase monitoring relays for detecting phase-related faults. Also noted that the ZMPT101B should not be connected directly to 400–415 V without confirming the module’s voltage rating.
+* Worked on the Veman Reddy Water Flow Monitoring System and investigated an issue that occurred during the final setup. Identified that LittleFS was not mounting, which prevented the receiver from storing queued packets and sending ACKs.
+* Corrected the LittleFS-related issue and reviewed the misleading queued-status messages. Tested the recovery process without erasing existing data and verified that the sender and receiver have matching LoRa settings and ACK formats.
+* After correcting the issue, tested the Veman Reddy Water Flow Monitoring System and confirmed that the system is now working properly without the previous communication or storage issue.
+* Coordinated with Nikhil Sir regarding the 3D-printed enclosure for the Veman Reddy order. Finalized the component placement and required dimensions, completed the box assembly, and kept the unit ready for dispatch.
+* Discussed the Auto Batching issue for the Ugandhar project with Divya Mam. Further discussion with the concerned person is required to identify and resolve the issue and complete the project tomorrow.
+Thank you.
+[2026-09-18 18:54:08] Sender: Kusum (917259510983) | Group: None | Text: ⚡ *Indus — Daily Comprehensive Report*
+📅 *Date:* 18 Sep 2026
+==================================================
+📊 *Today's Sales & Purchases*:
+• Today's Sales: *Rs. 10,68,420.00* (1 invoices)
+  └ 1. *Raj Farms* (26/27-110): *Rs. 10,68,420.00*
+• Today's Purchases/Costs: *Rs. 1,062.00* (1 items)
+  └ 1. *Jai Majisa Enterprises* (ME/26-27/131): *Rs. 1,062.00*
+
+📈 *Customer Receivables Breakdown*:
+• Total Pending: *35 Invoices* | Balance: *Rs. 25,48,282.00*
+  ├ 1. *J Leela Prasad*: *Rs. 1,08,873.00* (OD 410)
+  ├ 2. *J Leela Prasad*: *Rs. 89,843.00* (OD 410)
+  ├ 3. *Mr. Kumar poultry farm marripalli*: *Rs. 6,408.00* (OD 337)
+  ├ 4. *Deepika Poultry Farm*: *Rs. 3,796.00* (OD 306)
+  ├ 5. *Padmavathi Poultry*: *Rs. 78,080.00* (OD 299)
+  ├ 6. *Padmavathi Poultry*: *Rs. 43,750.00* (OD 298)
+  ├ 7. *DINESH POULTRY FARM*: *Rs. 36,423.00* (OD 266)
+  ├ 8. *Akshaya Poultry Farm*: *Rs. 69,776.00* (OD 252)
+  ├ 9. *Balaji Poultry Farm*: *Rs. 59,006.00* (OD 246)
+  ├ 10. *Mr. Ramki G M*: *Rs. 26,876.00* (OD 223)
+  ├ 11. *Devaki Poultry Farms*: *Rs. 98,544.00* (OD 219)
+  ├ 12. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 206)
+  ├ 13. *Mr. R G Jayakumar Sir*: *Rs. 62,864.00* (OD 206)
+  ├ 14. *Jagadamba Poultry farm*: *Rs. 53,750.00* (OD 206)
+  ├ 15. *Siddalingappa S Yalagi*: *Rs. 58,604.00* (OD 200)
+  ├ 16. *Cheranth Poultry Farm*: *Rs. 39,051.00* (OD 200)
+  ├ 17. *Balaji Poultry Farms*: *Rs. 78,750.00* (OD 196)
+  ├ 18. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 196)
+  ├ 19. *Mr. Subramanyam Reddy Garu*: *Rs. 16,880.00* (OD 193)
+  ├ 20. *Devaki Poultry Farms*: *Rs. 9,000.00* (OD 144)
+  ├ 21. *Madhusudhan Reddy*: *Rs. 12,383.00* (OD 142)
+  ├ 22. *Devaki Poultry Farms*: *Rs. 2,23,680.00* (OD 137)
+  ├ 23. *Sadiq Poultry Farm*: *Rs. 32,399.00* (OD 125)
+  ├ 24. *Sri Gayatri Poultry Farm*: *Rs. 30,384.00* (OD 115)
+  ├ 25. *Mr. Vishwas Raj Sir*: *Rs. 1,250.00* (OD 84)
+  ├ 26. *Shanmuga Poultry Farm*: *Rs. 16,290.00* (OD 81)
+  ├ 27. *Sai Srinivasa Poultry Farm*: *Rs. 20,487.00* (OD 71)
+  ├ 28. *Sri Gayatri Poultry Farm*: *Rs. 64,625.00* (OD 63)
+  ├ 29. *Kannaiah Naidu Garu*: *Rs. 1,83,549.00* (OD 50)
+  ├ 30. *Sri Durga Poultry Farm*: *Rs. 27,824.00* (OD 42)
+  ├ 31. *Sri Durga Poultry Farm*: *Rs. 41,050.00* (OD 39)
+  ├ 32. *Amma Agro Farms*: *Rs. 4,05,600.00* (OD 38)
+  ├ 33. *Amma Agro Farms*: *Rs. 2,68,426.00* (OD 30)
+  ├ 34. *Prasanna Venkateshwara Poultry Farm*: *Rs. 2,592.00* (OD 24)
+  └ 35. *Amma Agro Farms*: *Rs. 1,19,969.00* (OD 14)
+
+📋 *Vendor Payables Summary*: *40 Pending Bills* | Balance: *Rs. 23,75,759.15*
+  ├ 1. *Inderson Bright Industry*: *Rs. 730.00* (OD 464)
+  ├ 2. *Sri Sai Poultry*: *Rs. 2.00* (OD 463)
+  ├ 3. *Karni Enterprises*: *Rs. 27,480.00* (OD 371)
+  ├ 4. *Karni Enterprises*: *Rs. 2,023.00* (OD 358)
+  ├ 5. *Ranga Reddy Engg.Works*: *Rs. 8,418.00* (OD 353)
+  ├ 6. *Karni Enterprises*: *Rs. 7,014.00* (OD 340)
+  ├ 7. *Karni Enterprises*: *Rs. 6,702.00* (OD 332)
+  ├ 8. *Karni Enterprises*: *Rs. 8,195.97* (OD 310)
+  ├ 9. *Progressive Power Solutions*: *Rs. 80,995.00* (OD 306)
+  ├ 10. *Macfos Limited*: *Rs. 38,128.00* (OD 302)
+  ├ 11. *S.N Engg Works*: *Rs. 4,455.00* (OD 302)
+  ├ 12. *Dream Polymers*: *Rs. 1,598.00* (OD 302)
+  ├ 13. *Macfos Limited*: *Rs. 7,350.00* (OD 271)
+  ├ 14. *Macfos Limited*: *Rs. 773.00* (OD 270)
+  ├ 15. *Sharma Alloy Steels*: *Rs. 3,292.00* (OD 258)
+  ├ 16. *Chowdary Enterprises*: *Rs. 5,552.00* (OD 252)
+  ├ 17. *Cosmos Coal and Steel trading & Co.*: *Rs. 641.00* (OD 224)
+  ├ 18. *G K Fabrication Works*: *Rs. 20,562.00* (OD 220)
+  ├ 19. *G K Fabrication Works*: *Rs. 48,144.00* (OD 211)
+  ├ 20. *Akshara Siri Steel Traders*: *Rs. 710.00* (OD 208)
+  ├ 21. *Dazzle Robotics Pvt Ltd*: *Rs. 2,014.00* (OD 202)
+  ├ 22. *ZOHO CORPORATION PRIVATE LIMITED*: *Rs. 547.52* (OD 201)
+  ├ 23. *Universal Aluminium*: *Rs. 6,388.16* (OD 199)
+  ├ 24. *Bheeshma Metals*: *Rs. 59.50* (OD 193)
+  ├ 25. *Dream Polymers*: *Rs. 1,598.00* (OD 188)
+  ├ 26. *G.N Poultry Equipments*: *Rs. 4,125.00* (OD 175)
+  ├ 27. *Shiva Shakthi Moulding*: *Rs. 15,000.00* (OD 157)
+  ├ 28. *Sree Bhanu Industries*: *Rs. 28,966.00* (OD 134)
+  ├ 29. *Chowdary Enterprises*: *Rs. 39.00* (OD 115)
+  ├ 30. *S.N Engg Works*: *Rs. 25,000.00* (OD 112)
+  ├ 31. *PARNIKA ENTERPRISES*: *Rs. 2,06,500.00* (OD 86)
+  ├ 32. *Sree Bhanu Industries*: *Rs. 25,265.00* (OD 65)
+  ├ 33. *Lotus Engineering*: *Rs. 4,559.00* (OD 55)
+  ├ 34. *JAINEX LIMITED*: *Rs. 5,91,878.00* (OD 24)
+  ├ 35. *Lotus Engineering*: *Rs. 5,465.00* (OD 24)
+  ├ 36. *Excel Engineering Enterprises*: *Rs. 1,888.00* (OD 17)
+  ├ 37. *Sabitha Engg.Corp*: *Rs. 233.00* (OD 15)
+  ├ 38. *JAINEX LIMITED*: *Rs. 6,25,240.00* (OD 14)
+  ├ 39. *JAINEX LIMITED*: *Rs. 5,57,167.00* (OD 6)
+  └ 40. *Jai Majisa Enterprises*: *Rs. 1,062.00* (OD 0)
+--------------------------------------------------
+📦 *Stock Valuation (Inventory Asset):* *Rs. 1,22,08,494.07*
+💰 *Bank & Cash Balance:* *Rs. 24,63,750.55*
+⚖️ *Overall Net Financial Position:* *Rs. 1,48,44,767.47* (✅ Profit)
+📊 *Net Position Breakdown (History):*
+  • Today (18 Sep): *Rs. 1,48,44,767.47*
+  • -1 Day (17 Sep): *Rs. 1,48,64,107.47*
+  • -2 Days (16 Sep): *Rs. 1,51,88,716.09*
+  • -1 Week (11 Sep): *Rs. 1,97,47,406.31*
+  • -2 Weeks (04 Sep): *Rs. 1,96,18,444.73*
+  • -1 Month (19 Aug): *Rs. 1,62,20,971.71*
+  • -2 Months (20 Jul): *Rs. 82,25,317.12*
+  • -1 Year (18 Sep 2025): *-Rs. 3,83,78,338.15*
+⚠️ *Negative Stock Warning (2 items):*
+  • 15HP Horizontal Mixer With 10HP Grinder With Elevators: *-1.00 units*
+  • 2MM 120GSM - Printed: *-146.43 units*
+
+💳 *Loans & Liabilities (5 active):*
+  • *Proddutur Ravi Advance*: *Rs. 12,000.00*
+  • *Ram Pramodh Advance*: *Rs. 2,000.00*
+  • *ELECTRODE HOLDER ARCON 600 AMPS HD*: *Rs. 2,969.48*
+  • *Loan from Sunfra Farms*: *Rs. 5,00,000.00*
+  • *Sundaram Finance Loan*: *Rs. 12,45,778.00*
+==================================================
+[2026-09-18 18:53:49] Sender: Kusum (917259510983) | Group: None | Text: ⚡ *Indus — Daily Comprehensive Report*
+📅 *Date:* 18 Sep 2026
+==================================================
+📊 *Today's Sales & Purchases*:
+• Today's Sales: *Rs. 10,68,420.00* (1 invoices)
+  └ 1. *Raj Farms* (26/27-110): *Rs. 10,68,420.00*
+• Today's Purchases/Costs: *Rs. 1,062.00* (1 items)
+  └ 1. *Jai Majisa Enterprises* (ME/26-27/131): *Rs. 1,062.00*
+
+📈 *Customer Receivables Breakdown*:
+• Total Pending: *35 Invoices* | Balance: *Rs. 25,48,282.00*
+  ├ 1. *J Leela Prasad*: *Rs. 1,08,873.00* (OD 410)
+  ├ 2. *J Leela Prasad*: *Rs. 89,843.00* (OD 410)
+  ├ 3. *Mr. Kumar poultry farm marripalli*: *Rs. 6,408.00* (OD 337)
+  ├ 4. *Deepika Poultry Farm*: *Rs. 3,796.00* (OD 306)
+  ├ 5. *Padmavathi Poultry*: *Rs. 78,080.00* (OD 299)
+  ├ 6. *Padmavathi Poultry*: *Rs. 43,750.00* (OD 298)
+  ├ 7. *DINESH POULTRY FARM*: *Rs. 36,423.00* (OD 266)
+  ├ 8. *Akshaya Poultry Farm*: *Rs. 69,776.00* (OD 252)
+  ├ 9. *Balaji Poultry Farm*: *Rs. 59,006.00* (OD 246)
+  ├ 10. *Mr. Ramki G M*: *Rs. 26,876.00* (OD 223)
+  ├ 11. *Devaki Poultry Farms*: *Rs. 98,544.00* (OD 219)
+  ├ 12. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 206)
+  ├ 13. *Mr. R G Jayakumar Sir*: *Rs. 62,864.00* (OD 206)
+  ├ 14. *Jagadamba Poultry farm*: *Rs. 53,750.00* (OD 206)
+  ├ 15. *Siddalingappa S Yalagi*: *Rs. 58,604.00* (OD 200)
+  ├ 16. *Cheranth Poultry Farm*: *Rs. 39,051.00* (OD 200)
+  ├ 17. *Balaji Poultry Farms*: *Rs. 78,750.00* (OD 196)
+  ├ 18. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 196)
+  ├ 19. *Mr. Subramanyam Reddy Garu*: *Rs. 16,880.00* (OD 193)
+  ├ 20. *Devaki Poultry Farms*: *Rs. 9,000.00* (OD 144)
+  ├ 21. *Madhusudhan Reddy*: *Rs. 12,383.00* (OD 142)
+  ├ 22. *Devaki Poultry Farms*: *Rs. 2,23,680.00* (OD 137)
+  ├ 23. *Sadiq Poultry Farm*: *Rs. 32,399.00* (OD 125)
+  ├ 24. *Sri Gayatri Poultry Farm*: *Rs. 30,384.00* (OD 115)
+  ├ 25. *Mr. Vishwas Raj Sir*: *Rs. 1,250.00* (OD 84)
+  ├ 26. *Shanmuga Poultry Farm*: *Rs. 16,290.00* (OD 81)
+  ├ 27. *Sai Srinivasa Poultry Farm*: *Rs. 20,487.00* (OD 71)
+  ├ 28. *Sri Gayatri Poultry Farm*: *Rs. 64,625.00* (OD 63)
+  ├ 29. *Kannaiah Naidu Garu*: *Rs. 1,83,549.00* (OD 50)
+  ├ 30. *Sri Durga Poultry Farm*: *Rs. 27,824.00* (OD 42)
+  ├ 31. *Sri Durga Poultry Farm*: *Rs. 41,050.00* (OD 39)
+  ├ 32. *Amma Agro Farms*: *Rs. 4,05,600.00* (OD 38)
+  ├ 33. *Amma Agro Farms*: *Rs. 2,68,426.00* (OD 30)
+  ├ 34. *Prasanna Venkateshwara Poultry Farm*: *Rs. 2,592.00* (OD 24)
+  └ 35. *Amma Agro Farms*: *Rs. 1,19,969.00* (OD 14)
+
+📋 *Vendor Payables Summary*: *40 Pending Bills* | Balance: *Rs. 23,75,759.15*
+  ├ 1. *Inderson Bright Industry*: *Rs. 730.00* (OD 464)
+  ├ 2. *Sri Sai Poultry*: *Rs. 2.00* (OD 463)
+  ├ 3. *Karni Enterprises*: *Rs. 27,480.00* (OD 371)
+  ├ 4. *Karni Enterprises*: *Rs. 2,023.00* (OD 358)
+  ├ 5. *Ranga Reddy Engg.Works*: *Rs. 8,418.00* (OD 353)
+  ├ 6. *Karni Enterprises*: *Rs. 7,014.00* (OD 340)
+  ├ 7. *Karni Enterprises*: *Rs. 6,702.00* (OD 332)
+  ├ 8. *Karni Enterprises*: *Rs. 8,195.97* (OD 310)
+  ├ 9. *Progressive Power Solutions*: *Rs. 80,995.00* (OD 306)
+  ├ 10. *Macfos Limited*: *Rs. 38,128.00* (OD 302)
+  ├ 11. *S.N Engg Works*: *Rs. 4,455.00* (OD 302)
+  ├ 12. *Dream Polymers*: *Rs. 1,598.00* (OD 302)
+  ├ 13. *Macfos Limited*: *Rs. 7,350.00* (OD 271)
+  ├ 14. *Macfos Limited*: *Rs. 773.00* (OD 270)
+  ├ 15. *Sharma Alloy Steels*: *Rs. 3,292.00* (OD 258)
+  ├ 16. *Chowdary Enterprises*: *Rs. 5,552.00* (OD 252)
+  ├ 17. *Cosmos Coal and Steel trading & Co.*: *Rs. 641.00* (OD 224)
+  ├ 18. *G K Fabrication Works*: *Rs. 20,562.00* (OD 220)
+  ├ 19. *G K Fabrication Works*: *Rs. 48,144.00* (OD 211)
+  ├ 20. *Akshara Siri Steel Traders*: *Rs. 710.00* (OD 208)
+  ├ 21. *Dazzle Robotics Pvt Ltd*: *Rs. 2,014.00* (OD 202)
+  ├ 22. *ZOHO CORPORATION PRIVATE LIMITED*: *Rs. 547.52* (OD 201)
+  ├ 23. *Universal Aluminium*: *Rs. 6,388.16* (OD 199)
+  ├ 24. *Bheeshma Metals*: *Rs. 59.50* (OD 193)
+  ├ 25. *Dream Polymers*: *Rs. 1,598.00* (OD 188)
+  ├ 26. *G.N Poultry Equipments*: *Rs. 4,125.00* (OD 175)
+  ├ 27. *Shiva Shakthi Moulding*: *Rs. 15,000.00* (OD 157)
+  ├ 28. *Sree Bhanu Industries*: *Rs. 28,966.00* (OD 134)
+  ├ 29. *Chowdary Enterprises*: *Rs. 39.00* (OD 115)
+  ├ 30. *S.N Engg Works*: *Rs. 25,000.00* (OD 112)
+  ├ 31. *PARNIKA ENTERPRISES*: *Rs. 2,06,500.00* (OD 86)
+  ├ 32. *Sree Bhanu Industries*: *Rs. 25,265.00* (OD 65)
+  ├ 33. *Lotus Engineering*: *Rs. 4,559.00* (OD 55)
+  ├ 34. *JAINEX LIMITED*: *Rs. 5,91,878.00* (OD 24)
+  ├ 35. *Lotus Engineering*: *Rs. 5,465.00* (OD 24)
+  ├ 36. *Excel Engineering Enterprises*: *Rs. 1,888.00* (OD 17)
+  ├ 37. *Sabitha Engg.Corp*: *Rs. 233.00* (OD 15)
+  ├ 38. *JAINEX LIMITED*: *Rs. 6,25,240.00* (OD 14)
+  ├ 39. *JAINEX LIMITED*: *Rs. 5,57,167.00* (OD 6)
+  └ 40. *Jai Majisa Enterprises*: *Rs. 1,062.00* (OD 0)
+--------------------------------------------------
+📦 *Stock Valuation (Inventory Asset):* *Rs. 1,22,08,494.07*
+💰 *Bank & Cash Balance:* *Rs. 24,63,750.55*
+⚖️ *Overall Net Financial Position:* *Rs. 1,48,44,767.47* (✅ Profit)
+📊 *Net Position Breakdown (History):*
+  • Today (18 Sep): *Rs. 1,48,44,767.47*
+  • -1 Day (17 Sep): *Rs. 1,48,64,107.47*
+  • -2 Days (16 Sep): *Rs. 1,51,88,716.09*
+  • -1 Week (11 Sep): *Rs. 1,97,47,406.31*
+  • -2 Weeks (04 Sep): *Rs. 1,96,18,444.73*
+  • -1 Month (19 Aug): *Rs. 1,62,20,971.71*
+  • -2 Months (20 Jul): *Rs. 82,25,317.12*
+  • -1 Year (18 Sep 2025): *-Rs. 3,83,78,338.15*
+⚠️ *Negative Stock Warning (2 items):*
+  • 15HP Horizontal Mixer With 10HP Grinder With Elevators: *-1.00 units*
+  • 2MM 120GSM - Printed: *-146.43 units*
+
+💳 *Loans & Liabilities (5 active):*
+  • *Proddutur Ravi Advance*: *Rs. 12,000.00*
+  • *Ram Pramodh Advance*: *Rs. 2,000.00*
+  • *ELECTRODE HOLDER ARCON 600 AMPS HD*: *Rs. 2,969.48*
+  • *Loan from Sunfra Farms*: *Rs. 5,00,000.00*
+  • *Sundaram Finance Loan*: *Rs. 12,45,778.00*
+==================================================
+[2026-09-18 18:05:42] Sender: Kusum (917259510983) | Group: None | Text: Did Prasad sir or Balaji sir come today?
+[2026-09-18 08:07:46] Sender: [Management Team] Balaji Reddy (242695733772318) | Group: Management Team | Text: Login
+[2026-09-17 22:06:27] Sender: [Sunfra Group Of Companies] Kusum (917259510983) | Group: Sunfra Group Of Companies | Text: 1️⃣ *Ai iOT Team Reports:* — 📊 *EOD Summary*
+📅 *Date:* 17 Sep 2026
+• Balaji (Approval Task): *Report Review & Approval* - ❌
+• Balaji Team: *Daily Work Update* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 5*
+🗓️ *Total Failed this Month: 15*
+[2026-09-17 22:06:26] Sender: [Sunfra Group Of Companies] Kusum (917259510983) | Group: Sunfra Group Of Companies | Text: ⚡ *Indus — Daily Comprehensive Report*
+📅 *Date:* 17 Sep 2026
+==================================================
+📊 *Today's Sales & Purchases*:
+• Today's Sales: *Rs. 0.00* (0 invoices)
+• Today's Purchases/Costs: *Rs. 1,200.00* (3 items)
+  ├ 1. *Driver Charges*: *Rs. 500.00*
+  ├ 2. *Vehicle Expenditure*: *Rs. 600.00*
+  └ 3. *Weighment Charges*: *Rs. 100.00*
+
+📈 *Customer Receivables Breakdown*:
+• Total Pending: *39 Invoices* | Balance: *Rs. 25,67,858.00*
+  ├ 1. *J Leela Prasad*: *Rs. 1,08,873.00* (OD 409)
+  ├ 2. *J Leela Prasad*: *Rs. 89,843.00* (OD 409)
+  ├ 3. *Mr. Kumar poultry farm marripalli*: *Rs. 6,408.00* (OD 336)
+  ├ 4. *Deepika Poultry Farm*: *Rs. 3,796.00* (OD 305)
+  ├ 5. *Padmavathi Poultry*: *Rs. 78,080.00* (OD 298)
+  ├ 6. *Padmavathi Poultry*: *Rs. 43,750.00* (OD 297)
+  ├ 7. *DINESH POULTRY FARM*: *Rs. 36,423.00* (OD 265)
+  ├ 8. *Akshaya Poultry Farm*: *Rs. 69,776.00* (OD 251)
+  ├ 9. *Balaji Poultry Farm*: *Rs. 59,006.00* (OD 245)
+  ├ 10. *P.Chandra Shekhar*: *Rs. 500.00* (OD 227)
+  ├ 11. *Mr. Ramki G M*: *Rs. 26,876.00* (OD 222)
+  ├ 12. *Devaki Poultry Farms*: *Rs. 98,544.00* (OD 218)
+  ├ 13. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 205)
+  ├ 14. *Mr. R G Jayakumar Sir*: *Rs. 62,864.00* (OD 205)
+  ├ 15. *Jagadamba Poultry farm*: *Rs. 53,750.00* (OD 205)
+  ├ 16. *Siddalingappa S Yalagi*: *Rs. 58,604.00* (OD 199)
+  ├ 17. *Cheranth Poultry Farm*: *Rs. 39,051.00* (OD 199)
+  ├ 18. *Balaji Poultry Farms*: *Rs. 78,750.00* (OD 195)
+  ├ 19. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 195)
+  ├ 20. *Mr. Subramanyam Reddy Garu*: *Rs. 16,880.00* (OD 192)
+  ├ 21. *Mahadeshwara Poultry Farm*: *Rs. 3,781.00* (OD 192)
+  ├ 22. *Devaki Poultry Farms*: *Rs. 9,000.00* (OD 143)
+  ├ 23. *Madhusudhan Reddy*: *Rs. 12,383.00* (OD 141)
+  ├ 24. *Devaki Poultry Farms*: *Rs. 2,23,680.00* (OD 136)
+  ├ 25. *Sadiq Poultry Farm*: *Rs. 32,399.00* (OD 124)
+  ├ 26. *Sri Gayatri Poultry Farm*: *Rs. 30,384.00* (OD 114)
+  ├ 27. *Mrs. R Indumathi Garu*: *Rs. 8,000.00* (OD 92)
+  ├ 28. *Shri Shiridi  Sainadh Poultry Farm*: *Rs. 7,295.00* (OD 86)
+  ├ 29. *Mr. Vishwas Raj Sir*: *Rs. 1,250.00* (OD 83)
+  ├ 30. *Shanmuga Poultry Farm*: *Rs. 16,290.00* (OD 80)
+  ├ 31. *Sai Srinivasa Poultry Farm*: *Rs. 20,487.00* (OD 70)
+  ├ 32. *Sri Gayatri Poultry Farm*: *Rs. 64,625.00* (OD 62)
+  ├ 33. *Kannaiah Naidu Garu*: *Rs. 1,83,549.00* (OD 49)
+  ├ 34. *Sri Durga Poultry Farm*: *Rs. 27,824.00* (OD 41)
+  ├ 35. *Sri Durga Poultry Farm*: *Rs. 41,050.00* (OD 38)
+  ├ 36. *Amma Agro Farms*: *Rs. 4,05,600.00* (OD 37)
+  ├ 37. *Amma Agro Farms*: *Rs. 2,68,426.00* (OD 29)
+  ├ 38. *Prasanna Venkateshwara Poultry Farm*: *Rs. 2,592.00* (OD 23)
+  └ 39. *Amma Agro Farms*: *Rs. 1,19,969.00* (OD 13)
+
+📋 *Vendor Payables Summary*: *40 Pending Bills* | Balance: *Rs. 23,75,995.15*
+  ├ 1. *Inderson Bright Industry*: *Rs. 730.00* (OD 463)
+  ├ 2. *Sri Sai Poultry*: *Rs. 2.00* (OD 462)
+  ├ 3. *Karni Enterprises*: *Rs. 27,480.00* (OD 370)
+  ├ 4. *Karni Enterprises*: *Rs. 2,023.00* (OD 357)
+  ├ 5. *Ranga Reddy Engg.Works*: *Rs. 8,418.00* (OD 352)
+  ├ 6. *Karni Enterprises*: *Rs. 7,014.00* (OD 339)
+  ├ 7. *Karni Enterprises*: *Rs. 6,702.00* (OD 331)
+  ├ 8. *Karni Enterprises*: *Rs. 8,195.97* (OD 309)
+  ├ 9. *Progressive Power Solutions*: *Rs. 80,995.00* (OD 305)
+  ├ 10. *Macfos Limited*: *Rs. 38,128.00* (OD 301)
+  ├ 11. *S.N Engg Works*: *Rs. 4,455.00* (OD 301)
+  ├ 12. *Dream Polymers*: *Rs. 1,598.00* (OD 301)
+  ├ 13. *Macfos Limited*: *Rs. 7,350.00* (OD 270)
+  ├ 14. *Macfos Limited*: *Rs. 773.00* (OD 269)
+  ├ 15. *Sharma Alloy Steels*: *Rs. 3,292.00* (OD 257)
+  ├ 16. *Chowdary Enterprises*: *Rs. 5,552.00* (OD 251)
+  ├ 17. *Cosmos Coal and Steel trading & Co.*: *Rs. 641.00* (OD 223)
+  ├ 18. *G K Fabrication Works*: *Rs. 20,562.00* (OD 219)
+  ├ 19. *G K Fabrication Works*: *Rs. 48,144.00* (OD 210)
+  ├ 20. *Akshara Siri Steel Traders*: *Rs. 710.00* (OD 207)
+  ├ 21. *Dazzle Robotics Pvt Ltd*: *Rs. 2,014.00* (OD 201)
+  ├ 22. *ZOHO CORPORATION PRIVATE LIMITED*: *Rs. 547.52* (OD 200)
+  ├ 23. *Universal Aluminium*: *Rs. 6,388.16* (OD 198)
+  ├ 24. *Bheeshma Metals*: *Rs. 59.50* (OD 192)
+  ├ 25. *Dream Polymers*: *Rs. 1,598.00* (OD 187)
+  ├ 26. *G.N Poultry Equipments*: *Rs. 4,125.00* (OD 174)
+  ├ 27. *Shiva Shakthi Moulding*: *Rs. 15,000.00* (OD 156)
+  ├ 28. *Sree Bhanu Industries*: *Rs. 28,966.00* (OD 133)
+  ├ 29. *Chowdary Enterprises*: *Rs. 39.00* (OD 114)
+  ├ 30. *S.N Engg Works*: *Rs. 25,000.00* (OD 111)
+  ├ 31. *PARNIKA ENTERPRISES*: *Rs. 2,06,500.00* (OD 85)
+  ├ 32. *Sree Bhanu Industries*: *Rs. 25,265.00* (OD 64)
+  ├ 33. *Lotus Engineering*: *Rs. 4,559.00* (OD 54)
+  ├ 34. *JAINEX LIMITED*: *Rs. 5,91,878.00* (OD 23)
+  ├ 35. *Lotus Engineering*: *Rs. 5,465.00* (OD 23)
+  ├ 36. *Excel Engineering Enterprises*: *Rs. 1,888.00* (OD 16)
+  ├ 37. *Sabitha Engg.Corp*: *Rs. 233.00* (OD 14)
+  ├ 38. *JAINEX LIMITED*: *Rs. 6,25,240.00* (OD 13)
+  ├ 39. *JAINEX LIMITED*: *Rs. 5,57,167.00* (OD 5)
+  └ 40. *Jai Majisa Enterprises*: *Rs. 1,298.00* (OD 5)
+--------------------------------------------------
+📦 *Stock Valuation (Inventory Asset):* *Rs. 1,22,08,494.07*
+💰 *Bank & Cash Balance:* *Rs. 24,63,750.55*
+⚖️ *Overall Net Financial Position:* *Rs. 1,48,64,107.47* (✅ Profit)
+📊 *Net Position Breakdown (History):*
+  • Today (17 Sep): *Rs. 1,48,64,107.47*
+  • -1 Day (16 Sep): *Rs. 1,51,88,716.09*
+  • -2 Days (15 Sep): *Rs. 1,84,83,978.13*
+  • -1 Week (10 Sep): *Rs. 1,96,30,782.99*
+  • -2 Weeks (03 Sep): *Rs. 1,97,96,668.41*
+  • -1 Month (18 Aug): *Rs. 1,70,24,078.33*
+  • -2 Months (19 Jul): *Rs. 85,58,726.74*
+  • -1 Year (17 Sep 2025): *-Rs. 3,73,30,869.53*
+⚠️ *Negative Stock Warning (2 items):*
+  • 15HP Horizontal Mixer With 10HP Grinder With Elevators: *-1.00 units*
+  • 2MM 120GSM - Printed: *-146.43 units*
+
+💳 *Loans & Liabilities (5 active):*
+  • *Proddutur Ravi Advance*: *Rs. 12,000.00*
+  • *Ram Pramodh Advance*: *Rs. 2,000.00*
+  • *ELECTRODE HOLDER ARCON 600 AMPS HD*: *Rs. 2,969.48*
+  • *Loan from Sunfra Farms*: *Rs. 5,00,000.00*
+  • *Sundaram Finance Loan*: *Rs. 12,45,778.00*
+==================================================
+[2026-09-17 22:01:44] Sender: Kusum (917259510983) | Group: None | Text: 1️⃣ *Ai iOT Team Reports:* — 📊 *EOD Summary*
+📅 *Date:* 17 Sep 2026
+• Balaji (Approval Task): *Report Review & Approval* - ❌
+• Balaji Team: *Daily Work Update* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 5*
+🗓️ *Total Failed this Month: 15*
+[2026-09-17 22:01:42] Sender: Kusum (917259510983) | Group: None | Text: ⚡ *Indus — Daily Comprehensive Report*
+📅 *Date:* 17 Sep 2026
+==================================================
+📊 *Today's Sales & Purchases*:
+• Today's Sales: *Rs. 0.00* (0 invoices)
+• Today's Purchases/Costs: *Rs. 1,200.00* (3 items)
+  ├ 1. *Driver Charges*: *Rs. 500.00*
+  ├ 2. *Vehicle Expenditure*: *Rs. 600.00*
+  └ 3. *Weighment Charges*: *Rs. 100.00*
+
+📈 *Customer Receivables Breakdown*:
+• Total Pending: *39 Invoices* | Balance: *Rs. 25,67,858.00*
+  ├ 1. *J Leela Prasad*: *Rs. 1,08,873.00* (OD 409)
+  ├ 2. *J Leela Prasad*: *Rs. 89,843.00* (OD 409)
+  ├ 3. *Mr. Kumar poultry farm marripalli*: *Rs. 6,408.00* (OD 336)
+  ├ 4. *Deepika Poultry Farm*: *Rs. 3,796.00* (OD 305)
+  ├ 5. *Padmavathi Poultry*: *Rs. 78,080.00* (OD 298)
+  ├ 6. *Padmavathi Poultry*: *Rs. 43,750.00* (OD 297)
+  ├ 7. *DINESH POULTRY FARM*: *Rs. 36,423.00* (OD 265)
+  ├ 8. *Akshaya Poultry Farm*: *Rs. 69,776.00* (OD 251)
+  ├ 9. *Balaji Poultry Farm*: *Rs. 59,006.00* (OD 245)
+  ├ 10. *P.Chandra Shekhar*: *Rs. 500.00* (OD 227)
+  ├ 11. *Mr. Ramki G M*: *Rs. 26,876.00* (OD 222)
+  ├ 12. *Devaki Poultry Farms*: *Rs. 98,544.00* (OD 218)
+  ├ 13. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 205)
+  ├ 14. *Mr. R G Jayakumar Sir*: *Rs. 62,864.00* (OD 205)
+  ├ 15. *Jagadamba Poultry farm*: *Rs. 53,750.00* (OD 205)
+  ├ 16. *Siddalingappa S Yalagi*: *Rs. 58,604.00* (OD 199)
+  ├ 17. *Cheranth Poultry Farm*: *Rs. 39,051.00* (OD 199)
+  ├ 18. *Balaji Poultry Farms*: *Rs. 78,750.00* (OD 195)
+  ├ 19. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 195)
+  ├ 20. *Mr. Subramanyam Reddy Garu*: *Rs. 16,880.00* (OD 192)
+  ├ 21. *Mahadeshwara Poultry Farm*: *Rs. 3,781.00* (OD 192)
+  ├ 22. *Devaki Poultry Farms*: *Rs. 9,000.00* (OD 143)
+  ├ 23. *Madhusudhan Reddy*: *Rs. 12,383.00* (OD 141)
+  ├ 24. *Devaki Poultry Farms*: *Rs. 2,23,680.00* (OD 136)
+  ├ 25. *Sadiq Poultry Farm*: *Rs. 32,399.00* (OD 124)
+  ├ 26. *Sri Gayatri Poultry Farm*: *Rs. 30,384.00* (OD 114)
+  ├ 27. *Mrs. R Indumathi Garu*: *Rs. 8,000.00* (OD 92)
+  ├ 28. *Shri Shiridi  Sainadh Poultry Farm*: *Rs. 7,295.00* (OD 86)
+  ├ 29. *Mr. Vishwas Raj Sir*: *Rs. 1,250.00* (OD 83)
+  ├ 30. *Shanmuga Poultry Farm*: *Rs. 16,290.00* (OD 80)
+  ├ 31. *Sai Srinivasa Poultry Farm*: *Rs. 20,487.00* (OD 70)
+  ├ 32. *Sri Gayatri Poultry Farm*: *Rs. 64,625.00* (OD 62)
+  ├ 33. *Kannaiah Naidu Garu*: *Rs. 1,83,549.00* (OD 49)
+  ├ 34. *Sri Durga Poultry Farm*: *Rs. 27,824.00* (OD 41)
+  ├ 35. *Sri Durga Poultry Farm*: *Rs. 41,050.00* (OD 38)
+  ├ 36. *Amma Agro Farms*: *Rs. 4,05,600.00* (OD 37)
+  ├ 37. *Amma Agro Farms*: *Rs. 2,68,426.00* (OD 29)
+  ├ 38. *Prasanna Venkateshwara Poultry Farm*: *Rs. 2,592.00* (OD 23)
+  └ 39. *Amma Agro Farms*: *Rs. 1,19,969.00* (OD 13)
+
+📋 *Vendor Payables Summary*: *40 Pending Bills* | Balance: *Rs. 23,75,995.15*
+  ├ 1. *Inderson Bright Industry*: *Rs. 730.00* (OD 463)
+  ├ 2. *Sri Sai Poultry*: *Rs. 2.00* (OD 462)
+  ├ 3. *Karni Enterprises*: *Rs. 27,480.00* (OD 370)
+  ├ 4. *Karni Enterprises*: *Rs. 2,023.00* (OD 357)
+  ├ 5. *Ranga Reddy Engg.Works*: *Rs. 8,418.00* (OD 352)
+  ├ 6. *Karni Enterprises*: *Rs. 7,014.00* (OD 339)
+  ├ 7. *Karni Enterprises*: *Rs. 6,702.00* (OD 331)
+  ├ 8. *Karni Enterprises*: *Rs. 8,195.97* (OD 309)
+  ├ 9. *Progressive Power Solutions*: *Rs. 80,995.00* (OD 305)
+  ├ 10. *Macfos Limited*: *Rs. 38,128.00* (OD 301)
+  ├ 11. *S.N Engg Works*: *Rs. 4,455.00* (OD 301)
+  ├ 12. *Dream Polymers*: *Rs. 1,598.00* (OD 301)
+  ├ 13. *Macfos Limited*: *Rs. 7,350.00* (OD 270)
+  ├ 14. *Macfos Limited*: *Rs. 773.00* (OD 269)
+  ├ 15. *Sharma Alloy Steels*: *Rs. 3,292.00* (OD 257)
+  ├ 16. *Chowdary Enterprises*: *Rs. 5,552.00* (OD 251)
+  ├ 17. *Cosmos Coal and Steel trading & Co.*: *Rs. 641.00* (OD 223)
+  ├ 18. *G K Fabrication Works*: *Rs. 20,562.00* (OD 219)
+  ├ 19. *G K Fabrication Works*: *Rs. 48,144.00* (OD 210)
+  ├ 20. *Akshara Siri Steel Traders*: *Rs. 710.00* (OD 207)
+  ├ 21. *Dazzle Robotics Pvt Ltd*: *Rs. 2,014.00* (OD 201)
+  ├ 22. *ZOHO CORPORATION PRIVATE LIMITED*: *Rs. 547.52* (OD 200)
+  ├ 23. *Universal Aluminium*: *Rs. 6,388.16* (OD 198)
+  ├ 24. *Bheeshma Metals*: *Rs. 59.50* (OD 192)
+  ├ 25. *Dream Polymers*: *Rs. 1,598.00* (OD 187)
+  ├ 26. *G.N Poultry Equipments*: *Rs. 4,125.00* (OD 174)
+  ├ 27. *Shiva Shakthi Moulding*: *Rs. 15,000.00* (OD 156)
+  ├ 28. *Sree Bhanu Industries*: *Rs. 28,966.00* (OD 133)
+  ├ 29. *Chowdary Enterprises*: *Rs. 39.00* (OD 114)
+  ├ 30. *S.N Engg Works*: *Rs. 25,000.00* (OD 111)
+  ├ 31. *PARNIKA ENTERPRISES*: *Rs. 2,06,500.00* (OD 85)
+  ├ 32. *Sree Bhanu Industries*: *Rs. 25,265.00* (OD 64)
+  ├ 33. *Lotus Engineering*: *Rs. 4,559.00* (OD 54)
+  ├ 34. *JAINEX LIMITED*: *Rs. 5,91,878.00* (OD 23)
+  ├ 35. *Lotus Engineering*: *Rs. 5,465.00* (OD 23)
+  ├ 36. *Excel Engineering Enterprises*: *Rs. 1,888.00* (OD 16)
+  ├ 37. *Sabitha Engg.Corp*: *Rs. 233.00* (OD 14)
+  ├ 38. *JAINEX LIMITED*: *Rs. 6,25,240.00* (OD 13)
+  ├ 39. *JAINEX LIMITED*: *Rs. 5,57,167.00* (OD 5)
+  └ 40. *Jai Majisa Enterprises*: *Rs. 1,298.00* (OD 5)
+--------------------------------------------------
+📦 *Stock Valuation (Inventory Asset):* *Rs. 1,22,08,494.07*
+💰 *Bank & Cash Balance:* *Rs. 24,63,750.55*
+⚖️ *Overall Net Financial Position:* *Rs. 1,48,64,107.47* (✅ Profit)
+📊 *Net Position Breakdown (History):*
+  • Today (17 Sep): *Rs. 1,48,64,107.47*
+  • -1 Day (16 Sep): *Rs. 1,51,88,716.09*
+  • -2 Days (15 Sep): *Rs. 1,84,83,978.13*
+  • -1 Week (10 Sep): *Rs. 1,96,30,782.99*
+  • -2 Weeks (03 Sep): *Rs. 1,97,96,668.41*
+  • -1 Month (18 Aug): *Rs. 1,70,24,078.33*
+  • -2 Months (19 Jul): *Rs. 85,58,726.74*
+  • -1 Year (17 Sep 2025): *-Rs. 3,73,30,869.53*
+⚠️ *Negative Stock Warning (2 items):*
+  • 15HP Horizontal Mixer With 10HP Grinder With Elevators: *-1.00 units*
+  • 2MM 120GSM - Printed: *-146.43 units*
+
+💳 *Loans & Liabilities (5 active):*
+  • *Proddutur Ravi Advance*: *Rs. 12,000.00*
+  • *Ram Pramodh Advance*: *Rs. 2,000.00*
+  • *ELECTRODE HOLDER ARCON 600 AMPS HD*: *Rs. 2,969.48*
+  • *Loan from Sunfra Farms*: *Rs. 5,00,000.00*
+  • *Sundaram Finance Loan*: *Rs. 12,45,778.00*
+==================================================
+[2026-09-17 22:01:34] Sender: Kusum (917259510983) | Group: None | Text: 1️⃣ *Ai iOT Team Reports:* — 📊 *EOD Summary*
+📅 *Date:* 17 Sep 2026
+• Balaji (Approval Task): *Report Review & Approval* - ❌
+• Balaji Team: *Daily Work Update* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 5*
+🗓️ *Total Failed this Month: 15*
+[2026-09-17 22:01:31] Sender: Kusum (917259510983) | Group: None | Text: ⚡ *Indus — Daily Comprehensive Report*
+📅 *Date:* 17 Sep 2026
+==================================================
+📊 *Today's Sales & Purchases*:
+• Today's Sales: *Rs. 0.00* (0 invoices)
+• Today's Purchases/Costs: *Rs. 1,200.00* (3 items)
+  ├ 1. *Driver Charges*: *Rs. 500.00*
+  ├ 2. *Vehicle Expenditure*: *Rs. 600.00*
+  └ 3. *Weighment Charges*: *Rs. 100.00*
+
+📈 *Customer Receivables Breakdown*:
+• Total Pending: *39 Invoices* | Balance: *Rs. 25,67,858.00*
+  ├ 1. *J Leela Prasad*: *Rs. 1,08,873.00* (OD 409)
+  ├ 2. *J Leela Prasad*: *Rs. 89,843.00* (OD 409)
+  ├ 3. *Mr. Kumar poultry farm marripalli*: *Rs. 6,408.00* (OD 336)
+  ├ 4. *Deepika Poultry Farm*: *Rs. 3,796.00* (OD 305)
+  ├ 5. *Padmavathi Poultry*: *Rs. 78,080.00* (OD 298)
+  ├ 6. *Padmavathi Poultry*: *Rs. 43,750.00* (OD 297)
+  ├ 7. *DINESH POULTRY FARM*: *Rs. 36,423.00* (OD 265)
+  ├ 8. *Akshaya Poultry Farm*: *Rs. 69,776.00* (OD 251)
+  ├ 9. *Balaji Poultry Farm*: *Rs. 59,006.00* (OD 245)
+  ├ 10. *P.Chandra Shekhar*: *Rs. 500.00* (OD 227)
+  ├ 11. *Mr. Ramki G M*: *Rs. 26,876.00* (OD 222)
+  ├ 12. *Devaki Poultry Farms*: *Rs. 98,544.00* (OD 218)
+  ├ 13. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 205)
+  ├ 14. *Mr. R G Jayakumar Sir*: *Rs. 62,864.00* (OD 205)
+  ├ 15. *Jagadamba Poultry farm*: *Rs. 53,750.00* (OD 205)
+  ├ 16. *Siddalingappa S Yalagi*: *Rs. 58,604.00* (OD 199)
+  ├ 17. *Cheranth Poultry Farm*: *Rs. 39,051.00* (OD 199)
+  ├ 18. *Balaji Poultry Farms*: *Rs. 78,750.00* (OD 195)
+  ├ 19. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 195)
+  ├ 20. *Mr. Subramanyam Reddy Garu*: *Rs. 16,880.00* (OD 192)
+  ├ 21. *Mahadeshwara Poultry Farm*: *Rs. 3,781.00* (OD 192)
+  ├ 22. *Devaki Poultry Farms*: *Rs. 9,000.00* (OD 143)
+  ├ 23. *Madhusudhan Reddy*: *Rs. 12,383.00* (OD 141)
+  ├ 24. *Devaki Poultry Farms*: *Rs. 2,23,680.00* (OD 136)
+  ├ 25. *Sadiq Poultry Farm*: *Rs. 32,399.00* (OD 124)
+  ├ 26. *Sri Gayatri Poultry Farm*: *Rs. 30,384.00* (OD 114)
+  ├ 27. *Mrs. R Indumathi Garu*: *Rs. 8,000.00* (OD 92)
+  ├ 28. *Shri Shiridi  Sainadh Poultry Farm*: *Rs. 7,295.00* (OD 86)
+  ├ 29. *Mr. Vishwas Raj Sir*: *Rs. 1,250.00* (OD 83)
+  ├ 30. *Shanmuga Poultry Farm*: *Rs. 16,290.00* (OD 80)
+  ├ 31. *Sai Srinivasa Poultry Farm*: *Rs. 20,487.00* (OD 70)
+  ├ 32. *Sri Gayatri Poultry Farm*: *Rs. 64,625.00* (OD 62)
+  ├ 33. *Kannaiah Naidu Garu*: *Rs. 1,83,549.00* (OD 49)
+  ├ 34. *Sri Durga Poultry Farm*: *Rs. 27,824.00* (OD 41)
+  ├ 35. *Sri Durga Poultry Farm*: *Rs. 41,050.00* (OD 38)
+  ├ 36. *Amma Agro Farms*: *Rs. 4,05,600.00* (OD 37)
+  ├ 37. *Amma Agro Farms*: *Rs. 2,68,426.00* (OD 29)
+  ├ 38. *Prasanna Venkateshwara Poultry Farm*: *Rs. 2,592.00* (OD 23)
+  └ 39. *Amma Agro Farms*: *Rs. 1,19,969.00* (OD 13)
+
+📋 *Vendor Payables Summary*: *40 Pending Bills* | Balance: *Rs. 23,75,995.15*
+  ├ 1. *Inderson Bright Industry*: *Rs. 730.00* (OD 463)
+  ├ 2. *Sri Sai Poultry*: *Rs. 2.00* (OD 462)
+  ├ 3. *Karni Enterprises*: *Rs. 27,480.00* (OD 370)
+  ├ 4. *Karni Enterprises*: *Rs. 2,023.00* (OD 357)
+  ├ 5. *Ranga Reddy Engg.Works*: *Rs. 8,418.00* (OD 352)
+  ├ 6. *Karni Enterprises*: *Rs. 7,014.00* (OD 339)
+  ├ 7. *Karni Enterprises*: *Rs. 6,702.00* (OD 331)
+  ├ 8. *Karni Enterprises*: *Rs. 8,195.97* (OD 309)
+  ├ 9. *Progressive Power Solutions*: *Rs. 80,995.00* (OD 305)
+  ├ 10. *Macfos Limited*: *Rs. 38,128.00* (OD 301)
+  ├ 11. *S.N Engg Works*: *Rs. 4,455.00* (OD 301)
+  ├ 12. *Dream Polymers*: *Rs. 1,598.00* (OD 301)
+  ├ 13. *Macfos Limited*: *Rs. 7,350.00* (OD 270)
+  ├ 14. *Macfos Limited*: *Rs. 773.00* (OD 269)
+  ├ 15. *Sharma Alloy Steels*: *Rs. 3,292.00* (OD 257)
+  ├ 16. *Chowdary Enterprises*: *Rs. 5,552.00* (OD 251)
+  ├ 17. *Cosmos Coal and Steel trading & Co.*: *Rs. 641.00* (OD 223)
+  ├ 18. *G K Fabrication Works*: *Rs. 20,562.00* (OD 219)
+  ├ 19. *G K Fabrication Works*: *Rs. 48,144.00* (OD 210)
+  ├ 20. *Akshara Siri Steel Traders*: *Rs. 710.00* (OD 207)
+  ├ 21. *Dazzle Robotics Pvt Ltd*: *Rs. 2,014.00* (OD 201)
+  ├ 22. *ZOHO CORPORATION PRIVATE LIMITED*: *Rs. 547.52* (OD 200)
+  ├ 23. *Universal Aluminium*: *Rs. 6,388.16* (OD 198)
+  ├ 24. *Bheeshma Metals*: *Rs. 59.50* (OD 192)
+  ├ 25. *Dream Polymers*: *Rs. 1,598.00* (OD 187)
+  ├ 26. *G.N Poultry Equipments*: *Rs. 4,125.00* (OD 174)
+  ├ 27. *Shiva Shakthi Moulding*: *Rs. 15,000.00* (OD 156)
+  ├ 28. *Sree Bhanu Industries*: *Rs. 28,966.00* (OD 133)
+  ├ 29. *Chowdary Enterprises*: *Rs. 39.00* (OD 114)
+  ├ 30. *S.N Engg Works*: *Rs. 25,000.00* (OD 111)
+  ├ 31. *PARNIKA ENTERPRISES*: *Rs. 2,06,500.00* (OD 85)
+  ├ 32. *Sree Bhanu Industries*: *Rs. 25,265.00* (OD 64)
+  ├ 33. *Lotus Engineering*: *Rs. 4,559.00* (OD 54)
+  ├ 34. *JAINEX LIMITED*: *Rs. 5,91,878.00* (OD 23)
+  ├ 35. *Lotus Engineering*: *Rs. 5,465.00* (OD 23)
+  ├ 36. *Excel Engineering Enterprises*: *Rs. 1,888.00* (OD 16)
+  ├ 37. *Sabitha Engg.Corp*: *Rs. 233.00* (OD 14)
+  ├ 38. *JAINEX LIMITED*: *Rs. 6,25,240.00* (OD 13)
+  ├ 39. *JAINEX LIMITED*: *Rs. 5,57,167.00* (OD 5)
+  └ 40. *Jai Majisa Enterprises*: *Rs. 1,298.00* (OD 5)
+--------------------------------------------------
+📦 *Stock Valuation (Inventory Asset):* *Rs. 1,22,08,494.07*
+💰 *Bank & Cash Balance:* *Rs. 24,63,750.55*
+⚖️ *Overall Net Financial Position:* *Rs. 1,48,64,107.47* (✅ Profit)
+📊 *Net Position Breakdown (History):*
+  • Today (17 Sep): *Rs. 1,48,64,107.47*
+  • -1 Day (16 Sep): *Rs. 1,51,88,716.09*
+  • -2 Days (15 Sep): *Rs. 1,84,83,978.13*
+  • -1 Week (10 Sep): *Rs. 1,96,30,782.99*
+  • -2 Weeks (03 Sep): *Rs. 1,97,96,668.41*
+  • -1 Month (18 Aug): *Rs. 1,70,24,078.33*
+  • -2 Months (19 Jul): *Rs. 85,58,726.74*
+  • -1 Year (17 Sep 2025): *-Rs. 3,73,30,869.53*
+⚠️ *Negative Stock Warning (2 items):*
+  • 15HP Horizontal Mixer With 10HP Grinder With Elevators: *-1.00 units*
+  • 2MM 120GSM - Printed: *-146.43 units*
+
+💳 *Loans & Liabilities (5 active):*
+  • *Proddutur Ravi Advance*: *Rs. 12,000.00*
+  • *Ram Pramodh Advance*: *Rs. 2,000.00*
+  • *ELECTRODE HOLDER ARCON 600 AMPS HD*: *Rs. 2,969.48*
+  • *Loan from Sunfra Farms*: *Rs. 5,00,000.00*
+  • *Sundaram Finance Loan*: *Rs. 12,45,778.00*
+==================================================
+[2026-09-17 18:54:29] Sender: Kusum (917259510983) | Group: None | Text: ⚡ *Indus — Daily Comprehensive Report*
+📅 *Date:* 17 Sep 2026
+==================================================
+📊 *Today's Sales & Purchases*:
+• Today's Sales: *Rs. 0.00* (0 invoices)
+• Today's Purchases/Costs: *Rs. 1,200.00* (3 items)
+  ├ 1. *Driver Charges*: *Rs. 500.00*
+  ├ 2. *Vehicle Expenditure*: *Rs. 600.00*
+  └ 3. *Weighment Charges*: *Rs. 100.00*
+
+📈 *Customer Receivables Breakdown*:
+• Total Pending: *39 Invoices* | Balance: *Rs. 25,67,858.00*
+  ├ 1. *J Leela Prasad*: *Rs. 1,08,873.00* (OD 409)
+  ├ 2. *J Leela Prasad*: *Rs. 89,843.00* (OD 409)
+  ├ 3. *Mr. Kumar poultry farm marripalli*: *Rs. 6,408.00* (OD 336)
+  ├ 4. *Deepika Poultry Farm*: *Rs. 3,796.00* (OD 305)
+  ├ 5. *Padmavathi Poultry*: *Rs. 78,080.00* (OD 298)
+  ├ 6. *Padmavathi Poultry*: *Rs. 43,750.00* (OD 297)
+  ├ 7. *DINESH POULTRY FARM*: *Rs. 36,423.00* (OD 265)
+  ├ 8. *Akshaya Poultry Farm*: *Rs. 69,776.00* (OD 251)
+  ├ 9. *Balaji Poultry Farm*: *Rs. 59,006.00* (OD 245)
+  ├ 10. *P.Chandra Shekhar*: *Rs. 500.00* (OD 227)
+  ├ 11. *Mr. Ramki G M*: *Rs. 26,876.00* (OD 222)
+  ├ 12. *Devaki Poultry Farms*: *Rs. 98,544.00* (OD 218)
+  ├ 13. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 205)
+  ├ 14. *Mr. R G Jayakumar Sir*: *Rs. 62,864.00* (OD 205)
+  ├ 15. *Jagadamba Poultry farm*: *Rs. 53,750.00* (OD 205)
+  ├ 16. *Siddalingappa S Yalagi*: *Rs. 58,604.00* (OD 199)
+  ├ 17. *Cheranth Poultry Farm*: *Rs. 39,051.00* (OD 199)
+  ├ 18. *Balaji Poultry Farms*: *Rs. 78,750.00* (OD 195)
+  ├ 19. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 195)
+  ├ 20. *Mr. Subramanyam Reddy Garu*: *Rs. 16,880.00* (OD 192)
+  ├ 21. *Mahadeshwara Poultry Farm*: *Rs. 3,781.00* (OD 192)
+  ├ 22. *Devaki Poultry Farms*: *Rs. 9,000.00* (OD 143)
+  ├ 23. *Madhusudhan Reddy*: *Rs. 12,383.00* (OD 141)
+  ├ 24. *Devaki Poultry Farms*: *Rs. 2,23,680.00* (OD 136)
+  ├ 25. *Sadiq Poultry Farm*: *Rs. 32,399.00* (OD 124)
+  ├ 26. *Sri Gayatri Poultry Farm*: *Rs. 30,384.00* (OD 114)
+  ├ 27. *Mrs. R Indumathi Garu*: *Rs. 8,000.00* (OD 92)
+  ├ 28. *Shri Shiridi  Sainadh Poultry Farm*: *Rs. 7,295.00* (OD 86)
+  ├ 29. *Mr. Vishwas Raj Sir*: *Rs. 1,250.00* (OD 83)
+  ├ 30. *Shanmuga Poultry Farm*: *Rs. 16,290.00* (OD 80)
+  ├ 31. *Sai Srinivasa Poultry Farm*: *Rs. 20,487.00* (OD 70)
+  ├ 32. *Sri Gayatri Poultry Farm*: *Rs. 64,625.00* (OD 62)
+  ├ 33. *Kannaiah Naidu Garu*: *Rs. 1,83,549.00* (OD 49)
+  ├ 34. *Sri Durga Poultry Farm*: *Rs. 27,824.00* (OD 41)
+  ├ 35. *Sri Durga Poultry Farm*: *Rs. 41,050.00* (OD 38)
+  ├ 36. *Amma Agro Farms*: *Rs. 4,05,600.00* (OD 37)
+  ├ 37. *Amma Agro Farms*: *Rs. 2,68,426.00* (OD 29)
+  ├ 38. *Prasanna Venkateshwara Poultry Farm*: *Rs. 2,592.00* (OD 23)
+  └ 39. *Amma Agro Farms*: *Rs. 1,19,969.00* (OD 13)
+
+📋 *Vendor Payables Summary*: *40 Pending Bills* | Balance: *Rs. 23,75,995.15*
+  ├ 1. *Inderson Bright Industry*: *Rs. 730.00* (OD 463)
+  ├ 2. *Sri Sai Poultry*: *Rs. 2.00* (OD 462)
+  ├ 3. *Karni Enterprises*: *Rs. 27,480.00* (OD 370)
+  ├ 4. *Karni Enterprises*: *Rs. 2,023.00* (OD 357)
+  ├ 5. *Ranga Reddy Engg.Works*: *Rs. 8,418.00* (OD 352)
+  ├ 6. *Karni Enterprises*: *Rs. 7,014.00* (OD 339)
+  ├ 7. *Karni Enterprises*: *Rs. 6,702.00* (OD 331)
+  ├ 8. *Karni Enterprises*: *Rs. 8,195.97* (OD 309)
+  ├ 9. *Progressive Power Solutions*: *Rs. 80,995.00* (OD 305)
+  ├ 10. *Macfos Limited*: *Rs. 38,128.00* (OD 301)
+  ├ 11. *S.N Engg Works*: *Rs. 4,455.00* (OD 301)
+  ├ 12. *Dream Polymers*: *Rs. 1,598.00* (OD 301)
+  ├ 13. *Macfos Limited*: *Rs. 7,350.00* (OD 270)
+  ├ 14. *Macfos Limited*: *Rs. 773.00* (OD 269)
+  ├ 15. *Sharma Alloy Steels*: *Rs. 3,292.00* (OD 257)
+  ├ 16. *Chowdary Enterprises*: *Rs. 5,552.00* (OD 251)
+  ├ 17. *Cosmos Coal and Steel trading & Co.*: *Rs. 641.00* (OD 223)
+  ├ 18. *G K Fabrication Works*: *Rs. 20,562.00* (OD 219)
+  ├ 19. *G K Fabrication Works*: *Rs. 48,144.00* (OD 210)
+  ├ 20. *Akshara Siri Steel Traders*: *Rs. 710.00* (OD 207)
+  ├ 21. *Dazzle Robotics Pvt Ltd*: *Rs. 2,014.00* (OD 201)
+  ├ 22. *ZOHO CORPORATION PRIVATE LIMITED*: *Rs. 547.52* (OD 200)
+  ├ 23. *Universal Aluminium*: *Rs. 6,388.16* (OD 198)
+  ├ 24. *Bheeshma Metals*: *Rs. 59.50* (OD 192)
+  ├ 25. *Dream Polymers*: *Rs. 1,598.00* (OD 187)
+  ├ 26. *G.N Poultry Equipments*: *Rs. 4,125.00* (OD 174)
+  ├ 27. *Shiva Shakthi Moulding*: *Rs. 15,000.00* (OD 156)
+  ├ 28. *Sree Bhanu Industries*: *Rs. 28,966.00* (OD 133)
+  ├ 29. *Chowdary Enterprises*: *Rs. 39.00* (OD 114)
+  ├ 30. *S.N Engg Works*: *Rs. 25,000.00* (OD 111)
+  ├ 31. *PARNIKA ENTERPRISES*: *Rs. 2,06,500.00* (OD 85)
+  ├ 32. *Sree Bhanu Industries*: *Rs. 25,265.00* (OD 64)
+  ├ 33. *Lotus Engineering*: *Rs. 4,559.00* (OD 54)
+  ├ 34. *JAINEX LIMITED*: *Rs. 5,91,878.00* (OD 23)
+  ├ 35. *Lotus Engineering*: *Rs. 5,465.00* (OD 23)
+  ├ 36. *Excel Engineering Enterprises*: *Rs. 1,888.00* (OD 16)
+  ├ 37. *Sabitha Engg.Corp*: *Rs. 233.00* (OD 14)
+  ├ 38. *JAINEX LIMITED*: *Rs. 6,25,240.00* (OD 13)
+  ├ 39. *JAINEX LIMITED*: *Rs. 5,57,167.00* (OD 5)
+  └ 40. *Jai Majisa Enterprises*: *Rs. 1,298.00* (OD 5)
+--------------------------------------------------
+📦 *Stock Valuation (Inventory Asset):* *Rs. 1,25,40,309.69*
+💰 *Bank & Cash Balance:* *Rs. 24,63,750.55*
+⚖️ *Overall Net Financial Position:* *Rs. 1,51,95,923.09* (✅ Profit)
+📊 *Net Position Breakdown (History):*
+  • Today (17 Sep): *Rs. 1,51,95,923.09*
+  • -1 Day (16 Sep): *Rs. 1,51,88,716.09*
+  • -2 Days (15 Sep): *Rs. 1,84,83,978.13*
+  • -1 Week (10 Sep): *Rs. 1,96,30,782.99*
+  • -2 Weeks (03 Sep): *Rs. 1,97,96,668.41*
+  • -1 Month (18 Aug): *Rs. 1,70,24,078.33*
+  • -2 Months (19 Jul): *Rs. 85,58,726.74*
+  • -1 Year (17 Sep 2025): *-Rs. 3,73,30,869.53*
+⚠️ *Negative Stock Warning (2 items):*
+  • 15HP Horizontal Mixer With 10HP Grinder With Elevators: *-1.00 units*
+  • 2MM 120GSM - Printed: *-146.43 units*
+
+💳 *Loans & Liabilities (5 active):*
+  • *Proddutur Ravi Advance*: *Rs. 12,000.00*
+  • *Ram Pramodh Advance*: *Rs. 2,000.00*
+  • *ELECTRODE HOLDER ARCON 600 AMPS HD*: *Rs. 2,969.48*
+  • *Loan from Sunfra Farms*: *Rs. 5,00,000.00*
+  • *Sundaram Finance Loan*: *Rs. 12,45,778.00*
+==================================================
+
+=== WA MESSAGES FOR BALAJI HISTORY ===
+[2026-09-18 22:11:48] Sender: 917259510983 | Group: 120363410727174477@g.us | Text: 1️⃣ *Ai iOT Team Reports:* — 📊 *EOD Summary*
+📅 *Date:* 18 Sep 2026
+• Balaji (Approval Task): *Report Review & Approval* - ❌
+• Balaji Team: *Daily Work Update* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 6*
+🗓️ *Total Failed this Month: 16*
+[2026-09-18 22:06:43] Sender: 917259510983 | Group: 120363410727174477@g.us | Text: ⚡ *Indus — Daily Comprehensive Report*
+📅 *Date:* 18 Sep 2026
+==================================================
+📊 *Today's Sales & Purchases*:
+• Today's Sales: *Rs. 10,68,420.00* (1 invoices)
+  └ 1. *Raj Farms* (26/27-110): *Rs. 10,68,420.00*
+• Today's Purchases/Costs: *Rs. 1,062.00* (1 items)
+  └ 1. *Jai Majisa Enterprises* (ME/26-27/131): *Rs. 1,062.00*
+
+📈 *Customer Receivables Breakdown*:
+• Total Pending: *35 Invoices* | Balance: *Rs. 25,48,282.00*
+  ├ 1. *J Leela Prasad*: *Rs. 1,08,873.00* (OD 410)
+  ├ 2. *J Leela Prasad*: *Rs. 89,843.00* (OD 410)
+  ├ 3. *Mr. Kumar poultry farm marripalli*: *Rs. 6,408.00* (OD 337)
+  ├ 4. *Deepika Poultry Farm*: *Rs. 3,796.00* (OD 306)
+  ├ 5. *Padmavathi Poultry*: *Rs. 78,080.00* (OD 299)
+  ├ 6. *Padmavathi Poultry*: *Rs. 43,750.00* (OD 298)
+  ├ 7. *DINESH POULTRY FARM*: *Rs. 36,423.00* (OD 266)
+  ├ 8. *Akshaya Poultry Farm*: *Rs. 69,776.00* (OD 252)
+  ├ 9. *Balaji Poultry Farm*: *Rs. 59,006.00* (OD 246)
+  ├ 10. *Mr. Ramki G M*: *Rs. 26,876.00* (OD 223)
+  ├ 11. *Devaki Poultry Farms*: *Rs. 98,544.00* (OD 219)
+  ├ 12. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 206)
+  ├ 13. *Mr. R G Jayakumar Sir*: *Rs. 62,864.00* (OD 206)
+  ├ 14. *Jagadamba Poultry farm*: *Rs. 53,750.00* (OD 206)
+  ├ 15. *Siddalingappa S Yalagi*: *Rs. 58,604.00* (OD 200)
+  ├ 16. *Cheranth Poultry Farm*: *Rs. 39,051.00* (OD 200)
+  ├ 17. *Balaji Poultry Farms*: *Rs. 78,750.00* (OD 196)
+  ├ 18. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 196)
+  ├ 19. *Mr. Subramanyam Reddy Garu*: *Rs. 16,880.00* (OD 193)
+  ├ 20. *Devaki Poultry Farms*: *Rs. 9,000.00* (OD 144)
+  ├ 21. *Madhusudhan Reddy*: *Rs. 12,383.00* (OD 142)
+  ├ 22. *Devaki Poultry Farms*: *Rs. 2,23,680.00* (OD 137)
+  ├ 23. *Sadiq Poultry Farm*: *Rs. 32,399.00* (OD 125)
+  ├ 24. *Sri Gayatri Poultry Farm*: *Rs. 30,384.00* (OD 115)
+  ├ 25. *Mr. Vishwas Raj Sir*: *Rs. 1,250.00* (OD 84)
+  ├ 26. *Shanmuga Poultry Farm*: *Rs. 16,290.00* (OD 81)
+  ├ 27. *Sai Srinivasa Poultry Farm*: *Rs. 20,487.00* (OD 71)
+  ├ 28. *Sri Gayatri Poultry Farm*: *Rs. 64,625.00* (OD 63)
+  ├ 29. *Kannaiah Naidu Garu*: *Rs. 1,83,549.00* (OD 50)
+  ├ 30. *Sri Durga Poultry Farm*: *Rs. 27,824.00* (OD 42)
+  ├ 31. *Sri Durga Poultry Farm*: *Rs. 41,050.00* (OD 39)
+  ├ 32. *Amma Agro Farms*: *Rs. 4,05,600.00* (OD 38)
+  ├ 33. *Amma Agro Farms*: *Rs. 2,68,426.00* (OD 30)
+  ├ 34. *Prasanna Venkateshwara Poultry Farm*: *Rs. 2,592.00* (OD 24)
+  └ 35. *Amma Agro Farms*: *Rs. 1,19,969.00* (OD 14)
+
+📋 *Vendor Payables Summary*: *40 Pending Bills* | Balance: *Rs. 23,75,759.15*
+  ├ 1. *Inderson Bright Industry*: *Rs. 730.00* (OD 464)
+  ├ 2. *Sri Sai Poultry*: *Rs. 2.00* (OD 463)
+  ├ 3. *Karni Enterprises*: *Rs. 27,480.00* (OD 371)
+  ├ 4. *Karni Enterprises*: *Rs. 2,023.00* (OD 358)
+  ├ 5. *Ranga Reddy Engg.Works*: *Rs. 8,418.00* (OD 353)
+  ├ 6. *Karni Enterprises*: *Rs. 7,014.00* (OD 340)
+  ├ 7. *Karni Enterprises*: *Rs. 6,702.00* (OD 332)
+  ├ 8. *Karni Enterprises*: *Rs. 8,195.97* (OD 310)
+  ├ 9. *Progressive Power Solutions*: *Rs. 80,995.00* (OD 306)
+  ├ 10. *Macfos Limited*: *Rs. 38,128.00* (OD 302)
+  ├ 11. *S.N Engg Works*: *Rs. 4,455.00* (OD 302)
+  ├ 12. *Dream Polymers*: *Rs. 1,598.00* (OD 302)
+  ├ 13. *Macfos Limited*: *Rs. 7,350.00* (OD 271)
+  ├ 14. *Macfos Limited*: *Rs. 773.00* (OD 270)
+  ├ 15. *Sharma Alloy Steels*: *Rs. 3,292.00* (OD 258)
+  ├ 16. *Chowdary Enterprises*: *Rs. 5,552.00* (OD 252)
+  ├ 17. *Cosmos Coal and Steel trading & Co.*: *Rs. 641.00* (OD 224)
+  ├ 18. *G K Fabrication Works*: *Rs. 20,562.00* (OD 220)
+  ├ 19. *G K Fabrication Works*: *Rs. 48,144.00* (OD 211)
+  ├ 20. *Akshara Siri Steel Traders*: *Rs. 710.00* (OD 208)
+  ├ 21. *Dazzle Robotics Pvt Ltd*: *Rs. 2,014.00* (OD 202)
+  ├ 22. *ZOHO CORPORATION PRIVATE LIMITED*: *Rs. 547.52* (OD 201)
+  ├ 23. *Universal Aluminium*: *Rs. 6,388.16* (OD 199)
+  ├ 24. *Bheeshma Metals*: *Rs. 59.50* (OD 193)
+  ├ 25. *Dream Polymers*: *Rs. 1,598.00* (OD 188)
+  ├ 26. *G.N Poultry Equipments*: *Rs. 4,125.00* (OD 175)
+  ├ 27. *Shiva Shakthi Moulding*: *Rs. 15,000.00* (OD 157)
+  ├ 28. *Sree Bhanu Industries*: *Rs. 28,966.00* (OD 134)
+  ├ 29. *Chowdary Enterprises*: *Rs. 39.00* (OD 115)
+  ├ 30. *S.N Engg Works*: *Rs. 25,000.00* (OD 112)
+  ├ 31. *PARNIKA ENTERPRISES*: *Rs. 2,06,500.00* (OD 86)
+  ├ 32. *Sree Bhanu Industries*: *Rs. 25,265.00* (OD 65)
+  ├ 33. *Lotus Engineering*: *Rs. 4,559.00* (OD 55)
+  ├ 34. *JAINEX LIMITED*: *Rs. 5,91,878.00* (OD 24)
+  ├ 35. *Lotus Engineering*: *Rs. 5,465.00* (OD 24)
+  ├ 36. *Excel Engineering Enterprises*: *Rs. 1,888.00* (OD 17)
+  ├ 37. *Sabitha Engg.Corp*: *Rs. 233.00* (OD 15)
+  ├ 38. *JAINEX LIMITED*: *Rs. 6,25,240.00* (OD 14)
+  ├ 39. *JAINEX LIMITED*: *Rs. 5,57,167.00* (OD 6)
+  └ 40. *Jai Majisa Enterprises*: *Rs. 1,062.00* (OD 0)
+--------------------------------------------------
+📦 *Stock Valuation (Inventory Asset):* *Rs. 1,21,44,323.03*
+💰 *Bank & Cash Balance:* *Rs. 24,63,750.55*
+⚖️ *Overall Net Financial Position:* *Rs. 1,47,80,596.43* (✅ Profit)
+📊 *Net Position Breakdown (History):*
+  • Today (18 Sep): *Rs. 1,47,80,596.43*
+  • -1 Day (17 Sep): *Rs. 1,48,64,107.47*
+  • -2 Days (16 Sep): *Rs. 1,51,88,716.09*
+  • -1 Week (11 Sep): *Rs. 1,97,47,406.31*
+  • -2 Weeks (04 Sep): *Rs. 1,96,18,444.73*
+  • -1 Month (19 Aug): *Rs. 1,62,20,971.71*
+  • -2 Months (20 Jul): *Rs. 82,25,317.12*
+  • -1 Year (18 Sep 2025): *-Rs. 3,83,78,338.15*
+⚠️ *Negative Stock Warning (2 items):*
+  • 15HP Horizontal Mixer With 10HP Grinder With Elevators: *-1.00 units*
+  • 2MM 120GSM - Printed: *-146.43 units*
+
+💳 *Loans & Liabilities (5 active):*
+  • *Proddutur Ravi Advance*: *Rs. 12,000.00*
+  • *Ram Pramodh Advance*: *Rs. 2,000.00*
+  • *ELECTRODE HOLDER ARCON 600 AMPS HD*: *Rs. 2,969.48*
+  • *Loan from Sunfra Farms*: *Rs. 5,00,000.00*
+  • *Sundaram Finance Loan*: *Rs. 12,45,778.00*
+==================================================
+[2026-09-18 22:02:14] Sender: 917259510983 | Group:  | Text: 1️⃣ *Ai iOT Team Reports:* — 📊 *EOD Summary*
+📅 *Date:* 18 Sep 2026
+• Balaji (Approval Task): *Report Review & Approval* - ❌
+• Balaji Team: *Daily Work Update* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 6*
+🗓️ *Total Failed this Month: 16*
+[2026-09-18 22:02:10] Sender: 917259510983 | Group:  | Text: ⚡ *Indus — Daily Comprehensive Report*
+📅 *Date:* 18 Sep 2026
+==================================================
+📊 *Today's Sales & Purchases*:
+• Today's Sales: *Rs. 10,68,420.00* (1 invoices)
+  └ 1. *Raj Farms* (26/27-110): *Rs. 10,68,420.00*
+• Today's Purchases/Costs: *Rs. 1,062.00* (1 items)
+  └ 1. *Jai Majisa Enterprises* (ME/26-27/131): *Rs. 1,062.00*
+
+📈 *Customer Receivables Breakdown*:
+• Total Pending: *35 Invoices* | Balance: *Rs. 25,48,282.00*
+  ├ 1. *J Leela Prasad*: *Rs. 1,08,873.00* (OD 410)
+  ├ 2. *J Leela Prasad*: *Rs. 89,843.00* (OD 410)
+  ├ 3. *Mr. Kumar poultry farm marripalli*: *Rs. 6,408.00* (OD 337)
+  ├ 4. *Deepika Poultry Farm*: *Rs. 3,796.00* (OD 306)
+  ├ 5. *Padmavathi Poultry*: *Rs. 78,080.00* (OD 299)
+  ├ 6. *Padmavathi Poultry*: *Rs. 43,750.00* (OD 298)
+  ├ 7. *DINESH POULTRY FARM*: *Rs. 36,423.00* (OD 266)
+  ├ 8. *Akshaya Poultry Farm*: *Rs. 69,776.00* (OD 252)
+  ├ 9. *Balaji Poultry Farm*: *Rs. 59,006.00* (OD 246)
+  ├ 10. *Mr. Ramki G M*: *Rs. 26,876.00* (OD 223)
+  ├ 11. *Devaki Poultry Farms*: *Rs. 98,544.00* (OD 219)
+  ├ 12. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 206)
+  ├ 13. *Mr. R G Jayakumar Sir*: *Rs. 62,864.00* (OD 206)
+  ├ 14. *Jagadamba Poultry farm*: *Rs. 53,750.00* (OD 206)
+  ├ 15. *Siddalingappa S Yalagi*: *Rs. 58,604.00* (OD 200)
+  ├ 16. *Cheranth Poultry Farm*: *Rs. 39,051.00* (OD 200)
+  ├ 17. *Balaji Poultry Farms*: *Rs. 78,750.00* (OD 196)
+  ├ 18. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 196)
+  ├ 19. *Mr. Subramanyam Reddy Garu*: *Rs. 16,880.00* (OD 193)
+  ├ 20. *Devaki Poultry Farms*: *Rs. 9,000.00* (OD 144)
+  ├ 21. *Madhusudhan Reddy*: *Rs. 12,383.00* (OD 142)
+  ├ 22. *Devaki Poultry Farms*: *Rs. 2,23,680.00* (OD 137)
+  ├ 23. *Sadiq Poultry Farm*: *Rs. 32,399.00* (OD 125)
+  ├ 24. *Sri Gayatri Poultry Farm*: *Rs. 30,384.00* (OD 115)
+  ├ 25. *Mr. Vishwas Raj Sir*: *Rs. 1,250.00* (OD 84)
+  ├ 26. *Shanmuga Poultry Farm*: *Rs. 16,290.00* (OD 81)
+  ├ 27. *Sai Srinivasa Poultry Farm*: *Rs. 20,487.00* (OD 71)
+  ├ 28. *Sri Gayatri Poultry Farm*: *Rs. 64,625.00* (OD 63)
+  ├ 29. *Kannaiah Naidu Garu*: *Rs. 1,83,549.00* (OD 50)
+  ├ 30. *Sri Durga Poultry Farm*: *Rs. 27,824.00* (OD 42)
+  ├ 31. *Sri Durga Poultry Farm*: *Rs. 41,050.00* (OD 39)
+  ├ 32. *Amma Agro Farms*: *Rs. 4,05,600.00* (OD 38)
+  ├ 33. *Amma Agro Farms*: *Rs. 2,68,426.00* (OD 30)
+  ├ 34. *Prasanna Venkateshwara Poultry Farm*: *Rs. 2,592.00* (OD 24)
+  └ 35. *Amma Agro Farms*: *Rs. 1,19,969.00* (OD 14)
+
+📋 *Vendor Payables Summary*: *40 Pending Bills* | Balance: *Rs. 23,75,759.15*
+  ├ 1. *Inderson Bright Industry*: *Rs. 730.00* (OD 464)
+  ├ 2. *Sri Sai Poultry*: *Rs. 2.00* (OD 463)
+  ├ 3. *Karni Enterprises*: *Rs. 27,480.00* (OD 371)
+  ├ 4. *Karni Enterprises*: *Rs. 2,023.00* (OD 358)
+  ├ 5. *Ranga Reddy Engg.Works*: *Rs. 8,418.00* (OD 353)
+  ├ 6. *Karni Enterprises*: *Rs. 7,014.00* (OD 340)
+  ├ 7. *Karni Enterprises*: *Rs. 6,702.00* (OD 332)
+  ├ 8. *Karni Enterprises*: *Rs. 8,195.97* (OD 310)
+  ├ 9. *Progressive Power Solutions*: *Rs. 80,995.00* (OD 306)
+  ├ 10. *Macfos Limited*: *Rs. 38,128.00* (OD 302)
+  ├ 11. *S.N Engg Works*: *Rs. 4,455.00* (OD 302)
+  ├ 12. *Dream Polymers*: *Rs. 1,598.00* (OD 302)
+  ├ 13. *Macfos Limited*: *Rs. 7,350.00* (OD 271)
+  ├ 14. *Macfos Limited*: *Rs. 773.00* (OD 270)
+  ├ 15. *Sharma Alloy Steels*: *Rs. 3,292.00* (OD 258)
+  ├ 16. *Chowdary Enterprises*: *Rs. 5,552.00* (OD 252)
+  ├ 17. *Cosmos Coal and Steel trading & Co.*: *Rs. 641.00* (OD 224)
+  ├ 18. *G K Fabrication Works*: *Rs. 20,562.00* (OD 220)
+  ├ 19. *G K Fabrication Works*: *Rs. 48,144.00* (OD 211)
+  ├ 20. *Akshara Siri Steel Traders*: *Rs. 710.00* (OD 208)
+  ├ 21. *Dazzle Robotics Pvt Ltd*: *Rs. 2,014.00* (OD 202)
+  ├ 22. *ZOHO CORPORATION PRIVATE LIMITED*: *Rs. 547.52* (OD 201)
+  ├ 23. *Universal Aluminium*: *Rs. 6,388.16* (OD 199)
+  ├ 24. *Bheeshma Metals*: *Rs. 59.50* (OD 193)
+  ├ 25. *Dream Polymers*: *Rs. 1,598.00* (OD 188)
+  ├ 26. *G.N Poultry Equipments*: *Rs. 4,125.00* (OD 175)
+  ├ 27. *Shiva Shakthi Moulding*: *Rs. 15,000.00* (OD 157)
+  ├ 28. *Sree Bhanu Industries*: *Rs. 28,966.00* (OD 134)
+  ├ 29. *Chowdary Enterprises*: *Rs. 39.00* (OD 115)
+  ├ 30. *S.N Engg Works*: *Rs. 25,000.00* (OD 112)
+  ├ 31. *PARNIKA ENTERPRISES*: *Rs. 2,06,500.00* (OD 86)
+  ├ 32. *Sree Bhanu Industries*: *Rs. 25,265.00* (OD 65)
+  ├ 33. *Lotus Engineering*: *Rs. 4,559.00* (OD 55)
+  ├ 34. *JAINEX LIMITED*: *Rs. 5,91,878.00* (OD 24)
+  ├ 35. *Lotus Engineering*: *Rs. 5,465.00* (OD 24)
+  ├ 36. *Excel Engineering Enterprises*: *Rs. 1,888.00* (OD 17)
+  ├ 37. *Sabitha Engg.Corp*: *Rs. 233.00* (OD 15)
+  ├ 38. *JAINEX LIMITED*: *Rs. 6,25,240.00* (OD 14)
+  ├ 39. *JAINEX LIMITED*: *Rs. 5,57,167.00* (OD 6)
+  └ 40. *Jai Majisa Enterprises*: *Rs. 1,062.00* (OD 0)
+--------------------------------------------------
+📦 *Stock Valuation (Inventory Asset):* *Rs. 1,21,44,323.03*
+💰 *Bank & Cash Balance:* *Rs. 24,63,750.55*
+⚖️ *Overall Net Financial Position:* *Rs. 1,47,80,596.43* (✅ Profit)
+📊 *Net Position Breakdown (History):*
+  • Today (18 Sep): *Rs. 1,47,80,596.43*
+  • -1 Day (17 Sep): *Rs. 1,48,64,107.47*
+  • -2 Days (16 Sep): *Rs. 1,51,88,716.09*
+  • -1 Week (11 Sep): *Rs. 1,97,47,406.31*
+  • -2 Weeks (04 Sep): *Rs. 1,96,18,444.73*
+  • -1 Month (19 Aug): *Rs. 1,62,20,971.71*
+  • -2 Months (20 Jul): *Rs. 82,25,317.12*
+  • -1 Year (18 Sep 2025): *-Rs. 3,83,78,338.15*
+⚠️ *Negative Stock Warning (2 items):*
+  • 15HP Horizontal Mixer With 10HP Grinder With Elevators: *-1.00 units*
+  • 2MM 120GSM - Printed: *-146.43 units*
+
+💳 *Loans & Liabilities (5 active):*
+  • *Proddutur Ravi Advance*: *Rs. 12,000.00*
+  • *Ram Pramodh Advance*: *Rs. 2,000.00*
+  • *ELECTRODE HOLDER ARCON 600 AMPS HD*: *Rs. 2,969.48*
+  • *Loan from Sunfra Farms*: *Rs. 5,00,000.00*
+  • *Sundaram Finance Loan*: *Rs. 12,45,778.00*
+==================================================
+[2026-09-18 22:02:02] Sender: 917259510983 | Group:  | Text: 1️⃣ *Ai iOT Team Reports:* — 📊 *EOD Summary*
+📅 *Date:* 18 Sep 2026
+• Balaji (Approval Task): *Report Review & Approval* - ❌
+• Balaji Team: *Daily Work Update* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 6*
+🗓️ *Total Failed this Month: 16*
+[2026-09-18 22:01:59] Sender: 917259510983 | Group:  | Text: ⚡ *Indus — Daily Comprehensive Report*
+📅 *Date:* 18 Sep 2026
+==================================================
+📊 *Today's Sales & Purchases*:
+• Today's Sales: *Rs. 10,68,420.00* (1 invoices)
+  └ 1. *Raj Farms* (26/27-110): *Rs. 10,68,420.00*
+• Today's Purchases/Costs: *Rs. 1,062.00* (1 items)
+  └ 1. *Jai Majisa Enterprises* (ME/26-27/131): *Rs. 1,062.00*
+
+📈 *Customer Receivables Breakdown*:
+• Total Pending: *35 Invoices* | Balance: *Rs. 25,48,282.00*
+  ├ 1. *J Leela Prasad*: *Rs. 1,08,873.00* (OD 410)
+  ├ 2. *J Leela Prasad*: *Rs. 89,843.00* (OD 410)
+  ├ 3. *Mr. Kumar poultry farm marripalli*: *Rs. 6,408.00* (OD 337)
+  ├ 4. *Deepika Poultry Farm*: *Rs. 3,796.00* (OD 306)
+  ├ 5. *Padmavathi Poultry*: *Rs. 78,080.00* (OD 299)
+  ├ 6. *Padmavathi Poultry*: *Rs. 43,750.00* (OD 298)
+  ├ 7. *DINESH POULTRY FARM*: *Rs. 36,423.00* (OD 266)
+  ├ 8. *Akshaya Poultry Farm*: *Rs. 69,776.00* (OD 252)
+  ├ 9. *Balaji Poultry Farm*: *Rs. 59,006.00* (OD 246)
+  ├ 10. *Mr. Ramki G M*: *Rs. 26,876.00* (OD 223)
+  ├ 11. *Devaki Poultry Farms*: *Rs. 98,544.00* (OD 219)
+  ├ 12. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 206)
+  ├ 13. *Mr. R G Jayakumar Sir*: *Rs. 62,864.00* (OD 206)
+  ├ 14. *Jagadamba Poultry farm*: *Rs. 53,750.00* (OD 206)
+  ├ 15. *Siddalingappa S Yalagi*: *Rs. 58,604.00* (OD 200)
+  ├ 16. *Cheranth Poultry Farm*: *Rs. 39,051.00* (OD 200)
+  ├ 17. *Balaji Poultry Farms*: *Rs. 78,750.00* (OD 196)
+  ├ 18. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 196)
+  ├ 19. *Mr. Subramanyam Reddy Garu*: *Rs. 16,880.00* (OD 193)
+  ├ 20. *Devaki Poultry Farms*: *Rs. 9,000.00* (OD 144)
+  ├ 21. *Madhusudhan Reddy*: *Rs. 12,383.00* (OD 142)
+  ├ 22. *Devaki Poultry Farms*: *Rs. 2,23,680.00* (OD 137)
+  ├ 23. *Sadiq Poultry Farm*: *Rs. 32,399.00* (OD 125)
+  ├ 24. *Sri Gayatri Poultry Farm*: *Rs. 30,384.00* (OD 115)
+  ├ 25. *Mr. Vishwas Raj Sir*: *Rs. 1,250.00* (OD 84)
+  ├ 26. *Shanmuga Poultry Farm*: *Rs. 16,290.00* (OD 81)
+  ├ 27. *Sai Srinivasa Poultry Farm*: *Rs. 20,487.00* (OD 71)
+  ├ 28. *Sri Gayatri Poultry Farm*: *Rs. 64,625.00* (OD 63)
+  ├ 29. *Kannaiah Naidu Garu*: *Rs. 1,83,549.00* (OD 50)
+  ├ 30. *Sri Durga Poultry Farm*: *Rs. 27,824.00* (OD 42)
+  ├ 31. *Sri Durga Poultry Farm*: *Rs. 41,050.00* (OD 39)
+  ├ 32. *Amma Agro Farms*: *Rs. 4,05,600.00* (OD 38)
+  ├ 33. *Amma Agro Farms*: *Rs. 2,68,426.00* (OD 30)
+  ├ 34. *Prasanna Venkateshwara Poultry Farm*: *Rs. 2,592.00* (OD 24)
+  └ 35. *Amma Agro Farms*: *Rs. 1,19,969.00* (OD 14)
+
+📋 *Vendor Payables Summary*: *40 Pending Bills* | Balance: *Rs. 23,75,759.15*
+  ├ 1. *Inderson Bright Industry*: *Rs. 730.00* (OD 464)
+  ├ 2. *Sri Sai Poultry*: *Rs. 2.00* (OD 463)
+  ├ 3. *Karni Enterprises*: *Rs. 27,480.00* (OD 371)
+  ├ 4. *Karni Enterprises*: *Rs. 2,023.00* (OD 358)
+  ├ 5. *Ranga Reddy Engg.Works*: *Rs. 8,418.00* (OD 353)
+  ├ 6. *Karni Enterprises*: *Rs. 7,014.00* (OD 340)
+  ├ 7. *Karni Enterprises*: *Rs. 6,702.00* (OD 332)
+  ├ 8. *Karni Enterprises*: *Rs. 8,195.97* (OD 310)
+  ├ 9. *Progressive Power Solutions*: *Rs. 80,995.00* (OD 306)
+  ├ 10. *Macfos Limited*: *Rs. 38,128.00* (OD 302)
+  ├ 11. *S.N Engg Works*: *Rs. 4,455.00* (OD 302)
+  ├ 12. *Dream Polymers*: *Rs. 1,598.00* (OD 302)
+  ├ 13. *Macfos Limited*: *Rs. 7,350.00* (OD 271)
+  ├ 14. *Macfos Limited*: *Rs. 773.00* (OD 270)
+  ├ 15. *Sharma Alloy Steels*: *Rs. 3,292.00* (OD 258)
+  ├ 16. *Chowdary Enterprises*: *Rs. 5,552.00* (OD 252)
+  ├ 17. *Cosmos Coal and Steel trading & Co.*: *Rs. 641.00* (OD 224)
+  ├ 18. *G K Fabrication Works*: *Rs. 20,562.00* (OD 220)
+  ├ 19. *G K Fabrication Works*: *Rs. 48,144.00* (OD 211)
+  ├ 20. *Akshara Siri Steel Traders*: *Rs. 710.00* (OD 208)
+  ├ 21. *Dazzle Robotics Pvt Ltd*: *Rs. 2,014.00* (OD 202)
+  ├ 22. *ZOHO CORPORATION PRIVATE LIMITED*: *Rs. 547.52* (OD 201)
+  ├ 23. *Universal Aluminium*: *Rs. 6,388.16* (OD 199)
+  ├ 24. *Bheeshma Metals*: *Rs. 59.50* (OD 193)
+  ├ 25. *Dream Polymers*: *Rs. 1,598.00* (OD 188)
+  ├ 26. *G.N Poultry Equipments*: *Rs. 4,125.00* (OD 175)
+  ├ 27. *Shiva Shakthi Moulding*: *Rs. 15,000.00* (OD 157)
+  ├ 28. *Sree Bhanu Industries*: *Rs. 28,966.00* (OD 134)
+  ├ 29. *Chowdary Enterprises*: *Rs. 39.00* (OD 115)
+  ├ 30. *S.N Engg Works*: *Rs. 25,000.00* (OD 112)
+  ├ 31. *PARNIKA ENTERPRISES*: *Rs. 2,06,500.00* (OD 86)
+  ├ 32. *Sree Bhanu Industries*: *Rs. 25,265.00* (OD 65)
+  ├ 33. *Lotus Engineering*: *Rs. 4,559.00* (OD 55)
+  ├ 34. *JAINEX LIMITED*: *Rs. 5,91,878.00* (OD 24)
+  ├ 35. *Lotus Engineering*: *Rs. 5,465.00* (OD 24)
+  ├ 36. *Excel Engineering Enterprises*: *Rs. 1,888.00* (OD 17)
+  ├ 37. *Sabitha Engg.Corp*: *Rs. 233.00* (OD 15)
+  ├ 38. *JAINEX LIMITED*: *Rs. 6,25,240.00* (OD 14)
+  ├ 39. *JAINEX LIMITED*: *Rs. 5,57,167.00* (OD 6)
+  └ 40. *Jai Majisa Enterprises*: *Rs. 1,062.00* (OD 0)
+--------------------------------------------------
+📦 *Stock Valuation (Inventory Asset):* *Rs. 1,21,44,323.03*
+💰 *Bank & Cash Balance:* *Rs. 24,63,750.55*
+⚖️ *Overall Net Financial Position:* *Rs. 1,47,80,596.43* (✅ Profit)
+📊 *Net Position Breakdown (History):*
+  • Today (18 Sep): *Rs. 1,47,80,596.43*
+  • -1 Day (17 Sep): *Rs. 1,48,64,107.47*
+  • -2 Days (16 Sep): *Rs. 1,51,88,716.09*
+  • -1 Week (11 Sep): *Rs. 1,97,47,406.31*
+  • -2 Weeks (04 Sep): *Rs. 1,96,18,444.73*
+  • -1 Month (19 Aug): *Rs. 1,62,20,971.71*
+  • -2 Months (20 Jul): *Rs. 82,25,317.12*
+  • -1 Year (18 Sep 2025): *-Rs. 3,83,78,338.15*
+⚠️ *Negative Stock Warning (2 items):*
+  • 15HP Horizontal Mixer With 10HP Grinder With Elevators: *-1.00 units*
+  • 2MM 120GSM - Printed: *-146.43 units*
+
+💳 *Loans & Liabilities (5 active):*
+  • *Proddutur Ravi Advance*: *Rs. 12,000.00*
+  • *Ram Pramodh Advance*: *Rs. 2,000.00*
+  • *ELECTRODE HOLDER ARCON 600 AMPS HD*: *Rs. 2,969.48*
+  • *Loan from Sunfra Farms*: *Rs. 5,00,000.00*
+  • *Sundaram Finance Loan*: *Rs. 12,45,778.00*
+==================================================
+[2026-09-18 19:43:17] Sender: 207627359363311 | Group: 120363406924564250@g.us | Text: Hi Team,
+I am Poornima 
+Today's work Update, 
+* Worked on the new requirement for the Veman Reddy order, where five motors need to be monitored and a message should be sent whenever any motor switches OFF. Discussed the requirement with Balaji Sir and Vedant Sir for clarification.
+* Researched the motor status monitoring approach and confirmed that the current ZMPT101B voltage sensor is suitable for single-phase voltage measurement. Since the motors are three-phase, further research is required to select a suitable three-phase monitoring method.
+* Reviewed possible solutions for three-phase motor monitoring, including using contactor auxiliary contacts for ON/OFF status and three-phase monitoring relays for detecting phase-related faults. Also noted that the ZMPT101B should not be connected directly to 400–415 V without confirming the module’s voltage rating.
+* Worked on the Veman Reddy Water Flow Monitoring System and investigated an issue that occurred during the final setup. Identified that LittleFS was not mounting, which prevented the receiver from storing queued packets and sending ACKs.
+* Corrected the LittleFS-related issue and reviewed the misleading queued-status messages. Tested the recovery process without erasing existing data and verified that the sender and receiver have matching LoRa settings and ACK formats.
+* After correcting the issue, tested the Veman Reddy Water Flow Monitoring System and confirmed that the system is now working properly without the previous communication or storage issue.
+* Coordinated with Nikhil Sir regarding the 3D-printed enclosure for the Veman Reddy order. Finalized the component placement and required dimensions, completed the box assembly, and kept the unit ready for dispatch.
+* Discussed the Auto Batching issue for the Ugandhar project with Divya Mam. Further discussion with the concerned person is required to identify and resolve the issue and complete the project tomorrow.
+Thank you.
+[2026-09-18 18:54:08] Sender: 917259510983 | Group:  | Text: ⚡ *Indus — Daily Comprehensive Report*
+📅 *Date:* 18 Sep 2026
+==================================================
+📊 *Today's Sales & Purchases*:
+• Today's Sales: *Rs. 10,68,420.00* (1 invoices)
+  └ 1. *Raj Farms* (26/27-110): *Rs. 10,68,420.00*
+• Today's Purchases/Costs: *Rs. 1,062.00* (1 items)
+  └ 1. *Jai Majisa Enterprises* (ME/26-27/131): *Rs. 1,062.00*
+
+📈 *Customer Receivables Breakdown*:
+• Total Pending: *35 Invoices* | Balance: *Rs. 25,48,282.00*
+  ├ 1. *J Leela Prasad*: *Rs. 1,08,873.00* (OD 410)
+  ├ 2. *J Leela Prasad*: *Rs. 89,843.00* (OD 410)
+  ├ 3. *Mr. Kumar poultry farm marripalli*: *Rs. 6,408.00* (OD 337)
+  ├ 4. *Deepika Poultry Farm*: *Rs. 3,796.00* (OD 306)
+  ├ 5. *Padmavathi Poultry*: *Rs. 78,080.00* (OD 299)
+  ├ 6. *Padmavathi Poultry*: *Rs. 43,750.00* (OD 298)
+  ├ 7. *DINESH POULTRY FARM*: *Rs. 36,423.00* (OD 266)
+  ├ 8. *Akshaya Poultry Farm*: *Rs. 69,776.00* (OD 252)
+  ├ 9. *Balaji Poultry Farm*: *Rs. 59,006.00* (OD 246)
+  ├ 10. *Mr. Ramki G M*: *Rs. 26,876.00* (OD 223)
+  ├ 11. *Devaki Poultry Farms*: *Rs. 98,544.00* (OD 219)
+  ├ 12. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 206)
+  ├ 13. *Mr. R G Jayakumar Sir*: *Rs. 62,864.00* (OD 206)
+  ├ 14. *Jagadamba Poultry farm*: *Rs. 53,750.00* (OD 206)
+  ├ 15. *Siddalingappa S Yalagi*: *Rs. 58,604.00* (OD 200)
+  ├ 16. *Cheranth Poultry Farm*: *Rs. 39,051.00* (OD 200)
+  ├ 17. *Balaji Poultry Farms*: *Rs. 78,750.00* (OD 196)
+  ├ 18. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 196)
+  ├ 19. *Mr. Subramanyam Reddy Garu*: *Rs. 16,880.00* (OD 193)
+  ├ 20. *Devaki Poultry Farms*: *Rs. 9,000.00* (OD 144)
+  ├ 21. *Madhusudhan Reddy*: *Rs. 12,383.00* (OD 142)
+  ├ 22. *Devaki Poultry Farms*: *Rs. 2,23,680.00* (OD 137)
+  ├ 23. *Sadiq Poultry Farm*: *Rs. 32,399.00* (OD 125)
+  ├ 24. *Sri Gayatri Poultry Farm*: *Rs. 30,384.00* (OD 115)
+  ├ 25. *Mr. Vishwas Raj Sir*: *Rs. 1,250.00* (OD 84)
+  ├ 26. *Shanmuga Poultry Farm*: *Rs. 16,290.00* (OD 81)
+  ├ 27. *Sai Srinivasa Poultry Farm*: *Rs. 20,487.00* (OD 71)
+  ├ 28. *Sri Gayatri Poultry Farm*: *Rs. 64,625.00* (OD 63)
+  ├ 29. *Kannaiah Naidu Garu*: *Rs. 1,83,549.00* (OD 50)
+  ├ 30. *Sri Durga Poultry Farm*: *Rs. 27,824.00* (OD 42)
+  ├ 31. *Sri Durga Poultry Farm*: *Rs. 41,050.00* (OD 39)
+  ├ 32. *Amma Agro Farms*: *Rs. 4,05,600.00* (OD 38)
+  ├ 33. *Amma Agro Farms*: *Rs. 2,68,426.00* (OD 30)
+  ├ 34. *Prasanna Venkateshwara Poultry Farm*: *Rs. 2,592.00* (OD 24)
+  └ 35. *Amma Agro Farms*: *Rs. 1,19,969.00* (OD 14)
+
+📋 *Vendor Payables Summary*: *40 Pending Bills* | Balance: *Rs. 23,75,759.15*
+  ├ 1. *Inderson Bright Industry*: *Rs. 730.00* (OD 464)
+  ├ 2. *Sri Sai Poultry*: *Rs. 2.00* (OD 463)
+  ├ 3. *Karni Enterprises*: *Rs. 27,480.00* (OD 371)
+  ├ 4. *Karni Enterprises*: *Rs. 2,023.00* (OD 358)
+  ├ 5. *Ranga Reddy Engg.Works*: *Rs. 8,418.00* (OD 353)
+  ├ 6. *Karni Enterprises*: *Rs. 7,014.00* (OD 340)
+  ├ 7. *Karni Enterprises*: *Rs. 6,702.00* (OD 332)
+  ├ 8. *Karni Enterprises*: *Rs. 8,195.97* (OD 310)
+  ├ 9. *Progressive Power Solutions*: *Rs. 80,995.00* (OD 306)
+  ├ 10. *Macfos Limited*: *Rs. 38,128.00* (OD 302)
+  ├ 11. *S.N Engg Works*: *Rs. 4,455.00* (OD 302)
+  ├ 12. *Dream Polymers*: *Rs. 1,598.00* (OD 302)
+  ├ 13. *Macfos Limited*: *Rs. 7,350.00* (OD 271)
+  ├ 14. *Macfos Limited*: *Rs. 773.00* (OD 270)
+  ├ 15. *Sharma Alloy Steels*: *Rs. 3,292.00* (OD 258)
+  ├ 16. *Chowdary Enterprises*: *Rs. 5,552.00* (OD 252)
+  ├ 17. *Cosmos Coal and Steel trading & Co.*: *Rs. 641.00* (OD 224)
+  ├ 18. *G K Fabrication Works*: *Rs. 20,562.00* (OD 220)
+  ├ 19. *G K Fabrication Works*: *Rs. 48,144.00* (OD 211)
+  ├ 20. *Akshara Siri Steel Traders*: *Rs. 710.00* (OD 208)
+  ├ 21. *Dazzle Robotics Pvt Ltd*: *Rs. 2,014.00* (OD 202)
+  ├ 22. *ZOHO CORPORATION PRIVATE LIMITED*: *Rs. 547.52* (OD 201)
+  ├ 23. *Universal Aluminium*: *Rs. 6,388.16* (OD 199)
+  ├ 24. *Bheeshma Metals*: *Rs. 59.50* (OD 193)
+  ├ 25. *Dream Polymers*: *Rs. 1,598.00* (OD 188)
+  ├ 26. *G.N Poultry Equipments*: *Rs. 4,125.00* (OD 175)
+  ├ 27. *Shiva Shakthi Moulding*: *Rs. 15,000.00* (OD 157)
+  ├ 28. *Sree Bhanu Industries*: *Rs. 28,966.00* (OD 134)
+  ├ 29. *Chowdary Enterprises*: *Rs. 39.00* (OD 115)
+  ├ 30. *S.N Engg Works*: *Rs. 25,000.00* (OD 112)
+  ├ 31. *PARNIKA ENTERPRISES*: *Rs. 2,06,500.00* (OD 86)
+  ├ 32. *Sree Bhanu Industries*: *Rs. 25,265.00* (OD 65)
+  ├ 33. *Lotus Engineering*: *Rs. 4,559.00* (OD 55)
+  ├ 34. *JAINEX LIMITED*: *Rs. 5,91,878.00* (OD 24)
+  ├ 35. *Lotus Engineering*: *Rs. 5,465.00* (OD 24)
+  ├ 36. *Excel Engineering Enterprises*: *Rs. 1,888.00* (OD 17)
+  ├ 37. *Sabitha Engg.Corp*: *Rs. 233.00* (OD 15)
+  ├ 38. *JAINEX LIMITED*: *Rs. 6,25,240.00* (OD 14)
+  ├ 39. *JAINEX LIMITED*: *Rs. 5,57,167.00* (OD 6)
+  └ 40. *Jai Majisa Enterprises*: *Rs. 1,062.00* (OD 0)
+--------------------------------------------------
+📦 *Stock Valuation (Inventory Asset):* *Rs. 1,22,08,494.07*
+💰 *Bank & Cash Balance:* *Rs. 24,63,750.55*
+⚖️ *Overall Net Financial Position:* *Rs. 1,48,44,767.47* (✅ Profit)
+📊 *Net Position Breakdown (History):*
+  • Today (18 Sep): *Rs. 1,48,44,767.47*
+  • -1 Day (17 Sep): *Rs. 1,48,64,107.47*
+  • -2 Days (16 Sep): *Rs. 1,51,88,716.09*
+  • -1 Week (11 Sep): *Rs. 1,97,47,406.31*
+  • -2 Weeks (04 Sep): *Rs. 1,96,18,444.73*
+  • -1 Month (19 Aug): *Rs. 1,62,20,971.71*
+  • -2 Months (20 Jul): *Rs. 82,25,317.12*
+  • -1 Year (18 Sep 2025): *-Rs. 3,83,78,338.15*
+⚠️ *Negative Stock Warning (2 items):*
+  • 15HP Horizontal Mixer With 10HP Grinder With Elevators: *-1.00 units*
+  • 2MM 120GSM - Printed: *-146.43 units*
+
+💳 *Loans & Liabilities (5 active):*
+  • *Proddutur Ravi Advance*: *Rs. 12,000.00*
+  • *Ram Pramodh Advance*: *Rs. 2,000.00*
+  • *ELECTRODE HOLDER ARCON 600 AMPS HD*: *Rs. 2,969.48*
+  • *Loan from Sunfra Farms*: *Rs. 5,00,000.00*
+  • *Sundaram Finance Loan*: *Rs. 12,45,778.00*
+==================================================
+[2026-09-18 18:53:49] Sender: 917259510983 | Group:  | Text: ⚡ *Indus — Daily Comprehensive Report*
+📅 *Date:* 18 Sep 2026
+==================================================
+📊 *Today's Sales & Purchases*:
+• Today's Sales: *Rs. 10,68,420.00* (1 invoices)
+  └ 1. *Raj Farms* (26/27-110): *Rs. 10,68,420.00*
+• Today's Purchases/Costs: *Rs. 1,062.00* (1 items)
+  └ 1. *Jai Majisa Enterprises* (ME/26-27/131): *Rs. 1,062.00*
+
+📈 *Customer Receivables Breakdown*:
+• Total Pending: *35 Invoices* | Balance: *Rs. 25,48,282.00*
+  ├ 1. *J Leela Prasad*: *Rs. 1,08,873.00* (OD 410)
+  ├ 2. *J Leela Prasad*: *Rs. 89,843.00* (OD 410)
+  ├ 3. *Mr. Kumar poultry farm marripalli*: *Rs. 6,408.00* (OD 337)
+  ├ 4. *Deepika Poultry Farm*: *Rs. 3,796.00* (OD 306)
+  ├ 5. *Padmavathi Poultry*: *Rs. 78,080.00* (OD 299)
+  ├ 6. *Padmavathi Poultry*: *Rs. 43,750.00* (OD 298)
+  ├ 7. *DINESH POULTRY FARM*: *Rs. 36,423.00* (OD 266)
+  ├ 8. *Akshaya Poultry Farm*: *Rs. 69,776.00* (OD 252)
+  ├ 9. *Balaji Poultry Farm*: *Rs. 59,006.00* (OD 246)
+  ├ 10. *Mr. Ramki G M*: *Rs. 26,876.00* (OD 223)
+  ├ 11. *Devaki Poultry Farms*: *Rs. 98,544.00* (OD 219)
+  ├ 12. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 206)
+  ├ 13. *Mr. R G Jayakumar Sir*: *Rs. 62,864.00* (OD 206)
+  ├ 14. *Jagadamba Poultry farm*: *Rs. 53,750.00* (OD 206)
+  ├ 15. *Siddalingappa S Yalagi*: *Rs. 58,604.00* (OD 200)
+  ├ 16. *Cheranth Poultry Farm*: *Rs. 39,051.00* (OD 200)
+  ├ 17. *Balaji Poultry Farms*: *Rs. 78,750.00* (OD 196)
+  ├ 18. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 196)
+  ├ 19. *Mr. Subramanyam Reddy Garu*: *Rs. 16,880.00* (OD 193)
+  ├ 20. *Devaki Poultry Farms*: *Rs. 9,000.00* (OD 144)
+  ├ 21. *Madhusudhan Reddy*: *Rs. 12,383.00* (OD 142)
+  ├ 22. *Devaki Poultry Farms*: *Rs. 2,23,680.00* (OD 137)
+  ├ 23. *Sadiq Poultry Farm*: *Rs. 32,399.00* (OD 125)
+  ├ 24. *Sri Gayatri Poultry Farm*: *Rs. 30,384.00* (OD 115)
+  ├ 25. *Mr. Vishwas Raj Sir*: *Rs. 1,250.00* (OD 84)
+  ├ 26. *Shanmuga Poultry Farm*: *Rs. 16,290.00* (OD 81)
+  ├ 27. *Sai Srinivasa Poultry Farm*: *Rs. 20,487.00* (OD 71)
+  ├ 28. *Sri Gayatri Poultry Farm*: *Rs. 64,625.00* (OD 63)
+  ├ 29. *Kannaiah Naidu Garu*: *Rs. 1,83,549.00* (OD 50)
+  ├ 30. *Sri Durga Poultry Farm*: *Rs. 27,824.00* (OD 42)
+  ├ 31. *Sri Durga Poultry Farm*: *Rs. 41,050.00* (OD 39)
+  ├ 32. *Amma Agro Farms*: *Rs. 4,05,600.00* (OD 38)
+  ├ 33. *Amma Agro Farms*: *Rs. 2,68,426.00* (OD 30)
+  ├ 34. *Prasanna Venkateshwara Poultry Farm*: *Rs. 2,592.00* (OD 24)
+  └ 35. *Amma Agro Farms*: *Rs. 1,19,969.00* (OD 14)
+
+📋 *Vendor Payables Summary*: *40 Pending Bills* | Balance: *Rs. 23,75,759.15*
+  ├ 1. *Inderson Bright Industry*: *Rs. 730.00* (OD 464)
+  ├ 2. *Sri Sai Poultry*: *Rs. 2.00* (OD 463)
+  ├ 3. *Karni Enterprises*: *Rs. 27,480.00* (OD 371)
+  ├ 4. *Karni Enterprises*: *Rs. 2,023.00* (OD 358)
+  ├ 5. *Ranga Reddy Engg.Works*: *Rs. 8,418.00* (OD 353)
+  ├ 6. *Karni Enterprises*: *Rs. 7,014.00* (OD 340)
+  ├ 7. *Karni Enterprises*: *Rs. 6,702.00* (OD 332)
+  ├ 8. *Karni Enterprises*: *Rs. 8,195.97* (OD 310)
+  ├ 9. *Progressive Power Solutions*: *Rs. 80,995.00* (OD 306)
+  ├ 10. *Macfos Limited*: *Rs. 38,128.00* (OD 302)
+  ├ 11. *S.N Engg Works*: *Rs. 4,455.00* (OD 302)
+  ├ 12. *Dream Polymers*: *Rs. 1,598.00* (OD 302)
+  ├ 13. *Macfos Limited*: *Rs. 7,350.00* (OD 271)
+  ├ 14. *Macfos Limited*: *Rs. 773.00* (OD 270)
+  ├ 15. *Sharma Alloy Steels*: *Rs. 3,292.00* (OD 258)
+  ├ 16. *Chowdary Enterprises*: *Rs. 5,552.00* (OD 252)
+  ├ 17. *Cosmos Coal and Steel trading & Co.*: *Rs. 641.00* (OD 224)
+  ├ 18. *G K Fabrication Works*: *Rs. 20,562.00* (OD 220)
+  ├ 19. *G K Fabrication Works*: *Rs. 48,144.00* (OD 211)
+  ├ 20. *Akshara Siri Steel Traders*: *Rs. 710.00* (OD 208)
+  ├ 21. *Dazzle Robotics Pvt Ltd*: *Rs. 2,014.00* (OD 202)
+  ├ 22. *ZOHO CORPORATION PRIVATE LIMITED*: *Rs. 547.52* (OD 201)
+  ├ 23. *Universal Aluminium*: *Rs. 6,388.16* (OD 199)
+  ├ 24. *Bheeshma Metals*: *Rs. 59.50* (OD 193)
+  ├ 25. *Dream Polymers*: *Rs. 1,598.00* (OD 188)
+  ├ 26. *G.N Poultry Equipments*: *Rs. 4,125.00* (OD 175)
+  ├ 27. *Shiva Shakthi Moulding*: *Rs. 15,000.00* (OD 157)
+  ├ 28. *Sree Bhanu Industries*: *Rs. 28,966.00* (OD 134)
+  ├ 29. *Chowdary Enterprises*: *Rs. 39.00* (OD 115)
+  ├ 30. *S.N Engg Works*: *Rs. 25,000.00* (OD 112)
+  ├ 31. *PARNIKA ENTERPRISES*: *Rs. 2,06,500.00* (OD 86)
+  ├ 32. *Sree Bhanu Industries*: *Rs. 25,265.00* (OD 65)
+  ├ 33. *Lotus Engineering*: *Rs. 4,559.00* (OD 55)
+  ├ 34. *JAINEX LIMITED*: *Rs. 5,91,878.00* (OD 24)
+  ├ 35. *Lotus Engineering*: *Rs. 5,465.00* (OD 24)
+  ├ 36. *Excel Engineering Enterprises*: *Rs. 1,888.00* (OD 17)
+  ├ 37. *Sabitha Engg.Corp*: *Rs. 233.00* (OD 15)
+  ├ 38. *JAINEX LIMITED*: *Rs. 6,25,240.00* (OD 14)
+  ├ 39. *JAINEX LIMITED*: *Rs. 5,57,167.00* (OD 6)
+  └ 40. *Jai Majisa Enterprises*: *Rs. 1,062.00* (OD 0)
+--------------------------------------------------
+📦 *Stock Valuation (Inventory Asset):* *Rs. 1,22,08,494.07*
+💰 *Bank & Cash Balance:* *Rs. 24,63,750.55*
+⚖️ *Overall Net Financial Position:* *Rs. 1,48,44,767.47* (✅ Profit)
+📊 *Net Position Breakdown (History):*
+  • Today (18 Sep): *Rs. 1,48,44,767.47*
+  • -1 Day (17 Sep): *Rs. 1,48,64,107.47*
+  • -2 Days (16 Sep): *Rs. 1,51,88,716.09*
+  • -1 Week (11 Sep): *Rs. 1,97,47,406.31*
+  • -2 Weeks (04 Sep): *Rs. 1,96,18,444.73*
+  • -1 Month (19 Aug): *Rs. 1,62,20,971.71*
+  • -2 Months (20 Jul): *Rs. 82,25,317.12*
+  • -1 Year (18 Sep 2025): *-Rs. 3,83,78,338.15*
+⚠️ *Negative Stock Warning (2 items):*
+  • 15HP Horizontal Mixer With 10HP Grinder With Elevators: *-1.00 units*
+  • 2MM 120GSM - Printed: *-146.43 units*
+
+💳 *Loans & Liabilities (5 active):*
+  • *Proddutur Ravi Advance*: *Rs. 12,000.00*
+  • *Ram Pramodh Advance*: *Rs. 2,000.00*
+  • *ELECTRODE HOLDER ARCON 600 AMPS HD*: *Rs. 2,969.48*
+  • *Loan from Sunfra Farms*: *Rs. 5,00,000.00*
+  • *Sundaram Finance Loan*: *Rs. 12,45,778.00*
+==================================================
+[2026-09-18 18:05:42] Sender: 917259510983 | Group:  | Text: Did Prasad sir or Balaji sir come today?
+[2026-09-17 22:06:27] Sender: 917259510983 | Group: 120363410727174477@g.us | Text: 1️⃣ *Ai iOT Team Reports:* — 📊 *EOD Summary*
+📅 *Date:* 17 Sep 2026
+• Balaji (Approval Task): *Report Review & Approval* - ❌
+• Balaji Team: *Daily Work Update* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 5*
+🗓️ *Total Failed this Month: 15*
+[2026-09-17 22:06:26] Sender: 917259510983 | Group: 120363410727174477@g.us | Text: ⚡ *Indus — Daily Comprehensive Report*
+📅 *Date:* 17 Sep 2026
+==================================================
+📊 *Today's Sales & Purchases*:
+• Today's Sales: *Rs. 0.00* (0 invoices)
+• Today's Purchases/Costs: *Rs. 1,200.00* (3 items)
+  ├ 1. *Driver Charges*: *Rs. 500.00*
+  ├ 2. *Vehicle Expenditure*: *Rs. 600.00*
+  └ 3. *Weighment Charges*: *Rs. 100.00*
+
+📈 *Customer Receivables Breakdown*:
+• Total Pending: *39 Invoices* | Balance: *Rs. 25,67,858.00*
+  ├ 1. *J Leela Prasad*: *Rs. 1,08,873.00* (OD 409)
+  ├ 2. *J Leela Prasad*: *Rs. 89,843.00* (OD 409)
+  ├ 3. *Mr. Kumar poultry farm marripalli*: *Rs. 6,408.00* (OD 336)
+  ├ 4. *Deepika Poultry Farm*: *Rs. 3,796.00* (OD 305)
+  ├ 5. *Padmavathi Poultry*: *Rs. 78,080.00* (OD 298)
+  ├ 6. *Padmavathi Poultry*: *Rs. 43,750.00* (OD 297)
+  ├ 7. *DINESH POULTRY FARM*: *Rs. 36,423.00* (OD 265)
+  ├ 8. *Akshaya Poultry Farm*: *Rs. 69,776.00* (OD 251)
+  ├ 9. *Balaji Poultry Farm*: *Rs. 59,006.00* (OD 245)
+  ├ 10. *P.Chandra Shekhar*: *Rs. 500.00* (OD 227)
+  ├ 11. *Mr. Ramki G M*: *Rs. 26,876.00* (OD 222)
+  ├ 12. *Devaki Poultry Farms*: *Rs. 98,544.00* (OD 218)
+  ├ 13. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 205)
+  ├ 14. *Mr. R G Jayakumar Sir*: *Rs. 62,864.00* (OD 205)
+  ├ 15. *Jagadamba Poultry farm*: *Rs. 53,750.00* (OD 205)
+  ├ 16. *Siddalingappa S Yalagi*: *Rs. 58,604.00* (OD 199)
+  ├ 17. *Cheranth Poultry Farm*: *Rs. 39,051.00* (OD 199)
+  ├ 18. *Balaji Poultry Farms*: *Rs. 78,750.00* (OD 195)
+  ├ 19. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 195)
+  ├ 20. *Mr. Subramanyam Reddy Garu*: *Rs. 16,880.00* (OD 192)
+  ├ 21. *Mahadeshwara Poultry Farm*: *Rs. 3,781.00* (OD 192)
+  ├ 22. *Devaki Poultry Farms*: *Rs. 9,000.00* (OD 143)
+  ├ 23. *Madhusudhan Reddy*: *Rs. 12,383.00* (OD 141)
+  ├ 24. *Devaki Poultry Farms*: *Rs. 2,23,680.00* (OD 136)
+  ├ 25. *Sadiq Poultry Farm*: *Rs. 32,399.00* (OD 124)
+  ├ 26. *Sri Gayatri Poultry Farm*: *Rs. 30,384.00* (OD 114)
+  ├ 27. *Mrs. R Indumathi Garu*: *Rs. 8,000.00* (OD 92)
+  ├ 28. *Shri Shiridi  Sainadh Poultry Farm*: *Rs. 7,295.00* (OD 86)
+  ├ 29. *Mr. Vishwas Raj Sir*: *Rs. 1,250.00* (OD 83)
+  ├ 30. *Shanmuga Poultry Farm*: *Rs. 16,290.00* (OD 80)
+  ├ 31. *Sai Srinivasa Poultry Farm*: *Rs. 20,487.00* (OD 70)
+  ├ 32. *Sri Gayatri Poultry Farm*: *Rs. 64,625.00* (OD 62)
+  ├ 33. *Kannaiah Naidu Garu*: *Rs. 1,83,549.00* (OD 49)
+  ├ 34. *Sri Durga Poultry Farm*: *Rs. 27,824.00* (OD 41)
+  ├ 35. *Sri Durga Poultry Farm*: *Rs. 41,050.00* (OD 38)
+  ├ 36. *Amma Agro Farms*: *Rs. 4,05,600.00* (OD 37)
+  ├ 37. *Amma Agro Farms*: *Rs. 2,68,426.00* (OD 29)
+  ├ 38. *Prasanna Venkateshwara Poultry Farm*: *Rs. 2,592.00* (OD 23)
+  └ 39. *Amma Agro Farms*: *Rs. 1,19,969.00* (OD 13)
+
+📋 *Vendor Payables Summary*: *40 Pending Bills* | Balance: *Rs. 23,75,995.15*
+  ├ 1. *Inderson Bright Industry*: *Rs. 730.00* (OD 463)
+  ├ 2. *Sri Sai Poultry*: *Rs. 2.00* (OD 462)
+  ├ 3. *Karni Enterprises*: *Rs. 27,480.00* (OD 370)
+  ├ 4. *Karni Enterprises*: *Rs. 2,023.00* (OD 357)
+  ├ 5. *Ranga Reddy Engg.Works*: *Rs. 8,418.00* (OD 352)
+  ├ 6. *Karni Enterprises*: *Rs. 7,014.00* (OD 339)
+  ├ 7. *Karni Enterprises*: *Rs. 6,702.00* (OD 331)
+  ├ 8. *Karni Enterprises*: *Rs. 8,195.97* (OD 309)
+  ├ 9. *Progressive Power Solutions*: *Rs. 80,995.00* (OD 305)
+  ├ 10. *Macfos Limited*: *Rs. 38,128.00* (OD 301)
+  ├ 11. *S.N Engg Works*: *Rs. 4,455.00* (OD 301)
+  ├ 12. *Dream Polymers*: *Rs. 1,598.00* (OD 301)
+  ├ 13. *Macfos Limited*: *Rs. 7,350.00* (OD 270)
+  ├ 14. *Macfos Limited*: *Rs. 773.00* (OD 269)
+  ├ 15. *Sharma Alloy Steels*: *Rs. 3,292.00* (OD 257)
+  ├ 16. *Chowdary Enterprises*: *Rs. 5,552.00* (OD 251)
+  ├ 17. *Cosmos Coal and Steel trading & Co.*: *Rs. 641.00* (OD 223)
+  ├ 18. *G K Fabrication Works*: *Rs. 20,562.00* (OD 219)
+  ├ 19. *G K Fabrication Works*: *Rs. 48,144.00* (OD 210)
+  ├ 20. *Akshara Siri Steel Traders*: *Rs. 710.00* (OD 207)
+  ├ 21. *Dazzle Robotics Pvt Ltd*: *Rs. 2,014.00* (OD 201)
+  ├ 22. *ZOHO CORPORATION PRIVATE LIMITED*: *Rs. 547.52* (OD 200)
+  ├ 23. *Universal Aluminium*: *Rs. 6,388.16* (OD 198)
+  ├ 24. *Bheeshma Metals*: *Rs. 59.50* (OD 192)
+  ├ 25. *Dream Polymers*: *Rs. 1,598.00* (OD 187)
+  ├ 26. *G.N Poultry Equipments*: *Rs. 4,125.00* (OD 174)
+  ├ 27. *Shiva Shakthi Moulding*: *Rs. 15,000.00* (OD 156)
+  ├ 28. *Sree Bhanu Industries*: *Rs. 28,966.00* (OD 133)
+  ├ 29. *Chowdary Enterprises*: *Rs. 39.00* (OD 114)
+  ├ 30. *S.N Engg Works*: *Rs. 25,000.00* (OD 111)
+  ├ 31. *PARNIKA ENTERPRISES*: *Rs. 2,06,500.00* (OD 85)
+  ├ 32. *Sree Bhanu Industries*: *Rs. 25,265.00* (OD 64)
+  ├ 33. *Lotus Engineering*: *Rs. 4,559.00* (OD 54)
+  ├ 34. *JAINEX LIMITED*: *Rs. 5,91,878.00* (OD 23)
+  ├ 35. *Lotus Engineering*: *Rs. 5,465.00* (OD 23)
+  ├ 36. *Excel Engineering Enterprises*: *Rs. 1,888.00* (OD 16)
+  ├ 37. *Sabitha Engg.Corp*: *Rs. 233.00* (OD 14)
+  ├ 38. *JAINEX LIMITED*: *Rs. 6,25,240.00* (OD 13)
+  ├ 39. *JAINEX LIMITED*: *Rs. 5,57,167.00* (OD 5)
+  └ 40. *Jai Majisa Enterprises*: *Rs. 1,298.00* (OD 5)
+--------------------------------------------------
+📦 *Stock Valuation (Inventory Asset):* *Rs. 1,22,08,494.07*
+💰 *Bank & Cash Balance:* *Rs. 24,63,750.55*
+⚖️ *Overall Net Financial Position:* *Rs. 1,48,64,107.47* (✅ Profit)
+📊 *Net Position Breakdown (History):*
+  • Today (17 Sep): *Rs. 1,48,64,107.47*
+  • -1 Day (16 Sep): *Rs. 1,51,88,716.09*
+  • -2 Days (15 Sep): *Rs. 1,84,83,978.13*
+  • -1 Week (10 Sep): *Rs. 1,96,30,782.99*
+  • -2 Weeks (03 Sep): *Rs. 1,97,96,668.41*
+  • -1 Month (18 Aug): *Rs. 1,70,24,078.33*
+  • -2 Months (19 Jul): *Rs. 85,58,726.74*
+  • -1 Year (17 Sep 2025): *-Rs. 3,73,30,869.53*
+⚠️ *Negative Stock Warning (2 items):*
+  • 15HP Horizontal Mixer With 10HP Grinder With Elevators: *-1.00 units*
+  • 2MM 120GSM - Printed: *-146.43 units*
+
+💳 *Loans & Liabilities (5 active):*
+  • *Proddutur Ravi Advance*: *Rs. 12,000.00*
+  • *Ram Pramodh Advance*: *Rs. 2,000.00*
+  • *ELECTRODE HOLDER ARCON 600 AMPS HD*: *Rs. 2,969.48*
+  • *Loan from Sunfra Farms*: *Rs. 5,00,000.00*
+  • *Sundaram Finance Loan*: *Rs. 12,45,778.00*
+==================================================
+[2026-09-17 22:01:44] Sender: 917259510983 | Group:  | Text: 1️⃣ *Ai iOT Team Reports:* — 📊 *EOD Summary*
+📅 *Date:* 17 Sep 2026
+• Balaji (Approval Task): *Report Review & Approval* - ❌
+• Balaji Team: *Daily Work Update* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 5*
+🗓️ *Total Failed this Month: 15*
+[2026-09-17 22:01:42] Sender: 917259510983 | Group:  | Text: ⚡ *Indus — Daily Comprehensive Report*
+📅 *Date:* 17 Sep 2026
+==================================================
+📊 *Today's Sales & Purchases*:
+• Today's Sales: *Rs. 0.00* (0 invoices)
+• Today's Purchases/Costs: *Rs. 1,200.00* (3 items)
+  ├ 1. *Driver Charges*: *Rs. 500.00*
+  ├ 2. *Vehicle Expenditure*: *Rs. 600.00*
+  └ 3. *Weighment Charges*: *Rs. 100.00*
+
+📈 *Customer Receivables Breakdown*:
+• Total Pending: *39 Invoices* | Balance: *Rs. 25,67,858.00*
+  ├ 1. *J Leela Prasad*: *Rs. 1,08,873.00* (OD 409)
+  ├ 2. *J Leela Prasad*: *Rs. 89,843.00* (OD 409)
+  ├ 3. *Mr. Kumar poultry farm marripalli*: *Rs. 6,408.00* (OD 336)
+  ├ 4. *Deepika Poultry Farm*: *Rs. 3,796.00* (OD 305)
+  ├ 5. *Padmavathi Poultry*: *Rs. 78,080.00* (OD 298)
+  ├ 6. *Padmavathi Poultry*: *Rs. 43,750.00* (OD 297)
+  ├ 7. *DINESH POULTRY FARM*: *Rs. 36,423.00* (OD 265)
+  ├ 8. *Akshaya Poultry Farm*: *Rs. 69,776.00* (OD 251)
+  ├ 9. *Balaji Poultry Farm*: *Rs. 59,006.00* (OD 245)
+  ├ 10. *P.Chandra Shekhar*: *Rs. 500.00* (OD 227)
+  ├ 11. *Mr. Ramki G M*: *Rs. 26,876.00* (OD 222)
+  ├ 12. *Devaki Poultry Farms*: *Rs. 98,544.00* (OD 218)
+  ├ 13. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 205)
+  ├ 14. *Mr. R G Jayakumar Sir*: *Rs. 62,864.00* (OD 205)
+  ├ 15. *Jagadamba Poultry farm*: *Rs. 53,750.00* (OD 205)
+  ├ 16. *Siddalingappa S Yalagi*: *Rs. 58,604.00* (OD 199)
+  ├ 17. *Cheranth Poultry Farm*: *Rs. 39,051.00* (OD 199)
+  ├ 18. *Balaji Poultry Farms*: *Rs. 78,750.00* (OD 195)
+  ├ 19. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 195)
+  ├ 20. *Mr. Subramanyam Reddy Garu*: *Rs. 16,880.00* (OD 192)
+  ├ 21. *Mahadeshwara Poultry Farm*: *Rs. 3,781.00* (OD 192)
+  ├ 22. *Devaki Poultry Farms*: *Rs. 9,000.00* (OD 143)
+  ├ 23. *Madhusudhan Reddy*: *Rs. 12,383.00* (OD 141)
+  ├ 24. *Devaki Poultry Farms*: *Rs. 2,23,680.00* (OD 136)
+  ├ 25. *Sadiq Poultry Farm*: *Rs. 32,399.00* (OD 124)
+  ├ 26. *Sri Gayatri Poultry Farm*: *Rs. 30,384.00* (OD 114)
+  ├ 27. *Mrs. R Indumathi Garu*: *Rs. 8,000.00* (OD 92)
+  ├ 28. *Shri Shiridi  Sainadh Poultry Farm*: *Rs. 7,295.00* (OD 86)
+  ├ 29. *Mr. Vishwas Raj Sir*: *Rs. 1,250.00* (OD 83)
+  ├ 30. *Shanmuga Poultry Farm*: *Rs. 16,290.00* (OD 80)
+  ├ 31. *Sai Srinivasa Poultry Farm*: *Rs. 20,487.00* (OD 70)
+  ├ 32. *Sri Gayatri Poultry Farm*: *Rs. 64,625.00* (OD 62)
+  ├ 33. *Kannaiah Naidu Garu*: *Rs. 1,83,549.00* (OD 49)
+  ├ 34. *Sri Durga Poultry Farm*: *Rs. 27,824.00* (OD 41)
+  ├ 35. *Sri Durga Poultry Farm*: *Rs. 41,050.00* (OD 38)
+  ├ 36. *Amma Agro Farms*: *Rs. 4,05,600.00* (OD 37)
+  ├ 37. *Amma Agro Farms*: *Rs. 2,68,426.00* (OD 29)
+  ├ 38. *Prasanna Venkateshwara Poultry Farm*: *Rs. 2,592.00* (OD 23)
+  └ 39. *Amma Agro Farms*: *Rs. 1,19,969.00* (OD 13)
+
+📋 *Vendor Payables Summary*: *40 Pending Bills* | Balance: *Rs. 23,75,995.15*
+  ├ 1. *Inderson Bright Industry*: *Rs. 730.00* (OD 463)
+  ├ 2. *Sri Sai Poultry*: *Rs. 2.00* (OD 462)
+  ├ 3. *Karni Enterprises*: *Rs. 27,480.00* (OD 370)
+  ├ 4. *Karni Enterprises*: *Rs. 2,023.00* (OD 357)
+  ├ 5. *Ranga Reddy Engg.Works*: *Rs. 8,418.00* (OD 352)
+  ├ 6. *Karni Enterprises*: *Rs. 7,014.00* (OD 339)
+  ├ 7. *Karni Enterprises*: *Rs. 6,702.00* (OD 331)
+  ├ 8. *Karni Enterprises*: *Rs. 8,195.97* (OD 309)
+  ├ 9. *Progressive Power Solutions*: *Rs. 80,995.00* (OD 305)
+  ├ 10. *Macfos Limited*: *Rs. 38,128.00* (OD 301)
+  ├ 11. *S.N Engg Works*: *Rs. 4,455.00* (OD 301)
+  ├ 12. *Dream Polymers*: *Rs. 1,598.00* (OD 301)
+  ├ 13. *Macfos Limited*: *Rs. 7,350.00* (OD 270)
+  ├ 14. *Macfos Limited*: *Rs. 773.00* (OD 269)
+  ├ 15. *Sharma Alloy Steels*: *Rs. 3,292.00* (OD 257)
+  ├ 16. *Chowdary Enterprises*: *Rs. 5,552.00* (OD 251)
+  ├ 17. *Cosmos Coal and Steel trading & Co.*: *Rs. 641.00* (OD 223)
+  ├ 18. *G K Fabrication Works*: *Rs. 20,562.00* (OD 219)
+  ├ 19. *G K Fabrication Works*: *Rs. 48,144.00* (OD 210)
+  ├ 20. *Akshara Siri Steel Traders*: *Rs. 710.00* (OD 207)
+  ├ 21. *Dazzle Robotics Pvt Ltd*: *Rs. 2,014.00* (OD 201)
+  ├ 22. *ZOHO CORPORATION PRIVATE LIMITED*: *Rs. 547.52* (OD 200)
+  ├ 23. *Universal Aluminium*: *Rs. 6,388.16* (OD 198)
+  ├ 24. *Bheeshma Metals*: *Rs. 59.50* (OD 192)
+  ├ 25. *Dream Polymers*: *Rs. 1,598.00* (OD 187)
+  ├ 26. *G.N Poultry Equipments*: *Rs. 4,125.00* (OD 174)
+  ├ 27. *Shiva Shakthi Moulding*: *Rs. 15,000.00* (OD 156)
+  ├ 28. *Sree Bhanu Industries*: *Rs. 28,966.00* (OD 133)
+  ├ 29. *Chowdary Enterprises*: *Rs. 39.00* (OD 114)
+  ├ 30. *S.N Engg Works*: *Rs. 25,000.00* (OD 111)
+  ├ 31. *PARNIKA ENTERPRISES*: *Rs. 2,06,500.00* (OD 85)
+  ├ 32. *Sree Bhanu Industries*: *Rs. 25,265.00* (OD 64)
+  ├ 33. *Lotus Engineering*: *Rs. 4,559.00* (OD 54)
+  ├ 34. *JAINEX LIMITED*: *Rs. 5,91,878.00* (OD 23)
+  ├ 35. *Lotus Engineering*: *Rs. 5,465.00* (OD 23)
+  ├ 36. *Excel Engineering Enterprises*: *Rs. 1,888.00* (OD 16)
+  ├ 37. *Sabitha Engg.Corp*: *Rs. 233.00* (OD 14)
+  ├ 38. *JAINEX LIMITED*: *Rs. 6,25,240.00* (OD 13)
+  ├ 39. *JAINEX LIMITED*: *Rs. 5,57,167.00* (OD 5)
+  └ 40. *Jai Majisa Enterprises*: *Rs. 1,298.00* (OD 5)
+--------------------------------------------------
+📦 *Stock Valuation (Inventory Asset):* *Rs. 1,22,08,494.07*
+💰 *Bank & Cash Balance:* *Rs. 24,63,750.55*
+⚖️ *Overall Net Financial Position:* *Rs. 1,48,64,107.47* (✅ Profit)
+📊 *Net Position Breakdown (History):*
+  • Today (17 Sep): *Rs. 1,48,64,107.47*
+  • -1 Day (16 Sep): *Rs. 1,51,88,716.09*
+  • -2 Days (15 Sep): *Rs. 1,84,83,978.13*
+  • -1 Week (10 Sep): *Rs. 1,96,30,782.99*
+  • -2 Weeks (03 Sep): *Rs. 1,97,96,668.41*
+  • -1 Month (18 Aug): *Rs. 1,70,24,078.33*
+  • -2 Months (19 Jul): *Rs. 85,58,726.74*
+  • -1 Year (17 Sep 2025): *-Rs. 3,73,30,869.53*
+⚠️ *Negative Stock Warning (2 items):*
+  • 15HP Horizontal Mixer With 10HP Grinder With Elevators: *-1.00 units*
+  • 2MM 120GSM - Printed: *-146.43 units*
+
+💳 *Loans & Liabilities (5 active):*
+  • *Proddutur Ravi Advance*: *Rs. 12,000.00*
+  • *Ram Pramodh Advance*: *Rs. 2,000.00*
+  • *ELECTRODE HOLDER ARCON 600 AMPS HD*: *Rs. 2,969.48*
+  • *Loan from Sunfra Farms*: *Rs. 5,00,000.00*
+  • *Sundaram Finance Loan*: *Rs. 12,45,778.00*
+==================================================
+[2026-09-17 22:01:34] Sender: 917259510983 | Group:  | Text: 1️⃣ *Ai iOT Team Reports:* — 📊 *EOD Summary*
+📅 *Date:* 17 Sep 2026
+• Balaji (Approval Task): *Report Review & Approval* - ❌
+• Balaji Team: *Daily Work Update* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 5*
+🗓️ *Total Failed this Month: 15*
+[2026-09-17 22:01:31] Sender: 917259510983 | Group:  | Text: ⚡ *Indus — Daily Comprehensive Report*
+📅 *Date:* 17 Sep 2026
+==================================================
+📊 *Today's Sales & Purchases*:
+• Today's Sales: *Rs. 0.00* (0 invoices)
+• Today's Purchases/Costs: *Rs. 1,200.00* (3 items)
+  ├ 1. *Driver Charges*: *Rs. 500.00*
+  ├ 2. *Vehicle Expenditure*: *Rs. 600.00*
+  └ 3. *Weighment Charges*: *Rs. 100.00*
+
+📈 *Customer Receivables Breakdown*:
+• Total Pending: *39 Invoices* | Balance: *Rs. 25,67,858.00*
+  ├ 1. *J Leela Prasad*: *Rs. 1,08,873.00* (OD 409)
+  ├ 2. *J Leela Prasad*: *Rs. 89,843.00* (OD 409)
+  ├ 3. *Mr. Kumar poultry farm marripalli*: *Rs. 6,408.00* (OD 336)
+  ├ 4. *Deepika Poultry Farm*: *Rs. 3,796.00* (OD 305)
+  ├ 5. *Padmavathi Poultry*: *Rs. 78,080.00* (OD 298)
+  ├ 6. *Padmavathi Poultry*: *Rs. 43,750.00* (OD 297)
+  ├ 7. *DINESH POULTRY FARM*: *Rs. 36,423.00* (OD 265)
+  ├ 8. *Akshaya Poultry Farm*: *Rs. 69,776.00* (OD 251)
+  ├ 9. *Balaji Poultry Farm*: *Rs. 59,006.00* (OD 245)
+  ├ 10. *P.Chandra Shekhar*: *Rs. 500.00* (OD 227)
+  ├ 11. *Mr. Ramki G M*: *Rs. 26,876.00* (OD 222)
+  ├ 12. *Devaki Poultry Farms*: *Rs. 98,544.00* (OD 218)
+  ├ 13. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 205)
+  ├ 14. *Mr. R G Jayakumar Sir*: *Rs. 62,864.00* (OD 205)
+  ├ 15. *Jagadamba Poultry farm*: *Rs. 53,750.00* (OD 205)
+  ├ 16. *Siddalingappa S Yalagi*: *Rs. 58,604.00* (OD 199)
+  ├ 17. *Cheranth Poultry Farm*: *Rs. 39,051.00* (OD 199)
+  ├ 18. *Balaji Poultry Farms*: *Rs. 78,750.00* (OD 195)
+  ├ 19. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 195)
+  ├ 20. *Mr. Subramanyam Reddy Garu*: *Rs. 16,880.00* (OD 192)
+  ├ 21. *Mahadeshwara Poultry Farm*: *Rs. 3,781.00* (OD 192)
+  ├ 22. *Devaki Poultry Farms*: *Rs. 9,000.00* (OD 143)
+  ├ 23. *Madhusudhan Reddy*: *Rs. 12,383.00* (OD 141)
+  ├ 24. *Devaki Poultry Farms*: *Rs. 2,23,680.00* (OD 136)
+  ├ 25. *Sadiq Poultry Farm*: *Rs. 32,399.00* (OD 124)
+  ├ 26. *Sri Gayatri Poultry Farm*: *Rs. 30,384.00* (OD 114)
+  ├ 27. *Mrs. R Indumathi Garu*: *Rs. 8,000.00* (OD 92)
+  ├ 28. *Shri Shiridi  Sainadh Poultry Farm*: *Rs. 7,295.00* (OD 86)
+  ├ 29. *Mr. Vishwas Raj Sir*: *Rs. 1,250.00* (OD 83)
+  ├ 30. *Shanmuga Poultry Farm*: *Rs. 16,290.00* (OD 80)
+  ├ 31. *Sai Srinivasa Poultry Farm*: *Rs. 20,487.00* (OD 70)
+  ├ 32. *Sri Gayatri Poultry Farm*: *Rs. 64,625.00* (OD 62)
+  ├ 33. *Kannaiah Naidu Garu*: *Rs. 1,83,549.00* (OD 49)
+  ├ 34. *Sri Durga Poultry Farm*: *Rs. 27,824.00* (OD 41)
+  ├ 35. *Sri Durga Poultry Farm*: *Rs. 41,050.00* (OD 38)
+  ├ 36. *Amma Agro Farms*: *Rs. 4,05,600.00* (OD 37)
+  ├ 37. *Amma Agro Farms*: *Rs. 2,68,426.00* (OD 29)
+  ├ 38. *Prasanna Venkateshwara Poultry Farm*: *Rs. 2,592.00* (OD 23)
+  └ 39. *Amma Agro Farms*: *Rs. 1,19,969.00* (OD 13)
+
+📋 *Vendor Payables Summary*: *40 Pending Bills* | Balance: *Rs. 23,75,995.15*
+  ├ 1. *Inderson Bright Industry*: *Rs. 730.00* (OD 463)
+  ├ 2. *Sri Sai Poultry*: *Rs. 2.00* (OD 462)
+  ├ 3. *Karni Enterprises*: *Rs. 27,480.00* (OD 370)
+  ├ 4. *Karni Enterprises*: *Rs. 2,023.00* (OD 357)
+  ├ 5. *Ranga Reddy Engg.Works*: *Rs. 8,418.00* (OD 352)
+  ├ 6. *Karni Enterprises*: *Rs. 7,014.00* (OD 339)
+  ├ 7. *Karni Enterprises*: *Rs. 6,702.00* (OD 331)
+  ├ 8. *Karni Enterprises*: *Rs. 8,195.97* (OD 309)
+  ├ 9. *Progressive Power Solutions*: *Rs. 80,995.00* (OD 305)
+  ├ 10. *Macfos Limited*: *Rs. 38,128.00* (OD 301)
+  ├ 11. *S.N Engg Works*: *Rs. 4,455.00* (OD 301)
+  ├ 12. *Dream Polymers*: *Rs. 1,598.00* (OD 301)
+  ├ 13. *Macfos Limited*: *Rs. 7,350.00* (OD 270)
+  ├ 14. *Macfos Limited*: *Rs. 773.00* (OD 269)
+  ├ 15. *Sharma Alloy Steels*: *Rs. 3,292.00* (OD 257)
+  ├ 16. *Chowdary Enterprises*: *Rs. 5,552.00* (OD 251)
+  ├ 17. *Cosmos Coal and Steel trading & Co.*: *Rs. 641.00* (OD 223)
+  ├ 18. *G K Fabrication Works*: *Rs. 20,562.00* (OD 219)
+  ├ 19. *G K Fabrication Works*: *Rs. 48,144.00* (OD 210)
+  ├ 20. *Akshara Siri Steel Traders*: *Rs. 710.00* (OD 207)
+  ├ 21. *Dazzle Robotics Pvt Ltd*: *Rs. 2,014.00* (OD 201)
+  ├ 22. *ZOHO CORPORATION PRIVATE LIMITED*: *Rs. 547.52* (OD 200)
+  ├ 23. *Universal Aluminium*: *Rs. 6,388.16* (OD 198)
+  ├ 24. *Bheeshma Metals*: *Rs. 59.50* (OD 192)
+  ├ 25. *Dream Polymers*: *Rs. 1,598.00* (OD 187)
+  ├ 26. *G.N Poultry Equipments*: *Rs. 4,125.00* (OD 174)
+  ├ 27. *Shiva Shakthi Moulding*: *Rs. 15,000.00* (OD 156)
+  ├ 28. *Sree Bhanu Industries*: *Rs. 28,966.00* (OD 133)
+  ├ 29. *Chowdary Enterprises*: *Rs. 39.00* (OD 114)
+  ├ 30. *S.N Engg Works*: *Rs. 25,000.00* (OD 111)
+  ├ 31. *PARNIKA ENTERPRISES*: *Rs. 2,06,500.00* (OD 85)
+  ├ 32. *Sree Bhanu Industries*: *Rs. 25,265.00* (OD 64)
+  ├ 33. *Lotus Engineering*: *Rs. 4,559.00* (OD 54)
+  ├ 34. *JAINEX LIMITED*: *Rs. 5,91,878.00* (OD 23)
+  ├ 35. *Lotus Engineering*: *Rs. 5,465.00* (OD 23)
+  ├ 36. *Excel Engineering Enterprises*: *Rs. 1,888.00* (OD 16)
+  ├ 37. *Sabitha Engg.Corp*: *Rs. 233.00* (OD 14)
+  ├ 38. *JAINEX LIMITED*: *Rs. 6,25,240.00* (OD 13)
+  ├ 39. *JAINEX LIMITED*: *Rs. 5,57,167.00* (OD 5)
+  └ 40. *Jai Majisa Enterprises*: *Rs. 1,298.00* (OD 5)
+--------------------------------------------------
+📦 *Stock Valuation (Inventory Asset):* *Rs. 1,22,08,494.07*
+💰 *Bank & Cash Balance:* *Rs. 24,63,750.55*
+⚖️ *Overall Net Financial Position:* *Rs. 1,48,64,107.47* (✅ Profit)
+📊 *Net Position Breakdown (History):*
+  • Today (17 Sep): *Rs. 1,48,64,107.47*
+  • -1 Day (16 Sep): *Rs. 1,51,88,716.09*
+  • -2 Days (15 Sep): *Rs. 1,84,83,978.13*
+  • -1 Week (10 Sep): *Rs. 1,96,30,782.99*
+  • -2 Weeks (03 Sep): *Rs. 1,97,96,668.41*
+  • -1 Month (18 Aug): *Rs. 1,70,24,078.33*
+  • -2 Months (19 Jul): *Rs. 85,58,726.74*
+  • -1 Year (17 Sep 2025): *-Rs. 3,73,30,869.53*
+⚠️ *Negative Stock Warning (2 items):*
+  • 15HP Horizontal Mixer With 10HP Grinder With Elevators: *-1.00 units*
+  • 2MM 120GSM - Printed: *-146.43 units*
+
+💳 *Loans & Liabilities (5 active):*
+  • *Proddutur Ravi Advance*: *Rs. 12,000.00*
+  • *Ram Pramodh Advance*: *Rs. 2,000.00*
+  • *ELECTRODE HOLDER ARCON 600 AMPS HD*: *Rs. 2,969.48*
+  • *Loan from Sunfra Farms*: *Rs. 5,00,000.00*
+  • *Sundaram Finance Loan*: *Rs. 12,45,778.00*
+==================================================
+[2026-09-17 18:54:29] Sender: 917259510983 | Group:  | Text: ⚡ *Indus — Daily Comprehensive Report*
+📅 *Date:* 17 Sep 2026
+==================================================
+📊 *Today's Sales & Purchases*:
+• Today's Sales: *Rs. 0.00* (0 invoices)
+• Today's Purchases/Costs: *Rs. 1,200.00* (3 items)
+  ├ 1. *Driver Charges*: *Rs. 500.00*
+  ├ 2. *Vehicle Expenditure*: *Rs. 600.00*
+  └ 3. *Weighment Charges*: *Rs. 100.00*
+
+📈 *Customer Receivables Breakdown*:
+• Total Pending: *39 Invoices* | Balance: *Rs. 25,67,858.00*
+  ├ 1. *J Leela Prasad*: *Rs. 1,08,873.00* (OD 409)
+  ├ 2. *J Leela Prasad*: *Rs. 89,843.00* (OD 409)
+  ├ 3. *Mr. Kumar poultry farm marripalli*: *Rs. 6,408.00* (OD 336)
+  ├ 4. *Deepika Poultry Farm*: *Rs. 3,796.00* (OD 305)
+  ├ 5. *Padmavathi Poultry*: *Rs. 78,080.00* (OD 298)
+  ├ 6. *Padmavathi Poultry*: *Rs. 43,750.00* (OD 297)
+  ├ 7. *DINESH POULTRY FARM*: *Rs. 36,423.00* (OD 265)
+  ├ 8. *Akshaya Poultry Farm*: *Rs. 69,776.00* (OD 251)
+  ├ 9. *Balaji Poultry Farm*: *Rs. 59,006.00* (OD 245)
+  ├ 10. *P.Chandra Shekhar*: *Rs. 500.00* (OD 227)
+  ├ 11. *Mr. Ramki G M*: *Rs. 26,876.00* (OD 222)
+  ├ 12. *Devaki Poultry Farms*: *Rs. 98,544.00* (OD 218)
+  ├ 13. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 205)
+  ├ 14. *Mr. R G Jayakumar Sir*: *Rs. 62,864.00* (OD 205)
+  ├ 15. *Jagadamba Poultry farm*: *Rs. 53,750.00* (OD 205)
+  ├ 16. *Siddalingappa S Yalagi*: *Rs. 58,604.00* (OD 199)
+  ├ 17. *Cheranth Poultry Farm*: *Rs. 39,051.00* (OD 199)
+  ├ 18. *Balaji Poultry Farms*: *Rs. 78,750.00* (OD 195)
+  ├ 19. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 195)
+  ├ 20. *Mr. Subramanyam Reddy Garu*: *Rs. 16,880.00* (OD 192)
+  ├ 21. *Mahadeshwara Poultry Farm*: *Rs. 3,781.00* (OD 192)
+  ├ 22. *Devaki Poultry Farms*: *Rs. 9,000.00* (OD 143)
+  ├ 23. *Madhusudhan Reddy*: *Rs. 12,383.00* (OD 141)
+  ├ 24. *Devaki Poultry Farms*: *Rs. 2,23,680.00* (OD 136)
+  ├ 25. *Sadiq Poultry Farm*: *Rs. 32,399.00* (OD 124)
+  ├ 26. *Sri Gayatri Poultry Farm*: *Rs. 30,384.00* (OD 114)
+  ├ 27. *Mrs. R Indumathi Garu*: *Rs. 8,000.00* (OD 92)
+  ├ 28. *Shri Shiridi  Sainadh Poultry Farm*: *Rs. 7,295.00* (OD 86)
+  ├ 29. *Mr. Vishwas Raj Sir*: *Rs. 1,250.00* (OD 83)
+  ├ 30. *Shanmuga Poultry Farm*: *Rs. 16,290.00* (OD 80)
+  ├ 31. *Sai Srinivasa Poultry Farm*: *Rs. 20,487.00* (OD 70)
+  ├ 32. *Sri Gayatri Poultry Farm*: *Rs. 64,625.00* (OD 62)
+  ├ 33. *Kannaiah Naidu Garu*: *Rs. 1,83,549.00* (OD 49)
+  ├ 34. *Sri Durga Poultry Farm*: *Rs. 27,824.00* (OD 41)
+  ├ 35. *Sri Durga Poultry Farm*: *Rs. 41,050.00* (OD 38)
+  ├ 36. *Amma Agro Farms*: *Rs. 4,05,600.00* (OD 37)
+  ├ 37. *Amma Agro Farms*: *Rs. 2,68,426.00* (OD 29)
+  ├ 38. *Prasanna Venkateshwara Poultry Farm*: *Rs. 2,592.00* (OD 23)
+  └ 39. *Amma Agro Farms*: *Rs. 1,19,969.00* (OD 13)
+
+📋 *Vendor Payables Summary*: *40 Pending Bills* | Balance: *Rs. 23,75,995.15*
+  ├ 1. *Inderson Bright Industry*: *Rs. 730.00* (OD 463)
+  ├ 2. *Sri Sai Poultry*: *Rs. 2.00* (OD 462)
+  ├ 3. *Karni Enterprises*: *Rs. 27,480.00* (OD 370)
+  ├ 4. *Karni Enterprises*: *Rs. 2,023.00* (OD 357)
+  ├ 5. *Ranga Reddy Engg.Works*: *Rs. 8,418.00* (OD 352)
+  ├ 6. *Karni Enterprises*: *Rs. 7,014.00* (OD 339)
+  ├ 7. *Karni Enterprises*: *Rs. 6,702.00* (OD 331)
+  ├ 8. *Karni Enterprises*: *Rs. 8,195.97* (OD 309)
+  ├ 9. *Progressive Power Solutions*: *Rs. 80,995.00* (OD 305)
+  ├ 10. *Macfos Limited*: *Rs. 38,128.00* (OD 301)
+  ├ 11. *S.N Engg Works*: *Rs. 4,455.00* (OD 301)
+  ├ 12. *Dream Polymers*: *Rs. 1,598.00* (OD 301)
+  ├ 13. *Macfos Limited*: *Rs. 7,350.00* (OD 270)
+  ├ 14. *Macfos Limited*: *Rs. 773.00* (OD 269)
+  ├ 15. *Sharma Alloy Steels*: *Rs. 3,292.00* (OD 257)
+  ├ 16. *Chowdary Enterprises*: *Rs. 5,552.00* (OD 251)
+  ├ 17. *Cosmos Coal and Steel trading & Co.*: *Rs. 641.00* (OD 223)
+  ├ 18. *G K Fabrication Works*: *Rs. 20,562.00* (OD 219)
+  ├ 19. *G K Fabrication Works*: *Rs. 48,144.00* (OD 210)
+  ├ 20. *Akshara Siri Steel Traders*: *Rs. 710.00* (OD 207)
+  ├ 21. *Dazzle Robotics Pvt Ltd*: *Rs. 2,014.00* (OD 201)
+  ├ 22. *ZOHO CORPORATION PRIVATE LIMITED*: *Rs. 547.52* (OD 200)
+  ├ 23. *Universal Aluminium*: *Rs. 6,388.16* (OD 198)
+  ├ 24. *Bheeshma Metals*: *Rs. 59.50* (OD 192)
+  ├ 25. *Dream Polymers*: *Rs. 1,598.00* (OD 187)
+  ├ 26. *G.N Poultry Equipments*: *Rs. 4,125.00* (OD 174)
+  ├ 27. *Shiva Shakthi Moulding*: *Rs. 15,000.00* (OD 156)
+  ├ 28. *Sree Bhanu Industries*: *Rs. 28,966.00* (OD 133)
+  ├ 29. *Chowdary Enterprises*: *Rs. 39.00* (OD 114)
+  ├ 30. *S.N Engg Works*: *Rs. 25,000.00* (OD 111)
+  ├ 31. *PARNIKA ENTERPRISES*: *Rs. 2,06,500.00* (OD 85)
+  ├ 32. *Sree Bhanu Industries*: *Rs. 25,265.00* (OD 64)
+  ├ 33. *Lotus Engineering*: *Rs. 4,559.00* (OD 54)
+  ├ 34. *JAINEX LIMITED*: *Rs. 5,91,878.00* (OD 23)
+  ├ 35. *Lotus Engineering*: *Rs. 5,465.00* (OD 23)
+  ├ 36. *Excel Engineering Enterprises*: *Rs. 1,888.00* (OD 16)
+  ├ 37. *Sabitha Engg.Corp*: *Rs. 233.00* (OD 14)
+  ├ 38. *JAINEX LIMITED*: *Rs. 6,25,240.00* (OD 13)
+  ├ 39. *JAINEX LIMITED*: *Rs. 5,57,167.00* (OD 5)
+  └ 40. *Jai Majisa Enterprises*: *Rs. 1,298.00* (OD 5)
+--------------------------------------------------
+📦 *Stock Valuation (Inventory Asset):* *Rs. 1,25,40,309.69*
+💰 *Bank & Cash Balance:* *Rs. 24,63,750.55*
+⚖️ *Overall Net Financial Position:* *Rs. 1,51,95,923.09* (✅ Profit)
+📊 *Net Position Breakdown (History):*
+  • Today (17 Sep): *Rs. 1,51,95,923.09*
+  • -1 Day (16 Sep): *Rs. 1,51,88,716.09*
+  • -2 Days (15 Sep): *Rs. 1,84,83,978.13*
+  • -1 Week (10 Sep): *Rs. 1,96,30,782.99*
+  • -2 Weeks (03 Sep): *Rs. 1,97,96,668.41*
+  • -1 Month (18 Aug): *Rs. 1,70,24,078.33*
+  • -2 Months (19 Jul): *Rs. 85,58,726.74*
+  • -1 Year (17 Sep 2025): *-Rs. 3,73,30,869.53*
+⚠️ *Negative Stock Warning (2 items):*
+  • 15HP Horizontal Mixer With 10HP Grinder With Elevators: *-1.00 units*
+  • 2MM 120GSM - Printed: *-146.43 units*
+
+💳 *Loans & Liabilities (5 active):*
+  • *Proddutur Ravi Advance*: *Rs. 12,000.00*
+  • *Ram Pramodh Advance*: *Rs. 2,000.00*
+  • *ELECTRODE HOLDER ARCON 600 AMPS HD*: *Rs. 2,969.48*
+  • *Loan from Sunfra Farms*: *Rs. 5,00,000.00*
+  • *Sundaram Finance Loan*: *Rs. 12,45,778.00*
+==================================================
+[2026-09-17 18:54:26] Sender: 917259510983 | Group:  | Text: ⚡ *Indus — Daily Comprehensive Report*
+📅 *Date:* 17 Sep 2026
+==================================================
+📊 *Today's Sales & Purchases*:
+• Today's Sales: *Rs. 0.00* (0 invoices)
+• Today's Purchases/Costs: *Rs. 1,200.00* (3 items)
+  ├ 1. *Driver Charges*: *Rs. 500.00*
+  ├ 2. *Vehicle Expenditure*: *Rs. 600.00*
+  └ 3. *Weighment Charges*: *Rs. 100.00*
+
+📈 *Customer Receivables Breakdown*:
+• Total Pending: *39 Invoices* | Balance: *Rs. 25,67,858.00*
+  ├ 1. *J Leela Prasad*: *Rs. 1,08,873.00* (OD 409)
+  ├ 2. *J Leela Prasad*: *Rs. 89,843.00* (OD 409)
+  ├ 3. *Mr. Kumar poultry farm marripalli*: *Rs. 6,408.00* (OD 336)
+  ├ 4. *Deepika Poultry Farm*: *Rs. 3,796.00* (OD 305)
+  ├ 5. *Padmavathi Poultry*: *Rs. 78,080.00* (OD 298)
+  ├ 6. *Padmavathi Poultry*: *Rs. 43,750.00* (OD 297)
+  ├ 7. *DINESH POULTRY FARM*: *Rs. 36,423.00* (OD 265)
+  ├ 8. *Akshaya Poultry Farm*: *Rs. 69,776.00* (OD 251)
+  ├ 9. *Balaji Poultry Farm*: *Rs. 59,006.00* (OD 245)
+  ├ 10. *P.Chandra Shekhar*: *Rs. 500.00* (OD 227)
+  ├ 11. *Mr. Ramki G M*: *Rs. 26,876.00* (OD 222)
+  ├ 12. *Devaki Poultry Farms*: *Rs. 98,544.00* (OD 218)
+  ├ 13. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 205)
+  ├ 14. *Mr. R G Jayakumar Sir*: *Rs. 62,864.00* (OD 205)
+  ├ 15. *Jagadamba Poultry farm*: *Rs. 53,750.00* (OD 205)
+  ├ 16. *Siddalingappa S Yalagi*: *Rs. 58,604.00* (OD 199)
+  ├ 17. *Cheranth Poultry Farm*: *Rs. 39,051.00* (OD 199)
+  ├ 18. *Balaji Poultry Farms*: *Rs. 78,750.00* (OD 195)
+  ├ 19. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 195)
+  ├ 20. *Mr. Subramanyam Reddy Garu*: *Rs. 16,880.00* (OD 192)
+  ├ 21. *Mahadeshwara Poultry Farm*: *Rs. 3,781.00* (OD 192)
+  ├ 22. *Devaki Poultry Farms*: *Rs. 9,000.00* (OD 143)
+  ├ 23. *Madhusudhan Reddy*: *Rs. 12,383.00* (OD 141)
+  ├ 24. *Devaki Poultry Farms*: *Rs. 2,23,680.00* (OD 136)
+  ├ 25. *Sadiq Poultry Farm*: *Rs. 32,399.00* (OD 124)
+  ├ 26. *Sri Gayatri Poultry Farm*: *Rs. 30,384.00* (OD 114)
+  ├ 27. *Mrs. R Indumathi Garu*: *Rs. 8,000.00* (OD 92)
+  ├ 28. *Shri Shiridi  Sainadh Poultry Farm*: *Rs. 7,295.00* (OD 86)
+  ├ 29. *Mr. Vishwas Raj Sir*: *Rs. 1,250.00* (OD 83)
+  ├ 30. *Shanmuga Poultry Farm*: *Rs. 16,290.00* (OD 80)
+  ├ 31. *Sai Srinivasa Poultry Farm*: *Rs. 20,487.00* (OD 70)
+  ├ 32. *Sri Gayatri Poultry Farm*: *Rs. 64,625.00* (OD 62)
+  ├ 33. *Kannaiah Naidu Garu*: *Rs. 1,83,549.00* (OD 49)
+  ├ 34. *Sri Durga Poultry Farm*: *Rs. 27,824.00* (OD 41)
+  ├ 35. *Sri Durga Poultry Farm*: *Rs. 41,050.00* (OD 38)
+  ├ 36. *Amma Agro Farms*: *Rs. 4,05,600.00* (OD 37)
+  ├ 37. *Amma Agro Farms*: *Rs. 2,68,426.00* (OD 29)
+  ├ 38. *Prasanna Venkateshwara Poultry Farm*: *Rs. 2,592.00* (OD 23)
+  └ 39. *Amma Agro Farms*: *Rs. 1,19,969.00* (OD 13)
+
+📋 *Vendor Payables Summary*: *40 Pending Bills* | Balance: *Rs. 23,75,995.15*
+  ├ 1. *Inderson Bright Industry*: *Rs. 730.00* (OD 463)
+  ├ 2. *Sri Sai Poultry*: *Rs. 2.00* (OD 462)
+  ├ 3. *Karni Enterprises*: *Rs. 27,480.00* (OD 370)
+  ├ 4. *Karni Enterprises*: *Rs. 2,023.00* (OD 357)
+  ├ 5. *Ranga Reddy Engg.Works*: *Rs. 8,418.00* (OD 352)
+  ├ 6. *Karni Enterprises*: *Rs. 7,014.00* (OD 339)
+  ├ 7. *Karni Enterprises*: *Rs. 6,702.00* (OD 331)
+  ├ 8. *Karni Enterprises*: *Rs. 8,195.97* (OD 309)
+  ├ 9. *Progressive Power Solutions*: *Rs. 80,995.00* (OD 305)
+  ├ 10. *Macfos Limited*: *Rs. 38,128.00* (OD 301)
+  ├ 11. *S.N Engg Works*: *Rs. 4,455.00* (OD 301)
+  ├ 12. *Dream Polymers*: *Rs. 1,598.00* (OD 301)
+  ├ 13. *Macfos Limited*: *Rs. 7,350.00* (OD 270)
+  ├ 14. *Macfos Limited*: *Rs. 773.00* (OD 269)
+  ├ 15. *Sharma Alloy Steels*: *Rs. 3,292.00* (OD 257)
+  ├ 16. *Chowdary Enterprises*: *Rs. 5,552.00* (OD 251)
+  ├ 17. *Cosmos Coal and Steel trading & Co.*: *Rs. 641.00* (OD 223)
+  ├ 18. *G K Fabrication Works*: *Rs. 20,562.00* (OD 219)
+  ├ 19. *G K Fabrication Works*: *Rs. 48,144.00* (OD 210)
+  ├ 20. *Akshara Siri Steel Traders*: *Rs. 710.00* (OD 207)
+  ├ 21. *Dazzle Robotics Pvt Ltd*: *Rs. 2,014.00* (OD 201)
+  ├ 22. *ZOHO CORPORATION PRIVATE LIMITED*: *Rs. 547.52* (OD 200)
+  ├ 23. *Universal Aluminium*: *Rs. 6,388.16* (OD 198)
+  ├ 24. *Bheeshma Metals*: *Rs. 59.50* (OD 192)
+  ├ 25. *Dream Polymers*: *Rs. 1,598.00* (OD 187)
+  ├ 26. *G.N Poultry Equipments*: *Rs. 4,125.00* (OD 174)
+  ├ 27. *Shiva Shakthi Moulding*: *Rs. 15,000.00* (OD 156)
+  ├ 28. *Sree Bhanu Industries*: *Rs. 28,966.00* (OD 133)
+  ├ 29. *Chowdary Enterprises*: *Rs. 39.00* (OD 114)
+  ├ 30. *S.N Engg Works*: *Rs. 25,000.00* (OD 111)
+  ├ 31. *PARNIKA ENTERPRISES*: *Rs. 2,06,500.00* (OD 85)
+  ├ 32. *Sree Bhanu Industries*: *Rs. 25,265.00* (OD 64)
+  ├ 33. *Lotus Engineering*: *Rs. 4,559.00* (OD 54)
+  ├ 34. *JAINEX LIMITED*: *Rs. 5,91,878.00* (OD 23)
+  ├ 35. *Lotus Engineering*: *Rs. 5,465.00* (OD 23)
+  ├ 36. *Excel Engineering Enterprises*: *Rs. 1,888.00* (OD 16)
+  ├ 37. *Sabitha Engg.Corp*: *Rs. 233.00* (OD 14)
+  ├ 38. *JAINEX LIMITED*: *Rs. 6,25,240.00* (OD 13)
+  ├ 39. *JAINEX LIMITED*: *Rs. 5,57,167.00* (OD 5)
+  └ 40. *Jai Majisa Enterprises*: *Rs. 1,298.00* (OD 5)
+--------------------------------------------------
+📦 *Stock Valuation (Inventory Asset):* *Rs. 1,25,40,309.69*
+💰 *Bank & Cash Balance:* *Rs. 24,63,750.55*
+⚖️ *Overall Net Financial Position:* *Rs. 1,51,95,923.09* (✅ Profit)
+📊 *Net Position Breakdown (History):*
+  • Today (17 Sep): *Rs. 1,51,95,923.09*
+  • -1 Day (16 Sep): *Rs. 1,51,88,716.09*
+  • -2 Days (15 Sep): *Rs. 1,84,83,978.13*
+  • -1 Week (10 Sep): *Rs. 1,96,30,782.99*
+  • -2 Weeks (03 Sep): *Rs. 1,97,96,668.41*
+  • -1 Month (18 Aug): *Rs. 1,70,24,078.33*
+  • -2 Months (19 Jul): *Rs. 85,58,726.74*
+  • -1 Year (17 Sep 2025): *-Rs. 3,73,30,869.53*
+⚠️ *Negative Stock Warning (2 items):*
+  • 15HP Horizontal Mixer With 10HP Grinder With Elevators: *-1.00 units*
+  • 2MM 120GSM - Printed: *-146.43 units*
+
+💳 *Loans & Liabilities (5 active):*
+  • *Proddutur Ravi Advance*: *Rs. 12,000.00*
+  • *Ram Pramodh Advance*: *Rs. 2,000.00*
+  • *ELECTRODE HOLDER ARCON 600 AMPS HD*: *Rs. 2,969.48*
+  • *Loan from Sunfra Farms*: *Rs. 5,00,000.00*
+  • *Sundaram Finance Loan*: *Rs. 12,45,778.00*
+==================================================
+[2026-09-17 18:54:25] Sender: 917259510983 | Group:  | Text: ⚡ *Indus — Daily Comprehensive Report*
+📅 *Date:* 17 Sep 2026
+==================================================
+📊 *Today's Sales & Purchases*:
+• Today's Sales: *Rs. 0.00* (0 invoices)
+• Today's Purchases/Costs: *Rs. 1,200.00* (3 items)
+  ├ 1. *Driver Charges*: *Rs. 500.00*
+  ├ 2. *Vehicle Expenditure*: *Rs. 600.00*
+  └ 3. *Weighment Charges*: *Rs. 100.00*
+
+📈 *Customer Receivables Breakdown*:
+• Total Pending: *39 Invoices* | Balance: *Rs. 25,67,858.00*
+  ├ 1. *J Leela Prasad*: *Rs. 1,08,873.00* (OD 409)
+  ├ 2. *J Leela Prasad*: *Rs. 89,843.00* (OD 409)
+  ├ 3. *Mr. Kumar poultry farm marripalli*: *Rs. 6,408.00* (OD 336)
+  ├ 4. *Deepika Poultry Farm*: *Rs. 3,796.00* (OD 305)
+  ├ 5. *Padmavathi Poultry*: *Rs. 78,080.00* (OD 298)
+  ├ 6. *Padmavathi Poultry*: *Rs. 43,750.00* (OD 297)
+  ├ 7. *DINESH POULTRY FARM*: *Rs. 36,423.00* (OD 265)
+  ├ 8. *Akshaya Poultry Farm*: *Rs. 69,776.00* (OD 251)
+  ├ 9. *Balaji Poultry Farm*: *Rs. 59,006.00* (OD 245)
+  ├ 10. *P.Chandra Shekhar*: *Rs. 500.00* (OD 227)
+  ├ 11. *Mr. Ramki G M*: *Rs. 26,876.00* (OD 222)
+  ├ 12. *Devaki Poultry Farms*: *Rs. 98,544.00* (OD 218)
+  ├ 13. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 205)
+  ├ 14. *Mr. R G Jayakumar Sir*: *Rs. 62,864.00* (OD 205)
+  ├ 15. *Jagadamba Poultry farm*: *Rs. 53,750.00* (OD 205)
+  ├ 16. *Siddalingappa S Yalagi*: *Rs. 58,604.00* (OD 199)
+  ├ 17. *Cheranth Poultry Farm*: *Rs. 39,051.00* (OD 199)
+  ├ 18. *Balaji Poultry Farms*: *Rs. 78,750.00* (OD 195)
+  ├ 19. *Shri Jagadamba Poultry Farm*: *Rs. 78,750.00* (OD 195)
+  ├ 20. *Mr. Subramanyam Reddy Garu*: *Rs. 16,880.00* (OD 192)
+  ├ 21. *Mahadeshwara Poultry Farm*: *Rs. 3,781.00* (OD 192)
+  ├ 22. *Devaki Poultry Farms*: *Rs. 9,000.00* (OD 143)
+  ├ 23. *Madhusudhan Reddy*: *Rs. 12,383.00* (OD 141)
+  ├ 24. *Devaki Poultry Farms*: *Rs. 2,23,680.00* (OD 136)
+  ├ 25. *Sadiq Poultry Farm*: *Rs. 32,399.00* (OD 124)
+  ├ 26. *Sri Gayatri Poultry Farm*: *Rs. 30,384.00* (OD 114)
+  ├ 27. *Mrs. R Indumathi Garu*: *Rs. 8,000.00* (OD 92)
+  ├ 28. *Shri Shiridi  Sainadh Poultry Farm*: *Rs. 7,295.00* (OD 86)
+  ├ 29. *Mr. Vishwas Raj Sir*: *Rs. 1,250.00* (OD 83)
+  ├ 30. *Shanmuga Poultry Farm*: *Rs. 16,290.00* (OD 80)
+  ├ 31. *Sai Srinivasa Poultry Farm*: *Rs. 20,487.00* (OD 70)
+  ├ 32. *Sri Gayatri Poultry Farm*: *Rs. 64,625.00* (OD 62)
+  ├ 33. *Kannaiah Naidu Garu*: *Rs. 1,83,549.00* (OD 49)
+  ├ 34. *Sri Durga Poultry Farm*: *Rs. 27,824.00* (OD 41)
+  ├ 35. *Sri Durga Poultry Farm*: *Rs. 41,050.00* (OD 38)
+  ├ 36. *Amma Agro Farms*: *Rs. 4,05,600.00* (OD 37)
+  ├ 37. *Amma Agro Farms*: *Rs. 2,68,426.00* (OD 29)
+  ├ 38. *Prasanna Venkateshwara Poultry Farm*: *Rs. 2,592.00* (OD 23)
+  └ 39. *Amma Agro Farms*: *Rs. 1,19,969.00* (OD 13)
+
+📋 *Vendor Payables Summary*: *40 Pending Bills* | Balance: *Rs. 23,75,995.15*
+  ├ 1. *Inderson Bright Industry*: *Rs. 730.00* (OD 463)
+  ├ 2. *Sri Sai Poultry*: *Rs. 2.00* (OD 462)
+  ├ 3. *Karni Enterprises*: *Rs. 27,480.00* (OD 370)
+  ├ 4. *Karni Enterprises*: *Rs. 2,023.00* (OD 357)
+  ├ 5. *Ranga Reddy Engg.Works*: *Rs. 8,418.00* (OD 352)
+  ├ 6. *Karni Enterprises*: *Rs. 7,014.00* (OD 339)
+  ├ 7. *Karni Enterprises*: *Rs. 6,702.00* (OD 331)
+  ├ 8. *Karni Enterprises*: *Rs. 8,195.97* (OD 309)
+  ├ 9. *Progressive Power Solutions*: *Rs. 80,995.00* (OD 305)
+  ├ 10. *Macfos Limited*: *Rs. 38,128.00* (OD 301)
+  ├ 11. *S.N Engg Works*: *Rs. 4,455.00* (OD 301)
+  ├ 12. *Dream Polymers*: *Rs. 1,598.00* (OD 301)
+  ├ 13. *Macfos Limited*: *Rs. 7,350.00* (OD 270)
+  ├ 14. *Macfos Limited*: *Rs. 773.00* (OD 269)
+  ├ 15. *Sharma Alloy Steels*: *Rs. 3,292.00* (OD 257)
+  ├ 16. *Chowdary Enterprises*: *Rs. 5,552.00* (OD 251)
+  ├ 17. *Cosmos Coal and Steel trading & Co.*: *Rs. 641.00* (OD 223)
+  ├ 18. *G K Fabrication Works*: *Rs. 20,562.00* (OD 219)
+  ├ 19. *G K Fabrication Works*: *Rs. 48,144.00* (OD 210)
+  ├ 20. *Akshara Siri Steel Traders*: *Rs. 710.00* (OD 207)
+  ├ 21. *Dazzle Robotics Pvt Ltd*: *Rs. 2,014.00* (OD 201)
+  ├ 22. *ZOHO CORPORATION PRIVATE LIMITED*: *Rs. 547.52* (OD 200)
+  ├ 23. *Universal Aluminium*: *Rs. 6,388.16* (OD 198)
+  ├ 24. *Bheeshma Metals*: *Rs. 59.50* (OD 192)
+  ├ 25. *Dream Polymers*: *Rs. 1,598.00* (OD 187)
+  ├ 26. *G.N Poultry Equipments*: *Rs. 4,125.00* (OD 174)
+  ├ 27. *Shiva Shakthi Moulding*: *Rs. 15,000.00* (OD 156)
+  ├ 28. *Sree Bhanu Industries*: *Rs. 28,966.00* (OD 133)
+  ├ 29. *Chowdary Enterprises*: *Rs. 39.00* (OD 114)
+  ├ 30. *S.N Engg Works*: *Rs. 25,000.00* (OD 111)
+  ├ 31. *PARNIKA ENTERPRISES*: *Rs. 2,06,500.00* (OD 85)
+  ├ 32. *Sree Bhanu Industries*: *Rs. 25,265.00* (OD 64)
+  ├ 33. *Lotus Engineering*: *Rs. 4,559.00* (OD 54)
+  ├ 34. *JAINEX LIMITED*: *Rs. 5,91,878.00* (OD 23)
+  ├ 35. *Lotus Engineering*: *Rs. 5,465.00* (OD 23)
+  ├ 36. *Excel Engineering Enterprises*: *Rs. 1,888.00* (OD 16)
+  ├ 37. *Sabitha Engg.Corp*: *Rs. 233.00* (OD 14)
+  ├ 38. *JAINEX LIMITED*: *Rs. 6,25,240.00* (OD 13)
+  ├ 39. *JAINEX LIMITED*: *Rs. 5,57,167.00* (OD 5)
+  └ 40. *Jai Majisa Enterprises*: *Rs. 1,298.00* (OD 5)
+--------------------------------------------------
+📦 *Stock Valuation (Inventory Asset):* *Rs. 1,25,40,309.69*
+💰 *Bank & Cash Balance:* *Rs. 24,63,750.55*
+⚖️ *Overall Net Financial Position:* *Rs. 1,51,95,923.09* (✅ Profit)
+📊 *Net Position Breakdown (History):*
+  • Today (17 Sep): *Rs. 1,51,95,923.09*
+  • -1 Day (16 Sep): *Rs. 1,51,88,716.09*
+  • -2 Days (15 Sep): *Rs. 1,84,83,978.13*
+  • -1 Week (10 Sep): *Rs. 1,96,30,782.99*
+  • -2 Weeks (03 Sep): *Rs. 1,97,96,668.41*
+  • -1 Month (18 Aug): *Rs. 1,70,24,078.33*
+  • -2 Months (19 Jul): *Rs. 85,58,726.74*
+  • -1 Year (17 Sep 2025): *-Rs. 3,73,30,869.53*
+⚠️ *Negative Stock Warning (2 items):*
+  • 15HP Horizontal Mixer With 10HP Grinder With Elevators: *-1.00 units*
+  • 2MM 120GSM - Printed: *-146.43 units*
+
+💳 *Loans & Liabilities (5 active):*
+  • *Proddutur Ravi Advance*: *Rs. 12,000.00*
+  • *Ram Pramodh Advance*: *Rs. 2,000.00*
+  • *ELECTRODE HOLDER ARCON 600 AMPS HD*: *Rs. 2,969.48*
+  • *Loan from Sunfra Farms*: *Rs. 5,00,000.00*
+  • *Sundaram Finance Loan*: *Rs. 12,45,778.00*
+==================================================
+[2026-09-16 22:08:27] Sender: 917259510983 | Group: 120363410727174477@g.us | Text: 1️⃣ *Ai iOT Team Reports:* — 📊 *EOD Summary*
+📅 *Date:* 16 Sep 2026
+• Balaji (Approval Task): *Report Review & Approval* - ❌
+• Balaji Team: *Daily Work Update* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 4*
+🗓️ *Total Failed this Month: 14*

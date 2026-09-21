@@ -247,18 +247,15 @@ def generate_and_send_sunfra_pandl_report(recipient_phone = None, target_date_st
         pdf_file = os.path.join(media_dir, f"Sunfra_PL_Report_{target_date_str}.pdf")
         generate_pandl_pdf(display_date, table_rows, pdf_file)
 
-        # 2. Dispatch PDF file FIRST, then the separate text summary message to all target recipients
+        # 2. Dispatch PDF file FIRST (clean without caption), then the separate 3-line profit text message
         success_count = 0
         for rec in recipients:
-            # First send the PDF document
             status = send_waha_file(rec, pdf_file, caption="")
             if status:
                 success_count += 1
-            # Delay to guarantee WhatsApp receives and orders the PDF first
             time.sleep(1)
-            # Then send the separate message with Today, This Week, and Month P/L
             send_waha_message(rec, summary_text)
-            logger.info(f"Sunfra P&L (PDF first, then separate summary message) dispatched successfully to {rec}")
+            logger.info(f"Sunfra P&L (PDF + profit text message) dispatched successfully to {rec}")
         return success_count > 0
     except Exception as e:
         logger.error(f"Error generating Sunfra P&L report: {e}")

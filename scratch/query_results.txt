@@ -1,0 +1,98 @@
+
+==================== ROOPA ====================
+Total matching messages: 4
+[2026-09-19 10:49:08] [RawMessage] Sender: [Gate Manager] bodireddymahesh (238684318220422) | Group: Gate Manager | Text: Out for Thirupathi
+[2026-09-19 10:49:08] [WhatsAppMessage] Sender: 238684318220422 | Group: 120363225998735559@g.us | Text: Out for Thirupathi
+[2026-09-19 11:15:33] [RawMessage] Sender: [Jataayu] rupakamalapuram (147635256201243) | Group: Jataayu | Text: In
+[2026-09-19 11:15:33] [WhatsAppMessage] Sender: 147635256201243 | Group: 120363428872126006@g.us | Text: In
+
+==================== BHANUSHREE ====================
+Total matching messages: 6
+[2026-09-19 09:59:05] [RawMessage] Sender: [Sunfra HR Team] Bhanushree N.T (81991244460218) | Group: Sunfra HR Team | Text: Sign in
+[2026-09-19 09:59:05] [WhatsAppMessage] Sender: 81991244460218 | Group: 120363431222906850@g.us | Text: Sign in
+[2026-09-19 13:51:05] [RawMessage] Sender: [Sunfra HR Team] Bhanushree N.T (81991244460218) | Group: Sunfra HR Team | Text: Lunch
+[2026-09-19 13:51:05] [WhatsAppMessage] Sender: 81991244460218 | Group: 120363431222906850@g.us | Text: Lunch
+[2026-09-19 14:49:21] [RawMessage] Sender: [Sunfra HR Team] Bhanushree N.T (81991244460218) | Group: Sunfra HR Team | Text: Back
+[2026-09-19 14:49:21] [WhatsAppMessage] Sender: 81991244460218 | Group: 120363431222906850@g.us | Text: Back
+
+==================== PARVATI ====================
+Total matching messages: 4
+[2026-09-19 09:58:38] [RawMessage] Sender: [120363431222906850] Paru bavisetti (245225503076572) | Group: 120363431222906850 | Text: Sign in
+[2026-09-19 09:58:38] [WhatsAppMessage] Sender: 245225503076572 | Group: 120363431222906850@g.us | Text: Sign in
+[2026-09-19 13:47:44] [RawMessage] Sender: [Sunfra HR Team] Paru bavisetti (245225503076572) | Group: Sunfra HR Team | Text: Lunch
+[2026-09-19 13:47:44] [WhatsAppMessage] Sender: 245225503076572 | Group: 120363431222906850@g.us | Text: Lunch
+
+==================== JAGADISH ====================
+Total matching messages: 1
+[2026-09-19 10:53:48] [RawMessage] Sender: [Indus] Jagadish Amudala (217183829389549) | Group: Indus | Text: Login
+
+==================== ASIF ====================
+Total matching messages: 0
+
+==================== NANI ====================
+Total matching messages: 26
+[2026-09-19 00:51:32] [RawMessage] Sender: [Sunfra P&L] Nani Chinnam (112300593815672) | Group: Sunfra P&L | Text: Sunfra_Profit_Loss_Report_18_Sep_2026.pdf
+[2026-09-19 00:51:32] [WhatsAppMessage] Sender: 112300593815672 | Group: 120363427856964756@g.us | Text: Sunfra_Profit_Loss_Report_18_Sep_2026.pdf
+[2026-09-19 00:51:59] [RawMessage] Sender: [Sunfra P&L] Nani Chinnam (112300593815672) | Group: Sunfra P&L | Text: 🔴 Today P/L: -14,799/-
+🟢 This Week P/L: 2,53,438/-
+🟢 Sep Month P/L: 1,80,718/-
+[2026-09-19 00:51:59] [WhatsAppMessage] Sender: 112300593815672 | Group: 120363427856964756@g.us | Text: 🔴 Today P/L: -14,799/-
+🟢 This Week P/L: 2,53,438/-
+🟢 Sep Month P/L: 1,80,718/-
+[2026-09-19 00:53:21] [RawMessage] Sender: [Sunfra P&L] Nani Chinnam (112300593815672) | Group: Sunfra P&L | Text: Yesterday production not updated as they are busy with loading.
+[2026-09-19 00:53:21] [WhatsAppMessage] Sender: 112300593815672 | Group: 120363427856964756@g.us | Text: Yesterday production not updated as they are busy with loading.
+[2026-09-19 09:14:21] [RawMessage] Sender: [120363405877065233] Nani Chinnam (112300593815672) | Group: 120363405877065233 | Text: Confirmed 30 Katta to Raghupathi Naidu for 52 & 53 GMs
+Shead 3 @ 90 cut 
+Tomorrow morning loading
+@184791135711366
+[2026-09-19 09:14:21] [WhatsAppMessage] Sender: 112300593815672 | Group: 120363405877065233@g.us | Text: Confirmed 30 Katta to Raghupathi Naidu for 52 & 53 GMs
+Shead 3 @ 90 cut 
+Tomorrow morning loading
+@184791135711366
+[2026-09-19 10:14:01] [RawMessage] Sender: [Payments - Sunfra Farms] Nani Chinnam (112300593815672) | Group: Payments - Sunfra Farms | Text: Please add this account
+@184791135711366
+[2026-09-19 10:14:01] [WhatsAppMessage] Sender: 112300593815672 | Group: 120363405469158412@g.us | Text: Please add this account
+@184791135711366
+[2026-09-19 10:47:23] [RawMessage] Sender: [Payments - Sunfra Farms] Nani Chinnam (112300593815672) | Group: Payments - Sunfra Farms | Text: Account Holder Name : DUVVURU SUPRAJA
+Account number : 919010067620209
+IFSC Code : UTIB0004162
+[2026-09-19 10:47:23] [WhatsAppMessage] Sender: 112300593815672 | Group: 120363405469158412@g.us | Text: Account Holder Name : DUVVURU SUPRAJA
+Account number : 919010067620209
+IFSC Code : UTIB0004162
+[2026-09-19 10:47:47] [RawMessage] Sender: [Payments - Sunfra Farms] Nani Chinnam (112300593815672) | Group: Payments - Sunfra Farms | Text: Please send 50000/- to this account.. towards advance for GVK Farms
+@184791135711366
+[2026-09-19 10:47:47] [WhatsAppMessage] Sender: 112300593815672 | Group: 120363405469158412@g.us | Text: Please send 50000/- to this account.. towards advance for GVK Farms
+@184791135711366
+[2026-09-19 14:57:13] [RawMessage] Sender: [120363405639932471] Nani Chinnam (112300593815672) | Group: 120363405639932471 | Text: 🟢 *Scrap:*
+15.25 Trays
+@141927630536871
+@184791135711366
+[2026-09-19 14:57:13] [WhatsAppMessage] Sender: 112300593815672 | Group: 120363405639932471@g.us | Text: 🟢 *Scrap:*
+15.25 Trays
+@141927630536871
+@184791135711366
+[2026-09-19 14:57:37] [RawMessage] Sender: [Eggs Loading Details] Nani Chinnam (112300593815672) | Group: Eggs Loading Details | Text: 🟢 *Licious:* 2nd time
+Shead 1: 420 Trays
+@141927630536871
+[2026-09-19 14:57:37] [WhatsAppMessage] Sender: 112300593815672 | Group: 120363405639932471@g.us | Text: 🟢 *Licious:* 2nd time
+Shead 1: 420 Trays
+@141927630536871
+[2026-09-19 15:00:00] [RawMessage] Sender: [Eggs Loading Details] Nani Chinnam (112300593815672) | Group: Eggs Loading Details | Text: 🟢 *Eggoz:* 2nd time 
+Shead 8: 300 Trays (Old Stock)
+@141927630536871
+[2026-09-19 15:00:00] [WhatsAppMessage] Sender: 112300593815672 | Group: 120363405639932471@g.us | Text: 🟢 *Eggoz:* 2nd time 
+Shead 8: 300 Trays (Old Stock)
+@141927630536871
+[2026-09-19 15:00:35] [RawMessage] Sender: [Payments - Sunfra Farms] Nani Chinnam (112300593815672) | Group: Payments - Sunfra Farms | Text: Please pay
+[2026-09-19 15:00:35] [WhatsAppMessage] Sender: 112300593815672 | Group: 120363405469158412@g.us | Text: Please pay
+[2026-09-19 16:42:24] [RawMessage] Sender: [120363405469158412] Nani Chinnam (112300593815672) | Group: 120363405469158412 | Text: Please pay
+[2026-09-19 16:42:24] [WhatsAppMessage] Sender: 112300593815672 | Group: 120363405469158412@g.us | Text: Please pay
+[2026-09-19 17:10:23] [RawMessage] Sender: [Eggs Loading Details] Nani Chinnam (112300593815672) | Group: Eggs Loading Details | Text: 🔴 *Eggoz Return:*
+Shead 9 Small: 60 Trays
+@141927630536871
+[2026-09-19 17:10:23] [WhatsAppMessage] Sender: 112300593815672 | Group: 120363405639932471@g.us | Text: 🔴 *Eggoz Return:*
+Shead 9 Small: 60 Trays
+@141927630536871
+
+==================== BALAJI ====================
+Total matching messages: 0

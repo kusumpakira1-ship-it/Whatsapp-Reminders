@@ -9,7 +9,8 @@ from pydantic import BaseModel
 from typing import List, Optional
 from contextlib import asynccontextmanager
 
-from database import engine, Base, SessionLocal
+from config import settings
+from database import engine, Base, SessionLocal, get_db_session
 from models import Whitelist, RawMessage, ProcessedData, Group, Employee, SystemSetting, CustomAlarm, WhatsAppMessage, WAHAEvent, Task, EggGodownInventory, ReminderLog, Flock, BookStandard
 from ai_processor import process_text, process_image, process_document
 from waha_service import download_waha_media, get_waha_chat_name, send_waha_message, send_waha_file
@@ -227,11 +228,17 @@ def process_message_background(
         # Check for vacancy message first
         if text and process_vacancy_message(text):
             logger.info(f"Processed vacancy message {message_id}")
-            # we can continue or return? Wait, might as well let it save to raw messages JSON etc
             pass
             
     except Exception as e:
         logger.error(f"Error processing vacancy message: {e}")
+
+    # Real-time synchronization of daily attendance logs table
+    try:
+        from attendance_tracker import evaluate_attendance_for_date
+        evaluate_attendance_for_date()
+    except Exception as att_err:
+        logger.error(f"Error updating daily attendance log: {att_err}")
         
     try:
         raw_msg = db.query(RawMessage).filter(RawMessage.message_id == message_id).first()
@@ -779,7 +786,7 @@ async def waha_webhook(request: Request, background_tasks: BackgroundTasks):
     msg_time = datetime.fromtimestamp(timestamp_val, tz=IST).replace(tzinfo=None) if timestamp_val else datetime.now(IST).replace(tzinfo=None)
 
     # 1. Save Raw Data synchronously (takes < 5ms)
-    db = SessionLocal()
+    db = get_db_session()
     try:
         existing_msg = db.query(RawMessage).filter(RawMessage.message_id == message_id).first()
         if existing_msg:
@@ -800,14 +807,41 @@ async def waha_webhook(request: Request, background_tasks: BackgroundTasks):
 
         whatsapp_msg = WhatsAppMessage(
             message_id=message_id,
-            group_id=sender if is_group else "",
+            group_id=group_id if is_group else "",
             sender_id=sender_phone,
             message_text=text or "",
             timestamp=msg_time
         )
         db.add(whatsapp_msg)
-
         db.commit()
+
+        # Always dual-save to local SQLite fallback database as fail-safe
+        try:
+            import sqlite3
+            sqlite_conn = sqlite3.connect("whatsapp_reminders.sqlite")
+            sqlite_cursor = sqlite_conn.cursor()
+            sqlite_cursor.execute("""
+                CREATE TABLE IF NOT EXISTS sunfra_raw_messages (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    message_id VARCHAR(255),
+                    sender VARCHAR(100),
+                    group_name VARCHAR(255),
+                    timestamp DATETIME,
+                    message_type VARCHAR(50),
+                    raw_text TEXT,
+                    media_path VARCHAR(500),
+                    full_webhook_json TEXT,
+                    created_at DATETIME
+                );
+            """)
+            sqlite_cursor.execute("""
+                INSERT OR IGNORE INTO sunfra_raw_messages (message_id, sender, group_name, timestamp, message_type, raw_text, full_webhook_json)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (message_id, display_sender, group_name_str, str(msg_time), message_type, text, json.dumps(payload)))
+            sqlite_conn.commit()
+            sqlite_conn.close()
+        except Exception as sqle:
+            logger.warning(f"Dual-save to local SQLite skipped: {sqle}")
     except Exception as e:
         db.rollback()
         logger.error(f"Failed to save raw message: {e}")

@@ -1,0 +1,55 @@
+=== VERIFIED ATTENDANCE FOR 2026-09-19 ===
+
+🏢 Group: AI & IOT
+  • Akshay: 🟡 Half Day (No Logout) | Detail: Login at 10:16 AM | No Logout
+  • Kusum: 🟡 Half Day (No Logout) | Detail: Login at 10:18 AM | No Logout
+  • Poornima: 🟡 Half Day (No Logout) | Detail: Login at 10:22 AM | No Logout
+  • Ramya: 🟡 Half Day (No Logout) | Detail: Login at 10:09 AM | No Logout
+
+🏢 Group: Sunfra OLX CEE
+  • Asif: 🔴 Absent | Detail: No login or logout message
+  • Prasanna: 🔴 Absent | Detail: No login or logout message
+  • Yashaswini: 🔴 Absent | Detail: No login or logout message
+
+🏢 Group: Jataayu
+  • Roopa: 🟡 Half Day (Late Login & No Logout) | Detail: Login at 11:15 AM (> 11:00 AM) | No Logout
+
+🏢 Group: Sunfra Corporate
+  • Divya: 🔴 Absent | Detail: No login or logout message
+  • Prajwal: 🔴 Absent | Detail: No login or logout message
+
+🏢 Group: Sunfra Mudah
+  • Aishwarya: 🔴 Absent | Detail: No login or logout message
+  • Akshay: 🟢 Present | Detail: 07:44 AM - 04:02 PM (Net: 8.3 hrs)
+  • Bharath: 🔴 Absent | Detail: No login or logout message
+  • Krishna: 🔴 Absent | Detail: No login or logout message
+  • Lakshmi: 🔴 Absent | Detail: No login or logout message
+  • Nisha: 🔴 Absent | Detail: No login or logout message
+  • Ravi Teja: 🔴 Absent | Detail: No login or logout message
+  • Thanuja: 🔴 Absent | Detail: No login or logout message
+
+🏢 Group: Sunfra HR Team
+  • Bhanushree: 🟡 Half Day (No Logout) | Detail: Login at 09:59 AM | No Logout
+  • Parvati: 🟡 Half Day (No Logout) | Detail: Login at 09:58 AM | No Logout
+
+🏢 Group: Indus
+  • Girija: 🔴 Absent | Detail: No login or logout message
+  • Jagadish: 🟡 Half Day (No Logout) | Detail: Login at 10:53 AM | No Logout
+
+🏢 Group: Sunfra Farms
+  • Mahalakshmi: 🟡 Half Day (No Logout) | Detail: Login at 10:42 AM | No Logout
+
+🏢 Group: Sunfra Feeds
+  • Venkat: 🟡 Half Day (No Logout) | Detail: Login at 10:47 AM | No Logout
+
+🏢 Group: Management Team
+  • Balaji: 🟡 Half Day (No Logout) | Detail: Login at 09:00 AM | No Logout
+  • Nani: 🟡 Half Day (No Logout) | Detail: Login at 09:14 AM | No Logout
+  • Nikhil: 🟡 Half Day (No Logout) | Detail: Login at 08:46 AM | No Logout
+  • Prasad: 🔴 Absent | Detail: No login or logout message
+  • Prathiba: 🟡 Half Day (No Logout) | Detail: Login at 08:45 AM | No Logout
+  • Vamsi: 🟡 Half Day (No Logout) | Detail: Login at 07:21 AM | No Logout
+
+🏢 Group: Tendered
+  • Ganga: 🔴 Absent | Detail: No login or logout message
+

@@ -1227,18 +1227,22 @@ def poll_and_execute_unified_reminders():
                                 clean_raw_jid = msg_jids.get(raw_msg.message_id, '').replace('@g.us', '').strip()
                                 clean_target_jid = r.whatsapp_group_id.replace('@g.us', '').strip() if r.whatsapp_group_id else ''
 
-                                if clean_target_jid:
-                                    valid_match = (clean_raw_jid == clean_target_jid)
-                                else:
-                                    valid_match = ('balaji' in str(raw_msg.sender).lower() or '9493928388' in str(raw_msg.sender) or '242695733772318' in str(raw_msg.sender))
+                                # Strictly check sender phone/ID: MUST be Balaji (+91 94939 28388)
+                                sender_str = str(raw_msg.sender).lower()
+                                is_from_balaji = ('9493928388' in sender_str or '242695733772318' in sender_str or 'balaji' in sender_str)
 
-                                if valid_match:
-                                    is_approver = ('balaji' in str(raw_msg.sender).lower() or '9493928388' in str(raw_msg.sender) or '242695733772318' in str(raw_msg.sender) or 'kusum' in str(raw_msg.sender).lower())
-                                    has_approval_word = any(akw in raw_text_lower.split() or akw in raw_text_lower for akw in approval_kws)
-                                    if is_approver and has_approval_word and "why" not in raw_text_lower and "?" not in raw_text_lower:
-                                        submitted = True
-                                        logger.info(f"Approval task explicitly approved by {raw_msg.sender}: {raw_text_lower[:50]}")
-                                        break
+                                if not is_from_balaji:
+                                    continue
+
+                                if clean_target_jid and clean_raw_jid and clean_raw_jid != clean_target_jid:
+                                    continue
+
+                                has_approval_word = any(akw in raw_text_lower.split() or akw in raw_text_lower for akw in approval_kws)
+                                is_work_report = raw_text_lower.startswith(("hi team", "today's work", "today work", "work update"))
+                                if has_approval_word and not is_work_report and "why" not in raw_text_lower and "?" not in raw_text_lower:
+                                    submitted = True
+                                    logger.info(f"Balaji review task explicitly approved by Balaji (+91 94939 28388): {raw_text_lower[:50]}")
+                                    break
                         else:
                             raw_keywords = []
                             if is_rule_book:
@@ -2000,6 +2004,18 @@ def build_7_company_escalation_reports(db, now_ist):
         if gname and gjid:
             name_to_jids.setdefault(gname, set()).add(gjid)
 
+    static_dept_jids = {
+        'corporate': {'120363428349268084', '120363427470582988', '120363426659667927', '120363425581380088'},
+        'sunfra corporate': {'120363428349268084', '120363427470582988', '120363426659667927', '120363425581380088'},
+        'accounts poultry': {'120363429481469212', '120363221285198390', '120363221211615047', '120363421181996594', '120363410607412989'},
+        'farms': {'120363429481469212', '120363221285198390', '120363221211615047', '120363421181996594', '120363410607412989'},
+        'raw material': {'120363413108636132', '120363412616266332', '120363410508859526', '120363421181996594'},
+        'feeds': {'120363413108636132', '120363412616266332', '120363410508859526'},
+        'balaji': {'120363410684018393', '120363406924564250'}
+    }
+    for k, v in static_dept_jids.items():
+        name_to_jids.setdefault(k, set()).update(v)
+
     # Fetch messages from both RawMessage and WhatsAppMessage for complete coverage
     raw_messages_today = db.query(RawMessage).filter(RawMessage.timestamp >= start_of_day).all()
     wa_messages_today = db.query(WhatsAppMessage).filter(WhatsAppMessage.timestamp >= start_of_day).all()
@@ -2022,14 +2038,14 @@ def build_7_company_escalation_reports(db, now_ist):
         })
 
     kw_map = {
-        'day book': ['day book', 'daybook', 'day-book', 'day_book', 'daybk', 'cash book', 'cashbook', 'cash-book', 'bank book', 'bankbook', 'day book (', 'daybook.pdf', 'daybook pdf', 'daily daybook', 'daily day book', 'db update', 'daybook update', 'day book update'],
-        'daily sales': ['daily sales', 'sales', 'sale', 'sales report', 'sales rport', 'sale report', 'sales update', 'sales updates', 'daily sale', 'egg sales', 'egg sale', 'salex', 'trays', 'sales.pdf', 'sales pdf', 'sales by customer', 'sales by customer (', 'sales statement', 'sale statement'],
-        'daily purchases': ['daily purchase', 'daily purchases', 'purchase', 'purchases', 'purchse', 'purchse report', 'purchase report', 'purchases report', 'purchase update', 'purchase rport', 'purchases update', 'buy', 'bought', 'feed purchase', 'maize purchase', 'soya purchase', 'kg', 'tons', 'purchases by vendor', 'purchases by vendor (', 'purchases.pdf', 'purchase pdf', 'purchases pdf'],
-        'total payables': ['total payables', 'total payable', 'payable', 'payables', 'payble', 'payables report', 'payable report', 'payables update', 'payble update', 'due to', 'ap aging', 'ap-aging', 'ap_aging', 'payableee', 'payable.pdf', 'payables.pdf', 'payable pdf', 'payables pdf'],
-        'total receivables': ['total receivables', 'total receivable', 'receivable', 'receivables', 'recevable', 'recievables', 'recievable', 'recievables.pdf', 'recievable.pdf', 'receivables report', 'receivable report', 'receivables update', 'recevable update', 'due from', 'ar aging', 'ar-aging', 'ar_aging', 'receivable.pdf', 'receivables.pdf', 'receivable pdf', 'receivables pdf'],
-        'ca statement': ['ca statement', 'ca', 'ca-statement', 'ca_statement', 'ca statment', 'ca stmnt', 'statement', 'audit', 'tally', 'balance sheet', 'ca statement on', 'ca.pdf', 'ca pdf', 'ca report', 'audit report', 'otp'],
+        'day book': ['day book', 'daybook', 'day-book', 'day_book', 'daybk', 'cash book', 'cashbook', 'cash-book', 'bank book', 'bankbook', 'day book (', 'daybook.pdf', 'daybook pdf', 'daily daybook', 'daily day book', 'db update', 'daybook update', 'day book update', 'day book shared', 'daybook shared'],
+        'daily sales': ['daily sales', 'sales', 'sale', 'sales report', 'sales rport', 'sale report', 'sales update', 'sales updates', 'daily sale', 'egg sales', 'egg sale', 'salex', 'trays', 'sales.pdf', 'sales pdf', 'sales by customer', 'sales by customer (', 'sales statement', 'sale statement', 'daily sales shared', 'sales shared'],
+        'daily purchases': ['daily purchase', 'daily purchases', 'purchase', 'purchases', 'purchse', 'purchse report', 'purchase report', 'purchases report', 'purchase update', 'purchase rport', 'purchases update', 'buy', 'bought', 'feed purchase', 'maize purchase', 'soya purchase', 'kg', 'tons', 'purchases by vendor', 'purchases by vendor (', 'purchases.pdf', 'purchase pdf', 'purchases pdf', 'daily purchases shared', 'purchases shared'],
+        'total payables': ['total payables', 'total payable', 'payable', 'payables', 'payble', 'payables report', 'payable report', 'payables update', 'payble update', 'due to', 'ap aging', 'ap-aging', 'ap_aging', 'payableee', 'payable.pdf', 'payables.pdf', 'payable pdf', 'payables pdf', 'total payables shared', 'payables shared'],
+        'total receivables': ['total receivables', 'total receivable', 'receivable', 'receivables', 'recevable', 'recievables', 'recievable', 'recievables.pdf', 'recievable.pdf', 'receivables report', 'receivable report', 'receivables update', 'recevable update', 'due from', 'ar aging', 'ar-aging', 'ar_aging', 'receivable.pdf', 'receivables.pdf', 'receivable pdf', 'receivables pdf', 'total receivables shared', 'receivables shared'],
+        'ca statement': ['ca statement', 'ca', 'ca-statement', 'ca_statement', 'ca statment', 'ca stmnt', 'statement', 'audit', 'tally', 'balance sheet', 'ca statement on', 'ca.pdf', 'ca pdf', 'ca report', 'audit report', 'otp', 'ca statement shared'],
         'average p&l': ['average p&l', 'avg p&l', 'average pl', 'avg pl'],
-        'each sales p&l': ['each sales p&l', 'each sale p&l', 'sales p&l', 'each sales pl', 'each sale pl', 'sales pl', 'each sales profit', 'each sales p&l.pdf', 'each sales pl pdf', 'each sales', 'each sale', 'sales p&l.pdf', 'sales pl.pdf', 'sales by customer', 'sales by customer (', 'p&l'],
+        'each sales p&l': ['each sales p&l', 'each sale p&l', 'sales p&l', 'each sales pl', 'each sale pl', 'sales pl', 'each sales profit', 'each sales p&l.pdf', 'each sales pl pdf', 'each sales', 'each sale', 'sales p&l.pdf', 'sales pl.pdf', 'sales by customer', 'sales by customer (', 'p&l', 'each sales p&l shared', 'sales p&l shared', 'p&l shared'],
         'profit & loss summary': ['profit & loss summary', 'profit & loss', 'profit and loss', 'p&l', 'p & l', 'pl', 'p and l', 'p&l summary', 'profit loss summary', 'pl summary', 'profit loss'],
         'daily work update': ['daily work update', 'work update', 'work updates', 'wrk update', 'work rport', 'daily update', 'daily updates', 'work report', 'work reports', 'daily work report', 'daily work reports', 'eod update', 'eod updates', 'eod report', 'eod reports', 'today work', "today's work", 'tasks done', 'task done', 'work done', 'done', 'completed'],
         'stock': ['stock', 'stocks', 'stk', 'website', 'website updates', 'website update', 'ordering', 'stock update', 'stock updates', 'maize', 'soya', 'dorb', 'stonegrit', 'raw material', 'raw materials', 'raw material prices', 'updates'],
@@ -2301,7 +2317,6 @@ def build_7_company_escalation_reports(db, now_ist):
         ("Accounts Poultry: Daily Purchases", check_report_submitted('daily purchases', group_target='accounts poultry')),
         ("Accounts Poultry: Total Payables", check_report_submitted('total payables', group_target='accounts poultry')),
         ("Accounts Poultry: Total Receivables", check_report_submitted('total receivables', group_target='accounts poultry')),
-        ("Accounts Poultry: Each Sales P&L", check_report_submitted('each sales p&l', group_target='accounts poultry')),
         ("Rule Book: Rule Book Updates", check_report_submitted('rule book', group_target='rule book')),
         ("Sunfra P&L: Profit & Loss Summary", check_report_submitted('profit & loss summary', group_target='sunfra p&l')),
     ]
@@ -2592,6 +2607,34 @@ def generate_rental_vacancy_report():
     mtd_loss = total_daily_loss * day_num
     projected_monthly_loss = total_daily_loss * days_in_month
 
+    notice_lines = [
+        "  • *Kadubeesanahalli:* 2 flats",
+        "  • *Ickon:* 1",
+        "  • *K.R puram:* 1 flat"
+    ]
+
+    if raw_text and "notice" in raw_text.lower():
+        try:
+            parsed_notice = []
+            in_notice_section = False
+            for line in raw_text.split('\n'):
+                line_c = line.strip()
+                if "notice rooms" in line_c.lower() or "notice flats" in line_c.lower():
+                    in_notice_section = True
+                    continue
+                if in_notice_section and line_c:
+                    if ":" in line_c:
+                        parts = line_c.split(":", 1)
+                        prop = parts[0].strip()
+                        val = parts[1].strip()
+                        parsed_notice.append(f"  • *{prop}:* {val}")
+            if parsed_notice:
+                notice_lines = parsed_notice
+        except Exception:
+            pass
+
+    notice_str = "\n".join(notice_lines)
+
     report = (
         f"🚨 *DAILY RENTAL & VACANCY LOSS REPORT* 🚨\n"
         f"📅 *Date:* {date_formatted}\n\n"
@@ -2602,7 +2645,11 @@ def generate_rental_vacancy_report():
         f"• *Daily Loss Today:* ₹{total_daily_loss:,}\n"
         f"• *MTD Loss ({month_name} 1-{day_num}):* ₹{mtd_loss:,}\n\n"
         f"📍 *VACANT ROOMS DETAILS*\n"
-        + "\n\n".join(property_blocks)
+        + "\n\n".join(property_blocks) +
+        f"\n\n==================================================\n"
+        f"📋 *NOTICE ROOMS / FLATS*\n"
+        f"{notice_str}\n"
+        f"=================================================="
     )
     return report
 
@@ -2620,17 +2667,17 @@ def scheduled_4company_consolidated_reports_job():
     """Dispatches the 4 Consolidated Company Reports (Sunfra Farms, Sunfra Feeds, Corporate, Indus) to Kusum (7259510983)."""
     logger.info("Executing 4 Consolidated Company Reports Dispatcher...")
     try:
-        from zoho_reconciliation import generate_and_send_zoho_reconciliation_report
-        generate_and_send_zoho_reconciliation_report("917259510983@c.us")
+        from zoho_4company_pandl import generate_and_send_4company_pandl_report
+        generate_and_send_4company_pandl_report("917259510983@c.us")
     except Exception as e:
         logger.error(f"Error sending 4 Consolidated Company Reports: {e}")
 
-async def send_all_10pm_daily_reports_job():
+def send_all_10pm_daily_reports_job():
     logger.info("Executing 10:00 PM Daily Reports Dispatcher...")
     try:
         # 1. 4 Consolidated Company Reports (Sunfra Farms, Sunfra Feeds, Corporate, Indus)
-        from zoho_reconciliation import generate_and_send_zoho_reconciliation_report
-        generate_and_send_zoho_reconciliation_report("917259510983@c.us")
+        from zoho_4company_pandl import generate_and_send_4company_pandl_report
+        generate_and_send_4company_pandl_report("917259510983@c.us")
     except Exception as e:
         logger.error(f"Error sending 4 Consolidated Company Reports at 10 PM: {e}")
 
@@ -3078,16 +3125,10 @@ def scheduled_zoho_reconciliation_job():
     logger.info("Starting 10:00 PM Zoho Reconciliation Reports dispatch (7259510983 ONLY)...")
     recipients = ["917259510983@c.us"]
     try:
-        from zoho_reconciliation import (
-            generate_and_send_zoho_reconciliation_report,
-            generate_and_send_sunfra_feeds_reconciliation_report,
-            generate_and_send_sunfra_corporate_reconciliation_report
-        )
+        from zoho_4company_pandl import generate_and_send_4company_pandl_report
         for phone in recipients:
-            generate_and_send_zoho_reconciliation_report(phone)
-            generate_and_send_sunfra_feeds_reconciliation_report(phone)
-            generate_and_send_sunfra_corporate_reconciliation_report(phone)
-            logger.info(f"Successfully sent all 3 Zoho Reconciliation Reports to {phone}")
+            generate_and_send_4company_pandl_report(phone)
+            logger.info(f"Successfully sent 4-Company Consolidated Reports to {phone}")
     except Exception as e:
         logger.error(f"Error in scheduled_zoho_reconciliation_job: {e}")
 
@@ -3160,15 +3201,23 @@ def scheduled_egg_production_crosscheck_930pm_job():
         logger.error(f"Error in scheduled_egg_production_crosscheck_930pm_job: {e}")
 
 def scheduled_daily_attendance_summary_job():
-    """Dispatches the Daily Sunfra Community Attendance Summary at 9:30 PM IST to Kusum (7259510983)."""
+    """Dispatches the Daily Sunfra Community Attendance Summary at 9:30 PM IST to Kusum (7259510983) and company-wise reports."""
     logger.info("Executing 9:30 PM Daily Sunfra Community Attendance Summary Job...")
     try:
-        from attendance_tracker import evaluate_attendance_for_date, generate_attendance_summary_message
+        from attendance_tracker import evaluate_attendance_for_date, generate_attendance_summary_message, generate_company_attendance_messages
         from waha_service import send_waha_message
         data = evaluate_attendance_for_date()
+        
+        # 1. Send complete consolidated report across all 10 companies to Kusum (7259510983)
         summary_msg = generate_attendance_summary_message(data)
         send_waha_message("917259510983@c.us", summary_msg)
-        logger.info("Daily Attendance Summary successfully sent to 917259510983@c.us at 9:30 PM")
+        logger.info("Complete Daily Attendance Summary successfully sent to 917259510983@c.us at 9:30 PM")
+        
+        # 2. Generate company-wise attendance reports and send to Kusum
+        company_msgs = generate_company_attendance_messages(data)
+        for comp_name, comp_msg in company_msgs.items():
+            send_waha_message("917259510983@c.us", comp_msg)
+            logger.info(f"Generated and sent company-wise attendance report for {comp_name} to 917259510983@c.us")
     except Exception as e:
         logger.error(f"Error in scheduled_daily_attendance_summary_job: {e}")
 
@@ -3197,101 +3246,93 @@ def scheduled_vacancy_job():
 def setup_scheduler():
 
     global scheduler
+    if scheduler.running:
+        logger.info("Scheduler is already running. Skipping duplicate setup_scheduler().")
+        return
     
     # Schedule Health Monitor every 1 minute
-    scheduler.add_job(health_monitor_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60)
+    scheduler.add_job(health_monitor_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="health_monitor_job", replace_existing=True)
     
     # Schedule Live Flock Hatch Date & Birds Sync from sunfra.com every 4 hours
     from sunfra_batch_sync import sync_flocks_from_sunfra_web
-    scheduler.add_job(sync_flocks_from_sunfra_web, CronTrigger(hour="*/4", minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="sync_sunfra_flocks_job")
+    scheduler.add_job(sync_flocks_from_sunfra_web, CronTrigger(hour="*/4", minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="sync_sunfra_flocks_job", replace_existing=True)
     
     # Schedule Daily Sunfra P&L PDF report at 9:30 PM IST daily (to 7259510983, 8985779911, and 6364817749)
-    scheduler.add_job(scheduled_sunfra_pandl_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    scheduler.add_job(scheduled_sunfra_pandl_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_sunfra_pandl_job", replace_existing=True)
     
     # Schedule Monday Weekly Feed Formula update reminder at 11:00 AM IST on Mondays (Starts 14th Sep 2026)
-    scheduler.add_job(send_monday_weekly_feed_reminder_job, CronTrigger(day_of_week='mon', hour=11, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="send_monday_weekly_feed_reminder_job")
+    scheduler.add_job(send_monday_weekly_feed_reminder_job, CronTrigger(day_of_week='mon', hour=11, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="send_monday_weekly_feed_reminder_job", replace_existing=True)
 
-    # Schedule Feed stage transition check daily at 8:00 AM IST
-    scheduler.add_job(check_feed_change_transitions_job, CronTrigger(hour=8, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    # [ON HOLD] Schedule Feed stage transition check daily at 8:00 AM IST
+    # scheduler.add_job(check_feed_change_transitions_job, CronTrigger(hour=8, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="check_feed_change_transitions_job", replace_existing=True)
     
     # Schedule Task Overdue Checker & Nagging alert every 1 minute
-    scheduler.add_job(poll_and_remind_tasks_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="poll_tasks_job")
-    
-    # Wednesday meeting auto-task generation disabled per user request
-    # scheduler.add_job(create_wednesday_meeting_tasks, CronTrigger(day_of_week='wed', hour=6, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    scheduler.add_job(poll_and_remind_tasks_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="poll_tasks_job", replace_existing=True)
 
-    # Schedule Vaccine Approval Request to manager at 6:30 AM IST
-    scheduler.add_job(scheduled_vaccine_approval_request_job, CronTrigger(hour=6, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    # [ON HOLD] Schedule Vaccine Approval Request to manager at 6:30 AM IST
+    # scheduler.add_job(scheduled_vaccine_approval_request_job, CronTrigger(hour=6, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_vaccine_approval_request_job", replace_existing=True)
 
-    # Schedule Daily Vaccine & Medicine Reminder every day at 7:00 AM IST (only if manager approved at 6:30 AM)
-    scheduler.add_job(scheduled_vaccine_reminder_job, CronTrigger(hour=7, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    # [ON HOLD] Schedule Daily Vaccine & Medicine Reminder every day at 7:00 AM IST (only if manager approved at 6:30 AM)
+    # scheduler.add_job(scheduled_vaccine_reminder_job, CronTrigger(hour=7, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_vaccine_reminder_job", replace_existing=True)
 
     # Schedule Daily Egg Godown report daily at 9:00 PM IST
-    scheduler.add_job(scheduled_godown_report_job, CronTrigger(hour=21, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    scheduler.add_job(scheduled_godown_report_job, CronTrigger(hour=21, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_godown_report_job", replace_existing=True)
 
     # Midnight reset: advance trigger_time and reset sent recurring reminders to pending at 00:00 IST
-    scheduler.add_job(midnight_reset_job, CronTrigger(hour=0, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    scheduler.add_job(midnight_reset_job, CronTrigger(hour=0, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="midnight_reset_job", replace_existing=True)
 
     # Schedule media/report cleanup daily at 12:05 AM IST
-    scheduler.add_job(cleanup_old_files_job, CronTrigger(hour=0, minute=5, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    scheduler.add_job(cleanup_old_files_job, CronTrigger(hour=0, minute=5, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="cleanup_old_files_job", replace_existing=True)
     
     # Schedule 4 Consolidated Company Reports daily at 6:50 PM IST (to 7259510983)
-    scheduler.add_job(scheduled_4company_consolidated_reports_job, CronTrigger(hour=18, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_reports_650pm_job")
+    scheduler.add_job(scheduled_4company_consolidated_reports_job, CronTrigger(hour=18, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_reports_650pm_job", replace_existing=True)
 
     # Schedule Egg Production vs Godown Stock Cross-Check daily at 6:50 PM IST (to 7259510983 ONLY) & 9:30 PM IST (to 3 admins)
-    scheduler.add_job(scheduled_egg_production_crosscheck_650pm_job, CronTrigger(hour=18, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_production_crosscheck_650pm_job")
-    scheduler.add_job(scheduled_egg_production_crosscheck_930pm_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_production_crosscheck_930pm_job")
+    scheduler.add_job(scheduled_egg_production_crosscheck_650pm_job, CronTrigger(hour=18, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_production_crosscheck_650pm_job", replace_existing=True)
+    scheduler.add_job(scheduled_egg_production_crosscheck_930pm_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_production_crosscheck_930pm_job", replace_existing=True)
 
-    # Schedule Daily Sunfra Community Attendance Summary daily at 1:00 PM IST, 7:05 PM IST & 9:30 PM IST (to 7259510983)
-    scheduler.add_job(scheduled_daily_attendance_summary_job, CronTrigger(hour=13, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_1pm_job")
-    scheduler.add_job(scheduled_daily_attendance_summary_job, CronTrigger(hour=19, minute=5, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_705pm_job")
-    scheduler.add_job(scheduled_daily_attendance_summary_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_job")
+    # Schedule Daily Sunfra Community Attendance Summary daily at 7:05 PM IST & 9:30 PM IST EOD Lock (to 7259510983)
+    scheduler.add_job(scheduled_daily_attendance_summary_job, CronTrigger(hour=19, minute=5, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_705pm_job", replace_existing=True)
+    scheduler.add_job(scheduled_daily_attendance_summary_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_job", replace_existing=True)
 
     # Combined 10:00 PM Dispatcher: 4 Consolidated Company Reports, Daily Rental Loss, and Company-Wise Escalation
-    scheduler.add_job(send_all_10pm_daily_reports_job, CronTrigger(hour=22, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
-    
-    # Extra evening jobs paused per user instruction until further notice:
-    # scheduler.add_job(send_daily_farm_summary_1155pm_job, CronTrigger(hour=23, minute=55, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="daily_farm_summary_1155pm_job")
-    # scheduler.add_job(manager_escalation_job, CronTrigger(day_of_week='mon-sat', hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="manager_escalation_job")
+    scheduler.add_job(send_all_10pm_daily_reports_job, CronTrigger(hour=22, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="send_all_10pm_daily_reports_job", replace_existing=True)
     
     # Schedule Weekly 4-Company P&L & Stock Report every Saturday at 10:30 PM IST (to 7259510983)
-    scheduler.add_job(scheduled_4company_weekly_pandl_job, CronTrigger(day_of_week='sat', hour=22, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_weekly_pandl_job")
+    scheduler.add_job(scheduled_4company_weekly_pandl_job, CronTrigger(day_of_week='sat', hour=22, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_weekly_pandl_job", replace_existing=True)
 
     # Schedule Monthly 4-Company P&L & Stock Report on the last day of every month at 10:30 PM IST (to 7259510983)
-    scheduler.add_job(scheduled_4company_monthly_pandl_job, CronTrigger(hour=22, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_monthly_pandl_job")
+    scheduler.add_job(scheduled_4company_monthly_pandl_job, CronTrigger(hour=22, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_monthly_pandl_job", replace_existing=True)
     
     # Schedule weekly report at 11:00 PM IST on Sunday
-    scheduler.add_job(scheduled_weekly_report_job, CronTrigger(day_of_week='sun', hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    scheduler.add_job(scheduled_weekly_report_job, CronTrigger(day_of_week='sun', hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_weekly_report_job", replace_existing=True)
     
     # Schedule monthly report at 11:00 PM IST on the 1st day of every month
-    scheduler.add_job(scheduled_monthly_report_job, CronTrigger(day='1', hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
+    scheduler.add_job(scheduled_monthly_report_job, CronTrigger(day='1', hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_monthly_report_job", replace_existing=True)
 
     # Schedule yearly report at 11:00 PM IST on Dec 31
-    scheduler.add_job(scheduled_yearly_report_job, CronTrigger(month=12, day=31, hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600)
-    
-    # Schedule Daily Vacancy Summary at 10:00 AM IST (Disabled per user directive - sent at 10:00 PM only)
-    # scheduler.add_job(scheduled_vacancy_job, CronTrigger(hour=10, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_vacancy_job")
+    scheduler.add_job(scheduled_yearly_report_job, CronTrigger(month=12, day=31, hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_yearly_report_job", replace_existing=True)
     
     import os
     if os.getenv("USE_N8N", "false").lower() == "true":
         logger.info("USE_N8N is enabled. Live Alarms, Group Sync, and Unified Reminders are delegated to n8n.")
     else:
         # Schedule live alarms polling every 1 minute
-        scheduler.add_job(poll_live_alarms, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="poll_live_alarms_job")
+        scheduler.add_job(poll_live_alarms, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="poll_live_alarms_job", replace_existing=True)
         
         # Schedule group syncing to live PHP server every 5 minutes
-        scheduler.add_job(sync_groups_to_live, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="sync_groups_job")
+        scheduler.add_job(sync_groups_to_live, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="sync_groups_job", replace_existing=True)
         
         # Schedule database polling for unified reminders every 1 minute
-        scheduler.add_job(poll_and_execute_unified_reminders, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="poll_unified_reminders_job")
+        scheduler.add_job(poll_and_execute_unified_reminders, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="poll_unified_reminders_job", replace_existing=True)
         
     # Schedule Water Telemetry & Device OFF monitoring every 5 minutes
     from water_monitoring import check_and_dispatch_water_alerts
-    scheduler.add_job(check_and_dispatch_water_alerts, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="water_monitoring_job")
+    scheduler.add_job(check_and_dispatch_water_alerts, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="water_monitoring_job", replace_existing=True)
 
     # Schedule Water Flow & Indicator Telemetry 4-Hour OFF monitoring every 5 minutes
     from water_flow_farm_monitoring import check_and_dispatch_water_flow_farm_alerts
-    scheduler.add_job(check_and_dispatch_water_flow_farm_alerts, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="water_flow_farm_monitoring_job")
+    scheduler.add_job(check_and_dispatch_water_flow_farm_alerts, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="water_flow_farm_monitoring_job", replace_existing=True)
 
     scheduler.start()
     logger.info("APScheduler started.")
