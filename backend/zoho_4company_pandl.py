@@ -391,59 +391,63 @@ def generate_4company_pandl_report():
         emoji = comp['emoji']
         org_id = comp['org_id']
         
-        msg_lines = [
-            f"{emoji} *{name}* — 📊 *DAILY P&L & STOCK REPORT*",
-            f"📅 *Date:* {display_date_str}",
-            "=================================================="
-        ]
-        
-        # 1. Fetch Today's Daily Sales & Costs
-        today_sales, today_costs, sales_cnt, cost_cnt, sales_list, purch_list = fetch_today_sales_and_purchases(access_token, org_id, today_date_str)
-        today_daily_pl = today_sales - today_costs
-        
-        # 2. Fetch Overall Balances & Inventory Stock Data
-        accounts = get_chart_of_accounts(access_token, org_id)
-        receivables_data = get_receivables_summary(access_token, org_id)
-        payables_data = get_payables_summary(access_token, org_id)
-        stock_val, neg_items = fetch_inventory_stock_data(access_token, org_id)
-        
-        bank_total, bs_cash, bs_bank = fetch_balance_sheet_cash_and_equivalents(access_token, org_id)
-        rec_total = float(receivables_data.get('total_amount', 0.0) or receivables_data.get('total_balance', 0.0) or 0.0)
-        pay_total = float(payables_data.get('total_amount', 0.0) or payables_data.get('total_balance', 0.0) or 0.0)
-        
-        # Overall Net Position = (Stock + Receivables + Bank) - Payables
-        net_financial_position = (stock_val + rec_total + bank_total) - pay_total
-        
-        msg_lines.append(f"📦 *Stock Valuation:* *{format_currency(stock_val)}*")
-        
-        # Add Egg Stock right below Stock Valuation (highlight with red emoji if > 2.5 Lakhs)
-        egg_stock_count = fetch_egg_stock_count(access_token, org_id)
-        if egg_stock_count > 0 or company_key == 'farms':
-            lakhs = egg_stock_count / 100000.0
-            highlight = " 🔴" if egg_stock_count > 250000 else ""
-            msg_lines.append(f"  • *Egg Stock:* *{lakhs:.2f} Lakhs eggs* ({int(egg_stock_count):,} eggs){highlight}")
+        try:
+            msg_lines = [
+                f"{emoji} *{name}* — 📊 *DAILY P&L & STOCK REPORT*",
+                f"📅 *Date:* {display_date_str}",
+                "=================================================="
+            ]
             
-        msg_lines.append(f"💰 *Bank & Cash Balance:* *{format_currency(bank_total)}*")
-        msg_lines.append(f"📈 *Total Receivables:* *{format_currency(rec_total)}*")
-        msg_lines.append(f"📋 *Total Payables:* *{format_currency(pay_total)}*")
-        
-        net_pos_status = "✅ Profit" if net_financial_position >= 0 else "⚠️ Deficit"
-        msg_lines.append(f"⚖️ *Overall Net Financial Position:* *{format_currency(net_financial_position)}* ({net_pos_status})")
-        
-        # Net Position Historical Breakdown: today, -1 day, -2 days, -1 week, -2 weeks, -1 month, -2 months, -1 year
-        hist_positions = fetch_historical_net_positions(access_token, org_id, net_financial_position, today_date_str)
-        hist_lines = [f"  • {lbl}: *{format_currency(pos)}*" for lbl, pos in hist_positions]
-        msg_lines.append("📊 *Net Position Breakdown (History):*\n" + "\n".join(hist_lines))
-        
-        # Negative Stock Items warning (List ALL items as requested)
-        if neg_items:
-            neg_strs = [f"• {item_name}: *{qty:,.2f} units*" for item_name, qty in neg_items]
-            msg_lines.append(f"⚠️ *Negative Stock Warning ({len(neg_items)} items):*\n  " + "\n  ".join(neg_strs))
-        else:
-            msg_lines.append("⚠️ *Negative Stock:* *None* ✅")
+            # 1. Fetch Today's Daily Sales & Costs
+            today_sales, today_costs, sales_cnt, cost_cnt, sales_list, purch_list = fetch_today_sales_and_purchases(access_token, org_id, today_date_str)
+            today_daily_pl = today_sales - today_costs
             
-        msg_lines.append("==================================================")
-        company_reports.append("\n".join(msg_lines))
+            # 2. Fetch Overall Balances & Inventory Stock Data
+            accounts = get_chart_of_accounts(access_token, org_id)
+            receivables_data = get_receivables_summary(access_token, org_id)
+            payables_data = get_payables_summary(access_token, org_id)
+            stock_val, neg_items = fetch_inventory_stock_data(access_token, org_id)
+            
+            bank_total, bs_cash, bs_bank = fetch_balance_sheet_cash_and_equivalents(access_token, org_id)
+            rec_total = float(receivables_data.get('total_amount', 0.0) or receivables_data.get('total_balance', 0.0) or 0.0)
+            pay_total = float(payables_data.get('total_amount', 0.0) or payables_data.get('total_balance', 0.0) or 0.0)
+            
+            # Overall Net Position = (Stock + Receivables + Bank) - Payables
+            net_financial_position = (stock_val + rec_total + bank_total) - pay_total
+            
+            msg_lines.append(f"📦 *Stock Valuation:* *{format_currency(stock_val)}*")
+            
+            # Add Egg Stock right below Stock Valuation (highlight with red emoji if > 2.5 Lakhs)
+            egg_stock_count = fetch_egg_stock_count(access_token, org_id)
+            if egg_stock_count > 0 or company_key == 'farms':
+                lakhs = egg_stock_count / 100000.0
+                highlight = " 🔴" if egg_stock_count > 250000 else ""
+                msg_lines.append(f"  • *Egg Stock:* *{lakhs:.2f} Lakhs eggs* ({int(egg_stock_count):,} eggs){highlight}")
+                
+            msg_lines.append(f"💰 *Bank & Cash Balance:* *{format_currency(bank_total)}*")
+            msg_lines.append(f"📈 *Total Receivables:* *{format_currency(rec_total)}*")
+            msg_lines.append(f"📋 *Total Payables:* *{format_currency(pay_total)}*")
+            
+            net_pos_status = "✅ Profit" if net_financial_position >= 0 else "⚠️ Deficit"
+            msg_lines.append(f"⚖️ *Overall Net Financial Position:* *{format_currency(net_financial_position)}* ({net_pos_status})")
+            
+            # Net Position Historical Breakdown: today, -1 day, -2 days, -1 week, -2 weeks, -1 month, -2 months, -1 year
+            hist_positions = fetch_historical_net_positions(access_token, org_id, net_financial_position, today_date_str)
+            hist_lines = [f"  • {lbl}: *{format_currency(pos)}*" for lbl, pos in hist_positions]
+            msg_lines.append("📊 *Net Position Breakdown (History):*\n" + "\n".join(hist_lines))
+            
+            # Negative Stock Items warning (List ALL items as requested)
+            if neg_items:
+                neg_strs = [f"• {item_name}: *{qty:,.2f} units*" for item_name, qty in neg_items]
+                msg_lines.append(f"⚠️ *Negative Stock Warning ({len(neg_items)} items):*\n  " + "\n  ".join(neg_strs))
+            else:
+                msg_lines.append("⚠️ *Negative Stock:* *None* ✅")
+                
+            msg_lines.append("==================================================")
+            company_reports.append("\n".join(msg_lines))
+        except Exception as comp_err:
+            logger.error(f"Error generating daily P&L report for company '{name}' (org {org_id}): {comp_err}")
+            continue
         
     return company_reports
 
@@ -686,11 +690,14 @@ def generate_and_send_4company_pandl_report(recipient_phone: str = "917259510983
         
     logger.info(f"Sending {len(reports)} company P&L reports separately to {target}...")
     all_success = True
+    import time
     for idx, report_text in enumerate(reports, 1):
         success = send_waha_message(target, report_text)
         if not success:
             all_success = False
         logger.info(f"Sent 4-Company P&L msg {idx}/{len(reports)} to {target}: {'Success' if success else 'Failed'}")
+        if idx < len(reports):
+            time.sleep(2)
     return all_success
 
 if __name__ == "__main__":

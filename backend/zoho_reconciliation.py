@@ -56,19 +56,30 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str, target_date: 
         target_name_lower = exact_group_name.strip().lower()
         targets = company_targets.get(target_name_lower, [target_name_lower])
 
-        raw_msgs = db.query(RawMessage).order_by(desc(RawMessage.timestamp)).limit(3000).all()
-        wa_msgs = db.query(WhatsAppMessage).order_by(desc(WhatsAppMessage.timestamp)).limit(3000).all()
+        from sqlalchemy import or_
+        filter_cond_raw = or_(*[RawMessage.group_name.ilike(f"%{t}%") for t in targets])
+        filter_cond_wa = or_(*[WhatsAppMessage.group_id.ilike(f"%{t}%") for t in targets])
+
+        raw_msgs = db.query(RawMessage).filter(filter_cond_raw).order_by(desc(RawMessage.timestamp)).limit(100).all()
+        wa_msgs = db.query(WhatsAppMessage).filter(filter_cond_wa).order_by(desc(WhatsAppMessage.timestamp)).limit(100).all()
 
         combined = []
         for m in raw_msgs:
-            grp = (m.group_name or '').lower()
-            if any(t in grp for t in targets):
-                combined.append({'text': m.raw_text or '', 'ts': m.timestamp})
+            combined.append({'text': m.raw_text or '', 'ts': m.timestamp})
                 
         for m in wa_msgs:
-            grp = (m.group_id or '').lower()
-            if any(t in grp for t in targets):
-                combined.append({'text': m.message_text or '', 'ts': m.timestamp})
+            combined.append({'text': m.message_text or '', 'ts': m.timestamp})
+
+        # Dual-query local SQLite fallback to guarantee no messages are lost during MySQL downtime
+        try:
+            from database import SqliteSession
+            sq_db = SqliteSession()
+            sq_raw = sq_db.query(RawMessage).filter(filter_cond_raw).order_by(desc(RawMessage.timestamp)).limit(100).all()
+            for m in sq_raw:
+                combined.append({'text': m.raw_text or '', 'ts': m.timestamp})
+            sq_db.close()
+        except Exception:
+            pass
 
         if target_date:
             if isinstance(target_date, str):
@@ -82,14 +93,19 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str, target_date: 
         def get_report_date(ts):
             if not ts:
                 return None
-            ts_ist = ts.replace(tzinfo=timezone.utc).astimezone(IST) if ts.tzinfo is None else ts.astimezone(IST)
-            if ts_ist.hour < 6:
-                return (ts_ist - timedelta(days=1)).date()
-            return ts_ist.date()
+            if isinstance(ts, str):
+                try:
+                    ts = datetime.strptime(ts.split('.')[0], "%Y-%m-%d %H:%M:%S")
+                except Exception:
+                    pass
+            # ts is stored in IST local time
+            if ts.hour < 6:
+                return (ts - timedelta(days=1)).date()
+            return ts.date()
 
         # Filter strictly to messages posted for target date per user directive
         today_combined = [m for m in combined if get_report_date(m['ts']) == today_date]
-        today_combined.sort(key=lambda x: x['ts'], reverse=True)
+        today_combined.sort(key=lambda x: str(x['ts']), reverse=True)
 
         for m in today_combined:
             text = m['text']
@@ -438,27 +454,6 @@ def generate_and_send_zoho_reconciliation_report(recipient_phone: str = None, ta
     report_text = "\n".join(msg_lines)
     logger.info(f"Sending Consolidated Sunfra Farms Report to {target_phone}...")
     success = send_waha_message(target_phone, report_text)
-    
-    # Also dispatch Feeds, Corporate, and Indus Consolidated Reports to target recipient with isolated error handling & delays
-    import time
-    try:
-        time.sleep(2)
-        generate_and_send_sunfra_feeds_reconciliation_report(target_phone, today_date_str)
-    except Exception as e_sub:
-        logger.error(f"Error sending Feeds consolidated report: {e_sub}")
-        
-    try:
-        time.sleep(2)
-        generate_and_send_sunfra_corporate_reconciliation_report(target_phone, today_date_str)
-    except Exception as e_sub:
-        logger.error(f"Error sending Corporate consolidated report: {e_sub}")
-        
-    try:
-        time.sleep(2)
-        generate_and_send_indus_reconciliation_report(target_phone, today_date_str)
-    except Exception as e_sub:
-        logger.error(f"Error sending Indus consolidated report: {e_sub}")
-        
     return success
 
 
@@ -716,3 +711,52 @@ def generate_and_send_indus_reconciliation_report(recipient_phone: str = None, t
     logger.info(f"Sending Consolidated Indus Report to {target_phone}...")
     success = send_waha_message(target_phone, report_text)
     return success
+
+
+def dispatch_all_4company_reconciliation_reports(recipient_phone: str = "917259510983@c.us", target_date: str = None) -> bool:
+    """Dispatches all 4 Consolidated Company Reconciliation Reports (Daily Comprehensive Reports) for Sunfra Farms, Sunfra Feeds, Sunfra Corporate, and Indus."""
+    import time
+    logger.info(f"Starting dispatch of all 4 Consolidated Company Reconciliation Reports to {recipient_phone} (date={target_date or 'today'})...")
+    success_all = True
+    
+    # 1. Sunfra Farms
+    try:
+        ok1 = generate_and_send_zoho_reconciliation_report(recipient_phone, target_date=target_date)
+        logger.info(f"Sent 1/4 Sunfra Farms Reconciliation Report: {'Success' if ok1 else 'Failed'}")
+        if not ok1: success_all = False
+    except Exception as e:
+        logger.error(f"Error sending Sunfra Farms Reconciliation Report: {e}")
+        success_all = False
+    time.sleep(2)
+
+    # 2. Sunfra Feeds
+    try:
+        ok2 = generate_and_send_sunfra_feeds_reconciliation_report(recipient_phone, target_date=target_date)
+        logger.info(f"Sent 2/4 Sunfra Feeds Reconciliation Report: {'Success' if ok2 else 'Failed'}")
+        if not ok2: success_all = False
+    except Exception as e:
+        logger.error(f"Error sending Sunfra Feeds Reconciliation Report: {e}")
+        success_all = False
+    time.sleep(2)
+
+    # 3. Sunfra Corporate
+    try:
+        ok3 = generate_and_send_sunfra_corporate_reconciliation_report(recipient_phone, target_date=target_date)
+        logger.info(f"Sent 3/4 Sunfra Corporate Reconciliation Report: {'Success' if ok3 else 'Failed'}")
+        if not ok3: success_all = False
+    except Exception as e:
+        logger.error(f"Error sending Sunfra Corporate Reconciliation Report: {e}")
+        success_all = False
+    time.sleep(2)
+
+    # 4. Indus
+    try:
+        ok4 = generate_and_send_indus_reconciliation_report(recipient_phone, target_date=target_date)
+        logger.info(f"Sent 4/4 Indus Reconciliation Report: {'Success' if ok4 else 'Failed'}")
+        if not ok4: success_all = False
+    except Exception as e:
+        logger.error(f"Error sending Indus Reconciliation Report: {e}")
+        success_all = False
+
+    return success_all
+

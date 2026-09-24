@@ -232,6 +232,21 @@ class DailyAttendance(Base):
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
 
+class PapaakEggRate(Base):
+    __tablename__ = "sunfra_papaak_egg_rates"
+    id = Column(Integer, primary_key=True, index=True)
+    date = Column(Date, index=True, nullable=False)
+    email_timestamp = Column(DateTime, nullable=True)
+    category = Column(String(50), nullable=False)  # 'loading' or 'paper'
+    city_code = Column(String(50), index=True, nullable=False)  # 'HPT', 'HYD', 'NKL', 'BWL', 'KOL', 'MYS', 'CHE', 'BLR', etc.
+    rate_value = Column(Integer, nullable=False)  # 510, 530, 550, 558, 620, etc.
+    prev_rate_value = Column(Integer, nullable=True)
+    diff_value = Column(Integer, default=0)
+    raw_text = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=func.now())
+
+
+
 
 
 

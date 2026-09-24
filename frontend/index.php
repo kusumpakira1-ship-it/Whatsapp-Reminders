@@ -70,8 +70,15 @@ if (isset($_GET['api'])) {
         $now = date('Y-m-d H:i:s');
 
         try {
-            $stmt = $pdo->prepare("INSERT INTO mac_devices (mac_address, device_name, location, water_level, power_status, last_seen, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$mac, $name, $loc, $water, $power, $now, $now]);
+            $chk = $pdo->prepare("SELECT id FROM mac_devices WHERE mac_address = ?");
+            $chk->execute([$mac]);
+            if ($chk->fetch()) {
+                $stmt = $pdo->prepare("UPDATE mac_devices SET name = ?, location = ?, water_level = ?, status = ?, updated_at = ? WHERE mac_address = ?");
+                $stmt->execute([$name, $loc, $water, $power, $now, $mac]);
+            } else {
+                $stmt = $pdo->prepare("INSERT INTO mac_devices (name, mac_address, location, water_level, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$name, $mac, $loc, $water, $power, $now, $now]);
+            }
             echo json_encode(['status' => 'success', 'message' => 'Device added successfully']);
         } catch (Throwable $e) {
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
@@ -103,8 +110,15 @@ if (isset($_GET['api'])) {
             $stmt = $pdo->prepare("INSERT INTO device_readings (mac_address, location, water_level, status, timestamp) VALUES (?, ?, ?, ?, ?)");
             $stmt->execute([$mac, $location, $water, $status, $now]);
 
-            $stmt2 = $pdo->prepare("UPDATE mac_devices SET water_level = ?, status = ?, updated_at = ? WHERE mac_address = ?");
-            $stmt2->execute([$water, $status, $now, $mac]);
+            $chk = $pdo->prepare("SELECT id FROM mac_devices WHERE mac_address = ?");
+            $chk->execute([$mac]);
+            if ($chk->fetch()) {
+                $stmt2 = $pdo->prepare("UPDATE mac_devices SET water_level = ?, status = ?, location = ?, updated_at = ? WHERE mac_address = ?");
+                $stmt2->execute([$water, $status, $location, $now, $mac]);
+            } else {
+                $stmt2 = $pdo->prepare("INSERT INTO mac_devices (name, mac_address, location, water_level, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                $stmt2->execute(['Level_sensor', $mac, $location, $water, $status, $now, $now]);
+            }
 
             echo json_encode(['status' => 'success', 'message' => 'Telemetry record saved', 'data' => ['mac' => $mac, 'level' => $water, 'status' => $status]]);
         } catch (Throwable $e) {

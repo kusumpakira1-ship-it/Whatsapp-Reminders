@@ -4,5 +4,11 @@
     "low_active": false,
     "last_off_alert_ts": 0,
     "off_active": false
+  },
+  "40-91-51-C8-0C-C8": {
+    "last_low_alert_ts": 0,
+    "low_active": false,
+    "last_off_alert_ts": 0,
+    "off_active": false
   }
 }

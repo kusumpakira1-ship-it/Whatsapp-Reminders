@@ -8,7 +8,6 @@ from waha_service import send_waha_message
 logger = logging.getLogger(__name__)
 
 TARGET_GROUP_JID = "120363409544891824@g.us"
-TARGET_PHONE = "917259510983@c.us"
 STATE_FILE_PATH = os.path.join(os.path.dirname(__file__), "water_monitoring_state.json")
 
 IST = timezone(timedelta(hours=5, minutes=30))
@@ -47,19 +46,42 @@ def check_and_dispatch_water_alerts():
         conn = pymysql.connect(**DB_CONFIG)
         cur = conn.cursor()
         
-        # 1. Fetch only devices registered on the website (mac_devices table)
+        # 0. Auto-sync any water monitoring devices in device_readings to mac_devices if missing
+        cur.execute("""
+            SELECT DISTINCT mac_address, location
+            FROM device_readings
+            WHERE mac_address IS NOT NULL AND mac_address != ''
+              AND water_level >= 0
+              AND LOWER(location) NOT LIKE '%scale%'
+        """)
+        for ard in cur.fetchall():
+            a_mac = ard['mac_address'].strip()
+            a_loc = ard.get('location') or 'Main Tank'
+            cur.execute("SELECT id FROM mac_devices WHERE mac_address = %s", (a_mac,))
+            if not cur.fetchone():
+                logger.info(f"Auto-registering missing water monitoring device {a_mac} ({a_loc}) into mac_devices...")
+                cur.execute("""
+                    INSERT INTO mac_devices (name, mac_address, location, water_level, status, created_at, updated_at)
+                    VALUES (%s, %s, %s, %s, %s, NOW(), NOW())
+                """, ('Level_sensor', a_mac, a_loc, 50, 'ON'))
+                conn.commit()
+
+        # 1. Fetch all water monitoring devices (mac_devices table)
         cur.execute("""
             SELECT id, mac_address, name, location, water_level, status, updated_at, created_at
             FROM mac_devices
-            WHERE (
-                LOWER(name) LIKE '%level%' 
-                OR LOWER(name) LIKE '%sensor%' 
-                OR LOWER(name) LIKE '%water%' 
-                OR LOWER(location) LIKE '%tank%' 
-                OR LOWER(location) LIKE '%water%'
-            )
-            AND LOWER(name) NOT LIKE '%scale%'
-            AND water_level >= 0
+            WHERE LOWER(name) NOT LIKE '%scale%'
+              AND LOWER(location) NOT LIKE '%scale%'
+              AND (
+                  LOWER(name) LIKE '%level%' 
+                  OR LOWER(name) LIKE '%sensor%' 
+                  OR LOWER(name) LIKE '%water%' 
+                  OR LOWER(location) LIKE '%tank%' 
+                  OR LOWER(location) LIKE '%water%'
+                  OR LOWER(location) LIKE '%garden%'
+                  OR LOWER(location) LIKE '%halli%'
+              )
+              AND water_level >= 0
             ORDER BY id ASC
         """)
         registered_devices = cur.fetchall()
@@ -151,10 +173,9 @@ def check_and_dispatch_water_alerts():
                         f"Last Telemetry: {updated_at_str}"
                     )
                     logger.info(f"Sending Low Water Alert for {mac} ({location}) (every 30 mins) to Group ({TARGET_GROUP_JID})...")
-                    sent = send_waha_message(TARGET_GROUP_JID, alert_msg)
-                    if sent or True:
-                        dev_state["low_active"] = True
-                        dev_state["last_low_alert_ts"] = now_ts
+                    send_waha_message(TARGET_GROUP_JID, alert_msg)
+                    dev_state["low_active"] = True
+                    dev_state["last_low_alert_ts"] = now_ts
             elif water_level >= 50:
                 # Clear low water alert state silently when water reaches >= 50%
                 dev_state["low_active"] = False
@@ -174,10 +195,9 @@ def check_and_dispatch_water_alerts():
                         f"Last Telemetry: {updated_at_str}"
                     )
                     logger.info(f"Sending Device OFF Alert for {mac} ({location}) to Group ({TARGET_GROUP_JID})...")
-                    sent = send_waha_message(TARGET_GROUP_JID, off_msg)
-                    if sent or True:
-                        dev_state["off_active"] = True
-                        dev_state["last_off_alert_ts"] = now_ts
+                    send_waha_message(TARGET_GROUP_JID, off_msg)
+                    dev_state["off_active"] = True
+                    dev_state["last_off_alert_ts"] = now_ts
             else:
                 if dev_state.get("off_active"):
                     logger.info(f"Device {mac} back online. Clearing OFF alert state.")
