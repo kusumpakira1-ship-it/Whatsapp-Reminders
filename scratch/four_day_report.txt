@@ -1,0 +1,64 @@
+📋 *4-DAY ATTENDANCE SUMMARY REPORT*
+🗓️ *Period:* 21 Sep 2026 – 24 Sep 2026 (Total Working Days: 4)
+==================================================
+
+🏢 *AI & IOT*
+  • *Akshay*: *4* Present / *4* Working (0 Absent/Leave)
+  • *Kusum*: *4* Present / *4* Working (0 Absent/Leave)
+  • *Poornima*: *4* Present / *4* Working (0 Absent/Leave)
+  • *Ramya*: *2* Present / *4* Working (2 Absent/Leave)
+
+🏢 *Sunfra OLX CEE*
+  • *Asif*: *4* Present / *4* Working (0 Absent/Leave)
+  • *Prasanna*: *3.5* Present / *4* Working (0.5 Absent/Leave)
+  • *Yashaswini*: *3* Present / *4* Working (1 Absent/Leave)
+
+🏢 *Jataayu*
+  • *Roopa*: *3* Present / *4* Working (1 Absent/Leave)
+
+🏢 *Sunfra Corporate*
+  • *Divya*: *3.5* Present / *4* Working (0.5 Absent/Leave)
+  • *Prajwal*: *0* Present / *4* Working (4 Absent/Leave)
+
+🏢 *Sunfra Mudah*
+  • *Akshay*: *4* Present / *4* Working (0 Absent/Leave)
+  • *Bharath*: *4* Present / *4* Working (0 Absent/Leave)
+  • *Krishna*: *3* Present / *4* Working (1 Absent/Leave)
+  • *Nisha*: *4* Present / *4* Working (0 Absent/Leave)
+  • *Ravi Teja*: *3.5* Present / *4* Working (0.5 Absent/Leave)
+  • *Thanuja*: *4* Present / *4* Working (0 Absent/Leave)
+  • *Aishwarya*: *4* Present / *4* Working (0 Absent/Leave)
+  • *Lakshmi*: *3.5* Present / *4* Working (0.5 Absent/Leave)
+
+🏢 *Sunfra HR Team*
+  • *Parvati*: *4* Present / *4* Working (0 Absent/Leave)
+  • *Bhanushree*: *4* Present / *4* Working (0 Absent/Leave)
+
+🏢 *Indus*
+  • *Girija*: *0* Present / *4* Working (4 Absent/Leave)
+  • *Jagadish*: *0* Present / *4* Working (4 Absent/Leave)
+
+🏢 *Sunfra Farms*
+  • *Mahalakshmi*: *3* Present / *4* Working (1 Absent/Leave)
+
+🏢 *Sunfra Feeds*
+  • *Venkat*: *4* Present / *4* Working (0 Absent/Leave)
+
+🏢 *Management Team*
+  • *Balaji*: *2* Present / *4* Working (2 Absent/Leave)
+  • *Nani*: *4* Present / *4* Working (0 Absent/Leave)
+  • *Nikhil*: *3.5* Present / *4* Working (0.5 Absent/Leave)
+  • *Prasad*: *1* Present / *4* Working (3 Absent/Leave)
+  • *Prathiba*: *1.5* Present / *4* Working (2.5 Absent/Leave)
+  • *Vamsi*: *1.5* Present / *4* Working (2.5 Absent/Leave)
+
+🏢 *Tendered*
+  • *Ganga*: *4* Present / *4* Working (0 Absent/Leave)
+
+==================================================
+📊 *OVERALL 4-DAY SUMMARY (21 SEP TO 24 SEP):*
+👥 Total Employees: *31*
+🟢 Total Present Days: *93.5*
+🔴 Total Absent/Leave Days: *30.5*
+💼 Total Working Days Pool: *124*
+==================================================

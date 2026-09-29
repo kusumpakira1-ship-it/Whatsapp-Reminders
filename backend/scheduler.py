@@ -2664,20 +2664,20 @@ def scheduled_rental_vacancy_report_job():
         logger.error(f"Error in scheduled_rental_vacancy_report_job: {e}")
 
 def scheduled_4company_consolidated_reports_job():
-    """Dispatches the 4 Consolidated Company Reports (Sunfra Farms, Sunfra Feeds, Corporate, Indus) to Kusum (7259510983)."""
+    """Dispatches the 4 Consolidated Company Reports (Daily Comprehensive Reports for Sunfra Farms, Sunfra Feeds, Corporate, Indus) to Kusum (7259510983)."""
     logger.info("Executing 4 Consolidated Company Reports Dispatcher...")
     try:
-        from zoho_4company_pandl import generate_and_send_4company_pandl_report
-        generate_and_send_4company_pandl_report("917259510983@c.us")
+        from zoho_reconciliation import dispatch_all_4company_reconciliation_reports
+        dispatch_all_4company_reconciliation_reports("917259510983@c.us")
     except Exception as e:
         logger.error(f"Error sending 4 Consolidated Company Reports: {e}")
 
 def send_all_10pm_daily_reports_job():
     logger.info("Executing 10:00 PM Daily Reports Dispatcher...")
     try:
-        # 1. 4 Consolidated Company Reports (Sunfra Farms, Sunfra Feeds, Corporate, Indus)
-        from zoho_4company_pandl import generate_and_send_4company_pandl_report
-        generate_and_send_4company_pandl_report("917259510983@c.us")
+        # 1. 4 Consolidated Company Reports (Daily Comprehensive Reports for Sunfra Farms, Sunfra Feeds, Corporate, Indus)
+        from zoho_reconciliation import dispatch_all_4company_reconciliation_reports
+        dispatch_all_4company_reconciliation_reports("917259510983@c.us")
     except Exception as e:
         logger.error(f"Error sending 4 Consolidated Company Reports at 10 PM: {e}")
 
@@ -3125,9 +3125,9 @@ def scheduled_zoho_reconciliation_job():
     logger.info("Starting 10:00 PM Zoho Reconciliation Reports dispatch (7259510983 ONLY)...")
     recipients = ["917259510983@c.us"]
     try:
-        from zoho_4company_pandl import generate_and_send_4company_pandl_report
+        from zoho_reconciliation import dispatch_all_4company_reconciliation_reports
         for phone in recipients:
-            generate_and_send_4company_pandl_report(phone)
+            dispatch_all_4company_reconciliation_reports(phone)
             logger.info(f"Successfully sent 4-Company Consolidated Reports to {phone}")
     except Exception as e:
         logger.error(f"Error in scheduled_zoho_reconciliation_job: {e}")
@@ -3145,8 +3145,8 @@ def scheduled_sunfra_pandl_job():
 def scheduled_4company_pandl_job():
     logger.info("Starting 10:00 PM 4-Company Daily P&L & Stock Report job...")
     try:
-        from zoho_4company_pandl import generate_and_send_4company_pandl_report
-        generate_and_send_4company_pandl_report("917259510983@c.us")
+        from zoho_reconciliation import dispatch_all_4company_reconciliation_reports
+        dispatch_all_4company_reconciliation_reports("917259510983@c.us")
     except Exception as e:
         logger.error(f"Error in scheduled_4company_pandl_job: {e}")
 
@@ -3167,7 +3167,7 @@ def scheduled_4company_monthly_pandl_job():
         # Not the last day of the month
         return
 
-    logger.info("Starting Last-Day-of-Month 10:30 PM 4-Company Monthly P&L & Stock Report job...")
+    logger.info("Starting Last-Day-of-Month 9:00 PM 4-Company Monthly P&L & Stock Report job...")
     try:
         from zoho_4company_pandl import generate_and_send_4company_monthly_pandl_report
         generate_and_send_4company_monthly_pandl_report("917259510983@c.us")
@@ -3221,6 +3221,49 @@ def scheduled_daily_attendance_summary_job():
     except Exception as e:
         logger.error(f"Error in scheduled_daily_attendance_summary_job: {e}")
 
+def scheduled_daily_attendance_summary_1115pm_job():
+    """Dispatches the 11:15 PM EOD Final Lock Attendance Summary and locks in today's monthly absence increments."""
+    logger.info("Executing 11:15 PM EOD Final Lock Attendance Summary Job...")
+    try:
+        from attendance_tracker import evaluate_attendance_for_date, generate_attendance_summary_message, generate_company_attendance_messages, update_daily_absence_increments
+        from waha_service import send_waha_message
+        data = evaluate_attendance_for_date()
+        
+        # 1. Lock in today's absence increments into monthly baselines file at 11:15 PM EOD
+        update_daily_absence_increments(data)
+
+        # 2. Send complete consolidated report across all 10 companies to Kusum (7259510983)
+        summary_msg = generate_attendance_summary_message(data)
+        send_waha_message("917259510983@c.us", summary_msg)
+        logger.info("Complete 11:15 PM EOD Lock Attendance Summary sent to 917259510983@c.us")
+        
+        # 3. Generate company-wise attendance reports and send to Kusum
+        company_msgs = generate_company_attendance_messages(data)
+        for comp_name, comp_msg in company_msgs.items():
+            send_waha_message("917259510983@c.us", comp_msg)
+    except Exception as e:
+        logger.error(f"Error in scheduled_daily_attendance_summary_1115pm_job: {e}")
+
+def scheduled_monthly_attendance_report_job():
+    """Dispatches the Monthly Attendance Summary Report on the last day of every month at 9:00 PM IST to 7259510983."""
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST)
+    tomorrow = now_ist.date() + timedelta(days=1)
+    if tomorrow.day != 1:
+        # Not the last day of the month
+        return
+
+    logger.info("Executing Last-Day-of-Month 9:00 PM Monthly Attendance Report Job...")
+    try:
+        from attendance_tracker import generate_monthly_attendance_summary_message
+        from waha_service import send_waha_message
+        msg = generate_monthly_attendance_summary_message(now_ist.date())
+        send_waha_message("917259510983@c.us", msg)
+        logger.info("Monthly Attendance Report successfully sent to 917259510983@c.us")
+    except Exception as e:
+        logger.error(f"Error in scheduled_monthly_attendance_report_job: {e}")
+
 def scheduled_egg_market_pdf_job():
     logger.info("Starting 9:30 PM Egg Price & Market Analysis PDF report job...")
     try:
@@ -3243,6 +3286,15 @@ def scheduled_vacancy_job():
         logger.error(f"Error in scheduled_vacancy_job: {e}")
 
 
+def scheduled_papaak_email_fetch_job():
+    logger.info("Polling Gmail for CP-PAPAAK-S egg & feed rate emails...")
+    try:
+        from papaak_email_service import fetch_and_process_papaak_emails
+        fetch_and_process_papaak_emails(notify_on_new=True)
+    except Exception as e:
+        logger.error(f"Error in scheduled_papaak_email_fetch_job: {e}")
+
+
 def setup_scheduler():
 
     global scheduler
@@ -3252,6 +3304,9 @@ def setup_scheduler():
     
     # Schedule Health Monitor every 1 minute
     scheduler.add_job(health_monitor_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="health_monitor_job", replace_existing=True)
+    
+    # Schedule PAPAAK email fetching & WhatsApp auto-forwarding every 5 minutes
+    scheduler.add_job(scheduled_papaak_email_fetch_job, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="papaak_email_fetch_job", replace_existing=True)
     
     # Schedule Live Flock Hatch Date & Birds Sync from sunfra.com every 4 hours
     from sunfra_batch_sync import sync_flocks_from_sunfra_web
@@ -3291,9 +3346,10 @@ def setup_scheduler():
     scheduler.add_job(scheduled_egg_production_crosscheck_650pm_job, CronTrigger(hour=18, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_production_crosscheck_650pm_job", replace_existing=True)
     scheduler.add_job(scheduled_egg_production_crosscheck_930pm_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_production_crosscheck_930pm_job", replace_existing=True)
 
-    # Schedule Daily Sunfra Community Attendance Summary daily at 7:05 PM IST & 9:30 PM IST EOD Lock (to 7259510983)
+    # Schedule Daily Sunfra Community Attendance Summary daily at 7:05 PM IST, 9:30 PM IST & 11:15 PM IST EOD Lock (to 7259510983)
     scheduler.add_job(scheduled_daily_attendance_summary_job, CronTrigger(hour=19, minute=5, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_705pm_job", replace_existing=True)
     scheduler.add_job(scheduled_daily_attendance_summary_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_job", replace_existing=True)
+    scheduler.add_job(scheduled_daily_attendance_summary_1115pm_job, CronTrigger(hour=23, minute=15, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_1115pm_job", replace_existing=True)
 
     # Combined 10:00 PM Dispatcher: 4 Consolidated Company Reports, Daily Rental Loss, and Company-Wise Escalation
     scheduler.add_job(send_all_10pm_daily_reports_job, CronTrigger(hour=22, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="send_all_10pm_daily_reports_job", replace_existing=True)
@@ -3301,8 +3357,11 @@ def setup_scheduler():
     # Schedule Weekly 4-Company P&L & Stock Report every Saturday at 10:30 PM IST (to 7259510983)
     scheduler.add_job(scheduled_4company_weekly_pandl_job, CronTrigger(day_of_week='sat', hour=22, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_weekly_pandl_job", replace_existing=True)
 
-    # Schedule Monthly 4-Company P&L & Stock Report on the last day of every month at 10:30 PM IST (to 7259510983)
-    scheduler.add_job(scheduled_4company_monthly_pandl_job, CronTrigger(hour=22, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_monthly_pandl_job", replace_existing=True)
+    # Schedule Monthly 4-Company P&L & Stock Report on the last day of every month at 9:00 PM IST (to 7259510983)
+    scheduler.add_job(scheduled_4company_monthly_pandl_job, CronTrigger(hour=21, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_monthly_pandl_job", replace_existing=True)
+
+    # Schedule Monthly Attendance Report on the last day of every month at 9:00 PM IST (to 7259510983)
+    scheduler.add_job(scheduled_monthly_attendance_report_job, CronTrigger(hour=21, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_monthly_attendance_report_job", replace_existing=True)
     
     # Schedule weekly report at 11:00 PM IST on Sunday
     scheduler.add_job(scheduled_weekly_report_job, CronTrigger(day_of_week='sun', hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_weekly_report_job", replace_existing=True)

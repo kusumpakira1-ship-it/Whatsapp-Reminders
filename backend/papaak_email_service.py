@@ -17,6 +17,8 @@ IST = timezone(timedelta(hours=5, minutes=30))
 GMAIL_EMAIL = os.getenv("PAPAAK_EMAIL", "kusum@sunfra.com")
 GMAIL_APP_PASS = os.getenv("PAPAAK_APP_PASS", "kfgykqtorkchfkke")
 
+PAPAAK_RECIPIENTS = ["917259510983@c.us", "120363405877065233@g.us"]
+
 # Standard City Order for Report
 LOADING_CENTERS = ["HPT", "HYD", "NKL", "BWL", "KOL", "MYS"]
 PAPER_CENTERS = ["CHE", "BLR", "HPT", "HYD", "NKL", "MYS", "BWL"]
@@ -358,6 +360,60 @@ def parse_feed_email_text(email_text: str, msg_date: datetime):
     return parsed_records
 
 
+def format_papaak_raw_forward(body_text: str, is_feed: bool, msg_dt: datetime) -> str:
+    """
+    Formats raw incoming PAPAAK email messages into clean WhatsApp messages,
+    separating Paper Rates and Loading Rates explicitly.
+    """
+    if is_feed:
+        header = "🌾 *New PAPAAK Feed Rate Message*"
+        return f"{header}\n\n{body_text.strip()}"
+
+    records = parse_egg_email_text(body_text, msg_dt)
+    if not records:
+        header = "📩 *New PAPAAK Egg Rate Message*"
+        return f"{header}\n\n{body_text.strip()}"
+
+    paper_list = []
+    loading_list = []
+    seen_p = set()
+    seen_l = set()
+
+    for r in records:
+        c = r["city"]
+        v = r["rate"]
+        cat = r["category"]
+        if c in ["PAPAAK_RAW", ""] or v <= 0:
+            continue
+            
+        if cat == "paper":
+            if c not in seen_p:
+                seen_p.add(c)
+                paper_list.append(f"• {c}: *{v}*")
+        elif cat == "loading":
+            if c not in seen_l:
+                seen_l.add(c)
+                loading_list.append(f"• {c}: *{v}*")
+
+    lines = ["📩 *New PAPAAK Egg Rate Message*"]
+    
+    if paper_list:
+        lines.append("")
+        lines.append("*Paper Rates*")
+        lines.extend(paper_list)
+        
+    if loading_list:
+        lines.append("")
+        lines.append("*Loading Rates*")
+        lines.extend(loading_list)
+
+    if not paper_list and not loading_list:
+        lines.append("")
+        lines.append(body_text.strip())
+
+    return "\n".join(lines)
+
+
 def fetch_and_process_papaak_emails(notify_on_new: bool = True):
     """
     Connects to Gmail, fetches unread/recent emails from CP-PAPAAK-S, parses egg and feed rates,
@@ -385,6 +441,11 @@ def fetch_and_process_papaak_emails(notify_on_new: bool = True):
         mail_ids = data[0].split()
         # Fetch last 15 emails
         recent_ids = mail_ids[-15:]
+
+        pending_raw_forwards = []
+        has_batch_egg_rates = False
+        has_batch_feed_rates = False
+        latest_msg_dt = datetime.now(IST)
 
         for m_id in recent_ids:
             _, msg_data = mail.fetch(m_id, "(RFC822)")
@@ -501,36 +562,47 @@ def fetch_and_process_papaak_emails(notify_on_new: bool = True):
                             new_records_count += 1
 
                     if is_new_email and notify_on_new and len(body_text.strip()) > 5:
-                        header = "🌾 *New PAPAAK Feed Rate Message*" if is_feed else "📩 *New PAPAAK Egg Rate Message*"
-                        forward_msg = f"{header}\n\n{body_text.strip()}"
+                        forward_msg = format_papaak_raw_forward(body_text, is_feed, msg_dt)
+                        pending_raw_forwards.append((email_uid, forward_msg, is_feed))
 
-                        logger.info(f"Auto-forwarding PAPAAK email ({'FEED' if is_feed else 'EGG'}) to 917259510983@c.us...")
-                        send_waha_message("917259510983@c.us", forward_msg)
-
-                        # If message includes Egg Loading / Paper Rates, send formatted report with sequential number
                         if has_egg_rates:
-                            today_date = msg_dt.date()
-                            date_key = today_date.strftime("%Y-%m-%d")
-                            rep_num = get_next_report_number(date_key)
-                            report_msg = generate_daily_egg_rates_report(target_date=today_date, report_number=rep_num)
-                            if report_msg:
-                                logger.info(f"Auto-dispatching formatted report #{rep_num} to 917259510983@c.us...")
-                                send_waha_message("917259510983@c.us", report_msg)
-
-                        # If message includes Feed Rates, send formatted feed report with sequential number
+                            has_batch_egg_rates = True
                         if has_feed_rates:
-                            today_date = msg_dt.date()
-                            date_key = today_date.strftime("%Y-%m-%d")
-                            rep_num = get_next_feed_report_number(date_key)
-                            feed_report_msg = generate_daily_feed_rates_report(target_date=today_date, report_number=rep_num)
-                            if feed_report_msg:
-                                logger.info(f"Auto-dispatching formatted feed report #{rep_num} to 917259510983@c.us...")
-                                send_waha_message("917259510983@c.us", feed_report_msg)
-
-                        mark_email_id_forwarded(email_uid)
-                        forwarded_ids.add(email_uid)
+                            has_batch_feed_rates = True
+                        latest_msg_dt = msg_dt
 
         db.commit()
+
+        # 1. First forward all raw email messages to WhatsApp
+        for email_uid, forward_msg, is_feed in pending_raw_forwards:
+            for target in PAPAAK_RECIPIENTS:
+                logger.info(f"Auto-forwarding raw PAPAAK email ({'FEED' if is_feed else 'EGG'}) to {target}...")
+                send_waha_message(target, forward_msg)
+            mark_email_id_forwarded(email_uid)
+            forwarded_ids.add(email_uid)
+
+        # 2. AFTER all raw messages are forwarded, dispatch ONE consolidated formatted report
+        if notify_on_new:
+            if has_batch_egg_rates:
+                today_date = latest_msg_dt.date()
+                date_key = today_date.strftime("%Y-%m-%d")
+                rep_num = get_next_report_number(date_key)
+                report_msg = generate_daily_egg_rates_report(target_date=today_date, report_number=rep_num)
+                if report_msg:
+                    for target in PAPAAK_RECIPIENTS:
+                        logger.info(f"Auto-dispatching formatted Egg report #{rep_num} to {target}...")
+                        send_waha_message(target, report_msg)
+
+            if has_batch_feed_rates:
+                today_date = latest_msg_dt.date()
+                date_key = today_date.strftime("%Y-%m-%d")
+                rep_num = get_next_feed_report_number(date_key)
+                feed_report_msg = generate_daily_feed_rates_report(target_date=today_date, report_number=rep_num)
+                if feed_report_msg:
+                    for target in PAPAAK_RECIPIENTS:
+                        logger.info(f"Auto-dispatching formatted Feed report #{rep_num} to {target}...")
+                        send_waha_message(target, feed_report_msg)
+
         mail.logout()
         logger.info(f"Processed PAPAAK emails successfully. Added {new_records_count} new rate records.")
 
@@ -661,9 +733,9 @@ def generate_daily_egg_rates_report(target_date=None, report_number: int = None)
         db.close()
 
 
-def send_daily_papaak_egg_rates_report(target_phone: str = "917259510983@c.us", fetch_first: bool = True):
+def send_daily_papaak_egg_rates_report(target_phone: str = None, fetch_first: bool = True):
     """
-    Fetches latest emails and dispatches the daily report to target_phone (Kusum).
+    Fetches latest emails and dispatches the daily report to target recipients.
     """
     logger.info("Executing Egg Loading & Paper Rates Report Dispatcher...")
     try:
@@ -674,11 +746,13 @@ def send_daily_papaak_egg_rates_report(target_phone: str = "917259510983@c.us", 
         # Generate formatted report
         report_msg = generate_daily_egg_rates_report()
         if report_msg:
-            if not target_phone.endswith("@c.us") and not target_phone.endswith("@g.us"):
-                target_phone = f"{target_phone}@c.us"
-                
-            logger.info(f"Sending Daily Egg Loading & Paper Rates Report to {target_phone}...")
-            send_waha_message(target_phone, report_msg)
+            targets = [target_phone] if target_phone else PAPAAK_RECIPIENTS
+            for target in targets:
+                if not target.endswith("@c.us") and not target.endswith("@g.us"):
+                    target = f"{target}@c.us"
+                    
+                logger.info(f"Sending Daily Egg Loading & Paper Rates Report to {target}...")
+                send_waha_message(target, report_msg)
     except Exception as e:
         logger.error(f"Error in send_daily_papaak_egg_rates_report: {e}")
 
@@ -751,9 +825,9 @@ def generate_daily_feed_rates_report(target_date=None, report_number: int = None
         db.close()
 
 
-def send_daily_papaak_feed_rates_report(target_phone: str = "917259510983@c.us", fetch_first: bool = False):
+def send_daily_papaak_feed_rates_report(target_phone: str = None, fetch_first: bool = False):
     """
-    Generates and sends the daily feed report to target_phone.
+    Generates and sends the daily feed report to target recipients.
     """
     logger.info("Executing Feed Rates Report Dispatcher...")
     try:
@@ -761,9 +835,11 @@ def send_daily_papaak_feed_rates_report(target_phone: str = "917259510983@c.us",
             fetch_and_process_papaak_emails(notify_on_new=False)
         report_msg = generate_daily_feed_rates_report()
         if report_msg:
-            if not target_phone.endswith("@c.us") and not target_phone.endswith("@g.us"):
-                target_phone = f"{target_phone}@c.us"
-            logger.info(f"Sending Daily Feed Rates Report to {target_phone}...")
-            send_waha_message(target_phone, report_msg)
+            targets = [target_phone] if target_phone else PAPAAK_RECIPIENTS
+            for target in targets:
+                if not target.endswith("@c.us") and not target.endswith("@g.us"):
+                    target = f"{target}@c.us"
+                logger.info(f"Sending Daily Feed Rates Report to {target}...")
+                send_waha_message(target, report_msg)
     except Exception as e:
         logger.error(f"Error in send_daily_papaak_feed_rates_report: {e}")

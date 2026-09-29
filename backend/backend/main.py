@@ -405,34 +405,6 @@ def process_message_background(
         except Exception as json_err:
             logger.error(f"Failed to save to json in background: {json_err}")
             
-        # =========================================================================
-        # 4. Check for Temperature Alert (>38°C)
-        # =========================================================================
-        text_lower = text.lower()
-        if any(w in text_lower for w in ["temp", "temperature"]):
-            import re
-            match = re.search(r'(\d+(?:\.\d+)?)', text)
-            if match:
-                try:
-                    temp_val = float(match.group(1))
-                    if temp_val > 38.0:
-                        alert_msg = (
-                            f"🚨 *HIGH TEMPERATURE ALERT* 🚨\n\n"
-                            f"The reported temperature is *{temp_val}°C*!\n"
-                            f"Please spray water in the sheds immediately to protect the birds. 🚿"
-                        )
-                        admin_phones = ["917259510983", "916364817749"]
-                        # Send alert to admin numbers
-                        for admin in admin_phones:
-                            logger.info(f"Sending temperature alert to admin: {admin}")
-                            send_waha_message(admin, alert_msg)
-                        
-                        # Also send back to the group/chat where it came from
-                        if sender:
-                            logger.info(f"Sending temperature alert to chat source: {sender}")
-                            send_waha_message(sender, alert_msg)
-                except Exception as temp_err:
-                    logger.error(f"Error parsing temperature: {temp_err}")
 
         # =========================================================================
         # 5. Task Workflows Matching Logic
@@ -1483,6 +1455,11 @@ def trigger_zoho_reconciliation_report(background_tasks: BackgroundTasks, phone:
     target_phone = phone or "917259510983"
     background_tasks.add_task(generate_and_send_zoho_reconciliation_report, target_phone)
     return {"status": "success", "message": f"Zoho reconciliation report generation queued for {target_phone}."}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=False)
+
 
 
 

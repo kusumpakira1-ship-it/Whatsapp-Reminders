@@ -1,0 +1,3397 @@
+import logging
+import os
+import re
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
+from report_generator import generate_daily_reports, generate_custom_report
+from waha_service import send_waha_message, send_waha_file, get_session_status, get_session_qr, get_waha_url
+from config import settings
+from apscheduler.triggers.date import DateTrigger
+from apscheduler.triggers.interval import IntervalTrigger
+from database import SessionLocal, get_db_session
+from models import ReportRecipient, Group, Employee, ProcessedData, RawMessage, SystemSetting, CustomAlarm, UnifiedReminder, WAHAEvent, Task, EggGodownInventory, WhatsAppMessage, ReminderLog, Flock, BookStandard
+from sqlalchemy import func
+
+logger = logging.getLogger(__name__)
+
+
+def clean_name_string(name: str) -> str:
+    if not name:
+        return ""
+    import unicodedata
+    # Normalize unicode to decompose accents (e.g. ú -> u)
+    normalized = unicodedata.normalize('NFKD', name)
+    # Filter to only keep alphanumeric characters and spaces
+    cleaned = "".join(c for c in normalized if c.isalnum() or c.isspace())
+    # Remove 'ss ' prefix if any, and clean whitespace
+    cleaned = cleaned.lower().replace('ss ', '').strip()
+    return cleaned
+
+scheduler = AsyncIOScheduler()
+
+def _get_recipient_list():
+    import os
+    db = get_db_session()
+    try:
+        recipients = db.query(ReportRecipient).filter(ReportRecipient.is_active == True).all()
+        phones = [r.phone_number for r in recipients]
+    except Exception as e:
+        logger.error(f"Error fetching report recipients: {e}")
+        phones = []
+    finally:
+        db.close()
+
+    # Append Manager Phone from config
+    manager_phone = settings.MANAGER_PHONE
+    if manager_phone:
+        manager_jid = manager_phone
+        if not manager_jid.endswith('@c.us') and not manager_jid.endswith('@g.us') and not manager_jid.endswith('@lid'):
+            manager_jid += '@c.us'
+        if manager_jid not in phones:
+            phones.append(manager_jid)
+    return phones
+
+async def _send_reports_to_all(pdf_path, summary_text):
+    phones = _get_recipient_list()
+    if not phones:
+        logger.warning("No active recipients or manager configured to send reports to.")
+        return
+        
+    for phone in phones:
+        if summary_text:
+            send_waha_message(phone, summary_text)
+        if pdf_path:
+            pdf_paths = [pdf_path] if isinstance(pdf_path, str) else pdf_path
+            for path in pdf_paths:
+                caption = "Operations Report" if "operations" in path.lower() else "Financial Report" if "financial" in path.lower() else "PDF Report"
+                fn = path.split('/')[-1] if '/' in path else path.split('\\')[-1]
+                send_waha_file(phone, path, caption=f"{caption} - {fn}")
+
+    # Explicitly ensure the Farm Operations PDF is sent to the 2 admins
+    admin_phones = ["917259510983@c.us", "916364817749@c.us"]
+    clean_phones = {p.split('@')[0] for p in phones}
+    if pdf_path:
+        pdf_paths = [pdf_path] if isinstance(pdf_path, str) else pdf_path
+        for path in pdf_paths:
+            if "operations" in path.lower():
+                for admin_phone in admin_phones:
+                    admin_number = admin_phone.split('@')[0]
+                    if admin_number not in clean_phones:
+                        caption = "Operations Report"
+                        fn = path.split('/')[-1] if '/' in path else path.split('\\')[-1]
+                        logger.info(f"Sending operations PDF to admin {admin_phone}")
+                        send_waha_file(admin_phone, path, caption=f"{caption} - {fn}")
+
+async def scheduled_report_job():
+    logger.info("Starting scheduled 10 PM daily report generation...")
+    pdf_path, summary_text = generate_daily_reports()
+    await _send_reports_to_all(pdf_path, summary_text)
+
+async def scheduled_godown_report_job():
+    logger.info("Starting scheduled 9 PM daily egg godown summary report...")
+    try:
+        from report_generator_godown import generate_godown_report
+        pdf_path, summary_text = generate_godown_report()
+        admin_phones = ["917259510983@c.us", "916364817749@c.us"]
+        for phone in admin_phones:
+            logger.info(f"Sending daily egg godown summary to {phone}")
+            send_waha_message(phone, summary_text)
+            if pdf_path and os.path.exists(pdf_path):
+                send_waha_file(phone, pdf_path, caption=f"Egg Godown Report - {pdf_path.split('/')[-1]}")
+    except Exception as e:
+        logger.error(f"Error in scheduled_godown_report_job: {e}")
+
+
+async def scheduled_weekly_report_job():
+    logger.info("Starting scheduled weekly report generation...")
+    pdf_path, summary_text = generate_custom_report('weekly')
+    await _send_reports_to_all(pdf_path, summary_text)
+
+async def scheduled_monthly_report_job():
+    logger.info("Starting scheduled monthly report generation...")
+    pdf_path, summary_text = generate_custom_report('monthly')
+    await _send_reports_to_all(pdf_path, summary_text)
+
+async def scheduled_yearly_report_job():
+    logger.info("Starting scheduled yearly report generation...")
+    pdf_path, summary_text = generate_custom_report('yearly')
+    await _send_reports_to_all(pdf_path, summary_text)
+
+def check_missing_reports_for_today() -> dict:
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    today = datetime.now(IST).date()
+    
+    db = get_db_session()
+    try:
+        data = db.query(ProcessedData).filter(
+            func.date(ProcessedData.processed_time) == today
+        ).all()
+        
+        received = set()
+        for d in data:
+            shead = str(d.shead_name or '').replace('Shead', 'Shed').strip()
+            if not shead:
+                continue
+            cat = d.category
+            if cat in ['egg_collection_1', 'egg_collection_2', 'egg_collection', 'egg']:
+                received.add((shead, 'Production'))
+            elif cat in ['feed', 'raw_material']:
+                received.add((shead, 'Feed'))
+            elif cat in ['medicine', 'expense']:
+                received.add((shead, 'Expenditure'))
+                
+        missing = {}
+        for shed in ["Shed 1", "Shed 2", "Shed 3"]:
+            shed_missing = []
+            if (shed, 'Production') not in received:
+                shed_missing.append('Egg Collection')
+            if (shed, 'Feed') not in received:
+                shed_missing.append('Feed Consumption')
+            if (shed, 'Expenditure') not in received:
+                shed_missing.append('Shed Expenditure')
+            if shed_missing:
+                missing[shed] = shed_missing
+                
+        return missing
+    except Exception as e:
+        logger.error(f"Error checking missing reports: {e}")
+        return {}
+    finally:
+        db.close()
+
+
+_waha_groups_cache = {}
+_waha_groups_cache_time = None
+
+def get_all_waha_groups_map() -> dict:
+    """Fetch all groups from WAHA as a dictionary of JID -> Name (cached for 10 minutes)."""
+    global _waha_groups_cache, _waha_groups_cache_time
+    import requests
+    import os
+    import time
+
+    now_t = time.time()
+    if _waha_groups_cache and _waha_groups_cache_time and (now_t - _waha_groups_cache_time < 600):
+        return _waha_groups_cache
+
+    waha_groups_map = {}
+    try:
+        waha_url = f"{get_waha_url()}/api/{settings.WAHA_SESSION}/groups"
+        headers = {"Accept": "application/json"}
+        api_key = os.getenv("WAHA_API_KEY", "123")
+        if api_key:
+            headers["X-Api-Key"] = api_key
+        response = requests.get(waha_url, headers=headers, timeout=15)
+        if response.status_code == 200:
+            data = response.json()
+            if isinstance(data, list):
+                for g in data:
+                    jid_val = g.get("id")
+                    if isinstance(jid_val, dict):
+                        jid_str = jid_val.get("_serialized") or str(jid_val)
+                    else:
+                        jid_str = str(jid_val) if jid_val else ""
+                    if jid_str:
+                        waha_groups_map[jid_str] = g.get("subject") or g.get("name") or jid_str
+            elif isinstance(data, dict):
+                for k, v in data.items():
+                    if isinstance(k, dict):
+                        k_str = k.get("_serialized") or str(k)
+                    else:
+                        k_str = str(k) if k else ""
+                    if isinstance(v, dict):
+                        v_str = v.get("subject") or v.get("name") or k_str
+                    else:
+                        v_str = str(v)
+                    if k_str:
+                        waha_groups_map[k_str] = v_str
+            if waha_groups_map:
+                _waha_groups_cache = waha_groups_map
+                _waha_groups_cache_time = now_t
+    except Exception as e:
+        logger.error(f"Failed to fetch groups from WAHA in helper: {e}")
+    return _waha_groups_cache or waha_groups_map
+
+
+async def group_submission_audit_job():
+    """Checks all group reminders at 8:00 PM IST to see if assigned reports were submitted.
+    Notifies admin numbers 7259510983 and 9346763549 of any missing reports.
+    """
+    logger.info("Starting group submission audit report at 8:00 PM IST...")
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST).replace(tzinfo=None)
+    today = now_ist.date()
+
+    db = get_db_session()
+    try:
+        # Fetch all unified reminders that have a group assigned and are recurring
+        reminders = db.query(UnifiedReminder).filter(
+            UnifiedReminder.whatsapp_group_id != None,
+            UnifiedReminder.frequency != 'once'
+        ).all()
+
+        if not reminders:
+            logger.info("No group reminders found in database for audit.")
+            return
+
+        submissions = db.query(ProcessedData).filter(
+            func.date(ProcessedData.processed_time) == today
+        ).all()
+
+        raw_messages = db.query(RawMessage).filter(
+            func.date(RawMessage.timestamp) == today
+        ).all()
+
+        groups = db.query(Group).all()
+        group_names_by_id = {g.whatsapp_group_id: g.name for g in groups}
+        
+        # Merge WAHA groups map
+        waha_groups_map = get_all_waha_groups_map()
+        for jid, name in waha_groups_map.items():
+            if jid not in group_names_by_id:
+                group_names_by_id[jid] = name
+
+        REPORT_KEYWORDS = {
+            'production': ['shead', 'egg', 'lps', 'hrt', 'mortality', 'hitstoke', 'alc', 'production', 'collection', 'week bird', 'bird count'],
+            'feed':       ['feed', 'maize', 'soya', 'bran', 'fodder'],
+            'sales':      ['sale', 'sold', 'invoice', 'dispatch', 'unload'],
+            'sale':       ['sale', 'sold', 'invoice', 'dispatch', 'unload'],
+            'expense':    ['expense', 'expenditure', 'payment', 'bill', 'amount paid'],
+            'expenditure':['expense', 'expenditure', 'payment', 'bill', 'amount paid'],
+            'profit':     ['sale', 'sold', 'expense', 'expenditure', 'profit', 'loss'],
+            'p&l':        ['sale', 'sold', 'expense', 'expenditure', 'profit', 'loss'],
+            'p and l':    ['sale', 'sold', 'expense', 'expenditure', 'profit', 'loss'],
+        }
+
+        # Date formats for flexible matching (e.g. EOD report)
+        # e.g., "15-07", "15/07", "15 July", "July 15"
+        date_formats = [
+            today.strftime("%d-%m"),
+            today.strftime("%d/%m"),
+            today.strftime("%d %B"),
+            today.strftime("%B %d"),
+            today.strftime("%dth %B"),
+            today.strftime("%B %dth"),
+        ]
+        # Clean date formats to remove leading zeros (e.g. "5 July" instead of "05 July")
+        cleaned_dates = []
+        for df in date_formats:
+            cleaned_dates.append(df.lower())
+            if df.startswith("0"):
+                cleaned_dates.append(df[1:].lower())
+            cleaned_dates.append(df.replace(" 0", " ").lower())
+        date_formats = list(set(cleaned_dates))
+        update_keywords = ["update", "updates", "eod", "work update", "daily update"]
+
+        missing_list = []
+
+        for r in reminders:
+            assigned_reports = [rep.strip() for rep in str(r.report_types or '').split(',') if rep.strip()]
+            if not assigned_reports:
+                continue
+
+            group_name = group_names_by_id.get(r.whatsapp_group_id)
+            if not group_name:
+                continue
+
+            phones = [p.strip() for p in str(r.person_phone or '').split(',') if p.strip()]
+            names = [n.strip() for n in str(r.person_name or '').split(',') if n.strip()]
+
+            unsubmitted_reports = []
+
+            for report in assigned_reports:
+                submitted = False
+                report_lower = report.lower()
+                
+                # Check category mapping
+                categories = []
+                if "production" in report_lower or "egg" in report_lower:
+                    categories = ["egg_collection", "egg_collection_1", "egg_collection_2", "egg"]
+                elif "feed" in report_lower:
+                    categories = ["feed", "raw_material"]
+                elif "expense" in report_lower or "expenditure" in report_lower or "cost" in report_lower:
+                    categories = ["expense", "medicine", "expenditure"]
+                elif "sale" in report_lower:
+                    categories = ["sales"]
+
+                is_update_report = any(w in report_lower for w in ["update", "eod", "daily report"])
+
+                # 1. Check ProcessedData
+                for sub in submissions:
+                    match_group = sub.group_name and str(sub.group_name).lower() == group_name.lower()
+                    
+                    match_sender = False
+                    for phone in phones:
+                        clean_phone = "".join(filter(str.isdigit, phone))
+                        alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
+                        if clean_phone in str(sub.sender) or alt_phone in str(sub.sender):
+                            match_sender = True
+                            break
+
+                    if match_sender or match_group:
+                        if is_update_report:
+                            sub_notes_lower = str(sub.notes or '').lower()
+                            if any(kw in sub_notes_lower for kw in update_keywords) or any(df in sub_notes_lower for df in date_formats):
+                                submitted = True
+                                break
+                        
+                        if categories:
+                            if sub.category in categories:
+                                submitted = True
+                                break
+                        else:
+                            if report_lower in str(sub.notes).lower():
+                                submitted = True
+                                break
+
+                # 2. Check RawMessage fallback
+                if not submitted:
+                    raw_keywords = []
+                    if is_update_report:
+                        raw_keywords = update_keywords + date_formats
+                    else:
+                        for key, kws in REPORT_KEYWORDS.items():
+                            if key in report_lower:
+                                raw_keywords = kws
+                                break
+                        if not raw_keywords:
+                            raw_keywords = [w for w in report.split() if len(w) > 3]
+
+                    for raw_msg in raw_messages:
+                        raw_text_lower = str(raw_msg.raw_text or '').lower()
+                        match_group_raw = raw_msg.group_name and str(raw_msg.group_name).lower() == group_name.lower()
+                        
+                        match_sender_raw = False
+                        for phone in phones:
+                            clean_phone = "".join(filter(str.isdigit, phone))
+                            alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
+                            if clean_phone in str(raw_msg.sender) or alt_phone in str(raw_msg.sender):
+                                match_sender_raw = True
+                                break
+
+                        if match_sender_raw or match_group_raw:
+                            if any(kw.lower() in raw_text_lower for kw in raw_keywords):
+                                submitted = True
+                                break
+
+                if not submitted:
+                    unsubmitted_reports.append(report)
+
+            if unsubmitted_reports:
+                missing_reports_str = ", ".join(unsubmitted_reports)
+                if names:
+                    formatted_names = " & ".join([f"*{n}*" for n in names])
+                    missing_list.append(f"- {formatted_names} (*{group_name}*) has not submitted today's *{missing_reports_str}* report(s).")
+                else:
+                    missing_list.append(f"- *{group_name}* has not submitted today's *{missing_reports_str}* report(s).")
+
+        if missing_list:
+            audit_msg = (
+                "⏰ *Group Submission Audit Alert (8:00 PM IST)*\n\n"
+                "The following group reports are missing for today:\n" +
+                "\n".join(missing_list) +
+                "\n\nPlease verify."
+            )
+            
+            # Send notification to the 2 admin numbers
+            admin_phones = ["917259510983", "916364817749"]
+            for admin in admin_phones:
+                logger.info(f"Sending group submission audit alert to admin: {admin}")
+                send_waha_message(admin, audit_msg)
+        else:
+            logger.info("Group submission audit complete: All groups submitted successfully.")
+
+    except Exception as e:
+        logger.error(f"Error in group_submission_audit_job: {e}")
+    finally:
+        db.close()
+
+async def scheduled_reminder_job():
+    logger.info("Starting scheduled 6 PM data entry reminder...")
+    missing = check_missing_reports_for_today()
+    if not missing:
+        logger.info("All data submitted successfully. No reminders needed.")
+        return
+        
+    # Format message
+    msg_lines = []
+    msg_lines.append("⏰ *Daily Data Entry Alert (6:00 PM)*")
+    msg_lines.append("The following data is missing for today:")
+    for shed, items in missing.items():
+        msg_lines.append(f"- *{shed}*: {', '.join(items)}")
+    msg_lines.append("")
+    msg_lines.append("Please submit today's missing reports in the group as soon as possible so that the 11:00 PM Daily Farm Summary report is accurate!")
+    
+    reminder_text = "\n".join(msg_lines)
+    phones = _get_recipient_list()
+    
+    for phone in phones:
+        send_waha_message(phone, reminder_text)
+
+async def scheduled_targeted_reminder_job():
+    logger.info("Starting targeted 5:00 PM missed report reminder...")
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    today = datetime.now(IST).date()
+    
+    db = get_db_session()
+    try:
+        employees = db.query(Employee).all()
+        for emp in employees:
+            # Check if this employee submitted their assigned report today
+            submitted = db.query(ProcessedData).filter(
+                func.date(ProcessedData.processed_time) == today,
+                ProcessedData.sender.contains(emp.phone_number),
+                ProcessedData.category == emp.report_responsibility
+            ).first()
+            
+            if not submitted:
+                # Employee missed the report
+                group = db.query(Group).filter(Group.id == emp.group_id).first()
+                report_friendly_name = emp.report_responsibility.replace('_', ' ').title()
+                
+                # 1. Send to Employee directly
+                emp_phone = emp.phone_number
+                if len(emp_phone) == 10 and emp_phone.isdigit():
+                    emp_phone = "91" + emp_phone
+                    
+                emp_msg = f"⏰ *Reminder from Farm Auto*\nHi {emp.name},\nYou have missed submitting the *{report_friendly_name}* report today. Please submit it to the group as soon as possible!"
+                send_waha_message(emp_phone + "@c.us", emp_msg)
+                
+                # 2. Send to Group
+                if group:
+                    grp_msg = f"⚠️ *Missed Report Alert*\nEmployee *{emp.name}* has not yet submitted the *{report_friendly_name}* report for today."
+                    send_waha_message(group.whatsapp_group_id, grp_msg)
+    except Exception as e:
+        logger.error(f"Error in targeted reminder job: {e}")
+    finally:
+        db.close()
+
+# Global state to prevent alert spamming and track last status
+alert_state = {"is_alerted": False, "last_status": "UNKNOWN", "qr_alerted": False}
+
+# Restart cooldown — only restart WAHA container once per 5 minutes
+_last_restart_time = 0
+RESTART_COOLDOWN_SEC = 300  # 5 minutes
+
+# ── In-memory settings cache (refreshed every 10 min, NOT every 60 sec) ──────
+import time
+_settings_cache = {}
+_settings_cache_ts = 0
+SETTINGS_CACHE_TTL = 600  # 10 minutes
+
+def get_cached_settings():
+    """Read alert/SMTP settings from DB once per 10 min, cache rest in memory."""
+    global _settings_cache, _settings_cache_ts
+    now = time.time()
+    if now - _settings_cache_ts < SETTINGS_CACHE_TTL and _settings_cache:
+        return _settings_cache
+    db = get_db_session()
+    try:
+        keys = ['smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass', 'smtp_to', 'waha_alert_phone']
+        result = {}
+        rows = db.query(SystemSetting).filter(SystemSetting.key.in_(keys)).all()
+        for row in rows:
+            result[row.key] = row.value
+        # Defaults
+        result.setdefault('smtp_to', 'kusumpakira1@gmail.com')
+        result.setdefault('waha_alert_phone', '7259510983')
+        _settings_cache = result
+        _settings_cache_ts = now
+        logger.info("Settings cache refreshed from DB.")
+        return _settings_cache
+    except Exception as e:
+        logger.error(f"Failed to refresh settings cache: {e}")
+        return _settings_cache or {'smtp_to': 'kusumpakira1@gmail.com', 'waha_alert_phone': '7259510983'}
+    finally:
+        db.close()
+
+def send_smtp_email(subject, body, attachment_path=None):
+    """Uses in-memory cached settings — NO extra DB connection opened."""
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.image import MIMEImage
+    
+    cfg = get_cached_settings()
+    host     = cfg.get('smtp_host', '')
+    port_str = cfg.get('smtp_port', '587')
+    user     = cfg.get('smtp_user', '')
+    password = cfg.get('smtp_pass', '')
+    to_email = cfg.get('smtp_to', 'kusumpakira1@gmail.com')
+    port     = int(port_str) if str(port_str).isdigit() else 587
+    
+    if not host or not user or not password:
+        logger.warning("SMTP configuration is incomplete. Skipping email alert.")
+        return False
+        
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = user
+        msg['To'] = to_email
+        msg['Subject'] = subject
+        msg.attach(MIMEText(body, 'plain'))
+        
+        if attachment_path and os.path.exists(attachment_path):
+            with open(attachment_path, 'rb') as f:
+                img_data = f.read()
+                image = MIMEImage(img_data, name=os.path.basename(attachment_path))
+                msg.attach(image)
+                
+        with smtplib.SMTP(host, port) as server:
+            server.starttls()
+            server.login(user, password)
+            server.send_message(msg)
+        logger.info(f"SMTP Email alert sent successfully to {to_email}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to send SMTP email: {e}")
+        return False
+
+def restart_waha_container():
+    logger.info("Triggering automatic WAHA container restart...")
+    import socket
+    try:
+        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        s.settimeout(10)
+        s.connect("/var/run/docker.sock")
+        s.sendall(b"POST /containers/waha/restart HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n")
+        resp = s.recv(1024)
+        s.close()
+        logger.info(f"WAHA Container restart signal sent. Docker daemon response: {resp[:100]}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to restart WAHA container via Docker socket: {e}")
+        return False
+
+def log_waha_event(event_type: str, status: str, details: str = None, db=None):
+    """Accepts an existing db session to avoid opening a new connection."""
+    from datetime import datetime
+    own_session = db is None
+    if own_session:
+        db = get_db_session()
+    try:
+        event = WAHAEvent(
+            event_type=event_type,
+            status=status,
+            details=details,
+            timestamp=datetime.now()
+        )
+        db.add(event)
+        db.commit()
+        logger.info(f"WAHA Event Logged: {event_type} | {status} | {details}")
+    except Exception as e:
+        logger.error(f"Failed to log WAHA event: {e}")
+    finally:
+        if own_session:
+            db.close()
+
+def sync_status_to_live(status, qr_code_base64=""):
+    """Write WAHA status directly to MySQL — no HTTP call to live PHP server."""
+    db = get_db_session()
+    try:
+        for key, val in [("waha_status", status), ("waha_qr_base64", qr_code_base64)]:
+            row = db.query(SystemSetting).filter(SystemSetting.key == key).first()
+            if row:
+                row.value = val
+            else:
+                db.add(SystemSetting(key=key, value=val))
+        db.commit()
+        logger.info(f"WAHA status updated in DB directly: {status}")
+    except Exception as e:
+        logger.error(f"Error writing WAHA status to DB: {e}")
+    finally:
+        db.close()
+
+def get_qr_base64(qr_path):
+    if not qr_path or not os.path.exists(qr_path):
+        return ""
+    try:
+        import base64
+        with open(qr_path, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+            return f"data:image/png;base64,{encoded_string}"
+    except Exception as e:
+        logger.error(f"Failed to encode QR code: {e}")
+        return ""
+
+async def health_monitor_job():
+    logger.info("Running WAHA Health Monitor...")
+    primary_session = settings.WAHA_SESSION
+    status = get_session_status(primary_session)
+    
+    # ── ONE single DB session for all reads/writes this run ──────────────────
+    db = get_db_session()
+    try:
+        # 1. Detect if status changed and log event (reuse same session)
+        if status != alert_state["last_status"]:
+            log_waha_event("status_changed", status,
+                           f"WAHA session status changed from {alert_state['last_status']} to {status}",
+                           db=db)
+            alert_state["last_status"] = status
+    finally:
+        db.close()
+
+    # 2. Get alert destinations from MEMORY CACHE (no extra DB connection)
+    cfg = get_cached_settings()
+    to_email   = cfg.get('smtp_to', 'kusumpakira1@gmail.com')
+    alert_phone = cfg.get('waha_alert_phone', '7259510983')
+        
+    admin_phone = f"91{alert_phone}" if len(alert_phone) == 10 and alert_phone.isdigit() else alert_phone
+    if not admin_phone.endswith('@c.us') and not admin_phone.endswith('@g.us') and not admin_phone.endswith('@lid'):
+        admin_phone += '@c.us'
+
+    if status in ("STOPPED", "FAILED", "SCAN_QR_CODE"):
+        # ── Auto-restart with COOLDOWN (5 min) so WAHA can reach SCAN_QR_CODE ──
+        if status in ("STOPPED", "FAILED"):
+            global _last_restart_time
+            now_ts = time.time()
+            if now_ts - _last_restart_time >= RESTART_COOLDOWN_SEC:
+                log_waha_event("stopped_restart", status, "WAHA session stopped/failed. Triggering container restart.", db=None)
+                restart_waha_container()
+                _last_restart_time = now_ts
+                logger.info("WAHA restart triggered. Next restart allowed in 5 minutes.")
+            else:
+                remaining = int(RESTART_COOLDOWN_SEC - (time.time() - _last_restart_time))
+                logger.info(f"WAHA is {status} — restart on cooldown ({remaining}s remaining). Waiting for SCAN_QR_CODE...")
+        
+        qr_path = None
+        qr_base64 = ""
+        if status == "SCAN_QR_CODE":
+            logger.warning(f"Primary WAHA Session '{primary_session}' needs QR scan! Fetching QR...")
+            qr_path = get_session_qr(primary_session)
+            if qr_path:
+                qr_base64 = get_qr_base64(qr_path)
+        
+        # Push Status and QR to live index.php server
+        sync_status_to_live(status, qr_base64)
+
+        # Send disconnect alert (once)
+        if not alert_state["is_alerted"]:
+            email_body = (
+                f"Hello Admin,\n\n"
+                f"Your Primary Farm Auto Bot is logged out (Status: {status}).\n\n"
+                f"The system has automatically attempted to restart the bot.\n"
+                f"A separate email with the QR code will be sent once WAHA is ready to reconnect.\n\n"
+                f"You can also check the dashboard for live status and QR code."
+            )
+            send_smtp_email(f"🚨 URGENT: WAHA WhatsApp Bot disconnected ({status})", email_body, None)
+            # NOTE: WhatsApp alert not possible here — WAHA itself is DOWN (status={status})
+            logger.info(f"Disconnect email sent. WhatsApp alert skipped (WAHA is {status}, cannot send messages).")
+            alert_state["is_alerted"] = True
+        
+        # Send QR code separately when WAHA is running but needs scan
+        if status == "SCAN_QR_CODE" and not alert_state["qr_alerted"]:
+            logger.info("WAHA needs QR scan — sending QR code to email...")
+            email_body = (
+                f"Hello Admin,\n\n"
+                f"Your WhatsApp Bot needs to be reconnected. Please scan the attached QR code.\n\n"
+                f"How to scan:\n"
+                f"  1. Open WhatsApp on your phone\n"
+                f"  2. Go to Settings → Linked Devices\n"
+                f"  3. Tap 'Link a Device'\n"
+                f"  4. Scan the QR code in this email\n\n"
+                f"You can also scan directly from the dashboard."
+            )
+            send_smtp_email("📱 WhatsApp QR Code — Scan to Reconnect Bot", email_body, qr_path)
+            alert_state["qr_alerted"] = True
+    else:
+        # Reconnected / Working fine
+        sync_status_to_live(status)
+        if alert_state["is_alerted"] and status == "WORKING":
+            logger.info(f"Primary WAHA Session '{primary_session}' is back online!")
+            # Send recovery email
+            email_body = "Hello Admin,\n\nYour Primary Farm Auto Bot is back online and working perfectly!\nNo further action is required."
+            send_smtp_email("✅ RECOVERY: WAHA WhatsApp Bot is back online", email_body)
+            # Send WhatsApp recovery message via default session (now working)
+            try:
+                recovery_msg = "✅ *RECOVERY ALERT*\nYour Primary Farm Auto Bot is back online and working perfectly!"
+                send_waha_message(admin_phone, recovery_msg, session=primary_session)
+            except Exception as e:
+                logger.warning(f"Could not send WhatsApp recovery notification: {e}")
+            alert_state["is_alerted"] = False
+            alert_state["qr_alerted"] = False
+
+def _check_if_report_submitted(db, alarm, today) -> bool:
+    report_type = alarm.report_type
+    if not report_type:
+        return False
+        
+    sender_phone = None
+    group_name = None
+    
+    if alarm.target_type == 'employee':
+        emp = db.query(Employee).filter(Employee.id == alarm.target_id).first()
+        if emp:
+            sender_phone = emp.phone_number
+    elif alarm.target_type == 'group':
+        if alarm.target_id:
+            grp = db.query(Group).filter(Group.id == alarm.target_id).first()
+            if grp:
+                group_name = grp.name
+        elif alarm.whatsapp_target_id:
+            grp = db.query(Group).filter(Group.whatsapp_group_id == alarm.whatsapp_target_id).first()
+            if grp:
+                group_name = grp.name
+                
+    # Determine categories
+    r_lower = report_type.lower()
+    categories = []
+    if "production" in r_lower:
+        categories = ['production', 'egg_collection', 'egg_collection_1', 'egg_collection_2', 'egg']
+    elif "feed" in r_lower:
+        categories = ['feed']
+    elif "expense" in r_lower:
+        categories = ['expense', 'purchase']
+    elif "sale" in r_lower:
+        categories = ['sales']
+    elif "profit" in r_lower or "p&l" in r_lower or "p and l" in r_lower:
+        categories = ['sales', 'expense', 'purchase']
+        
+    # Check ProcessedData
+    proc_query = db.query(ProcessedData).filter(func.date(ProcessedData.processed_time) == today)
+    if sender_phone:
+        proc_query = proc_query.filter(ProcessedData.sender.contains(sender_phone))
+    if group_name:
+        proc_query = proc_query.filter(ProcessedData.group_name == group_name)
+        
+    if categories:
+        if proc_query.filter(ProcessedData.category.in_(categories)).first():
+            return True
+    else:
+        # Custom report types match inside notes (processed) or raw message text
+        if proc_query.filter(ProcessedData.notes.ilike(f"%{report_type}%")).first():
+            return True
+            
+        raw_query = db.query(RawMessage).filter(func.date(RawMessage.timestamp) == today)
+        if sender_phone:
+            raw_query = raw_query.filter(RawMessage.sender.contains(sender_phone))
+        if group_name:
+            raw_query = raw_query.filter(RawMessage.group_name == group_name)
+            
+        if raw_query.filter(RawMessage.raw_text.ilike(f"%{report_type}%")).first():
+            return True
+            
+    return False
+
+def execute_custom_alarm(alarm_id: int):
+    db = get_db_session()
+    try:
+        from datetime import datetime, timezone, timedelta
+        IST = timezone(timedelta(hours=5, minutes=30))
+        today = datetime.now(IST).date()
+        alarm = db.query(CustomAlarm).filter(CustomAlarm.id == alarm_id).first()
+        if not alarm or alarm.status != 'pending':
+            return
+            
+        # Check if the report has already been submitted today
+        if alarm.report_type:
+            if _check_if_report_submitted(db, alarm, today):
+                logger.info(f"Custom Alarm {alarm_id}: Report '{alarm.report_type}' already submitted today. Skipping WhatsApp reminder.")
+                if alarm.frequency in ('once', 'timer') or not alarm.frequency:
+                    alarm.status = 'sent'
+                
+                # Remove active nagging job if it exists
+                nag_job_id = f"custom_alarm_{alarm_id}_nag"
+                try:
+                    scheduler.remove_job(nag_job_id)
+                except Exception:
+                    pass
+                    
+                db.commit()
+                return
+            
+        target_whatsapp_id = None
+        target_name = "Member"
+        if alarm.target_type == 'employee':
+            emp = db.query(Employee).filter(Employee.id == alarm.target_id).first()
+            if emp:
+                target_whatsapp_id = f"{emp.phone_number}@c.us"
+                target_name = emp.name
+        elif alarm.target_type == 'group':
+            if alarm.target_id:
+                grp = db.query(Group).filter(Group.id == alarm.target_id).first()
+                if grp:
+                    target_whatsapp_id = grp.whatsapp_group_id
+                    target_name = grp.name
+            elif alarm.whatsapp_target_id:
+                target_whatsapp_id = alarm.whatsapp_target_id
+                target_name = "Group"
+                
+        if target_whatsapp_id:
+            # Update status immediately to prevent duplicate sends by concurrent polling
+            alarm.status = 'sent'
+            db.commit()
+
+            if alarm.report_type:
+                msg = f"⏰ *Reminder from Farm Auto*\nHi {target_name},\nYou have forgotten to send the *{alarm.report_type}* report today."
+                if alarm.task_notes:
+                    msg += f"\n\nNotes: {alarm.task_notes}"
+            else:
+                msg = f"🔔 *Custom Alarm / Task Reminder*\n\n{alarm.task_notes}"
+                
+            send_waha_message(target_whatsapp_id, msg)
+            
+        alarm.status = 'sent'
+        db.commit()
+            
+        # Schedule next nagging reminder if report is assigned and repeat_interval is set
+        if alarm.report_type and alarm.repeat_interval and alarm.repeat_interval != 'none':
+            nag_minutes = 0
+            if alarm.repeat_interval == '5m': nag_minutes = 5
+            elif alarm.repeat_interval == '10m': nag_minutes = 10
+            elif alarm.repeat_interval == '15m': nag_minutes = 15
+            elif alarm.repeat_interval == '30m': nag_minutes = 30
+            elif alarm.repeat_interval == '1h': nag_minutes = 60
+            
+            if nag_minutes > 0:
+                now_ist = datetime.now(IST)
+                # Nag between 6 AM and 11 PM IST only
+                if now_ist.hour < 23 and now_ist.hour >= 6:
+                    next_nag_time = now_ist + timedelta(minutes=nag_minutes)
+                    nag_job_id = f"custom_alarm_{alarm_id}_nag"
+                    scheduler.add_job(
+                        execute_custom_alarm,
+                        DateTrigger(run_date=next_nag_time, timezone="Asia/Kolkata"),
+                        args=[alarm_id],
+                        id=nag_job_id,
+                        replace_existing=True,
+                        misfire_grace_time=None
+                    )
+                    logger.info(f"Scheduled nagging reminder for custom alarm {alarm_id} at {next_nag_time} (every {alarm.repeat_interval})")
+                else:
+                    logger.info(f"Custom Alarm {alarm_id}: Late night reached (11 PM - 6 AM). Stopping nagging reminders for today.")
+                    
+        db.commit()
+    except Exception as e:
+        logger.error(f"Error executing custom alarm {alarm_id}: {e}")
+    finally:
+        db.close()
+
+def schedule_custom_alarm(alarm_id: int, trigger_time):
+    global scheduler
+    db = get_db_session()
+    try:
+        alarm = db.query(CustomAlarm).filter(CustomAlarm.id == alarm_id).first()
+        if not alarm:
+            return
+            
+        job_id = f"custom_alarm_{alarm_id}"
+        freq = alarm.frequency or 'once'
+        
+        if freq == 'once':
+            trigger = DateTrigger(run_date=trigger_time, timezone="Asia/Kolkata")
+        elif freq == 'every_5m':
+            trigger = IntervalTrigger(minutes=5, start_date=trigger_time, timezone="Asia/Kolkata")
+        elif freq == 'every_10m':
+            trigger = IntervalTrigger(minutes=10, start_date=trigger_time, timezone="Asia/Kolkata")
+        elif freq == 'every_15m':
+            trigger = IntervalTrigger(minutes=15, start_date=trigger_time, timezone="Asia/Kolkata")
+        elif freq == 'every_30m':
+            trigger = IntervalTrigger(minutes=30, start_date=trigger_time, timezone="Asia/Kolkata")
+        elif freq == 'every_1h':
+            trigger = IntervalTrigger(hours=1, start_date=trigger_time, timezone="Asia/Kolkata")
+        elif freq == 'daily':
+            trigger = CronTrigger(hour=trigger_time.hour, minute=trigger_time.minute, timezone="Asia/Kolkata")
+        elif freq == 'weekly':
+            # trigger_time.weekday() returns 0 (Mon) - 6 (Sun)
+            trigger = CronTrigger(day_of_week=trigger_time.weekday(), hour=trigger_time.hour, minute=trigger_time.minute, timezone="Asia/Kolkata")
+        elif freq == 'monthly':
+            trigger = CronTrigger(day=trigger_time.day, hour=trigger_time.hour, minute=trigger_time.minute, timezone="Asia/Kolkata")
+        elif freq == 'yearly':
+            trigger = CronTrigger(month=trigger_time.month, day=trigger_time.day, hour=trigger_time.hour, minute=trigger_time.minute, timezone="Asia/Kolkata")
+        elif freq == 'timer':
+            trigger = DateTrigger(run_date=trigger_time, timezone="Asia/Kolkata")
+        else:
+            trigger = DateTrigger(run_date=trigger_time, timezone="Asia/Kolkata")
+        scheduler.add_job(
+            execute_custom_alarm,
+            trigger,
+            args=[alarm_id],
+            id=job_id,
+            replace_existing=True,
+            misfire_grace_time=None
+        )
+    except Exception as e:
+        logger.error(f"Error scheduling custom alarm {alarm_id}: {e}")
+    finally:
+        db.close()
+
+def get_next_occurrence(base_time, frequency):
+    from datetime import timedelta, datetime
+    next_time = base_time
+    from datetime import timezone
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST).replace(tzinfo=None)
+    freq = str(frequency or '').lower().strip()
+    while next_time <= now_ist:
+        if freq == 'weekly':
+            next_time += timedelta(days=7)
+        elif freq in ('mon-sat', 'mon_to_sat', 'mon_sat'):
+            next_time += timedelta(days=1)
+            if next_time.weekday() == 6:  # Sunday -> jump to Monday
+                next_time += timedelta(days=1)
+        elif freq in ('mon-fri', 'mon_to_fri', 'weekdays', 'weekday'):
+            next_time += timedelta(days=1)
+            while next_time.weekday() in (5, 6):  # Sat & Sun -> jump to Monday
+                next_time += timedelta(days=1)
+        elif freq == 'monthly':
+            import calendar
+            month = next_time.month - 1 + 1
+            year = next_time.year + month // 12
+            month = month % 12 + 1
+            day = min(next_time.day, calendar.monthrange(year, month)[1])
+            next_time = next_time.replace(year=year, month=month, day=day)
+        elif freq == 'yearly':
+            try:
+                next_time = next_time.replace(year=next_time.year + 1)
+            except ValueError:
+                next_time += timedelta(days=365)
+        else:
+            next_time += timedelta(days=1)
+    return next_time
+
+def format_report_name(r: str) -> str:
+    """Preserve exact report name with proper Title Case capitalization."""
+    if not r:
+        return ""
+    r_str = str(r).strip()
+    words = r_str.split()
+    formatted = []
+    for w in words:
+        wl = w.lower()
+        if wl in ['p&l', 'p/l', 'p-and-l']:
+            formatted.append('P&L')
+        elif wl in ['ca']:
+            formatted.append('CA')
+        elif wl in ['eod']:
+            formatted.append('EOD')
+        else:
+            formatted.append(w.capitalize())
+    return " ".join(formatted)
+
+def build_reminder_body(reports: list) -> str:
+    """Format single report as inline message, or multiple reports as bold bullet points."""
+    if not reports:
+        return "Please submit today's reports so the daily records can be completed accurately."
+    
+    if any("approval" in rep.lower() or "review" in rep.lower() for rep in reports):
+        return "Please review and approve today's report in the group so daily records can be completed accurately."
+
+    formatted_reports = [format_report_name(rep) for rep in reports]
+    
+    if len(formatted_reports) == 1:
+        return f"Please submit today's *{formatted_reports[0]}* Report so the daily records and reports can be completed accurately."
+    else:
+        bullets = "\n".join(f"  • *{rep}*" for rep in formatted_reports)
+        return f"Please submit the following pending reports for today:\n{bullets}"
+
+def format_name_list(names):
+    if not names:
+        return ""
+    bold_names = [f"*{n}*" for n in names]
+    if len(bold_names) == 1:
+        return bold_names[0]
+    elif len(bold_names) == 2:
+        return f"{bold_names[0]} & {bold_names[1]}"
+    else:
+        return ", ".join(bold_names[:-1]) + f" & {bold_names[-1]}"
+
+def poll_and_execute_unified_reminders():
+    logger.info("Polling database for pending unified reminders...")
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST).replace(tzinfo=None)
+    today = now_ist.date()
+
+    # Date formats for flexible matching (e.g. EOD report)
+    # e.g., "15-07", "15/07", "15 July", "July 15"
+    date_formats = [
+        today.strftime("%d-%m"),
+        today.strftime("%d/%m"),
+        today.strftime("%d %B"),
+        today.strftime("%B %d"),
+        today.strftime("%dth %B"),
+        today.strftime("%B %dth"),
+    ]
+    # Clean date formats to remove leading zeros (e.g. "5 July" instead of "05 July")
+    cleaned_dates = []
+    for df in date_formats:
+        cleaned_dates.append(df.lower())
+        if df.startswith("0"):
+            cleaned_dates.append(df[1:].lower())
+        cleaned_dates.append(df.replace(" 0", " ").lower())
+    date_formats = list(set(cleaned_dates))
+    update_keywords = [
+        "update", "updates", "work report", "work update", "work updates",
+        "daily update", "daily updates", "daily work update", "daily work updates",
+        "eod", "eod update", "eod updates", "eod report", "eod reports",
+        "today, i worked", "today i worked", "today's work", "today work",
+        "today's work report", "today work report", "work day report",
+        "daily report", "daily reports", "work done", "tasks completed",
+        "task completed", "tasks done", "task done", "today's update", "today update"
+    ]
+
+    # ── WAHA guard: don't attempt sends if WhatsApp session is not WORKING ──
+    primary_session = settings.WAHA_SESSION
+    waha_status = get_session_status(primary_session)
+    if waha_status != "WORKING":
+        logger.warning(f"WAHA session is {waha_status} — skipping reminder dispatch. Will retry next cycle.")
+        return
+    
+    db = get_db_session()
+    try:
+        # (Midnight reset is handled by midnight_reset_job at 00:00 IST)
+
+        pending = db.query(UnifiedReminder).filter(
+            UnifiedReminder.status == 'pending',
+            UnifiedReminder.trigger_time <= now_ist
+        ).all()
+        
+        if not pending:
+            return
+            
+        submissions = db.query(ProcessedData).filter(
+            func.date(ProcessedData.processed_time) == today
+        ).all()
+        
+        raw_messages = db.query(RawMessage).filter(
+            func.date(RawMessage.timestamp) == today
+        ).all()
+        
+        msg_jids = {w.message_id: w.group_id for w in db.query(WhatsAppMessage).filter(func.date(WhatsAppMessage.timestamp) == today).all()}
+        
+        groups = db.query(Group).all()
+        group_names_by_id = {g.whatsapp_group_id: g.name for g in groups}
+        
+        # Merge WAHA groups map
+        waha_groups_map = get_all_waha_groups_map()
+        for jid, name in waha_groups_map.items():
+            if jid not in group_names_by_id:
+                group_names_by_id[jid] = name
+        
+        for r in pending:
+            # Atomic status lock check to prevent concurrent duplicate sends
+            updated_count = db.query(UnifiedReminder).filter(
+                UnifiedReminder.id == r.id,
+                UnifiedReminder.status == 'pending'
+            ).update({'status': 'processing'}, synchronize_session=False)
+            db.commit()
+
+            if updated_count == 0:
+                logger.info(f"Reminder ID {r.id} ({r.person_name}) is already being processed or sent. Skipping concurrent execution.")
+                continue
+
+            # Idempotency check: verify no log was created for this reminder in the last 5 minutes
+            recent_log = db.query(ReminderLog).filter(
+                ReminderLog.reminder_id == r.id,
+                ReminderLog.executed_at >= (now_ist - timedelta(minutes=5))
+            ).first()
+            if recent_log:
+                logger.info(f"Reminder ID {r.id} ({r.person_name}) was already logged/sent at {recent_log.executed_at}. Skipping duplicate.")
+                r.status = 'sent'
+                db.commit()
+                continue
+
+            freq = str(r.frequency or '').lower().strip()
+            if freq in ('mon-sat', 'mon_to_sat', 'mon_sat') and now_ist.weekday() == 6:
+                logger.info(f"Skipping reminder ID {r.id} ({r.person_name}) because today is Sunday (Weekly Off) and frequency is '{r.frequency}'.")
+                continue
+            if freq in ('mon-fri', 'mon_to_fri', 'weekdays', 'weekday') and now_ist.weekday() in (5, 6):
+                logger.info(f"Skipping reminder ID {r.id} ({r.person_name}) because today is Weekend ({now_ist.strftime('%A')}) and frequency is '{r.frequency}'.")
+                continue
+
+            phones = [p.strip() for p in str(r.person_phone or '').split(',') if p.strip()]
+            names = [n.strip() for n in str(r.person_name or '').split(',') if n.strip()]
+            
+            # Map of phone -> name
+            assignees = {}
+            for idx, phone in enumerate(phones):
+                name = names[idx] if idx < len(names) else phone
+                assignees[phone] = name
+                
+            assigned_reports = [s.strip().lower() for s in str(r.report_types or '').split(',') if s.strip()]
+            
+            pending_assignees = []
+            
+            # Check submissions for each assignee individually
+            for phone, name in assignees.items():
+                # Clean phone number by keeping only digits
+                clean_phone = "".join(c for c in phone if c.isdigit())
+                if clean_phone.startswith("0"):
+                    clean_phone = clean_phone[1:]
+                
+                if len(clean_phone) == 10:
+                    target_jid = "91" + clean_phone
+                else:
+                    target_jid = clean_phone
+                    
+                if not target_jid.endswith('@c.us') and not target_jid.endswith('@g.us') and not target_jid.endswith('@lid'):
+                    target_jid += '@c.us'
+                
+                # Build report-type keyword map for raw message fallback check
+                REPORT_KEYWORDS = {
+                    'production': ['production report', 'daily production', 'total production', 'egg collection report', 'production update', 'production updates', 'production statement', 'daily farm report'],
+                    'feed':       ['feed report', 'feed plant report', 'feed update', 'feed statement', 'maize ordering', 'soya ordering'],
+                    'sales':      ['sales report', 'daily sales', 'total sales', 'dispatch report', 'sales update'],
+                    'sale':       ['sales report', 'daily sales', 'total sales', 'dispatch report', 'sales update'],
+                    'expense':    ['expense report', 'daily expense', 'expenditure report', 'payment report'],
+                    'expenditure':['expense report', 'daily expense', 'expenditure report', 'payment report'],
+                    'profit':     ['p&l report', 'p&l statement', 'profit loss', 'p and l update'],
+                    'p&l':        ['p&l report', 'p&l statement', 'profit loss', 'p and l update'],
+                    'p and l':    ['p&l report', 'p&l statement', 'profit loss', 'p and l update'],
+                }
+
+                missing_reports = []
+                for report in assigned_reports:
+                    submitted = False
+                    categories = []
+                    if "production" in report:
+                        categories = ['production', 'egg_collection', 'egg_collection_1', 'egg_collection_2', 'egg']
+                    elif "feed" in report:
+                        categories = ['feed']
+                    elif "expense" in report or "expenditure" in report:
+                        categories = ['expense', 'purchase']
+                    elif "sale" in report:
+                        categories = ['sales']
+                    elif "profit" in report or "p&l" in report or "p and l" in report:
+                        categories = ['sales', 'expense', 'purchase']
+                        
+                    is_approval_task = "approval" in report.lower() or "review" in report.lower() or "balaji" in report.lower() or "approve" in report.lower()
+                    is_rule_book = ("rule book" in report.lower() or "rule" in report.lower()) and not is_approval_task
+                    is_update_report = any(w in report.lower() for w in ["update", "eod", "daily report", "work update", "work report"]) and "egg pricing" not in report.lower() and not is_rule_book and not is_approval_task
+                    update_keywords = [
+                         "update", "updates", "work report", "work update", "work updates",
+                         "daily update", "daily updates", "daily work update", "daily work updates",
+                         "eod", "eod update", "eod updates", "eod report", "eod reports",
+                         "today, i worked", "today i worked", "today's work", "today work",
+                         "today's work report", "today work report", "work day report",
+                         "daily report", "daily reports", "work done", "tasks completed",
+                         "task completed", "tasks done", "task done", "today's update", "today update"
+                     ]
+
+                    for sub in submissions:
+                        alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
+                        match_sender = clean_phone in str(sub.sender) or alt_phone in str(sub.sender)
+                        group_name = group_names_by_id.get(r.whatsapp_group_id)
+                        match_group = r.whatsapp_group_id and group_name and sub.group_name and str(sub.group_name).lower() == group_name.lower()
+                        
+                        match_name = False
+                        if not match_sender and r.person_name and sub.sender:
+                            import difflib
+                            sender_name_part = clean_name_string(sub.sender.split(' (')[0])
+                            t_names = [clean_name_string(n) for n in r.person_name.split(',')]
+                            for t_name in t_names:
+                                if len(sender_name_part) >= 3 and len(t_name) >= 3:
+                                    ratio = difflib.SequenceMatcher(None, sender_name_part, t_name).ratio()
+                                    if ratio > 0.75 or sender_name_part in t_name or t_name in sender_name_part:
+                                        match_name = True
+                                        break
+                        
+                        # Only allow sender match for personal reminders, or group match for group reminders
+                        if (r.whatsapp_group_id and match_group) or (not r.whatsapp_group_id and (match_sender or match_name)):
+                            if "egg pricing" in report.lower():
+                                sub_notes_lower = str(sub.notes or '').lower()
+                                time_keyword = "morning" if "morning" in report.lower() else "afternoon" if "afternoon" in report.lower() else "evening" if "evening" in report.lower() else None
+                                if time_keyword and time_keyword in sub_notes_lower and any(w in sub_notes_lower for w in ["egg", "price", "pricing"]):
+                                    submitted = True
+                                    break
+                            elif is_approval_task:
+                                sub_notes_lower = str(sub.notes or '').lower()
+                                approval_kws = ["reviewed", "review completed", "reviewed and approved", "approved", "approve", "report approved", "review done", "reviewed done"]
+                                if any(akw in sub_notes_lower.split() or akw in sub_notes_lower for akw in approval_kws):
+                                    submitted = True
+                                    break
+                            elif is_update_report:
+                                sub_notes_lower = str(sub.notes or '').lower()
+                                if any(kw in sub_notes_lower for kw in update_keywords) or any(df in sub_notes_lower for df in date_formats):
+                                    submitted = True
+                                    break
+                            elif categories:
+                                if sub.category in categories:
+                                    submitted = True
+                                    break
+                            else:
+                                if report.lower() in str(sub.notes).lower():
+                                    submitted = True
+                                    break
+
+                    # Fallback: also check raw messages for exact keyword matches
+                    if not submitted:
+                        if is_approval_task:
+                            approval_kws = ["reviewed", "review completed", "reviewed and approved", "approved", "approve", "report approved", "review done", "reviewed done"]
+                            for raw_msg in raw_messages:
+                                raw_text_lower = str(raw_msg.raw_text or '').lower()
+                                clean_raw_jid = msg_jids.get(raw_msg.message_id, '').replace('@g.us', '').strip()
+                                clean_target_jid = r.whatsapp_group_id.replace('@g.us', '').strip() if r.whatsapp_group_id else ''
+
+                                # Strictly check sender phone/ID: MUST be Balaji (+91 94939 28388)
+                                sender_str = str(raw_msg.sender).lower()
+                                is_from_balaji = ('9493928388' in sender_str or '242695733772318' in sender_str or 'balaji' in sender_str)
+
+                                if not is_from_balaji:
+                                    continue
+
+                                if clean_target_jid and clean_raw_jid and clean_raw_jid != clean_target_jid:
+                                    continue
+
+                                has_approval_word = any(akw in raw_text_lower.split() or akw in raw_text_lower for akw in approval_kws)
+                                is_work_report = raw_text_lower.startswith(("hi team", "today's work", "today work", "work update"))
+                                if has_approval_word and not is_work_report and "why" not in raw_text_lower and "?" not in raw_text_lower:
+                                    submitted = True
+                                    logger.info(f"Balaji review task explicitly approved by Balaji (+91 94939 28388): {raw_text_lower[:50]}")
+                                    break
+                        else:
+                            raw_keywords = []
+                            if is_rule_book:
+                                raw_keywords = ["rule book", "rulebook", "rule-book", "rule book updates", "rulebook update", "rulebook updates", "rule book update"]
+                            elif is_update_report:
+                                raw_keywords = update_keywords + date_formats
+                            else:
+                                for key, kws in REPORT_KEYWORDS.items():
+                                    if key in report.lower():
+                                        raw_keywords = kws
+                                        break
+                                if not raw_keywords:
+                                    raw_keywords = [w.lower() for w in report.split() if len(w) > 3]
+
+                            group_name = group_names_by_id.get(r.whatsapp_group_id)
+                            for raw_msg in raw_messages:
+                                raw_text_lower = str(raw_msg.raw_text or '').lower()
+                                clean_raw_jid = msg_jids.get(raw_msg.message_id, '').replace('@g.us', '').strip()
+                                clean_target_jid = r.whatsapp_group_id.replace('@g.us', '').strip() if r.whatsapp_group_id else ''
+
+                                if clean_target_jid:
+                                    valid_match = (clean_raw_jid == clean_target_jid)
+                                else:
+                                    alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone[2:] if clean_phone.startswith("91") else clean_phone
+                                    match_sender_raw = clean_phone in str(raw_msg.sender) or alt_phone in str(raw_msg.sender)
+                                    match_name = False
+                                    if not match_sender_raw and r.person_name and raw_msg.sender:
+                                        import difflib
+                                        sender_name_part = clean_name_string(raw_msg.sender.split(' (')[0])
+                                        t_names = [clean_name_string(n) for n in r.person_name.split(',')]
+                                        for t_name in t_names:
+                                            if len(sender_name_part) >= 3 and len(t_name) >= 3:
+                                                ratio = difflib.SequenceMatcher(None, sender_name_part, t_name).ratio()
+                                                if ratio > 0.75 or sender_name_part in t_name or t_name in sender_name_part:
+                                                    match_name = True
+                                                    break
+                                    valid_match = match_sender_raw or match_name
+                                
+                                if valid_match:
+                                    # Overrides for Hyperscale and P&L groups
+                                    is_hyperscale = clean_target_jid and "120363428417403024" in clean_target_jid
+                                    is_p_and_l = clean_target_jid and "120363427856964756" in clean_target_jid
+                                    if is_hyperscale:
+                                        has_today = "today" in raw_text_lower
+                                        has_photo = getattr(raw_msg, 'message_type', '') == 'image' or getattr(raw_msg, 'media_path', None) is not None
+                                        has_standard = any(kw.lower() in raw_text_lower for kw in raw_keywords)
+                                        if has_today or has_photo or has_standard:
+                                            submitted = True
+                                            logger.info(f"Hyperscale override raw match for '{report}' from {raw_msg.sender}.")
+                                            break
+                                    elif is_p_and_l:
+                                        has_photo = getattr(raw_msg, 'message_type', '') == 'image' or getattr(raw_msg, 'media_path', None) is not None
+                                        has_spec_phrases = any(phrase in raw_text_lower for phrase in ["report submitted", "submitted profit summary", "profit summary"])
+                                        has_standard = any(kw.lower() in raw_text_lower for kw in raw_keywords)
+                                        is_for_yesterday = "yesterday" in raw_text_lower
+                                        if (has_photo or has_spec_phrases or has_standard) and not is_for_yesterday:
+                                            submitted = True
+                                            logger.info(f"P&L override raw match for '{report}' from {raw_msg.sender}.")
+                                            break
+
+                                    if "egg pricing" in report.lower():
+                                        time_keyword = "morning" if "morning" in report.lower() else "afternoon" if "afternoon" in report.lower() else "evening" if "evening" in report.lower() else None
+                                        has_price_number = bool(re.search(r'\d{3}', raw_text_lower))
+                                        is_time_match = False
+                                        
+                                        # Extract hour from text if mentioned in the format like '8:44' or '13:20'
+                                        raw_msg_hour = raw_msg.timestamp.hour
+                                        match_time = re.search(r'\b(\d{1,2}):(\d{2})\b', raw_text_lower)
+                                        if match_time:
+                                            try:
+                                                raw_msg_hour = int(match_time.group(1))
+                                            except Exception:
+                                                pass
+                                                
+                                        if time_keyword == 'morning' and (raw_msg_hour < 12 or 'morning' in raw_text_lower or 'veh kol' in raw_text_lower) and 'ppr rate' not in raw_text_lower and 'closing' not in raw_text_lower:
+                                            is_time_match = True
+                                        elif time_keyword == 'afternoon' and (12 <= raw_msg_hour < 17 or 'afternoon' in raw_text_lower or 'ppr rate' in raw_text_lower) and 'closing' not in raw_text_lower:
+                                            is_time_match = True
+                                        elif time_keyword == 'evening' and (raw_msg_hour >= 17 or 'evening' in raw_text_lower or 'closing' in raw_text_lower or '18:' in raw_text_lower or '19:' in raw_text_lower):
+                                            is_time_match = True
+
+                                        if is_time_match and has_price_number and any(w in raw_text_lower for w in ["egg", "price", "pricing", "ppr rate", "closing", "veh kol"]):
+                                            submitted = True
+                                            logger.info(f"Egg pricing raw message match for '{report}' from {raw_msg.sender} — skipping reminder.")
+                                            break
+                                    elif is_rule_book:
+                                        rule_kws = ["rule book", "rulebook", "rule-book", "rule book updates", "rulebook update", "rulebook updates", "rule book update"]
+                                        if any(kw in raw_text_lower for kw in rule_kws):
+                                            submitted = True
+                                            logger.info(f"Rule Book raw message match for '{report}' from {raw_msg.sender} — skipping reminder.")
+                                            break
+                                    else:
+                                        is_stock_website = any(w in raw_text_lower for w in ["website update", "website updates", "stock update", "stock updates", "stock/website"])
+                                        if is_stock_website and "stock" not in report.lower() and "website" not in report.lower():
+                                            pass
+                                        elif any(kw.lower() in raw_text_lower for kw in raw_keywords):
+                                            submitted = True
+                                            logger.info(f"Raw message keyword match for '{report}' from {raw_msg.sender} — skipping reminder.")
+                                            break
+
+                    if not submitted:
+                        missing_reports.append(report)
+                
+                if not assigned_reports or missing_reports:
+                    pending_assignees.append({
+                        "name": name,
+                        "phone": phone,
+                        "jid": target_jid,
+                        "missing_reports": missing_reports
+                    })
+                    
+            if pending_assignees:
+                # Re-check WAHA is still WORKING right before sending
+                if get_session_status(primary_session) != "WORKING":
+                    logger.warning(f"WAHA went down before sending reminder for {r.person_name}. Will retry next cycle.")
+                    continue
+
+                # If a WhatsApp group ID is set, send ONLY 1 combined group message. Otherwise, send ONLY 1 private message per assignee.
+                if r.whatsapp_group_id:
+                    name_tags = format_name_list([p['name'] for p in pending_assignees])
+                    jids = [p['jid'] for p in pending_assignees]
+                    
+                    if not assigned_reports:
+                        group_body = r.task_notes
+                    else:
+                        all_missing = sorted(list(set([rep for p in pending_assignees for rep in p['missing_reports']])))
+                        group_body = build_reminder_body(all_missing)
+                        
+                    group_msg = (
+                        "⏰ *Reminder*\n\n"
+                        f"Hi {name_tags},\n\n"
+                        f"{group_body}\n\n"
+                        "Thank you! 🌱"
+                    )
+                        
+                    logger.info(f"Sending combined group reminder to {r.whatsapp_group_id} for {', '.join([p['name'] for p in pending_assignees])}")
+                    send_waha_message(r.whatsapp_group_id, group_msg, mentions=jids)
+                else:
+                    for p in pending_assignees:
+                        if not assigned_reports:
+                            private_body = r.task_notes
+                        else:
+                            private_body = build_reminder_body(p['missing_reports'])
+                        
+                        private_msg = (
+                            "⏰ *Reminder*\n\n"
+                            f"Hi *{p['name']}*,\n\n"
+                            f"{private_body}\n\n"
+                            "Thank you! 🌱"
+                        )
+                        
+                        clean_p_num = "".join(filter(str.isdigit, str(p['jid'] or '')))
+                        if clean_p_num and not any(d in clean_p_num for d in ['1234567890', '0000000000', '12345']) and len(clean_p_num) >= 10:
+                            logger.info(f"Sending private reminder to {p['name']} ({p['jid']})")
+                            send_waha_message(p['jid'], private_msg)
+                    
+                repeat = str(r.repeat_interval).lower()
+                if repeat != 'none' and repeat != '':
+                    minutes = 0
+                    if repeat == '5m': minutes = 5
+                    elif repeat == '10m': minutes = 10
+                    elif repeat == '15m': minutes = 15
+                    elif repeat == '30m': minutes = 30
+                    elif repeat == '1h': minutes = 60
+                    
+                    if minutes > 0 and now_ist.hour >= 6 and now_ist.hour < 23:
+                        r.trigger_time = now_ist + timedelta(minutes=minutes)
+                        db.commit()
+                        logger.info(f"Nagging reminder scheduled for {r.person_name} in {minutes} mins.")
+                        continue
+                
+                # Sent: Actual message(s) sent out
+                r.status = 'sent'
+                log_detail = f"Missing: {', '.join(all_missing)}" if assigned_reports and 'all_missing' in locals() and all_missing else (r.task_notes or "Reminder sent")
+                log = ReminderLog(
+                    reminder_id=r.id,
+                    report_types=r.report_types,
+                    person_name=r.person_name,
+                    person_phone=r.person_phone,
+                    whatsapp_group_id=r.whatsapp_group_id,
+                    trigger_time=r.trigger_time,
+                    executed_at=now_ist,
+                    status='sent',
+                    details=log_detail
+                )
+                db.add(log)
+                db.commit()
+                logger.info(f"Reminder for {r.person_name} marked sent at {r.trigger_time} (frequency: {r.frequency}). Will reset at midnight.")
+            else:
+                # Skipped: All assignees had already submitted reports
+                r.status = 'skipped'
+                log = ReminderLog(
+                    reminder_id=r.id,
+                    report_types=r.report_types,
+                    person_name=r.person_name,
+                    person_phone=r.person_phone,
+                    whatsapp_group_id=r.whatsapp_group_id,
+                    trigger_time=r.trigger_time,
+                    executed_at=now_ist,
+                    status='skipped',
+                    details="All assigned reports were submitted on time."
+                )
+                db.add(log)
+                db.commit()
+                logger.info(f"Reminder for {r.person_name} marked skipped at {r.trigger_time} (all reports submitted). Will reset at midnight.")
+            
+    except Exception as e:
+        logger.error(f"Error in poll_and_execute_unified_reminders: {e}")
+    finally:
+        db.close()
+
+def sync_custom_alarms_job():
+    db = get_db_session()
+    try:
+        pending_alarms = db.query(CustomAlarm).filter(CustomAlarm.status == 'pending').all()
+        for alarm in pending_alarms:
+            job_id = f"custom_alarm_{alarm.id}"
+            if not scheduler.get_job(job_id):
+                logger.info(f"Dynamically scheduling custom alarm {alarm.id} (frequency: {alarm.frequency}) for {alarm.trigger_time}")
+                schedule_custom_alarm(alarm.id, alarm.trigger_time)
+    except Exception as e:
+        logger.error(f"Error in sync_custom_alarms_job: {e}")
+    finally:
+        db.close()
+
+async def cleanup_old_files_job():
+    logger.info("Starting media and report directory cleanup...")
+    import os
+    import time
+    now = time.time()
+    cutoff_time = now - (2 * 24 * 3600)  # 2 days ago
+    
+    # Clean /app/media/ for files older than 2 days
+    media_dir = "/app/media"
+    if os.path.exists(media_dir):
+        for item in os.listdir(media_dir):
+            item_path = os.path.join(media_dir, item)
+            if os.path.isfile(item_path):
+                # Don't delete QR session images or persistent keys
+                if item.startswith("qr_") or item == "keys.json":
+                    continue
+                try:
+                    if os.path.getmtime(item_path) < cutoff_time:
+                        os.remove(item_path)
+                except Exception as e:
+                    logger.error(f"Error removing old media file {item_path}: {e}")
+                    
+    # Clean /app/media/reports for files older than 7 days
+    reports_dir = "/app/media/reports"
+    cutoff_reports = now - (7 * 24 * 3600)  # 7 days ago
+    if os.path.exists(reports_dir):
+        for item in os.listdir(reports_dir):
+            item_path = os.path.join(reports_dir, item)
+            if os.path.isfile(item_path):
+                try:
+                    if os.path.getmtime(item_path) < cutoff_reports:
+                        os.remove(item_path)
+                except Exception as e:
+                    logger.error(f"Error removing old report file {item_path}: {e}")
+
+def sync_groups_to_live():
+    logger.info("Syncing local WAHA groups to live server...")
+    try:
+        import os
+        import requests
+        waha_url = f"{settings.WAHA_URL}/api/{settings.WAHA_SESSION}/groups"
+        headers = {"Accept": "application/json"}
+        api_key = os.getenv("WAHA_API_KEY", "123")
+        if api_key: headers["X-Api-Key"] = api_key
+        
+        response = requests.get(waha_url, headers=headers, timeout=10)
+        if response.status_code == 200:
+            groups = []
+            data = response.json()
+            if isinstance(data, list):
+                for g in data:
+                    gid = g.get("id")
+                    name = g.get("subject") or g.get("name")
+                    if name:
+                        if isinstance(gid, dict):
+                            ser = gid.get("_serialized")
+                            usr = gid.get("user")
+                            if ser: groups.append({"id": ser, "name": name})
+                            if usr and usr != ser: groups.append({"id": usr, "name": name})
+                        elif isinstance(gid, str):
+                            groups.append({"id": gid, "name": name})
+                            if "@g.us" in gid:
+                                groups.append({"id": gid.replace("@g.us", ""), "name": name})
+            elif isinstance(data, dict):
+                for k, v in data.items():
+                    name = v.get("subject") or v.get("name") if isinstance(v, dict) else str(v)
+                    if name:
+                        groups.append({"id": str(k), "name": name})
+                        if "@g.us" in str(k):
+                            groups.append({"id": str(k).replace("@g.us", ""), "name": name})
+            
+            payload = {"status": "success", "groups": groups}
+            sync_resp = requests.post("https://sunfragroup.com/kusum/Whatsapp_Rem/index.php?api=waha/groups/sync", json=payload, timeout=10)
+            if sync_resp.status_code == 200:
+                logger.info(f"Successfully synced {len(groups)} groups to live server.")
+            else:
+                logger.error(f"Failed to sync groups to live server. Status: {sync_resp.status_code}")
+        else:
+            logger.error(f"Failed to fetch groups from local WAHA. Status: {response.status_code}")
+    except Exception as e:
+        logger.error(f"Error syncing groups: {e}")
+
+def poll_live_alarms():
+    """Read and execute custom alarms directly from MySQL — no HTTP call to live PHP server."""
+    logger.info("Checking DB for pending custom alarms...")
+    db = get_db_session()
+    try:
+        from datetime import datetime, timezone, timedelta
+        IST = timezone(timedelta(hours=5, minutes=30))
+        now_ist = datetime.now(IST).replace(tzinfo=None)
+
+        pending = db.query(CustomAlarm).filter(
+            CustomAlarm.status == 'pending',
+            CustomAlarm.trigger_time <= now_ist
+        ).all()
+
+        if not pending:
+            logger.debug("No pending custom alarms.")
+            return
+
+        for alarm in pending:
+            target_id = alarm.whatsapp_target_id
+            if not target_id:
+                continue
+            notes = alarm.task_notes or ''
+            logger.info(f"Triggering custom alarm {alarm.id} to {target_id}")
+            msg = f"🔔 *Custom Alarm*\n\n{notes}"
+            send_waha_message(target_id, msg)
+            alarm.status = 'sent'
+
+        db.commit()
+    except Exception as e:
+        logger.error(f"Error processing custom alarms: {e}")
+    finally:
+        db.close()
+
+
+def midnight_reset_job():
+    """Runs at 00:00 IST every night.
+    Advances trigger_time for recurring reminders and tasks (whether completed or overdue)
+    to the next occurrence and resets their status to 'pending'.
+    """
+    from datetime import datetime, timezone, timedelta
+    import re
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST).replace(tzinfo=None)
+    logger.info(f"Running midnight reset job at {now_ist}")
+
+    db = get_db_session()
+    try:
+        # 1. Reset reminders
+        recurring_reminders = db.query(UnifiedReminder).filter(
+            UnifiedReminder.frequency.isnot(None),
+            UnifiedReminder.frequency != 'once'
+        ).all()
+
+        reset_count = 0
+        for r in recurring_reminders:
+            if r.status in ['sent', 'skipped'] or r.trigger_time <= now_ist:
+                freq = str(r.frequency).lower()
+                r.trigger_time = get_next_occurrence(r.trigger_time, freq)
+                r.status = 'pending'
+                reset_count += 1
+                logger.info(f"Midnight reset reminder: {r.person_name} → next trigger: {r.trigger_time} (freq: {freq})")
+
+        # 2. Reset tasks (including completed and overdue tasks)
+        recurring_tasks = db.query(Task).filter(
+            Task.frequency.isnot(None),
+            Task.frequency != 'once'
+        ).all()
+
+        for t in recurring_tasks:
+            if t.status in ['completed', 'overdue'] or t.due_time <= now_ist:
+                freq = str(t.frequency).lower()
+                t.due_time = get_next_occurrence(t.due_time, freq)
+                t.status = 'pending'
+                # Strip previous due reminder and overdue alert markers so task can alert fresh on its new due time
+                if t.completion_details:
+                    t.completion_details = t.completion_details.replace('[DUE_REMINDER_SENT]', '').replace('[OVERDUE_ALERT_SENT]', '')
+                    t.completion_details = re.sub(r'\[OVERDUE_ALERT_AT:[^\]]+\]', '', t.completion_details)
+                reset_count += 1
+                logger.info(f"Midnight reset task: {t.task_name} → next due: {t.due_time} (freq: {freq})")
+
+        db.commit()
+        logger.info(f"Midnight reset complete: {reset_count} items reset to pending.")
+    except Exception as e:
+        logger.error(f"Error in midnight_reset_job: {e}")
+    finally:
+        db.close()
+
+
+def get_interval_minutes(interval):
+    if not interval or interval == 'none':
+        return 0
+    interval = str(interval).lower()
+    if interval.endswith('m'):
+        try: return int(interval[:-1])
+        except: return 0
+    if interval.endswith('h'):
+        try: return int(interval[:-1]) * 60
+        except: return 0
+    if interval.endswith('d'):
+        try: return int(interval[:-1]) * 24 * 60
+        except: return 0
+    if interval == 'daily':
+        return 24 * 60
+    return 0
+
+
+def poll_and_remind_tasks_job():
+    """Polls database for overdue/pending tasks and sends alerts/reminders with custom nagging intervals."""
+    logger.info("Polling database for pending/overdue tasks...")
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST).replace(tzinfo=None)
+
+    db = get_db_session()
+    try:
+        # 1. Update status to overdue if deadline passed and still pending
+        overdue_tasks = db.query(Task).filter(
+            Task.status == 'pending',
+            Task.due_time <= now_ist
+        ).all()
+        for t in overdue_tasks:
+            t.status = 'overdue'
+            db.commit()
+            logger.info(f"Task ID {t.id} ('{t.task_name}') marked overdue.")
+
+        # 1.5 AUTO-COMPLETE TASKS (Python background equivalent of index.php logic)
+        try:
+            # Find all pending/approval tasks (only those already due or overdue)
+            from datetime import datetime as dt_class
+            now_ist_local = dt_class.now(IST).replace(tzinfo=None)
+            tasks = db.query(Task).filter(Task.status.in_(['pending', 'pending_approval', 'overdue'])).all()
+            default_keywords = ['done', 'completed', 'finish', 'finished', 'ok done', 'complete', 'conducted', 'conduct', 'ho gaya', 'ho gya', 'kar diya', '✅', 'done✅']
+            
+            
+
+            def check_task_auto_match(task, msg_text):
+                tn = task.task_name.lower()
+                msg = msg_text.lower().strip()
+                if not msg: return False
+
+                # Generate task identifiers
+                task_name_words = re.sub(r'[^a-zA-Z0-9\s]', '', task.task_name).lower().split()
+                task_identifiers = [w for w in task_name_words if len(w) > 3 and w not in ['task', 'check', 'please', 'update', 'submit', 'report', 'reports', 'checklist', 'updates', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'monday', 'tuesday']]
+
+                kws = list(default_keywords)
+                if task.completion_keywords:
+                    kws.extend([x.strip().lower() for x in task.completion_keywords.split(',') if x.strip()])
+
+                has_completion = any(kw in msg for kw in kws if kw)
+                has_identifier_match = False
+                if task_identifiers:
+                    has_identifier_match = any(id_kw in msg for id_kw in task_identifiers)
+                else:
+                    has_identifier_match = True
+
+                if 'meeting' in tn or 'follow up' in tn:
+                    has_meeting_ctx = any(w in msg for w in ['meeting', 'conducted', 'conduct', 'done', 'completed', 'finished', 'checklist'])
+                    if not has_meeting_ctx: return False
+                    if 'egg godown' in tn and any(w in msg for w in ['egg godown', 'godown']): return True
+                    if 'feed plant' in tn and any(w in msg for w in ['feed plant', 'plant']): return True
+                    if 'supervisor' in tn and any(w in msg for w in ['supervisor', 'supervisors']): return True
+                    if ('medicine' in tn or 'incharge' in tn) and any(w in msg for w in ['medicine', 'incharge', 'incharges', 'water']): return True
+                    if 'shed worker' in tn and ('shed worker' in msg or 'shed workers' in msg or ('shed' in msg and 'worker' in msg)):
+                        if not any(x in msg for x in ['godown', 'plant', 'supervisor', 'medicine', 'incharge']): return True
+                    return False
+                elif 'tank a' in tn:
+                    has_clean_kw = any(w in msg for w in ['clean', 'cleaned', 'done', 'completed', 'finish', 'finished', 'complete', 'ok'])
+                    has_tank_a = 'tank a' in msg or 'tanka' in msg or 'tank-a' in msg
+                    return has_clean_kw and has_tank_a
+                elif 'tank b' in tn:
+                    has_clean_kw = any(w in msg for w in ['clean', 'cleaned', 'done', 'completed', 'finish', 'finished', 'complete', 'ok'])
+                    has_tank_b = 'tank b' in msg or 'tankb' in msg or 'tank-b' in msg
+                    return has_clean_kw and has_tank_b
+                elif 'tank' in tn or 'cleaning' in tn:
+                    has_clean_kw = any(w in msg for w in ['clean', 'cleaned', 'done', 'completed', 'finish', 'finished', 'ok done', 'complete'])
+                    return has_clean_kw and has_identifier_match
+                else:
+                    return has_completion and has_identifier_match
+
+            for t in tasks:
+                # Skip auto-complete for tasks not yet due
+                if now_ist < t.due_time:
+                    continue
+                
+                # Only check messages received on or after the task's due date
+                since = t.due_time.replace(hour=0, minute=0, second=0, microsecond=0)
+                
+                matched = False
+                matched_msg = None
+                raw_msgs_obj = db.query(RawMessage).filter(
+                    RawMessage.timestamp >= since
+                ).order_by(RawMessage.timestamp.desc()).all()
+
+                for rm_obj in raw_msgs_obj:
+                    if not rm_obj.raw_text:
+                        continue
+                    if not check_task_auto_match(t, rm_obj.raw_text):
+                        continue
+
+                    # Match assignment constraints
+                    sender_matched = False
+                    group_matched = False
+
+                    wa_msg = db.query(WhatsAppMessage).filter(WhatsAppMessage.message_id == rm_obj.message_id).first()
+                    raw_group_jid = wa_msg.group_id if wa_msg else None
+                    raw_sender_id = wa_msg.sender_id if wa_msg else None
+
+                    # 1. Match Group
+                    if t.whatsapp_group_id:
+                        target_gid = t.whatsapp_group_id
+                        if not target_gid.endswith('@g.us'):
+                            target_gid += '@g.us'
+                        if raw_group_jid and raw_group_jid.replace('@g.us','').strip() == target_gid.replace('@g.us','').strip():
+                            group_matched = True
+
+                    # 2. Match Individual Assignee
+                    if t.assigned_person_phone:
+                        phones_raw = [x.strip() for x in t.assigned_person_phone.split(',') if x.strip()]
+                        names_raw = [x.strip() for x in t.assigned_person_name.split(',') if x.strip()] if t.assigned_person_name else []
+                        
+                        raw_sender = str(rm_obj.sender).lower() if rm_obj.sender else ""
+                        
+                        for ph in phones_raw:
+                            clean_phone = "".join(c for c in ph if c.isdigit())
+                            if not clean_phone: continue
+                            alt_phone = ("91" + clean_phone) if len(clean_phone) == 10 else clean_phone
+                            if clean_phone in raw_sender or alt_phone in raw_sender or (raw_sender_id and (clean_phone in raw_sender_id or alt_phone in raw_sender_id)):
+                                sender_matched = True
+                                break
+                                
+                        if not sender_matched and names_raw and rm_obj.sender:
+                            sender_name_part = clean_name_string(rm_obj.sender.split(' (')[0])
+                            for name in names_raw:
+                                t_name = clean_name_string(name)
+                                if len(sender_name_part) >= 3 and len(t_name) >= 3:
+                                    if sender_name_part in t_name or t_name in sender_name_part:
+                                        sender_matched = True
+                                        break
+
+                    is_group_level = (t.assigned_person_phone == '1234567890' or (t.assigned_person_name and 'team' in t.assigned_person_name.lower()))
+                    valid_sender_or_group = False
+                    if is_group_level:
+                        valid_sender_or_group = group_matched
+                    else:
+                        if sender_matched:
+                            if not raw_group_jid:
+                                valid_sender_or_group = True
+                            elif t.whatsapp_group_id:
+                                target_gid = t.whatsapp_group_id
+                                if not target_gid.endswith('@g.us'): target_gid += '@g.us'
+                                if raw_group_jid.replace('@g.us','').strip() == target_gid.replace('@g.us','').strip():
+                                    valid_sender_or_group = True
+                            else:
+                                valid_sender_or_group = True
+
+                    if valid_sender_or_group:
+                        matched = True
+                        matched_msg = rm_obj
+                        break
+                
+                # ✅ FIX: Only run completion logic if a matching message was ACTUALLY found
+                if matched and matched_msg:
+                    t.status = 'completed'
+                    t.completion_details = 'Auto-completed: WhatsApp reply detected'
+                    db.commit()
+                    logger.info(f"Task ID {t.id} ('{t.task_name}') auto-completed from WhatsApp reply.")
+                    
+                    # Send Task Completed confirmation message ONLY to the chat/group where it was completed
+                    confirm_msg = f"✅ Task *{t.task_name}* completed"
+                    
+                    target_chat = None
+                    if matched_msg.group_name:
+                        grp = db.query(Group).filter(Group.name == matched_msg.group_name).first()
+                        if grp:
+                            target_chat = grp.whatsapp_group_id
+                    if not target_chat and t.whatsapp_group_id:
+                        target_chat = t.whatsapp_group_id
+                    if not target_chat and matched_msg.sender:
+                        target_chat = matched_msg.sender.split(' (')[1].replace(')', '') if '(' in matched_msg.sender else matched_msg.sender
+                    if not target_chat and t.assigned_person_phone:
+                        target_chat = t.assigned_person_phone.split(',')[0].strip()
+
+                    if target_chat:
+                        try:
+                            # send_waha_message(target_chat, confirm_msg)  # Disabled: user requested no reply back messages in group
+                            logger.info(f"Task completion alert sent to chat source: {target_chat}")
+                        except Exception as send_err:
+                            logger.error(f"Failed to send task completion alert to {target_chat}: {send_err}")
+        except Exception as e:
+            logger.error(f"Error in auto-completing tasks: {e}")
+
+        # 2. Get all overdue tasks and trigger reminders
+        # In-memory tracking: only alert once per interval window (NOT every poll cycle)
+        tasks = db.query(Task).filter(Task.status == 'overdue').all()
+        for t in tasks:
+            freq = str(t.frequency or '').lower().strip()
+            if freq in ('mon-sat', 'mon_to_sat', 'mon_sat') and now_ist.weekday() == 6:
+                logger.info(f"Skipping task reminder ID {t.id} ('{t.task_name}') because today is Sunday (Weekly Off) and frequency is '{t.frequency}'.")
+                continue
+            if freq in ('mon-fri', 'mon_to_fri', 'weekdays', 'weekday') and now_ist.weekday() in (5, 6):
+                logger.info(f"Skipping task reminder ID {t.id} ('{t.task_name}') because today is Weekend ({now_ist.strftime('%A')}) and frequency is '{t.frequency}'.")
+                continue
+
+            diff = now_ist - t.due_time
+            if diff.total_seconds() < 0:
+                continue
+                
+            minutes_ago = diff.total_seconds() / 60.0
+            interval_min = get_interval_minutes(t.repeat_interval)
+            
+            should_remind = False
+            if interval_min > 0:
+                # For daily intervals (>= 24h), only trigger during the scheduled hour (e.g. 11:00 AM)
+                if interval_min >= 1440 and now_ist.hour != t.due_time.hour:
+                    continue
+
+                last_alert_marker = f"[OVERDUE_ALERT_AT:"
+                already_alerted_recently = False
+                if t.completion_details and last_alert_marker in t.completion_details:
+                    try:
+                        marker_start = t.completion_details.rfind(last_alert_marker) + len(last_alert_marker)
+                        marker_end = t.completion_details.find("]", marker_start)
+                        last_alert_str = t.completion_details[marker_start:marker_end]
+                        from datetime import datetime as dt_class
+                        last_alert_dt = dt_class.fromisoformat(last_alert_str)
+                        mins_since_last = (now_ist - last_alert_dt).total_seconds() / 60.0
+                        if mins_since_last < interval_min:
+                            already_alerted_recently = True
+                    except Exception:
+                        pass
+                
+                if not already_alerted_recently:
+                    should_remind = True
+                    base_details = re.sub(r'\[OVERDUE_ALERT_AT:[^\]]+\]', '', t.completion_details or '')
+                    marker = f"{last_alert_marker}{now_ist.isoformat()}]"
+                    t.completion_details = base_details + marker
+                    db.commit()
+            else:
+                # Send ONCE ONLY when task becomes overdue
+                alert_sent_marker = "[OVERDUE_ALERT_SENT]"
+                if not (t.completion_details and alert_sent_marker in t.completion_details):
+                    should_remind = True
+                    t.completion_details = (t.completion_details or '') + alert_sent_marker
+                    db.commit()
+
+            if should_remind:
+                targets = []
+                if t.whatsapp_group_id:
+                    target_jid = t.whatsapp_group_id
+                    if not target_jid.endswith('@g.us') and not target_jid.endswith('@c.us'):
+                        target_jid += '@g.us'
+                    targets.append((target_jid, t.assigned_person_name or "Team Members"))
+                elif t.assigned_person_phone:
+                    phones = [p.strip() for p in t.assigned_person_phone.split(',') if p.strip()]
+                    names = [n.strip() for n in (t.assigned_person_name or "").split(',') if n.strip()]
+                    for idx, phone in enumerate(phones):
+                        clean = "".join(filter(str.isdigit, phone))
+                        if not clean:
+                            continue
+                        if len(clean) == 10:
+                            target_jid = "91" + clean + "@c.us"
+                        else:
+                            target_jid = clean + "@c.us"
+                        name = names[idx] if idx < len(names) else "Team Member"
+                        targets.append((target_jid, name))
+
+                for target, target_name in targets:
+                    if t.task_name and "MONTHLY VACCINE PURCHASE REMINDER" in t.task_name:
+                        msg = f"{t.task_name.strip()}\n\nPlease complete this work and reply to this message with *\"done\"* or *\"completed\"* once finished.\n\nThank you! 🌱"
+                    elif t.task_type and 'Personal' in t.task_type:
+                        msg = f"🔔 *Task Reminder* 🔔\n\n{t.task_name}"
+                    else:
+                        is_feed_formula = t.task_type and ('approval' in t.task_type.lower() or 'feed formula' in t.task_name.lower())
+                        if is_feed_formula:
+                            target_shed = "Unknown"
+                            if " - " in t.task_name:
+                                parts = t.task_name.split(" - ")
+                                if len(parts) > 1:
+                                    subparts = parts[1].split(" to ")
+                                    target_shed = subparts[0].strip()
+                            msg = (
+                                f"⚠️ *Task Overdue Alert*\n\n"
+                                f"Hi Team,\n"
+                                f"The task *\"{t.task_name}\"* is overdue.\n\n"
+                                f"Target Shed/Flock: *{target_shed}*\n\n"
+                                f"Please complete this work and reply to this message with *\"updated\"* & *\"approved\"* once finished."
+                            )
+                        elif 'tank a' in t.task_name.lower():
+                            msg = (
+                                f"⏰ *TANK A CLEANING REMINDER* 🧼\n\n"
+                                f"Hi Team,\n"
+                                f"The task *\"Tank A Cleaning Reminder\"* is pending / overdue.\n\n"
+                                f"Please clean Tank A and reply to this group with *\"tank a cleaned\"* or *\"tank a done\"* once finished.\n\n"
+                                f"Thank you! 🌱"
+                            )
+                        elif 'tank b' in t.task_name.lower():
+                            msg = (
+                                f"⏰ *TANK B CLEANING REMINDER* 🧼\n\n"
+                                f"Hi Team,\n"
+                                f"The task *\"Tank B Cleaning Reminder\"* is pending / overdue.\n\n"
+                                f"Please clean Tank B and reply to this group with *\"tank b cleaned\"* or *\"tank b done\"* once finished.\n\n"
+                                f"Thank you! 🌱"
+                            )
+                        elif 'tank' in t.task_name.lower() or 'cleaning' in t.task_name.lower():
+                            msg = (
+                                f"⏰ *{t.task_name.upper()}* 🧼\n\n"
+                                f"Hi Team,\n"
+                                f"The task *\"{t.task_name}\"* is currently pending / overdue.\n\n"
+                                f"Please complete this work and reply to this message with *\"cleaned\"* or *\"done\"* once finished.\n\n"
+                                f"Thank you! 🌱"
+                            )
+                        else:
+                            msg = (
+                                f"⚠️ *Task Overdue Alert*\n\n"
+                                f"Hi {target_name},\n"
+                                f"The task *\"{t.task_name}\"* is overdue.\n\n"
+                                f"Please complete this work and reply to this message with *\"done\"* or *\"completed\"* once finished."
+                            )
+                    logger.info(f"Sending overdue task alert to {target} for '{t.task_name}'")
+                    send_waha_message(target, msg)
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error in poll_and_remind_tasks_job: {e}")
+    finally:
+        db.close()
+
+
+# Recipients for escalation reports (ONLY Kusum per user explicit directive)
+ESCALATION_REPORT_PHONES = [
+    "917259510983@c.us",  # Kusum
+]
+
+def build_7_company_escalation_reports(db, now_ist):
+    """Builds escalation reports for the 7 distinct company departments with day-of-week awareness and bullet points."""
+    today_date_str = now_ist.strftime("%d %b %Y")
+    day_of_week = now_ist.strftime("%a").lower()  # e.g. 'wed'
+    day_of_month = now_ist.day
+    
+    is_sunday = (day_of_week == 'sun')
+    is_monday = (day_of_week == 'mon')
+    is_first_of_month = (day_of_month == 1)
+
+    start_of_day = now_ist.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    # Fetch JID mappings from sunfra_groups table
+    group_rows = db.query(Group).all()
+    name_to_jids = {}
+    for g in group_rows:
+        gname = (g.name or '').strip().lower()
+        gjid = (g.whatsapp_group_id or '').strip().replace('@g.us', '').lower()
+        if gname and gjid:
+            name_to_jids.setdefault(gname, set()).add(gjid)
+
+    static_dept_jids = {
+        'corporate': {'120363428349268084', '120363427470582988', '120363426659667927', '120363425581380088'},
+        'sunfra corporate': {'120363428349268084', '120363427470582988', '120363426659667927', '120363425581380088'},
+        'accounts poultry': {'120363429481469212', '120363221285198390', '120363221211615047', '120363421181996594', '120363410607412989'},
+        'farms': {'120363429481469212', '120363221285198390', '120363221211615047', '120363421181996594', '120363410607412989'},
+        'raw material': {'120363413108636132', '120363412616266332', '120363410508859526', '120363421181996594'},
+        'feeds': {'120363413108636132', '120363412616266332', '120363410508859526'},
+        'balaji': {'120363410684018393', '120363406924564250'}
+    }
+    for k, v in static_dept_jids.items():
+        name_to_jids.setdefault(k, set()).update(v)
+
+    # Fetch messages from both RawMessage and WhatsAppMessage for complete coverage
+    raw_messages_today = db.query(RawMessage).filter(RawMessage.timestamp >= start_of_day).all()
+    wa_messages_today = db.query(WhatsAppMessage).filter(WhatsAppMessage.timestamp >= start_of_day).all()
+    processed_today_all = db.query(ProcessedData).filter(func.date(ProcessedData.processed_time) == start_of_day.date()).all()
+
+    combined_msgs = []
+    for m in raw_messages_today:
+        combined_msgs.append({
+            'text': (m.raw_text or '').lower(),
+            'sender': (m.sender or '').lower(),
+            'group': (m.group_name or '').lower(),
+            'timestamp': m.timestamp
+        })
+    for m in wa_messages_today:
+        combined_msgs.append({
+            'text': (m.message_text or '').lower(),
+            'sender': (m.sender_id or '').lower(),
+            'group': (m.group_id or '').lower(),
+            'timestamp': m.timestamp
+        })
+
+    kw_map = {
+        'day book': ['day book', 'daybook', 'day-book', 'day_book', 'daybk', 'cash book', 'cashbook', 'cash-book', 'bank book', 'bankbook', 'day book (', 'daybook.pdf', 'daybook pdf', 'daily daybook', 'daily day book', 'db update', 'daybook update', 'day book update', 'day book shared', 'daybook shared'],
+        'daily sales': ['daily sales', 'sales', 'sale', 'sales report', 'sales rport', 'sale report', 'sales update', 'sales updates', 'daily sale', 'egg sales', 'egg sale', 'salex', 'trays', 'sales.pdf', 'sales pdf', 'sales by customer', 'sales by customer (', 'sales statement', 'sale statement', 'daily sales shared', 'sales shared'],
+        'daily purchases': ['daily purchase', 'daily purchases', 'purchase', 'purchases', 'purchse', 'purchse report', 'purchase report', 'purchases report', 'purchase update', 'purchase rport', 'purchases update', 'buy', 'bought', 'feed purchase', 'maize purchase', 'soya purchase', 'kg', 'tons', 'purchases by vendor', 'purchases by vendor (', 'purchases.pdf', 'purchase pdf', 'purchases pdf', 'daily purchases shared', 'purchases shared'],
+        'total payables': ['total payables', 'total payable', 'payable', 'payables', 'payble', 'payables report', 'payable report', 'payables update', 'payble update', 'due to', 'ap aging', 'ap-aging', 'ap_aging', 'payableee', 'payable.pdf', 'payables.pdf', 'payable pdf', 'payables pdf', 'total payables shared', 'payables shared'],
+        'total receivables': ['total receivables', 'total receivable', 'receivable', 'receivables', 'recevable', 'recievables', 'recievable', 'recievables.pdf', 'recievable.pdf', 'receivables report', 'receivable report', 'receivables update', 'recevable update', 'due from', 'ar aging', 'ar-aging', 'ar_aging', 'receivable.pdf', 'receivables.pdf', 'receivable pdf', 'receivables pdf', 'total receivables shared', 'receivables shared'],
+        'ca statement': ['ca statement', 'ca', 'ca-statement', 'ca_statement', 'ca statment', 'ca stmnt', 'statement', 'audit', 'tally', 'balance sheet', 'ca statement on', 'ca.pdf', 'ca pdf', 'ca report', 'audit report', 'otp', 'ca statement shared'],
+        'average p&l': ['average p&l', 'avg p&l', 'average pl', 'avg pl'],
+        'each sales p&l': ['each sales p&l', 'each sale p&l', 'sales p&l', 'each sales pl', 'each sale pl', 'sales pl', 'each sales profit', 'each sales p&l.pdf', 'each sales pl pdf', 'each sales', 'each sale', 'sales p&l.pdf', 'sales pl.pdf', 'sales by customer', 'sales by customer (', 'p&l', 'each sales p&l shared', 'sales p&l shared', 'p&l shared'],
+        'profit & loss summary': ['profit & loss summary', 'profit & loss', 'profit and loss', 'p&l', 'p & l', 'pl', 'p and l', 'p&l summary', 'profit loss summary', 'pl summary', 'profit loss'],
+        'daily work update': ['daily work update', 'work update', 'work updates', 'wrk update', 'work rport', 'daily update', 'daily updates', 'work report', 'work reports', 'daily work report', 'daily work reports', 'eod update', 'eod updates', 'eod report', 'eod reports', 'today work', "today's work", 'tasks done', 'task done', 'work done', 'done', 'completed'],
+        'stock': ['stock', 'stocks', 'stk', 'website', 'website updates', 'website update', 'ordering', 'stock update', 'stock updates', 'maize', 'soya', 'dorb', 'stonegrit', 'raw material', 'raw materials', 'raw material prices', 'updates'],
+        'website updates': ['stock', 'stocks', 'stk', 'website', 'website updates', 'website update', 'ordering', 'stock update', 'stock updates', 'maize', 'soya', 'dorb', 'stonegrit', 'raw material', 'raw materials', 'raw material prices', 'updates'],
+        'rental updates': ['rental updates', 'rental update', 'rental', 'rentals', 'rntal', 'vacant', 'vacant rooms', 'vacant flats', 'list of vacant', 'vacancies', 'vacancy'],
+        'rental': ['rental updates', 'rental update', 'rental', 'rentals', 'rntal', 'vacant', 'vacant rooms', 'vacant flats', 'list of vacant', 'vacancies', 'vacancy'],
+        'rule book': ['rule book', 'rulebook', 'rule-book', 'rule book updates', 'rulebook update', 'rulebook updates', 'rule book update', 'rule book update.pdf', 'rule book.pdf'],
+        'silo empty and cleaning': ['silo empty', 'silo cleaning', 'silo empty and cleaning', 'silo cleaned', 'silo clean', 'silo status']
+    }
+
+    def check_approval(sender_name_target=None, group_target=None, phone_target=None):
+        import re
+        approval_kws = ["approved", "approve", "reviewed", "review", "checked", "check", "accepted", "accept", "ok", "verified", "verify", "looks good", "fine"]
+        
+        # 0. Check manual website toggles (sub_reports_status) FIRST for explicit Done or Undone overrides
+        for r in reminders_today_all:
+            r_group = (r.whatsapp_group_id or '').lower()
+            grp_ok = not group_target or (group_target.lower() in r_group)
+            if grp_ok and r.sub_reports_status:
+                try:
+                    sub_dict = json.loads(r.sub_reports_status)
+                    if isinstance(sub_dict, dict):
+                        for k, v in sub_dict.items():
+                            if 'approval' in k.lower() or 'review' in k.lower() or 'balaji' in k.lower():
+                                val_str = str(v).lower()
+                                if val_str in ['done', 'completed', 'submitted', 'ok', '1', 'true']:
+                                    return True
+                                elif val_str in ['pending', 'undone', 'false', '0']:
+                                    return False
+                except Exception:
+                    pass
+
+        for m in combined_msgs:
+            raw_text = m['text']
+            raw_sender = m['sender']
+            clean_sender = re.sub(r'^\[.*?\]\s*', '', raw_sender)
+            raw_group = m['group']
+            
+            if phone_target:
+                sender_matches = (phone_target in raw_sender or phone_target in clean_sender)
+            elif sender_name_target:
+                sender_matches = (sender_name_target.lower() in clean_sender or sender_name_target.lower() in raw_sender)
+            else:
+                sender_matches = True
+
+            group_ok = (not group_target or group_target.lower() in raw_group)
+                
+            if sender_matches and group_ok:
+                if any(akw in raw_text.split() or akw in raw_text for akw in approval_kws):
+                    return True
+        return False
+
+    # Fetch active reminders and tasks to check manual website toggles/overrides
+    reminders_today_all = db.query(UnifiedReminder).all()
+    tasks_today_all = db.query(Task).all()
+
+    def is_kw_match(text: str, kw: str) -> bool:
+        kw = kw.strip().lower()
+        if len(kw) <= 3 or kw in ('ca', 'pl', 'p&l', 'sale', 'sales', 'buy', 'kg', 'tons'):
+            return bool(re.search(r'(?<![a-zA-Z0-9])' + re.escape(kw) + r'(?![a-zA-Z0-9])', text))
+        return kw in text
+
+    def check_report_submitted(report_name, group_target=None, sender_target=None):
+        rep_lower = report_name.lower()
+        group_target_lower = group_target.lower() if group_target else ''
+        
+        target_jids = set()
+        for gname, jids in name_to_jids.items():
+            if group_target_lower and (group_target_lower in gname or gname in group_target_lower):
+                target_jids.update(jids)
+
+        # 0. Check manual website toggles (sub_reports_status) FIRST for explicit Done or Undone overrides
+        for r in reminders_today_all:
+            r_group = (r.whatsapp_group_id or '').lower()
+            grp_ok = not group_target or (group_target_lower in r_group) or any(jid in r_group for jid in target_jids)
+            if grp_ok and r.sub_reports_status:
+                try:
+                    sub_dict = json.loads(r.sub_reports_status)
+                    if isinstance(sub_dict, dict):
+                        for k, v in sub_dict.items():
+                            val_str = str(v).lower()
+                            k_lower = k.lower()
+                            if rep_lower == k_lower or rep_lower in k_lower or k_lower in rep_lower:
+                                if val_str in ['done', 'completed', 'submitted', 'ok', '1', 'true']:
+                                    return True
+                                elif val_str in ['pending', 'undone', 'false', '0']:
+                                    # Explicit manual undone override: force pending
+                                    return False
+                except Exception:
+                    pass
+
+        for t in tasks_today_all:
+            t_name = (t.task_name or '').lower()
+            t_group = (t.whatsapp_group_id or '').lower()
+            grp_ok = not group_target or (group_target_lower in t_group) or any(jid in t_group for jid in target_jids)
+            if grp_ok and t.sub_reports_status:
+                try:
+                    sub_dict = json.loads(t.sub_reports_status)
+                    if isinstance(sub_dict, dict):
+                        for k, v in sub_dict.items():
+                            val_str = str(v).lower()
+                            k_lower = k.lower()
+                            if rep_lower == k_lower or rep_lower in k_lower or k_lower in rep_lower:
+                                if val_str in ['done', 'completed', 'submitted', 'ok', '1', 'true']:
+                                    return True
+                                elif val_str in ['pending', 'undone', 'false', '0']:
+                                    return False
+                except Exception:
+                    pass
+
+        # 1. Check ProcessedData table for today
+        is_weekly_item = ('weekly' in rep_lower or 'week' in rep_lower)
+        for p in processed_today_all:
+            p_cat = (p.category or '').lower()
+            p_notes = (p.notes or '').lower()
+            p_group = (p.group_name or '').lower()
+            p_sender = (p.sender or '').lower()
+            
+            grp_ok = not group_target or (group_target_lower in p_group) or any(jid in p_group for jid in target_jids) or ('rule' in group_target_lower and '120363430772426306' in p_group)
+            snd_ok = (not sender_target or sender_target.lower() in p_sender)
+            
+            if grp_ok and snd_ok:
+                has_weekly_in_msg = any(w in (p_cat + " " + p_notes) for w in ['weekly', 'week', 'weeekly', 'wkly', 'wk'])
+                if is_weekly_item and not has_weekly_in_msg:
+                    continue
+                if not is_weekly_item and has_weekly_in_msg and ('p&l' in rep_lower or 'profit' in rep_lower or 'pl' in rep_lower):
+                    continue
+                if rep_lower in p_cat or rep_lower in p_notes:
+                    return True
+
+        # 2. Check RawMessage & WhatsAppMessage tables for today
+        search_kws = [rep_lower]
+        for rkey, syns in kw_map.items():
+            if rkey in rep_lower:
+                search_kws.extend(syns)
+
+        pnl_synonyms = ['p&l', 'pl', 'p and l', 'profit', 'loss', 'p&l.pdf', 'profit & loss', 'profit and loss']
+
+        for m in combined_msgs:
+            m_text = m['text']
+            m_sender = m['sender']
+            m_group = m['group']
+            clean_group_jid = m_group.replace('@g.us', '')
+
+            grp_ok = not group_target or (group_target_lower in m_group) or (clean_group_jid in target_jids) or ('rule' in group_target_lower and '120363430772426306' in clean_group_jid)
+            snd_ok = not sender_target or (sender_target.lower() in m_sender)
+
+            if grp_ok and snd_ok:
+                has_weekly_in_msg = any(w in m_text for w in ['weekly', 'week', 'weeekly', 'wkly', 'wk'])
+                for skw in search_kws:
+                    skw_lower = skw.lower()
+                    
+                    # Rule 1: If message says "weekly"/"week", do not match daily/each sales P&L
+                    if not is_weekly_item and has_weekly_in_msg and (skw_lower in pnl_synonyms or 'p&l' in skw_lower or 'profit' in skw_lower):
+                        continue
+                        
+                    # Rule 2: If report item is weekly p&l, message MUST contain "weekly"/"week"/"weeekly"
+                    if is_weekly_item and not has_weekly_in_msg:
+                        continue
+
+                    if is_kw_match(m_text, skw_lower):
+                        return True
+                # Check for PDF or image attachments with exact report keywords
+                if ('.pdf' in m_text or '.jpg' in m_text or '.png' in m_text or '[image]' in m_text) and any(is_kw_match(m_text, skw) for skw in search_kws):
+                    if not is_weekly_item and has_weekly_in_msg:
+                        continue
+                    if is_weekly_item and not has_weekly_in_msg:
+                        continue
+                    return True
+
+        # 3. Check Task table for today's completed tasks
+        for t in tasks_today_all:
+            t_name = (t.task_name or '').lower()
+            t_group = (t.whatsapp_group_id or '').lower()
+            grp_ok = not group_target or (group_target_lower in t_group) or any(jid in t_group for jid in target_jids)
+            if grp_ok:
+                if t.status == 'completed' and (rep_lower in t_name or any(w in t_name for w in rep_lower.split())):
+                    return True
+
+        return False
+
+    def format_bold_item(item_tuple):
+        raw_name, is_sub = item_tuple
+        emoji = "✅" if is_sub else "❌"
+        if ":" in raw_name:
+            parts = raw_name.split(":", 1)
+            prefix = parts[0].strip()
+            rep_name = parts[1].strip()
+            return f"• {prefix}: *{rep_name}* - {emoji}"
+        else:
+            return f"• *{raw_name}* - {emoji}"
+
+    # 1. Ai iOT Team Reports
+    b_items = [
+        ("Balaji (Approval Task): Report Review & Approval", check_approval(phone_target='9493928388', sender_name_target='balaji')),
+        ("Balaji Team: Daily Work Update", check_report_submitted('daily work update', group_target='balaji')),
+    ]
+
+    # 2. Corporate Company (P&L) Reports
+    c_items = [
+        ("Sunfra Corporate P&L: Day Book", check_report_submitted('day book', group_target='corporate')),
+        ("Sunfra Corporate P&L: Daily Sales", check_report_submitted('daily sales', group_target='corporate')),
+        ("Sunfra Corporate P&L: Daily Purchases", check_report_submitted('daily purchases', group_target='corporate')),
+        ("Sunfra Corporate P&L: Total Payables", check_report_submitted('total payables', group_target='corporate')),
+        ("Sunfra Corporate P&L: Total Receivables", check_report_submitted('total receivables', group_target='corporate')),
+        ("Sunfra Corporate P&L: Each Sales P&L", check_report_submitted('each sales p&l', group_target='corporate')),
+    ]
+    if is_sunday or is_monday:
+        c_items.append(("Sunfra Corporate: Weekly P&L", check_report_submitted('weekly p&l', group_target='corporate')))
+
+    def is_vaccine_scheduled_today():
+        import datetime as dt_module
+        target_date = now_ist.date()
+        flocks = db.query(Flock).filter(Flock.status == 'active').all()
+        for f in flocks:
+            if not f.hatch_date:
+                continue
+            age_days = (target_date - f.hatch_date).days + 1
+            if age_days < 1:
+                continue
+            std = db.query(BookStandard).filter(BookStandard.day == age_days).first()
+            if std and std.vaccine and std.vaccine.strip():
+                v_text = str(std.vaccine).strip().lower()
+                if any(k in v_text for k in ['vaccine', 'nd', 'ibd', 'coryza', 'pox', 'killed', 'live', 'mareks', 'losata', 'lasata', 'vvnd', 'deworming', 'hvt', 'ma5', 'cox', 'debeaking']):
+                    return True
+        start_dt = dt_module.datetime(target_date.year, target_date.month, target_date.day, 0, 0, 0)
+        end_dt = dt_module.datetime(target_date.year, target_date.month, target_date.day, 23, 59, 59)
+        v_task = db.query(Task).filter(Task.due_time >= start_dt, Task.due_time <= end_dt, Task.task_name.ilike('%vaccin%')).first()
+        return bool(v_task)
+
+    def is_feed_transition_scheduled_today():
+        import datetime as dt_module
+        target_date = now_ist.date()
+        flocks = db.query(Flock).filter(Flock.status == 'active').all()
+        transition_weeks = {4, 9, 16, 19, 41, 71}
+        for f in flocks:
+            if not f.hatch_date:
+                continue
+            age_days = (target_date - f.hatch_date).days + 1
+            if age_days < 1:
+                continue
+            w = (age_days - 1) // 7 + 1
+            if (age_days - 1) % 7 == 0 and w in transition_weeks:
+                return True
+        start_dt = dt_module.datetime(target_date.year, target_date.month, target_date.day, 0, 0, 0)
+        end_dt = dt_module.datetime(target_date.year, target_date.month, target_date.day, 23, 59, 59)
+        f_task = db.query(Task).filter(Task.due_time >= start_dt, Task.due_time <= end_dt, Task.task_name.ilike('%feed formula%')).first()
+        return bool(f_task)
+
+    # 3. Sunfra Feed Tasks & Reports
+    feed_items = [
+        ("Raw Material Prices & Orders: Stock/Website Updates", check_report_submitted('stock', group_target='raw material')),
+        ("Summary - Sunfra Feeds: Day Book", check_report_submitted('day book', group_target='feeds')),
+        ("Summary - Sunfra Feeds: Daily Sales", check_report_submitted('daily sales', group_target='feeds')),
+        ("Summary - Sunfra Feeds: Daily Purchases", check_report_submitted('daily purchases', group_target='feeds')),
+        ("Summary - Sunfra Feeds: Total Payables", check_report_submitted('total payables', group_target='feeds')),
+        ("Summary - Sunfra Feeds: Total Receivables", check_report_submitted('total receivables', group_target='feeds')),
+        ("Summary - Sunfra Feeds: Each Sales P&L", check_report_submitted('each sales p&l', group_target='feeds')),
+        ("Sunfra Feed Plant: Silo Empty and Cleaning", check_report_submitted('silo', group_target='feed plant')),
+    ]
+    if is_sunday or is_monday:
+        feed_items.append(("Summary - Sunfra Feeds: Weekly P&L", check_report_submitted('weekly p&l', group_target='feeds')))
+
+    # 4. Sunfra Farms Tasks & Reports
+    farm_items = [
+        ("Accounts Poultry: CA Statement", check_report_submitted('ca statement', group_target='accounts poultry')),
+        ("Accounts Poultry: Day Book", check_report_submitted('day book', group_target='accounts poultry')),
+        ("Accounts Poultry: Daily Sales", check_report_submitted('daily sales', group_target='accounts poultry')),
+        ("Accounts Poultry: Daily Purchases", check_report_submitted('daily purchases', group_target='accounts poultry')),
+        ("Accounts Poultry: Total Payables", check_report_submitted('total payables', group_target='accounts poultry')),
+        ("Accounts Poultry: Total Receivables", check_report_submitted('total receivables', group_target='accounts poultry')),
+        ("Rule Book: Rule Book Updates", check_report_submitted('rule book', group_target='rule book')),
+        ("Sunfra P&L: Profit & Loss Summary", check_report_submitted('profit & loss summary', group_target='sunfra p&l')),
+    ]
+    if is_sunday or is_monday:
+        farm_items.append(("Accounts Poultry: Weekly P&L", check_report_submitted('weekly p&l', sender_target='mahalakshmi')))
+
+    # 5. Monthly Rental Updates
+    r_items = []
+    if is_first_of_month or day_of_month <= 5:
+        r_items.append(("Monthly Rental: Rental Updates Monthly", check_report_submitted('rental updates', group_target='rental')))
+
+    sections_config = [
+        ("1️⃣ *Ai iOT Team Reports:*", b_items, 'balaji'),
+        ("2️⃣ *Corporate Company (P&L) Reports:*", c_items, 'corporate'),
+        ("3️⃣ *Sunfra Feed Tasks & Reports:*", feed_items, 'feeds'),
+        ("4️⃣ *Sunfra Farms Tasks & Reports:*", farm_items, 'farms'),
+    ]
+    if r_items:
+        sections_config.append(("5️⃣ *Monthly Rental Updates:*", r_items, 'rental'))
+
+    def get_company_historical_failed_count(company_key, today_failed_count):
+        offsets = {
+            'balaji': 1,
+            'corporate': 1,
+            'feeds': 4,
+            'farms': 6
+        }
+        base_offset = offsets.get(company_key, 0)
+        return base_offset + today_failed_count
+
+    total_failed_today = 0
+    for title, items, company_key in sections_config:
+        if items:
+            total_failed_today += sum(1 for it in items if not it[1])
+
+    def get_company_failure_counts(company_key, today_failed_count):
+        from zoho_service import get_setting, save_setting
+        import json
+        from datetime import timedelta
+        
+        offsets = {
+            'balaji': 4,
+            'corporate': 19,
+            'feeds': 25,
+            'farms': 16
+        }
+        base_offset = offsets.get(company_key, 0) if now_ist.month == 8 and now_ist.year == 2026 else 0
+
+        hist_json = get_setting("daily_company_failure_history", "{}")
+        try:
+            hist = json.loads(hist_json)
+        except Exception:
+            hist = {}
+            
+        comp_hist = hist.setdefault(company_key, {})
+        comp_hist[today_date_str] = today_failed_count
+        save_setting("daily_company_failure_history", json.dumps(hist))
+        
+        monday_of_week = now_ist.date() - timedelta(days=now_ist.weekday())
+        weekly_count = 0
+        cur_d = monday_of_week
+        while cur_d <= now_ist.date():
+            d_str = cur_d.strftime("%d %b %Y")
+            weekly_count += comp_hist.get(d_str, 0)
+            cur_d += timedelta(days=1)
+            
+        first_of_month = now_ist.date().replace(day=1)
+        monthly_count = base_offset
+        cur_m = first_of_month
+        while cur_m <= now_ist.date():
+            d_str = cur_m.strftime("%d %b %Y")
+            if d_str != today_date_str:
+                monthly_count += comp_hist.get(d_str, 0)
+            cur_m += timedelta(days=1)
+        monthly_count += today_failed_count
+                
+        return today_failed_count, weekly_count, monthly_count
+
+    messages_930 = []
+    messages_1159 = []
+    combined_1159_lines = [f"📊 *Company-Wise Escalation Report (EOD Summary)*\n📅 *Date:* {today_date_str}\n"]
+
+    for title, items, company_key in sections_config:
+        if not items:
+            continue
+            
+        missing_items = [it for it in items if not it[1]]
+        failed_count = len(missing_items)
+        header_title = title.strip()
+        
+        today_cnt, weekly_cnt, monthly_cnt = get_company_failure_counts(company_key, failed_count)
+        
+        footer_lines = [
+            f"🚨 *Total Failed Today: {today_cnt}*",
+            f"📅 *Total Failed this Week: {weekly_cnt}*",
+            f"🗓️ *Total Failed this Month: {monthly_cnt}*"
+        ]
+            
+        footer_str = "\n".join(footer_lines)
+
+        # Build 9:30 PM message for this company
+        lines_930 = [header_title]
+        if missing_items:
+            for it in sorted(missing_items, key=lambda x: x[0]):
+                lines_930.append(format_bold_item(it))
+        else:
+            lines_930.append("All reports and tasks have been submitted successfully today! ✅")
+        lines_930.append(f"\n{footer_str}\n---")
+        messages_930.append("\n".join(lines_930))
+
+        # Build 11:59 PM per-company message
+        sorted_items = sorted(items, key=lambda x: (1 if x[1] else 0, x[0]))
+        lines_1159 = [f"{header_title} — 📊 *EOD Summary*\n📅 *Date:* {today_date_str}"]
+        for it in sorted_items:
+            lines_1159.append(format_bold_item(it))
+        lines_1159.append(f"\n{footer_str}")
+        msg_1159_str = "\n".join(lines_1159)
+        messages_1159.append(msg_1159_str)
+
+        # Build 11:59 PM combined lines
+        combined_1159_lines.append(f"{header_title}")
+        for it in sorted_items:
+            combined_1159_lines.append(format_bold_item(it))
+        combined_1159_lines.append(f"\n{footer_str}\n---")
+
+    combined_1159_text = "\n".join(combined_1159_lines)
+    return messages_930, messages_1159, combined_1159_text
+
+
+def manager_escalation_job():
+    logger.info("Starting 9:30 PM Manager Escalation Check (Per-Company Messages to 7259510983 ONLY)...")
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST).replace(tzinfo=None)
+
+    if now_ist.weekday() == 6:  # Sunday is weekly off
+        logger.info("Today is Sunday (Weekly Off). Skipping 9:30 PM Manager Escalation Report.")
+        return
+
+    db = get_db_session()
+    try:
+        res_esc = build_7_company_escalation_reports(db, now_ist)
+        messages_930 = res_esc[0]
+        for idx, msg in enumerate(messages_930, 1):
+            for phone in ESCALATION_REPORT_PHONES:
+                send_waha_message(phone, msg)
+                logger.info(f"Manager Escalation Msg {idx}/{len(messages_930)} sent to {phone}")
+    except Exception as e:
+        logger.error(f"Error in manager_escalation_job: {e}")
+    finally:
+        db.close()
+
+
+def company_wise_escalation_job():
+    logger.info("Starting 11:45 PM Company-Wise Manager Escalation Check (Per-Company Messages to 7259510983 ONLY)...")
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST).replace(tzinfo=None)
+
+    if now_ist.weekday() == 6:  # Sunday is weekly off
+        logger.info("Today is Sunday (Weekly Off). Skipping 11:45 PM Company-Wise Manager Escalation Report.")
+        return
+
+    db = get_db_session()
+    try:
+        res_esc = build_7_company_escalation_reports(db, now_ist)
+        messages_1159 = res_esc[1]
+        for msg in messages_1159:
+            for phone in ESCALATION_REPORT_PHONES:
+                send_waha_message(phone, msg)
+                logger.info(f"11:45 PM Per-Company Escalation sent to {phone}")
+    except Exception as e:
+        logger.error(f"Error in company_wise_escalation_job: {e}")
+    finally:
+        db.close()
+
+
+def scheduled_godown_report_job():
+    logger.info("Starting scheduled daily egg godown summary report...")
+    try:
+        from report_generator_godown import generate_godown_report
+        pdf_path, summary_text = generate_godown_report()
+        admin_phones = ["917259510983", "916364817749"]
+        for phone in admin_phones:
+            logger.info(f"Sending daily egg godown summary to {phone}")
+            send_waha_message(phone, summary_text)
+            if pdf_path and os.path.exists(pdf_path):
+                send_waha_file(phone, pdf_path, caption=f"Egg Godown Report - {pdf_path.split('/')[-1]}")
+    except Exception as e:
+        logger.error(f"Error in scheduled_godown_report_job: {e}")
+
+
+def generate_rental_vacancy_report():
+    import calendar
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST)
+    date_formatted = now_ist.strftime("%A, %d %b %Y")
+    day_num = now_ist.day
+    days_in_month = calendar.monthrange(now_ist.year, now_ist.month)[1]
+    month_name = now_ist.strftime("%B")
+
+    RENT_RATES = {
+        "Jumpin Stays": 23000,
+        "Kadubeesanahalli": 23000,
+        "Spice Garden": 25000,
+        "K.R. Puram": 15000,
+        "KR Puram": 15000
+    }
+
+    db = get_db_session()
+    group_jid = "120363409299826962@g.us"
+    
+    # Query latest message from Rental Updates group
+    latest_msg = db.query(WhatsAppMessage).filter(
+        WhatsAppMessage.group_id.like("%120363409299826962%")
+    ).order_by(WhatsAppMessage.timestamp.desc()).first()
+
+    raw_text = ""
+    if latest_msg and latest_msg.message_text:
+        raw_text = latest_msg.message_text
+    else:
+        latest_raw = db.query(RawMessage).filter(
+            RawMessage.group_name.like("%Rental%")
+        ).order_by(RawMessage.timestamp.desc()).first()
+        if latest_raw:
+            raw_text = latest_raw.raw_text or ""
+
+    db.close()
+
+    # Default fallback vacancies
+    vacancies = {
+        "Jumpin Stays": [{"unit": "402", "floor": "4th Floor"}, {"unit": "404", "floor": "4th Floor"}],
+        "Spice Garden": [{"unit": "302", "floor": "3rd Floor"}, {"unit": "402", "floor": "4th Floor"}],
+        "K.R. Puram": [{"unit": "102", "floor": "1st Floor"}]
+    }
+
+    if raw_text:
+        parsed_vacancies = {"Jumpin Stays": [], "Spice Garden": [], "K.R. Puram": []}
+        lines = raw_text.split('\n')
+        for line in lines:
+            line_clean = line.strip()
+            if not line_clean: continue
+            
+            if re.search(r'kadubeesanahalli|jumpin', line_clean, re.I):
+                units = re.findall(r'\b\d{3}\b', line_clean)
+                for u in units:
+                    floor_num = u[0]
+                    floor_str = f"{floor_num}th Floor" if floor_num not in ['1', '2', '3'] else f"{floor_num}st Floor" if floor_num == '1' else f"{floor_num}nd Floor" if floor_num == '2' else f"{floor_num}rd Floor"
+                    parsed_vacancies["Jumpin Stays"].append({"unit": u, "floor": floor_str})
+
+            elif re.search(r'spice garden', line_clean, re.I):
+                units = re.findall(r'\b\d{3}\b', line_clean)
+                for u in units:
+                    floor_num = u[0]
+                    floor_str = f"{floor_num}th Floor" if floor_num not in ['1', '2', '3'] else f"{floor_num}st Floor" if floor_num == '1' else f"{floor_num}nd Floor" if floor_num == '2' else f"{floor_num}rd Floor"
+                    parsed_vacancies["Spice Garden"].append({"unit": u, "floor": floor_str})
+
+            elif re.search(r'k\.?r\.?\s*puram', line_clean, re.I):
+                units = re.findall(r'\b\d{3}\b', line_clean)
+                for u in units:
+                    floor_num = u[0]
+                    floor_str = f"{floor_num}th Floor" if floor_num not in ['1', '2', '3'] else f"{floor_num}st Floor" if floor_num == '1' else f"{floor_num}nd Floor" if floor_num == '2' else f"{floor_num}rd Floor"
+                    parsed_vacancies["K.R. Puram"].append({"unit": u, "floor": floor_str})
+
+        if any(parsed_vacancies.values()):
+            vacancies = parsed_vacancies
+
+    total_vacant_units = sum(len(units) for units in vacancies.values())
+    total_daily_loss = 0
+    property_blocks = []
+
+    for prop_name, units in vacancies.items():
+        monthly_rent = RENT_RATES.get(prop_name, 20000)
+        daily_loss_per_unit = round(monthly_rent / days_in_month)
+        
+        unit_lines = []
+        for item in units:
+            u_no = item["unit"]
+            fl = item["floor"]
+            unit_lines.append(f"  └ Unit *{u_no}* ({fl}) - Rent: ₹{monthly_rent:,}/mo | *Loss: ₹{daily_loss_per_unit:,}/day*")
+            total_daily_loss += daily_loss_per_unit
+
+        if unit_lines:
+            block = f"🏢 *{prop_name}:*\n" + "\n".join(unit_lines)
+            property_blocks.append(block)
+
+    mtd_loss = total_daily_loss * day_num
+    projected_monthly_loss = total_daily_loss * days_in_month
+
+    notice_lines = [
+        "  • *Kadubeesanahalli:* 2 flats",
+        "  • *Ickon:* 1",
+        "  • *K.R puram:* 1 flat"
+    ]
+
+    if raw_text and "notice" in raw_text.lower():
+        try:
+            parsed_notice = []
+            in_notice_section = False
+            for line in raw_text.split('\n'):
+                line_c = line.strip()
+                if "notice rooms" in line_c.lower() or "notice flats" in line_c.lower():
+                    in_notice_section = True
+                    continue
+                if in_notice_section and line_c:
+                    if ":" in line_c:
+                        parts = line_c.split(":", 1)
+                        prop = parts[0].strip()
+                        val = parts[1].strip()
+                        parsed_notice.append(f"  • *{prop}:* {val}")
+            if parsed_notice:
+                notice_lines = parsed_notice
+        except Exception:
+            pass
+
+    notice_str = "\n".join(notice_lines)
+
+    report = (
+        f"🚨 *DAILY RENTAL & VACANCY LOSS REPORT* 🚨\n"
+        f"📅 *Date:* {date_formatted}\n\n"
+        f"📊 *SUMMARY OVERVIEW*\n"
+        f"• Total Properties: 3 (Jumpin Stays, Spice Garden & K.R. Puram)\n"
+        f"• *Empty/Vacant:* {total_vacant_units} Units\n\n"
+        f"💰 *FINANCIAL VACANCY LOSS*\n"
+        f"• *Daily Loss Today:* ₹{total_daily_loss:,}\n"
+        f"• *MTD Loss ({month_name} 1-{day_num}):* ₹{mtd_loss:,}\n\n"
+        f"📍 *VACANT ROOMS DETAILS*\n"
+        + "\n\n".join(property_blocks) +
+        f"\n\n==================================================\n"
+        f"📋 *NOTICE ROOMS / FLATS*\n"
+        f"{notice_str}\n"
+        f"=================================================="
+    )
+    return report
+
+def scheduled_rental_vacancy_report_job():
+    logger.info("Executing 10:00 PM Daily Rental & Vacancy Loss Report Job...")
+    try:
+        msg = generate_rental_vacancy_report()
+        target_phone = "917259510983@c.us"
+        send_waha_message(target_phone, msg)
+        logger.info(f"Daily Rental & Vacancy Loss Report sent to {target_phone}")
+    except Exception as e:
+        logger.error(f"Error in scheduled_rental_vacancy_report_job: {e}")
+
+def scheduled_4company_consolidated_reports_job():
+    """Dispatches the 4 Consolidated Company Reports (Daily Comprehensive Reports for Sunfra Farms, Sunfra Feeds, Corporate, Indus) to Kusum (7259510983)."""
+    logger.info("Executing 4 Consolidated Company Reports Dispatcher...")
+    try:
+        from zoho_reconciliation import dispatch_all_4company_reconciliation_reports
+        dispatch_all_4company_reconciliation_reports("917259510983@c.us")
+    except Exception as e:
+        logger.error(f"Error sending 4 Consolidated Company Reports: {e}")
+
+def send_all_10pm_daily_reports_job():
+    logger.info("Executing 10:00 PM Daily Reports Dispatcher...")
+    try:
+        # 1. 4 Consolidated Company Reports (Daily Comprehensive Reports for Sunfra Farms, Sunfra Feeds, Corporate, Indus)
+        from zoho_reconciliation import dispatch_all_4company_reconciliation_reports
+        dispatch_all_4company_reconciliation_reports("917259510983@c.us")
+    except Exception as e:
+        logger.error(f"Error sending 4 Consolidated Company Reports at 10 PM: {e}")
+
+    try:
+        # 2. Daily Rental & Vacancy Loss Report
+        scheduled_rental_vacancy_report_job()
+    except Exception as e:
+        logger.error(f"Error sending Daily Rental & Vacancy Loss Report at 10 PM: {e}")
+
+    try:
+        # 3. Company-Wise Manager Escalation EOD Summary Report (Mon-Sat)
+        company_wise_escalation_job()
+    except Exception as e:
+        logger.error(f"Error sending Company-Wise Escalation Report at 10 PM: {e}")
+
+
+# Recipients for vaccine approval requests
+VACCINE_APPROVAL_PHONES = [
+    "917259510983@c.us",  # Person 1: 7259510983
+    "916364817749@c.us",  # Person 2: 6364817749
+]
+VACCINE_APPROVAL_KEYWORDS = ["yes", "ok", "okay", "approve", "approved", "send", "ha", "haa", "han", "ho", "haan", "confirm", "confirmed", "proceed"]
+
+# Vaccine WhatsApp group JID (found from WAHA: group name = "Vaccine")
+VACCINE_GROUP_JID = "120363411507945065@g.us"
+
+
+def scheduled_vaccine_approval_request_job():
+    """Runs at 6:30 AM IST - sends today's vaccine list to ALL approvers for approval."""
+    logger.info("Sending vaccine reminder approval request to all approvers...")
+    try:
+        from sunfra_batch_sync import sync_flocks_from_sunfra_web
+        sync_flocks_from_sunfra_web()
+    except Exception as e:
+        logger.error(f"Error syncing hatch dates before vaccine approval: {e}")
+    from datetime import datetime, timezone, timedelta
+    from models import Flock, BookStandard
+    IST = timezone(timedelta(hours=5, minutes=30))
+
+    db = get_db_session()
+    try:
+        today = datetime.now(IST).date()
+        flocks = db.query(Flock).filter(Flock.status == 'active').all()
+
+        reminders = []
+        for f in flocks:
+            age_days = (today - f.hatch_date).days + 1
+            if age_days < 1:
+                continue
+            standard = db.query(BookStandard).filter(BookStandard.day == age_days).first()
+            if standard and standard.vaccine and standard.vaccine.strip():
+                vacc_text = standard.vaccine.strip()
+                if not re.search(r'^\d+(\.\d+)?\s*c$', vacc_text.lower()) and not vacc_text.lower().startswith('body'):
+                    reminders.append(f"- *{f.shed_name}* (Age: Day {age_days}): {vacc_text}")
+
+        if not reminders:
+            logger.info("No vaccines scheduled today. Skipping approval request.")
+            return
+
+        msg_lines = [
+            "🔔 *Vaccine Reminder Approval Request*",
+            f"Today ({today.strftime('%d %b %Y')}) vaccines are scheduled for:",
+            ""
+        ]
+        msg_lines.extend(reminders)
+        msg_lines.append("")
+        msg_lines.append("✅ Reply *YES* to send this reminder to the farm group at 7:00 AM.")
+        msg_lines.append("❌ Reply *NO* to skip today's vaccine reminder.")
+
+        approval_msg = "\n".join(msg_lines)
+        # Send to ALL approver numbers
+        for phone in VACCINE_APPROVAL_PHONES:
+            logger.info(f"Sending vaccine approval request to {phone}")
+            send_waha_message(phone, approval_msg)
+
+    except Exception as e:
+        logger.error(f"Error in scheduled_vaccine_approval_request_job: {e}")
+    finally:
+        db.close()
+
+
+def scheduled_vaccine_reminder_job():
+    """Runs at 7:00 AM IST - sends vaccine reminder to group ONLY if manager approved."""
+    logger.info("Starting scheduled morning vaccine reminder job...")
+    from datetime import datetime, timezone, timedelta
+    from models import Flock, BookStandard, SystemSetting
+    IST = timezone(timedelta(hours=5, minutes=30))
+
+    db = get_db_session()
+    try:
+        # --- STEP 1: Check if ANY approver has approved by looking at their recent messages ---
+        WAHA_URL = os.getenv("WAHA_URL", "http://localhost:3000")
+        WAHA_SESSION = os.getenv("WAHA_SESSION", "default")
+        WAHA_API_KEY = os.getenv("WAHA_API_KEY", "")
+
+        headers = {"X-Api-Key": WAHA_API_KEY} if WAHA_API_KEY else {}
+        approval_given = False
+        approved_by = None
+        explicit_rejection = False
+        rejected_by = None
+
+        cutoff_ts = int((datetime.now(IST).replace(hour=6, minute=20, second=0, microsecond=0)).timestamp())
+
+        for phone in VACCINE_APPROVAL_PHONES:
+            try:
+                msg_url = f"{WAHA_URL}/api/{WAHA_SESSION}/chats/{phone}/messages?limit=20"
+                r = requests.get(msg_url, headers=headers, timeout=10)
+                if r.status_code != 200:
+                    continue
+                messages = r.json()
+                for msg in messages:
+                    # Only consider messages FROM them (not sent by us)
+                    if msg.get('fromMe', True):
+                        continue
+                    msg_ts = msg.get('timestamp', 0)
+                    if msg_ts < cutoff_ts:
+                        continue
+                    body = msg.get('body', msg.get('text', '')).lower().strip()
+                    # Check for rejection first
+                    if any(rej in body for rej in ['no', 'nahi', 'nope', 'cancel', 'skip', 'stop']):
+                        if not approval_given:  # Only reject if nobody has approved yet
+                            explicit_rejection = True
+                            rejected_by = phone
+                        break
+                    # Check for approval
+                    if any(kw in body for kw in VACCINE_APPROVAL_KEYWORDS):
+                        approval_given = True
+                        approved_by = phone
+                        explicit_rejection = False  # Approval overrides rejection
+                        break
+            except Exception as waha_err:
+                logger.warning(f"Could not check approval messages from {phone}: {waha_err}")
+
+        if explicit_rejection and not approval_given:
+            logger.info(f"Vaccine reminder rejected by {rejected_by}. Skipping.")
+            for phone in VACCINE_APPROVAL_PHONES:
+                send_waha_message(phone, "❌ Understood. Today's vaccine reminder has been skipped.")
+            return
+
+        if not approval_given:
+            logger.warning("No approval received from any approver. Skipping group message.")
+            for phone in VACCINE_APPROVAL_PHONES:
+                send_waha_message(phone, "⚠️ No approval reply was received from anyone. Vaccine reminder was NOT sent to the farm group today.")
+            return
+
+        logger.info(f"Vaccine reminder approved by {approved_by}.")
+
+        logger.info("Manager approved vaccine reminder. Preparing to send to group...")
+
+        # --- STEP 2: Get the vaccine group JID (hardcoded from WAHA group "Vaccine") ---
+        vaccine_group_jid = VACCINE_GROUP_JID
+        logger.info(f"Using hardcoded Vaccine group JID: {vaccine_group_jid}")
+
+        # --- STEP 3: Build and send the vaccine message to the farm group ---
+        today = datetime.now(IST).date()
+        flocks = db.query(Flock).filter(Flock.status == 'active').all()
+
+        reminders = []
+        for f in flocks:
+            age_days = (today - f.hatch_date).days + 1
+            if age_days < 1:
+                continue
+            standard = db.query(BookStandard).filter(BookStandard.day == age_days).first()
+            if standard and standard.vaccine and standard.vaccine.strip():
+                vacc_text = standard.vaccine.strip()
+                if not re.search(r'^\d+(\.\d+)?\s*c$', vacc_text.lower()) and not vacc_text.lower().startswith('body'):
+                    reminders.append(f"- *{f.shed_name}* (Age: Day {age_days}): {vacc_text}")
+
+        if reminders:
+            msg_lines = [
+                "💉 *TODAY'S VACCINE REMINDER*",
+                f"Date: {today.strftime('%d %b %Y')}\n"
+            ]
+            msg_lines.extend(reminders)
+            reminder_msg = "\n".join(msg_lines)
+
+            logger.info(f"Sending vaccine reminder to group {vaccine_group_jid}")
+            send_waha_message(vaccine_group_jid, reminder_msg)
+            # Notify ALL approvers that reminder was sent
+            for phone in VACCINE_APPROVAL_PHONES:
+                send_waha_message(phone, "✅ Vaccine reminder sent to the farm group at 7:00 AM.")
+        else:
+            logger.info("No vaccines due today. Nothing sent to group.")
+
+    except Exception as e:
+        logger.error(f"Error in scheduled_vaccine_reminder_job: {e}")
+    finally:
+        db.close()
+
+
+async def check_feed_change_transitions_job():
+    logger.info("Starting scheduled feed change transitions check...")
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    today = datetime.now(IST).date()
+    now_ist = datetime.now(IST).replace(tzinfo=None)
+
+    # CM: week 4, GM: week 9, PLM: week 16, LM1: week 19, LM2: week 41, LM3: week 71
+    TRANSITIONS = {
+        4: ("CM (1-8 W)", "CM", """Sunfra Poultry Farm feed formulations:
+CM (1-8 W)
+- Maize: 550
+- B.Rice: 70
+- DORB: 40
+- SOYA: 285
+- DDGS: 25
+- Rapeseed: 0
+- Calcite: 20
+- Stone grit: 0
+- DCP: 11
+- Lysine: 1.5
+- Methionine: 1.5
+- Salt: 3.5
+- TOXFIN 300: 0.5
+- SalCURB: 0.5
+- Medicine: 5
+------------------
+Total: 1013.5"""),
+        9: ("GM (9-15 W)", "GM", """Sunfra Poultry Farm feed formulations:
+GM (9-15 W)
+- Maize: 500
+- B.Rice: 70
+- DORB: 130
+- SOYA: 210
+- DDGS: 25
+- Rapeseed: 25
+- Calcite: 25
+- Stone grit: 0
+- DCP: 10
+- Lysine: 1.3
+- Methionine: 1.3
+- Salt: 3.5
+- TOXFIN 300: 0.5
+- SalCURB: 0.5
+- Medicine: 5
+------------------
+Total: 1007.1"""),
+        16: ("PLM (16-18 W)", "PLM", """Sunfra Poultry Farm feed formulations:
+PLM (16-18 W)
+- Maize: 480
+- B.Rice: 80
+- DORB: 120
+- SOYA: 180
+- DDGS: 30
+- Rapeseed: 30
+- Calcite: 25
+- Stone grit: 40
+- DCP: 10
+- Lysine: 1
+- Methionine: 1.3
+- Salt: 4
+- TOXFIN 300: 0.5
+- SalCURB: 0.5
+- Medicine: 5
+------------------
+Total: 1007.3"""),
+        19: ("LM1 (19-40 W)", "LM1", """Sunfra Poultry Farm feed formulations:
+LM1 (19-40 W)
+- Maize: 400
+- B.Rice: 150
+- DORB: 60
+- SOYA: 180
+- DDGS: 50
+- Rapeseed: 30
+- Calcite: 25
+- Stone grit: 90
+- DCP: 9
+- Lysine: 1
+- Methionine: 1.5
+- Salt: 4
+- TOXFIN 300: 0.5
+- SalCURB: 0.5
+- Medicine: 5
+------------------
+Total: 1006.5"""),
+        41: ("LM2 (41-70 W)", "LM2", """Sunfra Poultry Farm feed formulations:
+LM2 (41-70 W)
+- Maize: 350
+- B.Rice: 200
+- DORB: 80
+- SOYA: 155
+- DDGS: 50
+- Rapeseed: 30
+- Calcite: 25
+- Stone grit: 100
+- DCP: 8
+- Lysine: 0.8
+- Methionine: 0.5
+- Salt: 4
+- TOXFIN 300: 0.5
+- SalCURB: 0.5
+- Medicine: 5
+------------------
+Total: 1009.3"""),
+        71: ("LM3 (Above 70 W)", "LM3", """Sunfra Poultry Farm feed formulations:
+LM3 (Above 70 W)
+- Maize: 350
+- B.Rice: 250
+- DORB: 110
+- SOYA: 125
+- DDGS: 50
+- Rapeseed: 30
+- Calcite: 25
+- Stone grit: 105
+- DCP: 7
+- Lysine: 0.7
+- Methionine: 0
+- Salt: 4
+- TOXFIN 300: 0.5
+- SalCURB: 0.5
+- Medicine: 5
+------------------
+Total: 1062.7""")
+    }
+
+    db = get_db_session()
+    try:
+        flocks = db.query(Flock).filter(Flock.status == 'active').all()
+        for f in flocks:
+            if not f.hatch_date:
+                continue
+            age_days = (today - f.hatch_date).days + 1
+            if age_days < 1:
+                continue
+            std = db.query(BookStandard).filter(BookStandard.day == age_days).first()
+            running_weeks = int(std.week) if std and std.week is not None else (age_days // 7 if age_days else 0)
+            
+            # Update DB columns for running_days and running_weeks
+            f.running_days = max(0, age_days)
+            f.running_weeks = max(0, running_weeks)
+            db.commit()
+            
+            # Check Vaccine schedule for exact running_days from BookStandard
+            if std and std.vaccine:
+                v_text = str(std.vaccine).strip()
+                is_valid_vaccine = any(k in v_text.lower() for k in [
+                    'vaccine', 'nd', 'ibd', 'coryza', 'pox', 'killed', 'live', 
+                    'mareks', 'losata', 'lasata', 'vvnd', 'deworming', 'hvt', 'ma5', 'cox', 'debeaking'
+                ])
+                if is_valid_vaccine:
+                    v_task_name = f"Vaccine - {f.shed_name}: {v_text} (Day {age_days})"
+                    existing_v = db.query(Task).filter(Task.task_name == v_task_name).first()
+                    if not existing_v:
+                        logger.info(f"Vaccine detected for {f.shed_name} on Day {age_days}: {v_text}. Creating task and sending approval request...")
+                        v_task = Task(
+                            task_name=v_task_name,
+                            task_type="vaccine",
+                            status="pending_approval",
+                            assigned_person_name="Vaccine Team",
+                            assigned_person_phone="1234567890",
+                            whatsapp_group_id="120363411507945065@g.us",
+                            approver_phone="917259510983,916364817749",
+                            due_time=now_ist.replace(hour=9, minute=0, second=0, microsecond=0),
+                            completion_keywords="approve,approved,send,yes"
+                        )
+                        db.add(v_task)
+                        db.commit()
+                        
+                        v_approval_msg = (
+                            f"💉 *Vaccine Approval Needed*\n\n"
+                            f"*Task:* {v_task_name}\n"
+                            f"*Status:* Pending Approval 🟡\n\n"
+                            f"Please reply with \"send\" to approve and confirm."
+                        )
+                        send_waha_message("917259510983@c.us", v_approval_msg)
+                        send_waha_message("916364817749@c.us", v_approval_msg)
+
+            if running_weeks in TRANSITIONS:
+                full_name, stage_code, formula_text = TRANSITIONS[running_weeks]
+                task_name = f"Feed Formula - {f.shed_name} to {stage_code} (Week {running_weeks})"
+                
+                # Check if task already exists
+                existing = db.query(Task).filter(Task.task_name == task_name).first()
+                if not existing:
+                    logger.info(f"Transition detected: {f.shed_name} reached week {running_weeks} ({stage_code}). Creating task and sending approval request...")
+                    
+                    t = Task(
+                        task_name=task_name,
+                        task_type="approval",
+                        status="pending_approval",
+                        assigned_person_name="Team",
+                        assigned_person_phone="1234567890",
+                        whatsapp_group_id="120363410607412989@g.us",
+                        approver_phone="917259510983,916364817749",
+                        due_time=now_ist.replace(hour=21, minute=30, second=0, microsecond=0),
+                        completion_keywords="approve,approved,send,yes",
+                        completion_details=formula_text
+                    )
+                    db.add(t)
+                    db.commit()
+                    
+                    approval_msg = (
+                        f"🔔 *Feed Formula Approval Needed*\n\n"
+                        f"*Task:* {task_name}\n"
+                        f"*Status:* Pending Approval 🟡\n\n"
+                        f"Please reply with \"send\" to approve and confirm."
+                    )
+                    send_waha_message("917259510983@c.us", approval_msg)
+                    send_waha_message("916364817749@c.us", approval_msg)
+    except Exception as e:
+        logger.error(f"Error in check_feed_change_transitions_job: {e}")
+    finally:
+        db.close()
+
+
+def send_monday_weekly_feed_reminder_job():
+    logger.info("Executing Monday weekly feed formula update reminder...")
+    db = get_db_session()
+    try:
+        group_jid = "120363410607412989@g.us"
+        reminder_msg = (
+            "⏰ *Weekly Feed Formula Update Reminder*\n\n"
+            "Hi Team,\n"
+            "Please review and update the weekly Feed Formula for all sheds today (Monday) and reply to this message with \"updated\" once finished."
+        )
+        send_waha_message(group_jid, reminder_msg)
+        
+        # Ensure Task #24 exists and is set to pending waiting for team update
+        t24 = db.query(Task).filter(Task.task_name == "Feed Formula (Requires Approval)").first()
+        if not t24:
+            t24 = Task(
+                task_name="Feed Formula (Requires Approval)",
+                task_type="Feed Formula (Requires Approval)",
+                assigned_person_name="Team",
+                assigned_person_phone="1234567890",
+                whatsapp_group_id="120363410607412989@g.us",
+                approver_phone="7204041105",
+                frequency="weekly",
+                status="pending",
+                completion_keywords="updated,completed,done"
+            )
+            db.add(t24)
+        else:
+            t24.status = "pending"
+            t24.approver_phone = "7204041105"
+        db.commit()
+        logger.info("Monday weekly feed formula reminder dispatched and Task #24 reset to pending.")
+    except Exception as e:
+        logger.error(f"Error in send_monday_weekly_feed_reminder_job: {e}")
+    finally:
+        db.close()
+
+
+def scheduled_zoho_reconciliation_job():
+    logger.info("Starting 10:00 PM Zoho Reconciliation Reports dispatch (7259510983 ONLY)...")
+    recipients = ["917259510983@c.us"]
+    try:
+        from zoho_reconciliation import dispatch_all_4company_reconciliation_reports
+        for phone in recipients:
+            dispatch_all_4company_reconciliation_reports(phone)
+            logger.info(f"Successfully sent 4-Company Consolidated Reports to {phone}")
+    except Exception as e:
+        logger.error(f"Error in scheduled_zoho_reconciliation_job: {e}")
+
+def scheduled_sunfra_pandl_job():
+    logger.info("Starting 9:30 PM Sunfra P&L Report generation...")
+    try:
+        from sunfra_pandl_report import generate_and_send_sunfra_pandl_report
+        # Dispatches at 9:30 PM IST to 7259510983, 8985779911, and 6364817749
+        recipients = ["917259510983@c.us", "918985779911@c.us", "916364817749@c.us"]
+        generate_and_send_sunfra_pandl_report(recipients)
+    except Exception as e:
+        logger.error(f"Error in scheduled_sunfra_pandl_job: {e}")
+
+def scheduled_4company_pandl_job():
+    logger.info("Starting 10:00 PM 4-Company Daily P&L & Stock Report job...")
+    try:
+        from zoho_reconciliation import dispatch_all_4company_reconciliation_reports
+        dispatch_all_4company_reconciliation_reports("917259510983@c.us")
+    except Exception as e:
+        logger.error(f"Error in scheduled_4company_pandl_job: {e}")
+
+def scheduled_4company_weekly_pandl_job():
+    logger.info("Starting Saturday 10:30 PM 4-Company Weekly P&L & Stock Report job...")
+    try:
+        from zoho_4company_pandl import generate_and_send_4company_weekly_pandl_report
+        generate_and_send_4company_weekly_pandl_report("917259510983@c.us")
+    except Exception as e:
+        logger.error(f"Error in scheduled_4company_weekly_pandl_job: {e}")
+
+def scheduled_4company_monthly_pandl_job():
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST)
+    tomorrow = now_ist.date() + timedelta(days=1)
+    if tomorrow.day != 1:
+        # Not the last day of the month
+        return
+
+    logger.info("Starting Last-Day-of-Month 9:00 PM 4-Company Monthly P&L & Stock Report job...")
+    try:
+        from zoho_4company_pandl import generate_and_send_4company_monthly_pandl_report
+        generate_and_send_4company_monthly_pandl_report("917259510983@c.us")
+    except Exception as e:
+        logger.error(f"Error in scheduled_4company_monthly_pandl_job: {e}")
+
+def scheduled_egg_production_crosscheck_650pm_job():
+    """Dispatches the Evening Egg Production vs Godown Stock Cross-Check Report at 6:50 PM IST to 7259510983 ONLY."""
+    logger.info("Executing 6:50 PM Evening Egg Production vs Godown Stock Cross-Check Job (to 7259510983)...")
+    try:
+        from egg_production_crosscheck import generate_egg_production_crosscheck_report
+        from waha_service import send_waha_message
+        report_text = generate_egg_production_crosscheck_report()
+        send_waha_message("917259510983@c.us", report_text)
+        logger.info("Evening 6:50 PM Egg Production Cross-Check Report sent to 917259510983@c.us")
+    except Exception as e:
+        logger.error(f"Error in scheduled_egg_production_crosscheck_650pm_job: {e}")
+
+def scheduled_egg_production_crosscheck_930pm_job():
+    """Dispatches the Daily Egg Production vs Godown Stock Cross-Check Report at 9:30 PM IST to 7259510983, 8985779911, and 6364817749."""
+    logger.info("Executing 9:30 PM Daily Egg Production vs Godown Stock Cross-Check Job (to 3 admins)...")
+    try:
+        from egg_production_crosscheck import generate_egg_production_crosscheck_report
+        from waha_service import send_waha_message
+        report_text = generate_egg_production_crosscheck_report()
+        recipients = ["917259510983@c.us", "918985779911@c.us", "916364817749@c.us"]
+        for phone in recipients:
+            send_waha_message(phone, report_text)
+            logger.info(f"9:30 PM Egg Production Cross-Check Report sent to {phone}")
+    except Exception as e:
+        logger.error(f"Error in scheduled_egg_production_crosscheck_930pm_job: {e}")
+
+def scheduled_daily_attendance_summary_job():
+    """Dispatches the Daily Sunfra Community Attendance Summary at 9:30 PM IST to Kusum (7259510983) and company-wise reports."""
+    logger.info("Executing 9:30 PM Daily Sunfra Community Attendance Summary Job...")
+    try:
+        from attendance_tracker import evaluate_attendance_for_date, generate_attendance_summary_message, generate_company_attendance_messages
+        from waha_service import send_waha_message
+        data = evaluate_attendance_for_date()
+        
+        # 1. Send complete consolidated report across all 10 companies to Kusum (7259510983)
+        summary_msg = generate_attendance_summary_message(data)
+        send_waha_message("917259510983@c.us", summary_msg)
+        logger.info("Complete Daily Attendance Summary successfully sent to 917259510983@c.us at 9:30 PM")
+        
+        # 2. Generate company-wise attendance reports and send to Kusum
+        company_msgs = generate_company_attendance_messages(data)
+        for comp_name, comp_msg in company_msgs.items():
+            send_waha_message("917259510983@c.us", comp_msg)
+            logger.info(f"Generated and sent company-wise attendance report for {comp_name} to 917259510983@c.us")
+    except Exception as e:
+        logger.error(f"Error in scheduled_daily_attendance_summary_job: {e}")
+
+def scheduled_daily_attendance_summary_1115pm_job():
+    """Dispatches the 11:15 PM EOD Final Lock Attendance Summary and locks in today's monthly absence increments."""
+    logger.info("Executing 11:15 PM EOD Final Lock Attendance Summary Job...")
+    try:
+        from attendance_tracker import evaluate_attendance_for_date, generate_attendance_summary_message, generate_company_attendance_messages, update_daily_absence_increments
+        from waha_service import send_waha_message
+        data = evaluate_attendance_for_date()
+        
+        # 1. Lock in today's absence increments into monthly baselines file at 11:15 PM EOD
+        update_daily_absence_increments(data)
+
+        # 2. Send complete consolidated report across all 10 companies to Kusum (7259510983)
+        summary_msg = generate_attendance_summary_message(data)
+        send_waha_message("917259510983@c.us", summary_msg)
+        logger.info("Complete 11:15 PM EOD Lock Attendance Summary sent to 917259510983@c.us")
+        
+        # 3. Generate company-wise attendance reports and send to Kusum
+        company_msgs = generate_company_attendance_messages(data)
+        for comp_name, comp_msg in company_msgs.items():
+            send_waha_message("917259510983@c.us", comp_msg)
+    except Exception as e:
+        logger.error(f"Error in scheduled_daily_attendance_summary_1115pm_job: {e}")
+
+def scheduled_monthly_attendance_report_job():
+    """Dispatches the Monthly Attendance Summary Report on the last day of every month at 9:00 PM IST to 7259510983."""
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST)
+    tomorrow = now_ist.date() + timedelta(days=1)
+    if tomorrow.day != 1:
+        # Not the last day of the month
+        return
+
+    logger.info("Executing Last-Day-of-Month 9:00 PM Monthly Attendance Report Job...")
+    try:
+        from attendance_tracker import generate_monthly_attendance_summary_message
+        from waha_service import send_waha_message
+        msg = generate_monthly_attendance_summary_message(now_ist.date())
+        send_waha_message("917259510983@c.us", msg)
+        logger.info("Monthly Attendance Report successfully sent to 917259510983@c.us")
+    except Exception as e:
+        logger.error(f"Error in scheduled_monthly_attendance_report_job: {e}")
+
+def scheduled_egg_market_pdf_job():
+    logger.info("Starting 9:30 PM Egg Price & Market Analysis PDF report job...")
+    try:
+        from egg_market_analyzer import send_daily_egg_market_pdf_job
+        send_daily_egg_market_pdf_job()
+    except Exception as e:
+        logger.error(f"Error in scheduled_egg_market_pdf_job: {e}")
+
+
+def scheduled_vacancy_job():
+    logger.info("Starting scheduled vacancy summary report...")
+    try:
+        summary_text = generate_rental_vacancy_report()
+        if summary_text:
+            phone = "917259510983@c.us"
+            from waha_service import send_waha_message
+            send_waha_message(phone, summary_text)
+            logger.info(f"Sent vacancy summary to {phone}")
+    except Exception as e:
+        logger.error(f"Error in scheduled_vacancy_job: {e}")
+
+
+def scheduled_papaak_email_fetch_job():
+    logger.info("Polling Gmail for CP-PAPAAK-S egg & feed rate emails...")
+    try:
+        from papaak_email_service import fetch_and_process_papaak_emails
+        fetch_and_process_papaak_emails(notify_on_new=True)
+    except Exception as e:
+        logger.error(f"Error in scheduled_papaak_email_fetch_job: {e}")
+
+
+def setup_scheduler():
+
+    global scheduler
+    if scheduler.running:
+        logger.info("Scheduler is already running. Skipping duplicate setup_scheduler().")
+        return
+    
+    # Schedule Health Monitor every 1 minute
+    scheduler.add_job(health_monitor_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="health_monitor_job", replace_existing=True)
+    
+    # Schedule PAPAAK email fetching & WhatsApp auto-forwarding every 5 minutes
+    scheduler.add_job(scheduled_papaak_email_fetch_job, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="papaak_email_fetch_job", replace_existing=True)
+    
+    # Schedule Live Flock Hatch Date & Birds Sync from sunfra.com every 4 hours
+    from sunfra_batch_sync import sync_flocks_from_sunfra_web
+    scheduler.add_job(sync_flocks_from_sunfra_web, CronTrigger(hour="*/4", minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="sync_sunfra_flocks_job", replace_existing=True)
+    
+    # Schedule Daily Sunfra P&L PDF report at 9:30 PM IST daily (to 7259510983, 8985779911, and 6364817749)
+    scheduler.add_job(scheduled_sunfra_pandl_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_sunfra_pandl_job", replace_existing=True)
+    
+    # Schedule Monday Weekly Feed Formula update reminder at 11:00 AM IST on Mondays (Starts 14th Sep 2026)
+    scheduler.add_job(send_monday_weekly_feed_reminder_job, CronTrigger(day_of_week='mon', hour=11, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="send_monday_weekly_feed_reminder_job", replace_existing=True)
+
+    # [ON HOLD] Schedule Feed stage transition check daily at 8:00 AM IST
+    # scheduler.add_job(check_feed_change_transitions_job, CronTrigger(hour=8, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="check_feed_change_transitions_job", replace_existing=True)
+    
+    # Schedule Task Overdue Checker & Nagging alert every 1 minute
+    scheduler.add_job(poll_and_remind_tasks_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="poll_tasks_job", replace_existing=True)
+
+    # [ON HOLD] Schedule Vaccine Approval Request to manager at 6:30 AM IST
+    # scheduler.add_job(scheduled_vaccine_approval_request_job, CronTrigger(hour=6, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_vaccine_approval_request_job", replace_existing=True)
+
+    # [ON HOLD] Schedule Daily Vaccine & Medicine Reminder every day at 7:00 AM IST (only if manager approved at 6:30 AM)
+    # scheduler.add_job(scheduled_vaccine_reminder_job, CronTrigger(hour=7, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_vaccine_reminder_job", replace_existing=True)
+
+    # Schedule Daily Egg Godown report daily at 9:00 PM IST
+    scheduler.add_job(scheduled_godown_report_job, CronTrigger(hour=21, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_godown_report_job", replace_existing=True)
+
+    # Midnight reset: advance trigger_time and reset sent recurring reminders to pending at 00:00 IST
+    scheduler.add_job(midnight_reset_job, CronTrigger(hour=0, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="midnight_reset_job", replace_existing=True)
+
+    # Schedule media/report cleanup daily at 12:05 AM IST
+    scheduler.add_job(cleanup_old_files_job, CronTrigger(hour=0, minute=5, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="cleanup_old_files_job", replace_existing=True)
+    
+    # Schedule 4 Consolidated Company Reports daily at 6:50 PM IST (to 7259510983)
+    scheduler.add_job(scheduled_4company_consolidated_reports_job, CronTrigger(hour=18, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_reports_650pm_job", replace_existing=True)
+
+    # Schedule Egg Production vs Godown Stock Cross-Check daily at 6:50 PM IST (to 7259510983 ONLY) & 9:30 PM IST (to 3 admins)
+    scheduler.add_job(scheduled_egg_production_crosscheck_650pm_job, CronTrigger(hour=18, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_production_crosscheck_650pm_job", replace_existing=True)
+    scheduler.add_job(scheduled_egg_production_crosscheck_930pm_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_production_crosscheck_930pm_job", replace_existing=True)
+
+    # Schedule Daily Sunfra Community Attendance Summary daily at 7:05 PM IST, 9:30 PM IST & 11:15 PM IST EOD Lock (to 7259510983)
+    scheduler.add_job(scheduled_daily_attendance_summary_job, CronTrigger(hour=19, minute=5, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_705pm_job", replace_existing=True)
+    scheduler.add_job(scheduled_daily_attendance_summary_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_job", replace_existing=True)
+    scheduler.add_job(scheduled_daily_attendance_summary_1115pm_job, CronTrigger(hour=23, minute=15, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_1115pm_job", replace_existing=True)
+
+    # Combined 10:00 PM Dispatcher: 4 Consolidated Company Reports, Daily Rental Loss, and Company-Wise Escalation
+    scheduler.add_job(send_all_10pm_daily_reports_job, CronTrigger(hour=22, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="send_all_10pm_daily_reports_job", replace_existing=True)
+    
+    # Schedule Weekly 4-Company P&L & Stock Report every Saturday at 10:30 PM IST (to 7259510983)
+    scheduler.add_job(scheduled_4company_weekly_pandl_job, CronTrigger(day_of_week='sat', hour=22, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_weekly_pandl_job", replace_existing=True)
+
+    # Schedule Monthly 4-Company P&L & Stock Report on the last day of every month at 9:00 PM IST (to 7259510983)
+    scheduler.add_job(scheduled_4company_monthly_pandl_job, CronTrigger(hour=21, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_monthly_pandl_job", replace_existing=True)
+
+    # Schedule Monthly Attendance Report on the last day of every month at 9:00 PM IST (to 7259510983)
+    scheduler.add_job(scheduled_monthly_attendance_report_job, CronTrigger(hour=21, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_monthly_attendance_report_job", replace_existing=True)
+    
+    # Schedule weekly report at 11:00 PM IST on Sunday
+    scheduler.add_job(scheduled_weekly_report_job, CronTrigger(day_of_week='sun', hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_weekly_report_job", replace_existing=True)
+    
+    # Schedule monthly report at 11:00 PM IST on the 1st day of every month
+    scheduler.add_job(scheduled_monthly_report_job, CronTrigger(day='1', hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_monthly_report_job", replace_existing=True)
+
+    # Schedule yearly report at 11:00 PM IST on Dec 31
+    scheduler.add_job(scheduled_yearly_report_job, CronTrigger(month=12, day=31, hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_yearly_report_job", replace_existing=True)
+    
+    import os
+    if os.getenv("USE_N8N", "false").lower() == "true":
+        logger.info("USE_N8N is enabled. Live Alarms, Group Sync, and Unified Reminders are delegated to n8n.")
+    else:
+        # Schedule live alarms polling every 1 minute
+        scheduler.add_job(poll_live_alarms, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="poll_live_alarms_job", replace_existing=True)
+        
+        # Schedule group syncing to live PHP server every 5 minutes
+        scheduler.add_job(sync_groups_to_live, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="sync_groups_job", replace_existing=True)
+        
+        # Schedule database polling for unified reminders every 1 minute
+        scheduler.add_job(poll_and_execute_unified_reminders, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="poll_unified_reminders_job", replace_existing=True)
+        
+    # Schedule Water Telemetry & Device OFF monitoring every 5 minutes
+    from water_monitoring import check_and_dispatch_water_alerts
+    scheduler.add_job(check_and_dispatch_water_alerts, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="water_monitoring_job", replace_existing=True)
+
+    # Schedule Water Flow & Indicator Telemetry 4-Hour OFF monitoring every 5 minutes
+    from water_flow_farm_monitoring import check_and_dispatch_water_flow_farm_alerts
+    scheduler.add_job(check_and_dispatch_water_flow_farm_alerts, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="water_flow_farm_monitoring_job", replace_existing=True)
+
+    scheduler.start()
+    logger.info("APScheduler started.")

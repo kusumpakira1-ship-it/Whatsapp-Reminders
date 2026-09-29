@@ -2,6 +2,7 @@ import os
 import re
 import json
 import logging
+import calendar
 from datetime import datetime, date, time
 from sqlalchemy import text
 from database import get_db_session
@@ -17,7 +18,7 @@ COMMUNITY_EMPLOYEES = [
         "employees": [
             {"name": "Kusum", "phone": "7975209680", "aliases": ["kusum", "kusumpakira", "7975209680", "917975209680", "183300681367688"]},
             {"name": "Poornima", "phone": "7204484516", "aliases": ["poornima", "poorna", "207627359363311", "7204484516", "917204484516"]},
-            {"name": "Akshay - A", "phone": "9019713446", "aliases": ["akshay", "akshay i h", "akshay - a", "206686828683301", "9019713446", "919019713446"]},
+            {"name": "Akshay", "phone": "9019713446", "aliases": ["akshay", "akshay i h", "akshay - a", "206686828683301", "9019713446", "919019713446"]},
             {"name": "Ramya", "phone": "7019063646", "aliases": ["ramya", "259149770277018", "7019063646", "917019063646"]},
         ]
     },
@@ -237,6 +238,8 @@ def evaluate_attendance_for_date(target_date_str: str = None) -> dict:
                 break_start_kws = lunch_kws + break_kws
                 break_end_kws = ["back", "return", "returned", "back to work", "rejoined"]
                 leave_regex = re.compile(r'\b(leave|on\s+leave|taking\s+leave|leave\s+today|sick\s+leave|casual\s+leave|applied\s+leave|planned\s+leave|cl|sl|eave)\b', re.IGNORECASE)
+                half_day_leave_regex = re.compile(r'\b(half\s*day\s*leave|half\s*day|1/2\s*day|half\s*cl|half\s*sl|cl\s*half|sl\s*half|half\s*sick|half\s*casual)\b', re.IGNORECASE)
+                is_half_day_leave = False
                 logout_regex = re.compile(
                     r'\b('
                     r'log\s*out|logged\s*out|loged\s*out|loging\s*out|logging\s*out|'
@@ -266,6 +269,9 @@ def evaluate_attendance_for_date(target_date_str: str = None) -> dict:
                     
                     # Check leave keywords
                     if leave_regex.search(txt):
+                        leave_time = m.timestamp
+                    if half_day_leave_regex.search(txt):
+                        is_half_day_leave = True
                         leave_time = m.timestamp
 
                     is_no_break = any(neg in txt for neg in ["no tea", "no break", "no lunch", "without break", "nobreak", "notea"])
@@ -309,11 +315,22 @@ def evaluate_attendance_for_date(target_date_str: str = None) -> dict:
                     if is_keyword_match(txt, logout_kws) or logout_regex.search(txt):
                         logout_time = m.timestamp
 
-                # Fallback for login_time: If employee posted messages but didn't type explicit "login" keyword, use first message timestamp
-                if not login_time and matched_msgs:
-                    non_leave_msgs = [m for m in matched_msgs if not leave_regex.search((m.raw_text or "").strip().lower())]
-                    if non_leave_msgs:
-                        login_time = non_leave_msgs[0].timestamp
+                # Admin Approved Login Time Override for forgotten login
+                for m in matched_msgs:
+                    txt_low = (m.raw_text or "").lower()
+                    if any(k in txt_low for k in ["forgot", "forget", "missed", "late login"]) and any(k in txt_low for k in ["came", "in at", "reached", "login at", "came at"]):
+                        time_match = re.search(r'\b(\d{1,2})[:\.](\d{2})\b', txt_low)
+                        if time_match:
+                            req_h = int(time_match.group(1))
+                            req_m = int(time_match.group(2))
+                            if "pm" in txt_low and req_h < 12: req_h += 12
+                            elif "am" in txt_low and req_h == 12: req_h = 0
+                            
+                            is_approved = any(any(app in (r.raw_text or "").lower() for app in ["approved", "approve", "approved login"]) for r in raws)
+                            if is_approved:
+                                login_time = m.timestamp.replace(hour=req_h, minute=req_m, second=0)
+                                logger.info(f"Admin approved login time for {emp_name}: {login_time}")
+                                break
 
                 # Check Divya presence if mentioned by name e.g. "Divya ma'am came"
                 if emp_name == "Divya" and not login_time:
@@ -354,8 +371,8 @@ def evaluate_attendance_for_date(target_date_str: str = None) -> dict:
                     net_seconds = max(0, gross_seconds)
                     net_hours = net_seconds / 3600.0
 
-                # Late login threshold is 1:30 PM (login after 13:30)
-                is_late = login_time and (login_time.hour > 13 or (login_time.hour == 13 and login_time.minute > 30))
+                # Late login threshold is 11:00 AM (login posted after 11:00 AM)
+                is_late = login_time and (login_time.hour > 11 or (login_time.hour == 11 and login_time.minute > 0))
                 is_sat_off = is_saturday and (grp_name, emp_name) in SATURDAY_OFF_EMPLOYEES
 
                 # Apply Attendance Rules:
@@ -364,21 +381,22 @@ def evaluate_attendance_for_date(target_date_str: str = None) -> dict:
                     status_badge = "⚪ Day Off"
                     detail = "Saturday Day Off"
                     tot_day_off += 1
-                elif emp_name in ["Prasad", "Yashaswini"] and (leave_time or not login_time):
-                    status_type = "on_leave"
-                    status_badge = "🔵 Leave" if emp_name == "Prasad" else "🔵 On Leave"
-                    detail = "On Leave"
-                    tot_leave += 1
+                elif is_half_day_leave:
+                    if login_time and (net_hours >= 4.5 or not logout_time):
+                        status_type = "half_day_approved_leave"
+                        status_badge = "🟡 Half Day (Half Day Leave)"
+                        detail = f"Applied Half Day Leave ({'Logged in at ' + login_time.strftime('%I:%M %p') if login_time else 'Approved'})"
+                        tot_half_day += 1
+                    else:
+                        status_type = "on_leave"
+                        status_badge = "🔵 On Leave"
+                        detail = "Half Day Leave requested but < 4.5 hrs worked"
+                        tot_leave += 1
                 elif leave_time and not login_time:
                     status_type = "on_leave"
                     status_badge = "🔵 On Leave"
                     detail = f"Leave message at {leave_time.strftime('%I:%M %p')}"
                     tot_leave += 1
-                elif emp_name in ["Prajwal", "Mahalakshmi", "Roopa", "Krishna", "Girija", "Jagadish", "Balaji", "Vamsi"] and (not login_time or emp_name in ["Prajwal", "Mahalakshmi"]):
-                    status_type = "absent"
-                    status_badge = "🔴 Absent"
-                    detail = "No login or logout message"
-                    tot_absent += 1
                 elif not login_time and not logout_time:
                     status_type = "absent"
                     status_badge = "🔴 Absent"
@@ -404,10 +422,10 @@ def evaluate_attendance_for_date(target_date_str: str = None) -> dict:
                     status_badge = "🟡 Half Day (No Logout)"
                     detail = f"Login at {login_time.strftime('%I:%M %p')} | No Logout" if login_time else "No Logout"
                     tot_half_day += 1
-                elif net_hours < 7.0:
+                elif net_hours < 8.0:
                     status_type = "half_day_short"
                     status_badge = "🟡 Half Day"
-                    detail = f"Net hours {net_hours:.1f} hrs (< 7 hrs)"
+                    detail = f"Net hours {net_hours:.1f} hrs (< 8 hrs)"
                     tot_half_day += 1
                 else:
                     status_type = "present"
@@ -568,21 +586,17 @@ def get_employee_absence_label(emp_name: str, grp_name: str) -> str:
         
         key = f"{emp_name}_{grp_name}"
         if key not in baselines:
-            if emp_name == "Akshay - A":
-                key = f"Akshay_{grp_name}"
-            elif key not in baselines:
-                key = emp_name
+            key = emp_name
             
         cnt = baselines.get(key, None)
         if cnt is not None:
             cnt_str = str(int(cnt)) if cnt == int(cnt) else str(cnt)
-            return f" (A - {cnt_str})"
+            return f" (Ab - {cnt_str})"
     except Exception:
         pass
     return ""
 
 def generate_attendance_summary_message(data: dict) -> str:
-    update_daily_absence_increments(data)
     dt = datetime.strptime(data['date'], '%Y-%m-%d')
     disp_date = dt.strftime('%d %b %Y')
     
@@ -637,6 +651,93 @@ def generate_company_attendance_messages(data: dict) -> dict:
 
         company_msgs[g['group_name']] = "\n".join(lines)
     return company_msgs
+
+def get_monthly_working_days(year: int, month: int, grp_name: str, emp_name: str) -> int:
+    """Calculates working days for a given employee in a specific month/year based on Sunday Off and Saturday Off rules."""
+    num_days = calendar.monthrange(year, month)[1]
+    is_sat_off = (grp_name, emp_name) in SATURDAY_OFF_EMPLOYEES
+    working_days = 0
+    for day in range(1, num_days + 1):
+        dt = date(year, month, day)
+        w = dt.weekday() # Monday=0 ... Saturday=5, Sunday=6
+        if w == 6: # Sunday
+            continue
+        if w == 5 and is_sat_off: # Saturday off
+            continue
+        working_days += 1
+    return working_days
+
+def generate_monthly_attendance_summary_message(target_date: date = None) -> str:
+    """Generates the Monthly Attendance Report across all departments and employees."""
+    if not target_date:
+        target_date = date.today()
+    
+    year = target_date.year
+    month = target_date.month
+    month_name = target_date.strftime('%B %Y')
+    num_days = calendar.monthrange(year, month)[1]
+
+    baselines = {}
+    if os.path.exists(BASELINES_FILE):
+        try:
+            with open(BASELINES_FILE, "r") as f:
+                baselines = json.load(f)
+        except Exception:
+            baselines = {}
+
+    lines = [
+        f"📋 *MONTHLY ATTENDANCE REPORT*",
+        f"🗓️ *Period:* {month_name} (Total Days: {num_days})",
+        "=================================================="
+    ]
+
+    tot_working_days_all = 0
+    tot_present_days_all = 0.0
+    tot_absent_days_all = 0.0
+    tot_emp_count = 0
+
+    for grp_data in COMMUNITY_EMPLOYEES:
+        grp_name = grp_data["group"]
+        grp_lines = [f"\n🏢 *{grp_name}*"]
+        
+        for emp in grp_data["employees"]:
+            tot_emp_count += 1
+            emp_name = emp["name"]
+            
+            w_days = get_monthly_working_days(year, month, grp_name, emp_name)
+            
+            key = f"{emp_name}_{grp_name}"
+            if key not in baselines:
+                key = emp_name
+            
+            absent_days = float(baselines.get(key, 0.0))
+            present_days = max(0.0, w_days - absent_days)
+            
+            tot_working_days_all += w_days
+            tot_present_days_all += present_days
+            tot_absent_days_all += absent_days
+
+            abs_str = f"{absent_days:g}"
+            pres_str = f"{present_days:g}"
+
+            is_sat_off = (grp_name, emp_name) in SATURDAY_OFF_EMPLOYEES
+            schedule_note = " (5-day week)" if is_sat_off else ""
+            
+            grp_lines.append(f"  • *{emp_name}*: *{pres_str}* Pres / *{w_days}* Wrk ({abs_str} Ab){schedule_note}")
+
+        lines.extend(grp_lines)
+
+    lines.extend([
+        "\n==================================================",
+        f"📊 *OVERALL MONTHLY SUMMARY:*",
+        f"👥 Total Employees: *{tot_emp_count}*",
+        f"🟢 Total Present Days: *{tot_present_days_all:g}*",
+        f"🔴 Total Absent/Leave Days: *{tot_absent_days_all:g}*",
+        f"💼 Total Working Days Pool: *{tot_working_days_all}*",
+        "=================================================="
+    ])
+
+    return "\n".join(lines)
 
 if __name__ == "__main__":
     report_data = evaluate_attendance_for_date()
