@@ -1,66 +1,66 @@
 📋 *Daily Attendance Report*
-📅 *Date:* 25 Sep 2026
+📅 *Date:* 29 Sep 2026
 ==================================================
 
 🏢 *AI & IOT*
-  • *Akshay* (Ab - 3.5) : 🔴 Absent
-  • *Kusum* (Ab - 2.5) : 🔴 Absent
-  • *Poornima* (Ab - 3.5) : 🔴 Absent
-  • *Ramya* (Ab - 4) : 🔴 Absent
+  • *Akshay* (Ab - 3) : 🔵 On Leave
+  • *Kusum* (Ab - 2) : 🔴 Absent
+  • *Poornima* (Ab - 3) : 🔴 Absent
+  • *Ramya* (Ab - 4.5) : 🟡 Half Day (Late Login)
 
 🏢 *Sunfra OLX CEE*
   • *Asif* (Ab - 0.5) : 🔴 Absent
-  • *Prasanna* (Ab - 0.5) : 🔴 Absent
-  • *Yashaswini* (Ab - 1.5) : 🔴 Absent
+  • *Prasanna* (Ab - 0) : 🟡 Half Day (No Logout)
+  • *Yashaswini* (Ab - 1) : 🔴 Absent
 
 🏢 *Jataayu*
-  • *Roopa* (Ab - 1.5) : 🔴 Absent
+  • *Roopa* (Ab - 2.5) : 🟡 Half Day (Late Login)
 
 🏢 *Sunfra Corporate*
-  • *Divya* (Ab - 2) : 🔴 Absent
-  • *Prajwal* (Ab - 3) : 🔴 Absent
+  • *Divya* (Ab - 2) : 🟡 Half Day (8 hrs Not Completed)
+  • *Prajwal* (Ab - 2) : 🔴 Absent
 
 🏢 *Sunfra Mudah*
-  • *Aishwarya* (Ab - 2.5) : 🔴 Absent
-  • *Akshay* (Ab - 1.5) : 🔴 Absent
-  • *Bharath* (Ab - 0.5) : 🔴 Absent
-  • *Krishna* (Ab - 2.5) : 🔴 Absent
-  • *Lakshmi* (Ab - 1) : 🔴 Absent
-  • *Nisha* (Ab - 1.5) : 🔴 Absent
-  • *Ravi Teja* (Ab - 2) : 🔴 Absent
-  • *Thanuja* (Ab - 3) : 🔴 Absent
+  • *Aishwarya* (Ab - 2) : 🟡 Half Day (8 hrs Not Completed)
+  • *Akshay* (Ab - 1) : 🟡 Half Day (8 hrs Not Completed)
+  • *Bharath* (Ab - 0) : 🔴 Absent
+  • *Krishna* (Ab - 2) : 🟡 Half Day (8 hrs Not Completed)
+  • *Lakshmi* (Ab - 0) : 🟡 Half Day (8 hrs Not Completed)
+  • *Nisha* (Ab - 1) : 🟡 Half Day (8 hrs Not Completed)
+  • *Ravi Teja* (Ab - 1.5) : 🟡 Half Day (8 hrs Not Completed)
+  • *Thanuja* (Ab - 2.5) : 🔴 Absent
 
 🏢 *Sunfra HR Team*
-  • *Bhanushree* (Ab - 2) : 🔴 Absent
-  • *Parvati* (Ab - 2) : 🔴 Absent
+  • *Bhanushree* (Ab - 0.5) : 🔴 Absent
+  • *Parvati* (Ab - 0.5) : 🔴 Absent
 
 🏢 *Indus*
-  • *Girija* (Ab - 8.5) : 🔴 Absent
-  • *Jagadish* (Ab - 2.5) : 🔴 Absent
+  • *Girija* (Ab - 11.5) : 🔴 Absent
+  • *Jagadish* (Ab - 3) : 🔴 Absent
 
 🏢 *Sunfra Farms*
-  • *Mahalakshmi* (Ab - 2) : 🟡 Half Day
+  • *Mahalakshmi* (Ab - 1.5) : 🟡 Half Day (8 hrs Not Completed)
 
 🏢 *Sunfra Feeds*
-  • *Venkat* (Ab - 3.5) : 🔴 Absent
+  • *Venkat* (Ab - 4) : 🟡 Half Day (8 hrs Not Completed)
 
 🏢 *Management Team*
-  • *Balaji* (Ab - 0.5) : 🔴 Absent
-  • *Nani* (Ab - 0.5) : 🔴 Absent
+  • *Balaji* (Ab - 0) : 🔴 Absent
+  • *Nani* (Ab - 0) : 🔴 Absent
   • *Nikhil* (Ab - 0.5) : 🔴 Absent
-  • *Prasad* (Ab - 2.5) : 🔴 Absent
-  • *Prathiba* (Ab - 1.5) : 🔴 Absent
-  • *Vamsi* (Ab - 1.5) : 🔴 Absent
+  • *Prasad* (Ab - 3) : 🟡 Half Day (Late Login)
+  • *Prathiba* (Ab - 0.5) : 🔴 Absent
+  • *Vamsi* (Ab - 0) : 🔴 Absent
 
 🏢 *Tendered*
-  • *Ganga* (Ab - 0.5) : 🔴 Absent
+  • *Ganga* (Ab - 0) : 🔴 Absent
 
 ==================================================
 📊 *OVERALL STATS:*
 👥 Total Employees: *31*
 🟢 Present (Full Day): *0*
 ⚪ Half Day Present: *0*
-🟡 Half Day: *1*
-🔵 On Leave: *0*
-🔴 Absent: *30*
+🟡 Half Day: *13*
+🔵 On Leave: *1*
+🔴 Absent: *17*
 ==================================================
