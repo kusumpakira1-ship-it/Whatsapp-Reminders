@@ -17,7 +17,7 @@ IST = timezone(timedelta(hours=5, minutes=30))
 GMAIL_EMAIL = os.getenv("PAPAAK_EMAIL", "kusum@sunfra.com")
 GMAIL_APP_PASS = os.getenv("PAPAAK_APP_PASS", "kfgykqtorkchfkke")
 
-PAPAAK_RECIPIENTS = ["917259510983@c.us", "120363405877065233@g.us"]
+PAPAAK_RECIPIENTS = ["917259510983@c.us"]
 
 # Standard City Order for Report
 LOADING_CENTERS = ["HPT", "HYD", "NKL", "BWL", "KOL", "MYS"]
