@@ -12,7 +12,9 @@ BLOCKED_PHONES = ['9346763549', '919346763549']
 
 def get_waha_url() -> str:
     url = getattr(settings, 'WAHA_URL', '') or os.getenv("WAHA_URL", "http://localhost:3000")
-    if os.name == 'nt' or not os.path.exists("/.dockerenv"):
+    if os.path.exists("/.dockerenv"):
+        url = url.replace("localhost", "waha").replace("host.docker.internal", "waha")
+    elif os.name == 'nt':
         url = url.replace("host.docker.internal", "localhost")
     return url.rstrip("/")
 

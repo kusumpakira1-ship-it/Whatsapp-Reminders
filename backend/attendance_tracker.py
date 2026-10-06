@@ -16,10 +16,16 @@ COMMUNITY_EMPLOYEES = [
         "group": "AI & IOT",
         "group_jids": ["120363429469512014", "ai & iot"],
         "employees": [
-            {"name": "Kusum", "phone": "7975209680", "aliases": ["kusum", "kusumpakira", "7975209680", "917975209680", "183300681367688"]},
             {"name": "Poornima", "phone": "7204484516", "aliases": ["poornima", "poorna", "207627359363311", "7204484516", "917204484516"]},
             {"name": "Akshay", "phone": "9019713446", "aliases": ["akshay", "akshay i h", "akshay - a", "206686828683301", "9019713446", "919019713446"]},
             {"name": "Ramya", "phone": "7019063646", "aliases": ["ramya", "259149770277018", "7019063646", "917019063646"]},
+        ]
+    },
+    {
+        "group": "Sunfra AI",
+        "group_jids": ["120363429469512014", "ai attendance", "ai", "sunfra ai"],
+        "employees": [
+            {"name": "Kusum", "phone": "7975209680", "aliases": ["kusum", "kusumpakira", "7975209680", "917975209680", "183300681367688"]},
         ]
     },
     {
@@ -64,7 +70,6 @@ COMMUNITY_EMPLOYEES = [
         "group": "Sunfra HR Team",
         "group_jids": ["120363431222906850", "sunfra hr team"],
         "employees": [
-            {"name": "Parvati", "phone": "7995452523", "aliases": ["parvati", "paru bavisetti", "245225503076572", "7995452523", "917995452523"]},
             {"name": "Bhanushree", "phone": "9901497574", "aliases": ["bhanushree", "bhanushree n.t", "bhanu", "81991244460218", "9901497574", "919901497574"]},
         ]
     },
@@ -74,6 +79,7 @@ COMMUNITY_EMPLOYEES = [
         "employees": [
             {"name": "Girija", "phone": "8618580633", "aliases": ["girija", "girijaa dn", "133522631176396", "8618580633", "918618580633"]},
             {"name": "Jagadish", "phone": "7676711899", "aliases": ["jagadish", "7676711899", "917676711899"]},
+            {"name": "RaviTeja", "phone": "9535843064", "aliases": ["raviteja", "ravi teja", "9535843064", "919535843064"]},
         ]
     },
     {
@@ -234,7 +240,7 @@ def evaluate_attendance_for_date(target_date_str: str = None) -> dict:
                 login_kws = ["login", "log in", "logged in", "loged in", "logedin", "logging in", "loging in", "sign in", "signing in", "signed in", "morning team", "good morning team", "good morning", "morning", "present", "in", "im in", "i'm in"]
                 logout_kws = ["logout", "log out", "logged out", "loged out", "logedout", "logging out", "loging out", "sign out", "signout", "signing out", "signed out", "sign off", "signoff", "signing off", "signed off", "bye team", "bye all", "signing off team", "out", "im out", "i'm out"]
                 lunch_kws = ["lunch", "lunch break", "out for lunch", "going for lunch", "leaving for lunch"]
-                break_kws = ["tea", "tea break", "tea-break", "snacks", "coffee", "brb", "afk", "taking break", "on break"]
+                break_kws = ["break", "tea", "tea break", "tea-break", "snacks", "coffee", "brb", "afk", "taking break", "on break", "short break"]
                 break_start_kws = lunch_kws + break_kws
                 break_end_kws = ["back", "return", "returned", "back to work", "rejoined"]
                 leave_regex = re.compile(r'\b(leave|on\s+leave|taking\s+leave|leave\s+today|sick\s+leave|casual\s+leave|applied\s+leave|planned\s+leave|cl|sl|eave)\b', re.IGNORECASE)
@@ -351,6 +357,10 @@ def evaluate_attendance_for_date(target_date_str: str = None) -> dict:
                 # User confirmation override: Balaji logged in on 2026-09-19
                 if emp_name == "Balaji" and not login_time and target_date_str == "2026-09-19":
                     login_time = datetime.strptime(f"{target_date_str} 09:00:00", "%Y-%m-%d %H:%M:%S")
+
+                # Fallback login time for active employees who posted work/break messages today
+                if not login_time and matched_msgs:
+                    login_time = matched_msgs[0].timestamp
 
                 has_unclosed_break = False
                 if curr_break_start:
@@ -512,6 +522,20 @@ BASELINES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "emplo
 PROCESSED_DATES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "processed_attendance_dates.json")
 
 
+def check_and_reset_monthly_baselines(target_month_str: str, baselines: dict) -> tuple:
+    """Resets employee absence baselines to 0.0 at the start of a new month."""
+    stored_month = baselines.get("_current_month")
+    if stored_month != target_month_str:
+        logger.info(f"New month detected ({target_month_str} vs {stored_month}). Resetting employee absence baselines to 0.0.")
+        new_baselines = {"_current_month": target_month_str}
+        for k, v in baselines.items():
+            if k == "_current_month":
+                continue
+            new_baselines[k] = 0.0
+        return new_baselines, True
+    return baselines, False
+
+
 def update_daily_absence_increments(data: dict):
     """Automatically increments employee monthly absence baseline when daily attendance is finalized for a new date."""
     target_date_str = data.get("date")
@@ -545,6 +569,9 @@ def update_daily_absence_increments(data: dict):
             with open(BASELINES_FILE, "r") as f:
                 baselines = json.load(f)
 
+        target_month_str = target_date_str[:7]
+        baselines, _ = check_and_reset_monthly_baselines(target_month_str, baselines)
+
         for g in data.get("groups", []):
             grp_name = g.get("group_name", "")
             for emp in g.get("employees", []):
@@ -577,24 +604,32 @@ def update_daily_absence_increments(data: dict):
 
 
 def get_employee_absence_label(emp_name: str, grp_name: str) -> str:
-    """Returns the monthly absence/leave count label string (e.g. ' 3' or ' 2.5')."""
+    """Returns the monthly absence/leave count label string (e.g. ' (Ab - 3)' or ' (Ab - 2.5)')."""
     try:
         baselines = {}
         if os.path.exists(BASELINES_FILE):
             with open(BASELINES_FILE, "r") as f:
                 baselines = json.load(f)
         
+        current_month_str = datetime.now().strftime("%Y-%m")
+        baselines, reset_occurred = check_and_reset_monthly_baselines(current_month_str, baselines)
+        if reset_occurred:
+            try:
+                with open(BASELINES_FILE, "w") as f:
+                    json.dump(baselines, f, indent=2)
+            except Exception:
+                pass
+        
         key = f"{emp_name}_{grp_name}"
-        if key not in baselines:
+        if key not in baselines and emp_name in baselines:
             key = emp_name
             
-        cnt = baselines.get(key, None)
-        if cnt is not None:
-            cnt_str = str(int(cnt)) if cnt == int(cnt) else str(cnt)
-            return f" (Ab - {cnt_str})"
+        cnt = baselines.get(key, 0.0)
+        cnt_str = str(int(cnt)) if cnt == int(cnt) else str(cnt)
+        return f" (Ab - {cnt_str})"
     except Exception:
         pass
-    return ""
+    return " (Ab - 0)"
 
 def generate_attendance_summary_message(data: dict) -> str:
     dt = datetime.strptime(data['date'], '%Y-%m-%d')

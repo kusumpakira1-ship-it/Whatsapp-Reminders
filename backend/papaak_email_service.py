@@ -20,8 +20,8 @@ GMAIL_APP_PASS = os.getenv("PAPAAK_APP_PASS", "kfgykqtorkchfkke")
 PAPAAK_RECIPIENTS = ["917259510983@c.us"]
 
 # Standard City Order for Report
-LOADING_CENTERS = ["HPT", "HYD", "NKL", "BWL", "KOL", "MYS"]
-PAPER_CENTERS = ["CHE", "BLR", "HPT", "HYD", "NKL", "MYS", "BWL"]
+LOADING_CENTERS = ["HPT", "HYD", "NKL", "BWL", "MYS"]
+PAPER_CENTERS = ["CHE", "BLR", "HPT", "HYD", "NKL", "MYS", "BWL", "KOL"]
 
 FEED_COMMODITIES = [
     ("BAJ", ["DLH"]),
@@ -167,11 +167,15 @@ def parse_egg_email_text(email_text: str, msg_date: datetime):
     # Even if email text says 'PAPER RATE FOR TOMORROW', it applies to today's daily cycle
     email_date = msg_date.date()
     paper_target_date = email_date
-    is_evening = msg_date.hour >= 17
+    msg_hour = msg_date.hour
+    is_morning_paper = (6 <= msg_hour < 9)
+    is_daytime_loading = (9 <= msg_hour < 17)
+    is_evening = (msg_hour >= 17)
 
     # Process line by line
-    is_entire_msg_paper = ("PAPER RATE FOR" in text_upper or "PPR RATE FOR" in text_upper)
+    is_entire_msg_paper = ("PAPER RATE FOR" in text_upper or "PPR RATE FOR" in text_upper or is_morning_paper)
     is_paper_section = is_entire_msg_paper
+    is_time_egg_section = False
     is_closing_section = False
     is_feed_section = any(k in text_upper for k in ["SOY", "MAZ", "DRB", "BAJ", "GNE45", "DMC", "FEED", "RAW MATERIAL"])
     
@@ -184,16 +188,19 @@ def parse_egg_email_text(email_text: str, msg_date: datetime):
         if "CLOSING" in line_upper:
             is_closing_section = True
             is_paper_section = False
+            is_time_egg_section = False
             continue
 
         if ("PAPER RATE FOR" in line_upper or "PPR RATE FOR" in line_upper):
             is_paper_section = True
             is_closing_section = False
+            is_time_egg_section = False
             continue
 
         if (line_upper.startswith("PAPER RATE") or line_upper.startswith("PPR RATE")):
             is_paper_section = True
             is_closing_section = False
+            is_time_egg_section = False
             # check inline like PAPER RATE HYD 520 or PPR RATE BWL:540
             cleaned_line = line_upper.replace("PAPER RATE", "").replace("PPR RATE", "")
             matches_inline = list(re.finditer(r'\b([A-Z\(\)]+)\s*[:\s]\s*(\d{3})\b', cleaned_line))
@@ -211,9 +218,9 @@ def parse_egg_email_text(email_text: str, msg_date: datetime):
 
         # If a new time-based Egg loading rate announcement starts, e.g. "11:15 Egg" or "8:02 Egg"
         if re.search(r'\b\d{1,2}:\d{2}\s*EGG\b', line_upper) or line_upper == "EGG":
-            if not is_entire_msg_paper:
-                is_paper_section = False
-                is_closing_section = False
+            is_time_egg_section = True
+            is_paper_section = False
+            is_closing_section = False
             continue
 
         # 1. Match Feed/Raw Material pattern e.g. "SOY-3850", "MAZ:1950", "DRB-1200", "BAJ 1800", "SOY HYP-3900", "GNE45-2100", "DMC-1500"
@@ -235,18 +242,33 @@ def parse_egg_email_text(email_text: str, msg_date: datetime):
             city = match.group(1).strip()
             rate = int(match.group(2))
             
-            # Categorize rate
-            if is_paper_section:
+            # Categorize rate based on explicit time windows & sections:
+            if is_morning_paper:
+                cat = "paper"
+                rec_date = paper_target_date
+            elif is_time_egg_section:
+                cat = "loading"
+                rec_date = email_date
+            elif is_closing_section:
+                cat = "loading"
+                rec_date = email_date
+            elif is_paper_section:
                 cat = "paper"
                 rec_date = paper_target_date
             elif is_closing_section:
-                cat = "loading" if city in LOADING_CENTERS else ("paper" if is_evening and city in PAPER_CENTERS else "loading")
+                cat = "paper" if city in PAPER_CENTERS else "loading"
+                rec_date = email_date
+            elif is_daytime_loading:
+                cat = "loading"
+                rec_date = email_date
+            elif is_evening:
+                cat = "paper" if city in PAPER_CENTERS else "loading"
                 rec_date = email_date
             elif is_feed_section and city not in LOADING_CENTERS and city not in PAPER_CENTERS:
                 cat = "feed"
                 rec_date = email_date
             else:
-                cat = "loading" if city in LOADING_CENTERS else ("paper" if is_evening and city in PAPER_CENTERS else "loading")
+                cat = "paper" if city in PAPER_CENTERS else "loading"
                 rec_date = email_date
 
             parsed_records.append({
@@ -575,11 +597,15 @@ def fetch_and_process_papaak_emails(notify_on_new: bool = True):
 
         # 1. First forward all raw email messages to WhatsApp
         for email_uid, forward_msg, is_feed in pending_raw_forwards:
+            sent_any = False
             for target in PAPAAK_RECIPIENTS:
                 logger.info(f"Auto-forwarding raw PAPAAK email ({'FEED' if is_feed else 'EGG'}) to {target}...")
-                send_waha_message(target, forward_msg)
-            mark_email_id_forwarded(email_uid)
-            forwarded_ids.add(email_uid)
+                ok = send_waha_message(target, forward_msg)
+                if ok:
+                    sent_any = True
+            if sent_any:
+                mark_email_id_forwarded(email_uid)
+                forwarded_ids.add(email_uid)
 
         # 2. AFTER all raw messages are forwarded, dispatch ONE consolidated formatted report
         if notify_on_new:
@@ -640,6 +666,8 @@ def generate_daily_egg_rates_report(target_date=None, report_number: int = None)
         # Fetch latest loading rates for target_date and compare against previous day
         loading_rates = {}
         paper_rates = {}
+        fallback_loading = {"HPT": 485, "HYD": 505, "NKL": 520, "BWL": 522, "MYS": 600}
+        fallback_paper = {"CHE": 600, "BLR": 585, "HPT": 525, "HYD": 520, "NKL": 540, "MYS": 605, "BWL": 522, "KOL": 590}
 
         # 1. Loading Rates (compared with yesterday's loading rates)
         for city in LOADING_CENTERS:
@@ -655,42 +683,28 @@ def generate_daily_egg_rates_report(target_date=None, report_number: int = None)
                         PapaakEggRate.date < target_date,
                         PapaakEggRate.city_code == city,
                         PapaakEggRate.category == "loading"
-                    ).order_by(PapaakEggRate.date.desc(), PapaakEggRate.id.desc()).first()
+                    ).order_by(PapaakEggRate.date.desc(), PapaakEggRate.id.asc()).first()
 
-                    if prev_record:
-                        diff_val = r.rate_value - prev_record.rate_value
-                    else:
-                        diff_val = r.diff_value
+                    prev_loading_val = prev_record.rate_value if prev_record else fallback_loading.get(city, 485)
+                    diff_val = r.rate_value - prev_loading_val
                 else:
                     diff_val = 0
 
                 diff_str = f"(+{diff_val})" if diff_val > 0 else f"({diff_val})"
                 loading_rates[city] = f"{r.rate_value}{diff_str}"
             else:
-                defaults = {"HPT": "500(0)", "HYD": "510(0)", "NKL": "520(0)", "BWL": "558(0)", "KOL": "605(0)", "MYS": "610(0)"}
-                loading_rates[city] = defaults.get(city, "500(0)")
+                default_val = fallback_loading.get(city, 500)
+                loading_rates[city] = f"{default_val}(0)"
 
         # 2. Paper Rates (compared with yesterday's paper rates)
-        # User Directive: If morning, daytime or evening announces paper rate for a city (e.g. PAPER RATE HYD 520, PPR RATE BWL:540),
-        # accept it immediately for that city and compute diff against yesterday's closing benchmark.
-        # For cities without any paper rate announced today yet, show yesterday's closing benchmark with (0) in brackets.
         for city in PAPER_CENTERS:
             # Yesterday's closing benchmark paper rate
             yesterday_paper = db.query(PapaakEggRate).filter(
                 PapaakEggRate.date < target_date,
                 PapaakEggRate.city_code == city,
                 PapaakEggRate.category == "paper"
-            ).order_by(PapaakEggRate.date.desc(), PapaakEggRate.id.desc()).first()
+            ).order_by(PapaakEggRate.date.desc(), PapaakEggRate.id.asc()).first()
 
-            fallback_paper = {
-                "CHE": 600,
-                "BLR": 580,
-                "HPT": 520,
-                "HYD": 520,
-                "NKL": 560,
-                "MYS": 590,
-                "BWL": 558
-            }
             yesterday_rate = yesterday_paper.rate_value if yesterday_paper else fallback_paper.get(city, 540)
 
             # Check if this city has an announced paper rate today (morning, noon, or evening)
