@@ -20,6 +20,8 @@ services:
       - WHATSAPP_DEFAULT_ENGINE=WEBJS
       - WAHA_DASHBOARD_NO_PASSWORD=true
       - WAHA_API_KEY=123
+      - WAHA_AUTO_START=true
+      - WHATSAPP_RESTART_ON_CRASH=true
       - WAHA_WEBHOOK_URL=http://fastapi-backend.com:8000/webhook
       - WAHA_WEBHOOK_EVENTS=message,message.any
       - WHATSAPP_HOOK_URL=http://fastapi-backend.com:8000/webhook
@@ -28,9 +30,11 @@ services:
       - WHATSAPP_CLIENT_PUPS_TIMEOUT=0
       - WHATSAPP_RESTART_ALL_SESSIONS=true
       - WAHA_LOCAL_STORE_PATH=/app/.waha
+      - NODE_OPTIONS=--max-old-space-size=4096
       - NODE_TLS_REJECT_UNAUTHORIZED=0
     volumes:
       - ./waha_data:/app/.waha
+
 
   # ─────────────────────────────────────────────
   # BACKEND — FastAPI Python Application
