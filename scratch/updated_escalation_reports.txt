@@ -1,0 +1,61 @@
+=== UPDATED TODAY ESCALATION REPORTS ===
+
+--- COMPANY REPORT 1 ---
+1️⃣ *Ai iOT Team Reports:*
+• Balaji (Approval Task): *Report Review & Approval* - ❌
+• Balaji Team: *Daily Work Update* - ❌
+
+🚨 *Total Failed Today: 2*
+📅 *Total Failed this Week: 4*
+🗓️ *Total Failed this Month: 5*
+📋 *Total Tasks this Month: 10*
+---
+
+--- COMPANY REPORT 2 ---
+2️⃣ *Corporate Company (P&L) Reports:*
+• Sunfra Corporate P&L: *Daily Purchases* - ❌
+• Sunfra Corporate P&L: *Daily Sales* - ❌
+• Sunfra Corporate P&L: *Day Book* - ❌
+• Sunfra Corporate P&L: *Each Sales P&L* - ❌
+• Sunfra Corporate P&L: *Total Payables* - ❌
+• Sunfra Corporate P&L: *Total Receivables* - ❌
+
+🚨 *Total Failed Today: 6*
+📅 *Total Failed this Week: 8*
+🗓️ *Total Failed this Month: 8*
+📋 *Total Tasks this Month: 31*
+---
+
+--- COMPANY REPORT 3 ---
+3️⃣ *Sunfra Feed Tasks & Reports:*
+• Summary - Sunfra Feeds: *Daily Purchases* - ❌
+• Summary - Sunfra Feeds: *Daily Sales* - ❌
+• Summary - Sunfra Feeds: *Day Book* - ❌
+• Summary - Sunfra Feeds: *Each Sales P&L* - ❌
+• Summary - Sunfra Feeds: *Total Payables* - ❌
+• Summary - Sunfra Feeds: *Total Receivables* - ❌
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ❌
+
+🚨 *Total Failed Today: 7*
+📅 *Total Failed this Week: 12*
+🗓️ *Total Failed this Month: 16*
+📋 *Total Tasks this Month: 38*
+---
+
+--- COMPANY REPORT 4 ---
+4️⃣ *Sunfra Farms Tasks & Reports:*
+• Accounts Poultry: *CA Statement* - ❌
+• Accounts Poultry: *Daily Purchases* - ❌
+• Accounts Poultry: *Daily Sales* - ❌
+• Accounts Poultry: *Day Book* - ❌
+• Accounts Poultry: *Total Payables* - ❌
+• Accounts Poultry: *Total Receivables* - ❌
+• Rule Book: *Rule Book Updates* - ❌
+• Sunfra P&L: *Profit & Loss Summary* - ❌
+
+🚨 *Total Failed Today: 8*
+📅 *Total Failed this Week: 10*
+🗓️ *Total Failed this Month: 14*
+📋 *Total Tasks this Month: 41*
+---
+

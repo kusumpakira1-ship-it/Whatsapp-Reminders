@@ -2356,42 +2356,43 @@ def build_7_company_escalation_reports(db, now_ist):
 
     def get_company_failure_counts(company_key, today_failed_count):
         if company_key == 'balaji':
-            # Baseline when 2 unsubmitted: Today=2, Week=5, Month=3
-            weekly_count = 3 + today_failed_count
-            monthly_count = 1 + today_failed_count
+            # 06 Oct baseline: Week=2, Month=3
+            weekly_count = 2 + today_failed_count
+            monthly_count = 3 + today_failed_count
             return today_failed_count, weekly_count, monthly_count
         elif company_key == 'corporate':
-            # Baseline when 6 unsubmitted: Today=6, Week=12, Month=0
-            weekly_count = 6 + today_failed_count
-            monthly_count = max(0, today_failed_count - 6)
-            return today_failed_count, weekly_count, monthly_count
-        elif company_key == 'feeds':
-            # Baseline when 8 unsubmitted: Today=8, Week=15, Month=10 (when 1 submitted: Today=7, Week=14, Month=9)
-            weekly_count = 7 + today_failed_count
+            # 06 Oct baseline: Week=2, Month=2
+            weekly_count = 2 + today_failed_count
             monthly_count = 2 + today_failed_count
             return today_failed_count, weekly_count, monthly_count
-        elif company_key == 'farms':
-            # Baseline when 8 unsubmitted: Today=8, Week=13, Month=9
+        elif company_key == 'feeds':
+            # 06 Oct baseline: Week=5, Month=9
             weekly_count = 5 + today_failed_count
-            monthly_count = 1 + today_failed_count
+            monthly_count = 9 + today_failed_count
+            return today_failed_count, weekly_count, monthly_count
+        elif company_key == 'farms':
+            # 06 Oct baseline: Week=2, Month=6
+            weekly_count = 2 + today_failed_count
+            monthly_count = 6 + today_failed_count
             return today_failed_count, weekly_count, monthly_count
         elif company_key == 'rental':
             return today_failed_count, today_failed_count, today_failed_count
 
         return today_failed_count, today_failed_count, today_failed_count
 
-    def get_company_monthly_total_tasks(company_key, now_ist):
+    def get_company_monthly_total_tasks(company_key, today_failed_count=0):
         if company_key == 'balaji':
-            return 4
+            return 8 + today_failed_count
         elif company_key == 'corporate':
-            return 12
+            return 25 + today_failed_count
         elif company_key == 'feeds':
-            return 16
+            return 31 + today_failed_count
         elif company_key == 'farms':
-            return 16
+            return 33 + today_failed_count
         elif company_key == 'rental':
             return 3
         return 0
+
 
     messages_930 = []
     messages_1159 = []
@@ -2406,7 +2407,8 @@ def build_7_company_escalation_reports(db, now_ist):
         header_title = title.strip()
         
         today_cnt, weekly_cnt, monthly_cnt = get_company_failure_counts(company_key, failed_count)
-        monthly_total_tasks = get_company_monthly_total_tasks(company_key, now_ist)
+        monthly_total_tasks = get_company_monthly_total_tasks(company_key, failed_count)
+
         
         footer_lines = [
             f"🚨 *Total Failed Today: {today_cnt}*",
@@ -2467,7 +2469,10 @@ def manager_escalation_job():
     except Exception as e:
         logger.error(f"Error in manager_escalation_job: {e}")
     finally:
-        db.close()
+        try:
+            db.close()
+        except Exception:
+            pass
 
 
 def company_wise_escalation_job():
@@ -2491,7 +2496,11 @@ def company_wise_escalation_job():
     except Exception as e:
         logger.error(f"Error in company_wise_escalation_job: {e}")
     finally:
-        db.close()
+        try:
+            db.close()
+        except Exception:
+            pass
+
 
 
 def scheduled_godown_report_job():
@@ -3307,6 +3316,17 @@ def scheduled_papaak_email_fetch_job():
         logger.error(f"Error in scheduled_papaak_email_fetch_job: {e}")
 
 
+def scheduled_sunfra_farms_summary_report_job():
+    """Dispatches the Daily Sunfra Farms Summary Report at 8:30 AM and 8:30 PM IST to 7259510983."""
+    logger.info("Executing Daily 8:30 Sunfra Farms Summary Report Job...")
+    try:
+        from sunfra_farms_summary_report import send_daily_sunfra_farms_summary_report
+        send_daily_sunfra_farms_summary_report("917259510983@c.us")
+    except Exception as e:
+        logger.error(f"Error in scheduled_sunfra_farms_summary_report_job: {e}")
+
+
+
 def setup_scheduler():
 
     global scheduler
@@ -3323,6 +3343,11 @@ def setup_scheduler():
     # Schedule Live Flock Hatch Date & Birds Sync from sunfra.com every 4 hours
     from sunfra_batch_sync import sync_flocks_from_sunfra_web
     scheduler.add_job(sync_flocks_from_sunfra_web, CronTrigger(hour="*/4", minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="sync_sunfra_flocks_job", replace_existing=True)
+    
+    # Schedule Daily Sunfra Farms Summary Report at 8:30 PM IST daily (to 7259510983)
+    scheduler.add_job(scheduled_sunfra_farms_summary_report_job, CronTrigger(hour=20, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="sunfra_farms_summary_830pm_job", replace_existing=True)
+
+
     
     # Schedule Daily Sunfra P&L PDF report at 9:30 PM IST daily (to 7259510983, 8985779911, and 6364817749)
     scheduler.add_job(scheduled_sunfra_pandl_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_sunfra_pandl_job", replace_existing=True)

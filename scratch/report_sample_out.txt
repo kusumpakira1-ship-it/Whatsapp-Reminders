@@ -1,0 +1,28 @@
+🌾*Sunfra Farms Summary Report*
+*Date:* 07 Oct 2026
+
+*Shead 1:*
+Feed Consumed: 4.81 Tons
+Water Consumed: 1626.20 Litres
+Avg Water Consumed: 10.3L / 100 birds (Low 🔵)
+
+*Shead 2:* 🔴 Not Installed
+*Shead 3:* 🔴 Not Installed
+*Shead 4:* 🔴 Not Installed
+*Shead 5:* 🔴 Not Installed
+*Shead 6:* 🔴 Not Installed
+*Shead 7:* 🔴 Not Installed
+*Shead 8:* 🔴 Not Installed
+*Shead Chick:* 🔴 Not Connected
+*Shead Grower:* 🔴 Not Installed
+
+*Today Weather Report:*
+Temperature: 33°C
+Feels Like: 34°C
+Wind Speed: 10 km/h
+
+*Tomorrow Weather Forecast:*
+Temperature: 21°C - 34°C
+Feels Like: 25°C - 35°C
+Wind Speed: 3 km/h
+Rain Expected %: 72% (Expected around 6:00 PM, 9:00 PM)

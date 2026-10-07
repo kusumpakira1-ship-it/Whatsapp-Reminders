@@ -1,0 +1,444 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Sunfra Dashboard</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+	body{
+		margin:0;
+		font-family:Poppins,Arial,sans-serif;
+		background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+		color:#fff;
+	}
+	.dashboard {
+		padding: 20px;
+		display: grid;
+		grid-template-columns: 1fr 1fr;  
+		gap: 20px;
+		max-width: 1200px;
+		margin: 0 auto;
+	}
+
+	@media (max-width: 768px) {
+		.dashboard {
+			grid-template-columns: 1fr; 
+			padding: 15px;
+			gap: 15px;
+		}
+
+		.card-header {
+			font-size: 16px;
+		}
+
+		.card-value {
+			font-size: 28px;
+		}
+
+		.silo-item, .temp-item, .water-item {
+			font-size: 12px;
+		}
+	}
+
+	.card{
+		padding:20px;
+		border-radius:18px;
+		background:rgba(255,255,255,0.12);
+		backdrop-filter:blur(12px);
+		box-shadow:0 20px 40px rgba(0,0,0,.35);
+		border:2px solid transparent;
+	}
+	.card-header{
+		display:flex;
+		align-items:center;
+		gap:10px;
+		font-size:18px;
+		margin-bottom:15px;
+	}
+	.card-value{
+		font-size:40px;
+	}
+	.card small{font-size:14px;opacity:.8}
+
+	.silo-item{
+		margin-bottom:12px;
+	}
+	.progress{
+		background:rgba(255,255,255,.25);
+		border-radius:8px;
+		height:10px;
+		overflow:hidden;
+	}
+	.progress-fill{
+		height:100%;
+		width:0;
+		transition:.5s;
+	}
+	.good{color:#2ecc71}
+	.warn{color:#f39c12}
+	.crit{color:#e74c3c}
+	.water-item{
+		margin-bottom:10px;
+		padding:8px 10px;
+		border-radius:10px;
+		background:rgba(255,255,255,0.08);
+	}
+
+	.water-low{
+		border-left:4px solid #2ecc71;
+	}
+	.water-mid{
+		border-left:4px solid #f39c12;
+	}
+	.water-high{
+		border-left:4px solid #e74c3c;
+	}
+
+	.water-bar{
+		height:6px;
+		border-radius:6px;
+		background:rgba(255,255,255,0.2);
+		margin-top:6px;
+		overflow:hidden;
+	}
+
+	.water-bar-fill{
+		height:100%;
+		width:0;
+		transition:0.5s;
+	}.temp-item{
+		margin-bottom:14px;
+		padding:12px;
+		border-radius:12px;
+		background:rgba(255,255,255,0.08);
+	}
+
+	.temp-good{ border-left:4px solid #2ecc71; }
+	.temp-warn{ border-left:4px solid #f39c12; }
+	.temp-crit{ border-left:4px solid #e74c3c; }
+
+	.temp-bar{
+		height:8px;
+		border-radius:8px;
+		background:rgba(255,255,255,.25);
+		overflow:hidden;
+		margin-top:6px;
+	}
+
+	.temp-bar-fill{
+		height:100%;
+		width:0;
+		transition:0.6s;
+	}
+</style>
+</head>
+
+<body>
+
+<input type="hidden" id="client_id" value="1">
+
+<div class="dashboard">
+
+<div class="card" id="tempCard">
+    <div class="card-header">
+        <i class="fas fa-temperature-high"></i> Temperature Monitoring
+    </div>
+    <div id="tempList">Loading...</div>
+</div>
+
+<div class="card" id="siloCard">
+    <div class="card-header"><i class="fas fa-warehouse"></i> Silo Monitoring</div>
+    <div id="siloList">Loading...</div>
+</div>
+
+<div class="card" id="waterCard">
+    <div class="card-header"><i class="fas fa-water"></i> Water Usage (Today)</div>
+    <div class="card-value">
+        <span id="waterValue">--</span> L
+    </div>
+    <div id="waterDetails">Loading...</div>
+    <small id="waterTime"></small>
+</div>
+
+<div class="card" id="tankCard">
+    <div class="card-header">
+        <i class="fas fa-oil-can"></i> Tank Level
+    </div>
+    <div id="tankList">Loading...</div>
+</div>
+
+</div>
+
+<script>
+const clientId = document.getElementById("client_id").value;
+
+function isToday(dateString) {
+    if (!dateString) return false;
+
+    const today = new Date();
+    const dataDate = new Date(dateString.replace(" ", "T"));
+
+    return (
+        today.getFullYear() === dataDate.getFullYear() &&
+        today.getMonth() === dataDate.getMonth() &&
+        today.getDate() === dataDate.getDate()
+    );
+}
+
+function loadSiloData(){
+    fetch(`https://sunfra.com/farm/sunfra/sensor/indicator_last_value_json.php?client_id=${clientId}`)
+    .then(res => res.json())
+    .then(res => {
+
+        const container = document.getElementById("siloList");
+        container.innerHTML = "";
+
+        if (!res || res.count === 0 || !res.data) {
+            container.innerHTML = "No Silo Data";
+            return;
+        }
+
+        Object.entries(res.data).forEach(([siloName, silo]) => {
+
+            const value = parseFloat(silo.indicator_data.value);
+            const time  = silo.indicator_data.timestamp;
+
+            const max = 15000; 
+            const percent = Math.min((value / max) * 100, 100);
+
+            let color = "#2ecc71";
+            let status = "Good";
+
+            if (percent < 30) {
+                color = "#f39c12";
+                status = "Low";
+            }
+            if (percent < 10) {
+                color = "#e74c3c";
+                status = "Critical";
+            }
+
+            container.innerHTML += `
+                <div class="silo-item">
+                    <strong>${siloName}</strong><br>
+                    ${value} Kg <small>(${time})</small><br>
+                    <small>Status: <span style="color:${color}">${status}</span></small>
+                    <div class="progress">
+                        <div class="progress-fill"
+                             style="width:${percent}%; background:${color}">
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    })
+    .catch(err => {
+        console.error(err);
+        document.getElementById("siloList").innerText = "API Error";
+    });
+}
+
+loadSiloData();
+
+function loadWaterFlowData() {
+    fetch(`https://sunfra.com/farm/sunfra/sensor/water_flow_last_value_json.php?client_id=${clientId}`)
+        .then(res => res.json())
+        .then(res => {
+
+            const waterValue   = document.getElementById("waterValue");
+            const waterDetails = document.getElementById("waterDetails");
+            const waterTime    = document.getElementById("waterTime");
+
+            if (!res || !res.data || !res.grand_total_liters) {
+                waterValue.innerText = "--";
+                waterDetails.innerText = "No Water Data";
+                return;
+            }
+
+            waterValue.innerText = Number(res.grand_total_liters).toFixed(2);
+			const total = Number(res.grand_total_liters);
+			if (total <= 20) waterValue.style.color = "#2ecc71";
+			else if (total <= 40) waterValue.style.color = "#f39c12";
+			else waterValue.style.color = "#e74c3c";
+
+            waterDetails.innerHTML = "";
+
+			Object.entries(res.data).forEach(([shedName, shed]) => {
+
+				const liters = Number(shed.water_used_liters);
+				let cls = "water-low";
+				let barColor = "#2ecc71";
+
+				if (liters > 10 && liters <= 20) {
+					cls = "water-mid";
+					barColor = "#f39c12";
+				}
+				if (liters > 20) {
+					cls = "water-high";
+					barColor = "#e74c3c";
+				}
+
+				const percent = Math.min((liters / 30) * 100, 100);
+
+				waterDetails.innerHTML += `
+					<div class="water-item ${cls}">
+						<strong>${shedName}</strong> :
+						${liters.toFixed(2)} L
+						<div class="water-bar">
+							<div class="water-bar-fill"
+								 style="width:${percent}%; background:${barColor}">
+							</div>
+						</div>
+					</div>
+				`;
+			});
+
+            waterTime.innerText = `Today (${res.date})`;
+        })
+        .catch(err => {
+            console.error("Water API Error:", err);
+            document.getElementById("waterDetails").innerText = "API Error";
+        });
+}
+
+loadWaterFlowData();
+
+function loadTemperatureData(){
+    fetch(`https://sunfra.com/farm/sunfra/sensor/temperature_last_value_json.php?client_id=${clientId}`)
+        .then(res => res.json())
+        .then(res => {
+
+            const container = document.getElementById("tempList");
+            container.innerHTML = "";
+
+            if (!res || res.count === 0 || !res.data) {
+                container.innerHTML = "No Temperature Data";
+                return;
+            }
+
+            Object.entries(res.data).forEach(([shedName, data]) => {
+
+                const temp = parseFloat(data.temperature);
+                const hum  = parseFloat(data.humidity);
+                const time = data.timestamp;
+
+                let cls = "temp-good";
+                let color = "#2ecc71";
+
+                if (temp > 27 && temp <= 30) {
+                    cls = "temp-warn";
+                    color = "#f39c12";
+                }
+                if (temp > 30) {
+                    cls = "temp-crit";
+                    color = "#e74c3c";
+                }
+
+                const percent = Math.min((temp / 40) * 100, 100);
+
+                container.innerHTML += `
+                    <div class="temp-item ${cls}">
+                        <strong>${shedName}</strong><br>
+                        <span style="font-size:22px;color:${color}">
+                            ${temp.toFixed(1)} °C
+                        </span>
+                        &nbsp; | Humidity: ${hum.toFixed(1)}%
+                        <br>
+                        <small>${time}</small>
+
+                        <div class="temp-bar">
+                            <div class="temp-bar-fill"
+                                 style="width:${percent}%; background:${color}">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        })
+        .catch(err => {
+            console.error("Temperature API Error:", err);
+            document.getElementById("tempList").innerText = "API Error";
+        });
+}
+
+loadTemperatureData();
+
+function loadTankLevelData() {
+    fetch(`https://sunfra.com/farm/sunfra/sensor/water_level_last_value.php?client_id=${clientId}`)
+        .then(res => res.json())
+        .then(res => {
+
+            const container = document.getElementById("tankList");
+            container.innerHTML = "";
+
+            if (!res || res.status !== "success" || !res.data || res.data.length === 0) {
+                container.innerHTML = "<span style='color:#e74c3c'>No Tank Data</span>";
+                return;
+            }
+
+            res.data.forEach(tank => {
+
+                const name = tank.mac_address_name;
+                const level = parseFloat(tank.last_data.status);
+                const time  = tank.last_data.datetime;
+
+                const todayAvailable = isToday(time);
+
+                let color = "#2ecc71"; // green
+                let statusText = "Normal";
+
+                if (level < 40) {
+                    color = "#f39c12"; // orange
+                    statusText = "Low";
+                }
+                if (level < 20) {
+                    color = "#e74c3c"; // red
+                    statusText = "Critical";
+                }
+
+                // 🔴 FORCE RED IF TODAY DATA NOT AVAILABLE
+                if (!todayAvailable) {
+                    color = "#e74c3c";
+                    statusText = "No Today Data";
+                }
+
+                container.innerHTML += `
+                    <div class="silo-item">
+                        <strong>${name}</strong><br>
+                        <span style="font-size:22px;color:${color}">
+                            ${level} %
+                        </span>
+                        <br>
+                        <small style="color:${color}">
+                            ${statusText} (${time})
+                        </small>
+
+                        <div class="progress">
+                            <div class="progress-fill"
+                                 style="width:${level}%; background:${color}">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        })
+        .catch(err => {
+            console.error("Tank API Error:", err);
+            document.getElementById("tankList").innerHTML =
+                "<span style='color:#e74c3c'>API Error</span>";
+        });
+}
+
+loadTankLevelData();
+setInterval(loadTankLevelData, 10000);
+setInterval(loadTemperatureData, 10000);
+setInterval(loadWaterFlowData, 10000);
+setInterval(loadSiloData, 5000);
+
+</script>
+
+</body>
+</html>
