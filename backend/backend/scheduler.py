@@ -3550,6 +3550,10 @@ def setup_scheduler():
     from water_flow_daily_report import send_daily_water_flow_report_job
     scheduler.add_job(send_daily_water_flow_report_job, CronTrigger(hour=23, minute=58, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="daily_water_flow_report_job", replace_existing=True)
 
+    # Schedule Motor Voltage & Power Status Check every 30 minutes to Motor Alerts WhatsApp Group
+    from motor_voltage_monitoring import check_and_dispatch_motor_voltage_alerts
+    scheduler.add_job(check_and_dispatch_motor_voltage_alerts, CronTrigger(minute="*/30", timezone="Asia/Kolkata"), misfire_grace_time=300, id="check_motor_voltage_alerts_job", replace_existing=True)
+
     scheduler.start()
     logger.info("APScheduler started.")
 
