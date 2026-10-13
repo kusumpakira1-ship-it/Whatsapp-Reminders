@@ -2007,8 +2007,8 @@ def build_7_company_escalation_reports(db, now_ist):
             name_to_jids.setdefault(gname, set()).add(gjid)
 
     static_dept_jids = {
-        'corporate': {'120363428349268084', '120363427470582988', '120363426659667927', '120363425581380088'},
-        'sunfra corporate': {'120363428349268084', '120363427470582988', '120363426659667927', '120363425581380088'},
+        'corporate': {'120363428349268084', '120363427470582988', '120363426659667927', '120363425581380088', '120363428748481277'},
+        'sunfra corporate': {'120363428349268084', '120363427470582988', '120363426659667927', '120363425581380088', '120363428748481277'},
         'accounts poultry': {'120363429481469212', '120363221285198390', '120363221211615047', '120363421181996594', '120363410607412989'},
         'farms': {'120363429481469212', '120363221285198390', '120363221211615047', '120363421181996594', '120363410607412989'},
         'raw material': {'120363413108636132', '120363412616266332', '120363410508859526', '120363421181996594'},
@@ -2047,7 +2047,7 @@ def build_7_company_escalation_reports(db, now_ist):
         'total receivables': ['total receivables', 'total receivable', 'receivable', 'receivables', 'recevable', 'recievables', 'recievable', 'recievables.pdf', 'recievable.pdf', 'receivables report', 'receivable report', 'receivables update', 'recevable update', 'due from', 'ar aging', 'ar-aging', 'ar_aging', 'receivable.pdf', 'receivables.pdf', 'receivable pdf', 'receivables pdf', 'total receivables shared', 'receivables shared'],
         'ca statement': ['ca statement', 'ca', 'ca-statement', 'ca_statement', 'ca statment', 'ca stmnt', 'statement', 'audit', 'tally', 'balance sheet', 'ca statement on', 'ca.pdf', 'ca pdf', 'ca report', 'audit report', 'otp', 'ca statement shared'],
         'average p&l': ['average p&l', 'avg p&l', 'average pl', 'avg pl'],
-        'each sales p&l': ['each sales p&l', 'each sale p&l', 'sales p&l', 'each sales pl', 'each sale pl', 'sales pl', 'each sales profit', 'each sales p&l.pdf', 'each sales pl pdf', 'each sales', 'each sale', 'sales p&l.pdf', 'sales pl.pdf', 'sales by customer', 'sales by customer (', 'p&l', 'each sales p&l shared', 'sales p&l shared', 'p&l shared'],
+        'each sales p&l': ['each sales p&l', 'each sale p&l', 'sales p&l', 'each sales pl', 'each sale pl', 'sales pl', 'each sales profit', 'each sales p&l.pdf', 'each sales pl pdf', 'each sales', 'each sale', 'sales p&l.pdf', 'sales pl.pdf', 'sales by customer', 'sales by customer (', 'p&l', 'each sales p&l shared', 'sales p&l shared', 'p&l shared', 'daily sales shared', 'daily sales'],
         'profit & loss summary': ['profit & loss summary', 'profit & loss', 'profit and loss', 'p&l', 'p & l', 'pl', 'p and l', 'p&l summary', 'profit loss summary', 'pl summary', 'profit loss'],
         'daily work update': ['daily work update', 'work update', 'work updates', 'wrk update', 'work rport', 'daily update', 'daily updates', 'work report', 'work reports', 'daily work report', 'daily work reports', 'eod update', 'eod updates', 'eod report', 'eod reports', 'today work', "today's work", 'tasks done', 'task done', 'work done', 'done', 'completed'],
         'stock': ['stock', 'stocks', 'stk', 'website', 'website updates', 'website update', 'ordering', 'stock update', 'stock updates', 'maize', 'soya', 'dorb', 'stonegrit', 'raw material', 'raw materials', 'raw material prices', 'updates'],
@@ -2342,9 +2342,9 @@ def build_7_company_escalation_reports(db, now_ist):
     def get_company_historical_failed_count(company_key, today_failed_count):
         offsets = {
             'balaji': 1,
-            'corporate': 1,
-            'feeds': 4,
-            'farms': 6
+            'corporate': 7,
+            'feeds': 3,
+            'farms': 4
         }
         base_offset = offsets.get(company_key, 0)
         return base_offset + today_failed_count
@@ -2354,44 +2354,112 @@ def build_7_company_escalation_reports(db, now_ist):
         if items:
             total_failed_today += sum(1 for it in items if not it[1])
 
-    def get_company_failure_counts(company_key, today_failed_count):
-        if company_key == 'balaji':
-            # Baseline when 2 unsubmitted: Today=2, Week=5, Month=3
-            weekly_count = 3 + today_failed_count
-            monthly_count = 1 + today_failed_count
-            return today_failed_count, weekly_count, monthly_count
-        elif company_key == 'corporate':
-            # Baseline when 6 unsubmitted: Today=6, Week=12, Month=0
-            weekly_count = 6 + today_failed_count
-            monthly_count = max(0, today_failed_count - 6)
-            return today_failed_count, weekly_count, monthly_count
-        elif company_key == 'feeds':
-            # Baseline when 8 unsubmitted: Today=8, Week=15, Month=10 (when 1 submitted: Today=7, Week=14, Month=9)
-            weekly_count = 7 + today_failed_count
-            monthly_count = 2 + today_failed_count
-            return today_failed_count, weekly_count, monthly_count
-        elif company_key == 'farms':
-            # Baseline when 8 unsubmitted: Today=8, Week=13, Month=9
-            weekly_count = 5 + today_failed_count
-            monthly_count = 1 + today_failed_count
-            return today_failed_count, weekly_count, monthly_count
-        elif company_key == 'rental':
-            return today_failed_count, today_failed_count, today_failed_count
+    def get_company_failure_counts(company_key, today_failed_count, report_date):
+        if report_date.day == 7:
+            if company_key == 'balaji':
+                return today_failed_count, 3, 4
+            elif company_key == 'corporate':
+                return today_failed_count, 2, 2
+            elif company_key == 'feeds':
+                return today_failed_count, 7, 11
+            elif company_key == 'farms':
+                return today_failed_count, 3, 8
+            elif company_key == 'rental':
+                return today_failed_count, today_failed_count, today_failed_count
+        elif report_date.day <= 11:
+            if company_key == 'balaji':
+                return today_failed_count, 3 + today_failed_count, 7
+            elif company_key == 'corporate':
+                return today_failed_count, 2 + today_failed_count, 2
+            elif company_key == 'feeds':
+                return today_failed_count, 7 + today_failed_count, 16
+            elif company_key == 'farms':
+                return today_failed_count, 3 + today_failed_count, 14
+            elif company_key == 'rental':
+                return today_failed_count, today_failed_count, today_failed_count
+        elif report_date.day == 12:
+            # Baseline for Monday 12 Oct 2026 as explicitly set by management
+            if company_key == 'balaji':
+                return 1, 1, 8
+            elif company_key == 'corporate':
+                return 7, 7, 9
+            elif company_key == 'feeds':
+                return 3, 3, 19
+            elif company_key == 'farms':
+                return 4, 4, 18
+            elif company_key == 'rental':
+                return today_failed_count, today_failed_count, today_failed_count
+        else:
+            # Day 13 Oct onwards: accumulate starting from 12 Oct EOD baseline
+            if company_key == 'balaji':
+                weekly_count = 1 + today_failed_count
+                monthly_count = 8 + today_failed_count
+                return today_failed_count, weekly_count, monthly_count
+            elif company_key == 'corporate':
+                weekly_count = 7 + today_failed_count
+                monthly_count = 9 + today_failed_count
+                return today_failed_count, weekly_count, monthly_count
+            elif company_key == 'feeds':
+                weekly_count = 3 + today_failed_count
+                monthly_count = 19 + today_failed_count
+                return today_failed_count, weekly_count, monthly_count
+            elif company_key == 'farms':
+                weekly_count = 4 + today_failed_count
+                monthly_count = 18 + today_failed_count
+                return today_failed_count, weekly_count, monthly_count
+            elif company_key == 'rental':
+                return today_failed_count, today_failed_count, today_failed_count
 
         return today_failed_count, today_failed_count, today_failed_count
 
-    def get_company_monthly_total_tasks(company_key, now_ist):
-        if company_key == 'balaji':
-            return 4
-        elif company_key == 'corporate':
-            return 12
-        elif company_key == 'feeds':
-            return 16
-        elif company_key == 'farms':
-            return 16
-        elif company_key == 'rental':
-            return 3
+    def get_company_monthly_total_tasks(company_key, report_date):
+        if report_date.day == 7:
+            if company_key == 'balaji':
+                return 10
+            elif company_key == 'corporate':
+                return 31
+            elif company_key == 'feeds':
+                return 39
+            elif company_key == 'farms':
+                return 41
+            elif company_key == 'rental':
+                return 3
+        elif report_date.day <= 11:
+            if company_key == 'balaji':
+                return 16
+            elif company_key == 'corporate':
+                return 43
+            elif company_key == 'feeds':
+                return 63
+            elif company_key == 'farms':
+                return 65
+            elif company_key == 'rental':
+                return 3
+        elif report_date.day == 12:
+            if company_key == 'balaji':
+                return 18
+            elif company_key == 'corporate':
+                return 50
+            elif company_key == 'feeds':
+                return 72
+            elif company_key == 'farms':
+                return 74
+            elif company_key == 'rental':
+                return 3
+        else:
+            # Day 13 Oct onwards: 12 Oct base + today's tasks
+            if company_key == 'balaji':
+                return 18 + 2
+            elif company_key == 'corporate':
+                return 50 + (7 if is_sunday or is_monday else 6)
+            elif company_key == 'feeds':
+                return 72 + (9 if is_sunday or is_monday else 8)
+            elif company_key == 'farms':
+                return 74 + (9 if is_sunday or is_monday else 8)
+            elif company_key == 'rental':
+                return 3
         return 0
+
 
     messages_930 = []
     messages_1159 = []
@@ -2405,8 +2473,9 @@ def build_7_company_escalation_reports(db, now_ist):
         failed_count = len(missing_items)
         header_title = title.strip()
         
-        today_cnt, weekly_cnt, monthly_cnt = get_company_failure_counts(company_key, failed_count)
+        today_cnt, weekly_cnt, monthly_cnt = get_company_failure_counts(company_key, failed_count, now_ist)
         monthly_total_tasks = get_company_monthly_total_tasks(company_key, now_ist)
+
         
         footer_lines = [
             f"🚨 *Total Failed Today: {today_cnt}*",
@@ -2467,31 +2536,39 @@ def manager_escalation_job():
     except Exception as e:
         logger.error(f"Error in manager_escalation_job: {e}")
     finally:
-        db.close()
+        try:
+            db.close()
+        except Exception:
+            pass
 
 
-def company_wise_escalation_job():
-    logger.info("Starting 11:45 PM Company-Wise Manager Escalation Check (Per-Company Messages to 7259510983 ONLY)...")
+def company_wise_escalation_job(target_phones=None):
+    logger.info("Starting Company-Wise Manager Escalation Check...")
     from datetime import datetime, timezone, timedelta
     IST = timezone(timedelta(hours=5, minutes=30))
     now_ist = datetime.now(IST).replace(tzinfo=None)
 
     if now_ist.weekday() == 6:  # Sunday is weekly off
-        logger.info("Today is Sunday (Weekly Off). Skipping 11:45 PM Company-Wise Manager Escalation Report.")
+        logger.info("Today is Sunday (Weekly Off). Skipping Company-Wise Manager Escalation Report.")
         return
 
     db = get_db_session()
     try:
         res_esc = build_7_company_escalation_reports(db, now_ist)
         messages_1159 = res_esc[1]
+        phones = target_phones if target_phones else ESCALATION_REPORT_PHONES
         for msg in messages_1159:
-            for phone in ESCALATION_REPORT_PHONES:
+            for phone in phones:
                 send_waha_message(phone, msg)
-                logger.info(f"11:45 PM Per-Company Escalation sent to {phone}")
+                logger.info(f"Per-Company Escalation sent to {phone}")
     except Exception as e:
         logger.error(f"Error in company_wise_escalation_job: {e}")
     finally:
-        db.close()
+        try:
+            db.close()
+        except Exception:
+            pass
+
 
 
 def scheduled_godown_report_job():
@@ -2699,10 +2776,42 @@ def send_all_10pm_daily_reports_job():
 
     try:
         # 3. Company-Wise Manager Escalation EOD Summary Report (Mon-Sat)
-        from daily_farm_summary import company_wise_escalation_job
         company_wise_escalation_job()
     except Exception as e:
         logger.error(f"Error sending Company-Wise Escalation Report at 10 PM: {e}")
+
+
+SUNFRA_GROUP_OF_COMPANIES_JID = "120363410727174477@g.us"
+
+def send_all_1150pm_daily_reports_job():
+    """11:50 PM Final Wrap Dispatcher:
+    Dispatches 4 Consolidated Company reports, Rental Vacancy loss & Escalations
+    to 7259510983 and Sunfra Group Of Companies (120363410727174477@g.us).
+    """
+    logger.info("Executing 11:50 PM Final Wrap Daily Reports Dispatcher (to 7259510983 & Sunfra Group Of Companies)...")
+    targets = ["917259510983@c.us", SUNFRA_GROUP_OF_COMPANIES_JID]
+
+    # 1. 4 Consolidated Company Reports
+    try:
+        from zoho_reconciliation import dispatch_all_4company_reconciliation_reports
+        for target in targets:
+            logger.info(f"Dispatching 4 Consolidated Company Reports (11:50 PM) to {target}...")
+            dispatch_all_4company_reconciliation_reports(target)
+    except Exception as e:
+        logger.error(f"Error sending 4 Consolidated Company Reports at 11:50 PM: {e}")
+
+    # 2. Daily Rental & Vacancy Loss Report
+    try:
+        scheduled_vacancy_job(target_phones=targets)
+    except Exception as e:
+        logger.error(f"Error sending Daily Rental & Vacancy Loss Report at 11:50 PM: {e}")
+
+    # 3. Company-Wise Manager Escalation EOD Summary Report
+    try:
+        company_wise_escalation_job(target_phones=targets)
+    except Exception as e:
+        logger.error(f"Error sending Company-Wise Escalation Report at 11:50 PM: {e}")
+
 
 
 
@@ -3285,15 +3394,21 @@ def scheduled_egg_market_pdf_job():
         logger.error(f"Error in scheduled_egg_market_pdf_job: {e}")
 
 
-def scheduled_vacancy_job():
+def scheduled_vacancy_job(target_phones=None):
     logger.info("Starting scheduled vacancy summary report...")
     try:
         summary_text = generate_rental_vacancy_report()
         if summary_text:
-            phone = "917259510983@c.us"
+            if target_phones is None:
+                phones = ["917259510983@c.us"]
+            elif isinstance(target_phones, (list, tuple, set)):
+                phones = list(target_phones)
+            else:
+                phones = [target_phones]
             from waha_service import send_waha_message
-            send_waha_message(phone, summary_text)
-            logger.info(f"Sent vacancy summary to {phone}")
+            for phone in phones:
+                send_waha_message(phone, summary_text)
+                logger.info(f"Sent vacancy summary to {phone}")
     except Exception as e:
         logger.error(f"Error in scheduled_vacancy_job: {e}")
 
@@ -3305,6 +3420,27 @@ def scheduled_papaak_email_fetch_job():
         fetch_and_process_papaak_emails(notify_on_new=True)
     except Exception as e:
         logger.error(f"Error in scheduled_papaak_email_fetch_job: {e}")
+
+
+def scheduled_sunfra_farms_summary_report_job():
+    """Dispatches the Daily Sunfra Farm Report at 6:55 PM IST to 7259510983."""
+    logger.info("Executing Daily Sunfra Farm Report Job (6:55 PM)...")
+    try:
+        from sunfra_farms_summary_report import send_daily_sunfra_farms_summary_report
+        send_daily_sunfra_farms_summary_report("917259510983@c.us")
+    except Exception as e:
+        logger.error(f"Error in scheduled_sunfra_farms_summary_report_job: {e}")
+
+def scheduled_sunfra_farms_summary_report_830pm_job():
+    """Dispatches the Daily Sunfra Farm Report at 8:30 PM IST to 7259510983 and Egg Rates & Weather Forecast group."""
+    logger.info("Executing Daily Sunfra Farm Report Job (8:30 PM)...")
+    try:
+        from sunfra_farms_summary_report import send_daily_sunfra_farms_summary_report
+        recipients = ["917259510983@c.us", "120363411797923836@g.us"]
+        send_daily_sunfra_farms_summary_report(recipients)
+    except Exception as e:
+        logger.error(f"Error in scheduled_sunfra_farms_summary_report_830pm_job: {e}")
+
 
 
 def setup_scheduler():
@@ -3323,6 +3459,12 @@ def setup_scheduler():
     # Schedule Live Flock Hatch Date & Birds Sync from sunfra.com every 4 hours
     from sunfra_batch_sync import sync_flocks_from_sunfra_web
     scheduler.add_job(sync_flocks_from_sunfra_web, CronTrigger(hour="*/4", minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="sync_sunfra_flocks_job", replace_existing=True)
+    
+    # Schedule Daily Sunfra Farm Report at 6:55 PM IST (to 7259510983) & 8:30 PM IST (to 7259510983 & Egg Rates & Weather Forecast group)
+    scheduler.add_job(scheduled_sunfra_farms_summary_report_job, CronTrigger(hour=18, minute=55, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="sunfra_farms_summary_655pm_job", replace_existing=True)
+    scheduler.add_job(scheduled_sunfra_farms_summary_report_830pm_job, CronTrigger(hour=20, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="sunfra_farms_summary_830pm_job", replace_existing=True)
+
+
     
     # Schedule Daily Sunfra P&L PDF report at 9:30 PM IST daily (to 7259510983, 8985779911, and 6364817749)
     scheduler.add_job(scheduled_sunfra_pandl_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_sunfra_pandl_job", replace_existing=True)
@@ -3358,13 +3500,12 @@ def setup_scheduler():
     scheduler.add_job(scheduled_egg_production_crosscheck_650pm_job, CronTrigger(hour=18, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_production_crosscheck_650pm_job", replace_existing=True)
     scheduler.add_job(scheduled_egg_production_crosscheck_930pm_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_production_crosscheck_930pm_job", replace_existing=True)
 
-    # Schedule Daily Sunfra Community Attendance Summary daily at 7:05 PM IST, 9:30 PM IST & 11:15 PM IST EOD Lock (to 7259510983)
-    scheduler.add_job(scheduled_daily_attendance_summary_job, CronTrigger(hour=19, minute=5, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_705pm_job", replace_existing=True)
-    scheduler.add_job(scheduled_daily_attendance_summary_job, CronTrigger(hour=21, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_job", replace_existing=True)
-    scheduler.add_job(scheduled_daily_attendance_summary_1115pm_job, CronTrigger(hour=23, minute=15, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_1115pm_job", replace_existing=True)
+    # Schedule Daily Sunfra Community Attendance Summary daily once at 11:45 PM IST (to 7259510983)
+    scheduler.add_job(scheduled_daily_attendance_summary_1115pm_job, CronTrigger(hour=23, minute=45, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_1145pm_job", replace_existing=True)
 
-    # Combined 10:30 PM Dispatcher: 4 Consolidated Company Reports, Daily Rental Loss, and Company-Wise Escalation
+    # Combined 10:30 PM & 11:50 PM Dispatcher: 4 Consolidated Company Reports, Daily Rental Loss, and Company-Wise Escalation
     scheduler.add_job(send_all_10pm_daily_reports_job, CronTrigger(hour=22, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="send_all_10pm_daily_reports_job", replace_existing=True)
+    scheduler.add_job(send_all_1150pm_daily_reports_job, CronTrigger(hour=23, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="send_all_1150pm_daily_reports_job", replace_existing=True)
     
     # Schedule Weekly 4-Company P&L & Stock Report every Saturday at 10:30 PM IST (to 7259510983)
     scheduler.add_job(scheduled_4company_weekly_pandl_job, CronTrigger(day_of_week='sat', hour=22, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_weekly_pandl_job", replace_existing=True)
@@ -3405,7 +3546,7 @@ def setup_scheduler():
     from water_flow_farm_monitoring import check_and_dispatch_water_flow_farm_alerts
     scheduler.add_job(check_and_dispatch_water_flow_farm_alerts, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="water_flow_farm_monitoring_job", replace_existing=True)
 
-    # Schedule Daily Water Flow Summary Report daily at 11:58 PM IST (23:58 IST) to 7259510983
+    # Schedule Daily Water Flow Summary Report daily at 11:58 PM IST (23:58 IST) to 7259510983 & Sunfra Group Of Companies
     from water_flow_daily_report import send_daily_water_flow_report_job
     scheduler.add_job(send_daily_water_flow_report_job, CronTrigger(hour=23, minute=58, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="daily_water_flow_report_job", replace_existing=True)
 

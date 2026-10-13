@@ -1,11 +1,12 @@
+import os
+import urllib.parse
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, declarative_base
 from config import settings
-import urllib.parse
 
-# URL-encode the password to handle special characters like '@'
-encoded_password = urllib.parse.quote_plus(settings.DB_PASS)
-DATABASE_URL = f"mysql+pymysql://{settings.DB_USER}:{encoded_password}@{settings.DB_HOST}/{settings.DB_NAME}"
+db_pass = getattr(settings, "DB_PASS", os.getenv("DB_PASS", "Kusum@2026Bb!"))
+encoded_password = urllib.parse.quote_plus(db_pass)
+DATABASE_URL = f"mysql+pymysql://{getattr(settings, 'DB_USER', 'u632391467_kusumpakira')}:{encoded_password}@{getattr(settings, 'DB_HOST', '145.223.17.70')}/{getattr(settings, 'DB_NAME', 'u632391467_kusumpakira')}"
 
 engine = create_engine(
     DATABASE_URL, 

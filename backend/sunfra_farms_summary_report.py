@@ -207,7 +207,7 @@ def generate_sunfra_farms_summary_report(target_date=None) -> str:
     weather = fetch_chittoor_weather_data()
 
     report_lines = [
-        "🌾*Sunfra Farms Summary Report*",
+        "🌾*Sunfra Farm Report*",
         f"*Date:* {date_str}",
         "",
         "*Shead 1:*",
@@ -240,19 +240,32 @@ def generate_sunfra_farms_summary_report(target_date=None) -> str:
     return "\n".join(report_lines)
 
 
-def send_daily_sunfra_farms_summary_report(target_phone: str = "917259510983@c.us"):
-    """Generates and dispatches the Sunfra Farms Summary Report to target recipient."""
+def send_daily_sunfra_farms_summary_report(target_phone="917259510983@c.us"):
+    """Generates and dispatches the Sunfra Farms Summary Report to target recipient(s)."""
     logger.info("Executing Sunfra Farms Summary Report Dispatcher...")
     try:
         report_msg = generate_sunfra_farms_summary_report()
-        if report_msg:
-            if not target_phone.endswith("@c.us") and not target_phone.endswith("@g.us"):
-                target_phone = f"{target_phone}@c.us"
+        if not report_msg:
+            return False
 
-            logger.info(f"Sending Sunfra Farms Summary Report to {target_phone}...")
-            ok = send_waha_message(target_phone, report_msg)
-            logger.info(f"Sunfra Farms Summary Report send result: {ok}")
-            return ok
+        if target_phone is None:
+            targets = ["917259510983@c.us"]
+        elif isinstance(target_phone, (list, tuple, set)):
+            targets = list(target_phone)
+        else:
+            targets = [target_phone]
+
+        success = False
+        for target in targets:
+            if not target.endswith("@c.us") and not target.endswith("@g.us"):
+                target = f"{target}@c.us"
+
+            logger.info(f"Sending Sunfra Farms Summary Report to {target}...")
+            ok = send_waha_message(target, report_msg)
+            logger.info(f"Sunfra Farms Summary Report send result to {target}: {ok}")
+            if ok:
+                success = True
+        return success
     except Exception as e:
         logger.error(f"Error in send_daily_sunfra_farms_summary_report: {e}")
         return False

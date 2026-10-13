@@ -17,11 +17,18 @@ IST = timezone(timedelta(hours=5, minutes=30))
 GMAIL_EMAIL = os.getenv("PAPAAK_EMAIL", "kusum@sunfra.com")
 GMAIL_APP_PASS = os.getenv("PAPAAK_APP_PASS", "kfgykqtorkchfkke")
 
-PAPAAK_RECIPIENTS = ["917259510983@c.us"]
+PAPAAK_MANAGER_PHONE = "917259510983@c.us"
+PAPAAK_EGG_GROUP_JID = "120363411797923836@g.us"   # Egg Rates & Weather Forecast
+PAPAAK_FEED_GROUP_JID = "120363411665097967@g.us"  # Feed Rates
+
+PAPAAK_EGG_RECIPIENTS = [PAPAAK_MANAGER_PHONE, PAPAAK_EGG_GROUP_JID]
+PAPAAK_FEED_RECIPIENTS = [PAPAAK_MANAGER_PHONE, PAPAAK_FEED_GROUP_JID]
+PAPAAK_RECIPIENTS = [PAPAAK_MANAGER_PHONE]
 
 # Standard City Order for Report
 LOADING_CENTERS = ["HPT", "HYD", "NKL", "BWL", "MYS"]
 PAPER_CENTERS = ["CHE", "BLR", "HPT", "HYD", "NKL", "MYS", "BWL", "KOL"]
+ALL_PAPER_CENTERS = ["CHE", "BLR", "HPT", "HYD", "NKL", "MYS", "BWL", "KOL", "AMD", "MUM", "RAI", "SRT", "CCU"]
 
 FEED_COMMODITIES = [
     ("BAJ", ["DLH"]),
@@ -216,12 +223,18 @@ def parse_egg_email_text(email_text: str, msg_date: datetime):
                     })
             continue
 
-        # If a new time-based Egg loading rate announcement starts, e.g. "11:15 Egg" or "8:02 Egg"
+        # If a new time-based Egg rate announcement starts, e.g. "11:15 Egg" or "19:07 Egg"
         if re.search(r'\b\d{1,2}:\d{2}\s*EGG\b', line_upper) or line_upper == "EGG":
-            is_time_egg_section = True
-            is_paper_section = False
-            is_closing_section = False
+            if is_evening or is_morning_paper or "VEH KOL" in text_upper:
+                is_paper_section = True
+                is_time_egg_section = False
+                is_closing_section = False
+            else:
+                is_time_egg_section = True
+                is_paper_section = False
+                is_closing_section = False
             continue
+
 
         # 1. Match Feed/Raw Material pattern e.g. "SOY-3850", "MAZ:1950", "DRB-1200", "BAJ 1800", "SOY HYP-3900", "GNE45-2100", "DMC-1500"
         feed_match = re.search(r'\b(SOY\s*HYP|SOY|MAZ|DRB|BAJ|GNE45|DMC|FEED|RAW\s*MAT)\s*[:\-\s]\s*(\d{3,6})\b', line_upper)
@@ -242,8 +255,8 @@ def parse_egg_email_text(email_text: str, msg_date: datetime):
             city = match.group(1).strip()
             rate = int(match.group(2))
             
-            # Categorize rate based on explicit time windows & sections:
-            if is_morning_paper:
+            # Categorize rate based on explicit section headers & time windows:
+            if is_paper_section:
                 cat = "paper"
                 rec_date = paper_target_date
             elif is_time_egg_section:
@@ -252,23 +265,20 @@ def parse_egg_email_text(email_text: str, msg_date: datetime):
             elif is_closing_section:
                 cat = "loading"
                 rec_date = email_date
-            elif is_paper_section:
+            elif is_morning_paper:
                 cat = "paper"
                 rec_date = paper_target_date
-            elif is_closing_section:
-                cat = "paper" if city in PAPER_CENTERS else "loading"
-                rec_date = email_date
             elif is_daytime_loading:
                 cat = "loading"
                 rec_date = email_date
             elif is_evening:
-                cat = "paper" if city in PAPER_CENTERS else "loading"
+                cat = "paper" if city in ALL_PAPER_CENTERS else "loading"
                 rec_date = email_date
-            elif is_feed_section and city not in LOADING_CENTERS and city not in PAPER_CENTERS:
+            elif is_feed_section and city not in LOADING_CENTERS and city not in ALL_PAPER_CENTERS:
                 cat = "feed"
                 rec_date = email_date
             else:
-                cat = "paper" if city in PAPER_CENTERS else "loading"
+                cat = "paper" if city in ALL_PAPER_CENTERS else "loading"
                 rec_date = email_date
 
             parsed_records.append({
@@ -520,14 +530,18 @@ def fetch_and_process_papaak_emails(notify_on_new: bool = True):
                     email_uid = msg.get("Message-ID") or f"{msg.get('date', '')}_{body_text[:50]}"
                     is_new_email = email_uid not in forwarded_ids
 
+                    full_text = body_text.strip()
+                    if subject and subject.upper() not in body_text.upper():
+                        full_text = f"{subject}\n{body_text}".strip()
+
                     # Determine if Feed or Egg message
-                    is_feed = "FEED" in body_text.upper() or any(k in body_text.upper() for k in ["SOY", "MAZ", "DRB", "BAJ", "GNE45", "DMC"])
+                    is_feed = "FEED" in full_text.upper() or any(k in full_text.upper() for k in ["SOY", "MAZ", "DRB", "BAJ", "GNE45", "DMC"])
 
                     # Parse records
                     if is_feed:
-                        records = parse_feed_email_text(body_text, msg_dt)
+                        records = parse_feed_email_text(full_text, msg_dt)
                     else:
-                        records = parse_egg_email_text(body_text, msg_dt)
+                        records = parse_egg_email_text(full_text, msg_dt)
 
                     has_egg_rates = False
                     has_feed_rates = False
@@ -584,7 +598,7 @@ def fetch_and_process_papaak_emails(notify_on_new: bool = True):
                             new_records_count += 1
 
                     if is_new_email and notify_on_new and len(body_text.strip()) > 5:
-                        forward_msg = format_papaak_raw_forward(body_text, is_feed, msg_dt)
+                        forward_msg = format_papaak_raw_forward(full_text, is_feed, msg_dt)
                         pending_raw_forwards.append((email_uid, forward_msg, is_feed))
 
                         if has_egg_rates:
@@ -598,7 +612,8 @@ def fetch_and_process_papaak_emails(notify_on_new: bool = True):
         # 1. First forward all raw email messages to WhatsApp
         for email_uid, forward_msg, is_feed in pending_raw_forwards:
             sent_any = False
-            for target in PAPAAK_RECIPIENTS:
+            recipients = PAPAAK_FEED_RECIPIENTS if is_feed else PAPAAK_EGG_RECIPIENTS
+            for target in recipients:
                 logger.info(f"Auto-forwarding raw PAPAAK email ({'FEED' if is_feed else 'EGG'}) to {target}...")
                 ok = send_waha_message(target, forward_msg)
                 if ok:
@@ -615,8 +630,8 @@ def fetch_and_process_papaak_emails(notify_on_new: bool = True):
                 rep_num = get_next_report_number(date_key)
                 report_msg = generate_daily_egg_rates_report(target_date=today_date, report_number=rep_num)
                 if report_msg:
-                    for target in PAPAAK_RECIPIENTS:
-                        logger.info(f"Auto-dispatching formatted Egg report #{rep_num} to {target}...")
+                    for target in PAPAAK_EGG_RECIPIENTS:
+                        logger.info(f"Auto-dispatching formatted Egg report to {target}...")
                         send_waha_message(target, report_msg)
 
             if has_batch_feed_rates:
@@ -625,8 +640,8 @@ def fetch_and_process_papaak_emails(notify_on_new: bool = True):
                 rep_num = get_next_feed_report_number(date_key)
                 feed_report_msg = generate_daily_feed_rates_report(target_date=today_date, report_number=rep_num)
                 if feed_report_msg:
-                    for target in PAPAAK_RECIPIENTS:
-                        logger.info(f"Auto-dispatching formatted Feed report #{rep_num} to {target}...")
+                    for target in PAPAAK_FEED_RECIPIENTS:
+                        logger.info(f"Auto-dispatching formatted Feed report to {target}...")
                         send_waha_message(target, feed_report_msg)
 
         mail.logout()
@@ -666,8 +681,8 @@ def generate_daily_egg_rates_report(target_date=None, report_number: int = None)
         # Fetch latest loading rates for target_date and compare against previous day
         loading_rates = {}
         paper_rates = {}
-        fallback_loading = {"HPT": 485, "HYD": 505, "NKL": 520, "BWL": 522, "MYS": 600}
-        fallback_paper = {"CHE": 600, "BLR": 585, "HPT": 525, "HYD": 520, "NKL": 540, "MYS": 605, "BWL": 522, "KOL": 590}
+        fallback_loading = {"HPT": 500, "HYD": 520, "NKL": 540, "BWL": 522, "MYS": 605}
+        fallback_paper = {"CHE": 600, "BLR": 590, "HPT": 530, "HYD": 530, "NKL": 540, "MYS": 610, "BWL": 522, "KOL": 600}
 
         # 1. Loading Rates (compared with yesterday's loading rates)
         for city in LOADING_CENTERS:
@@ -683,9 +698,9 @@ def generate_daily_egg_rates_report(target_date=None, report_number: int = None)
                         PapaakEggRate.date < target_date,
                         PapaakEggRate.city_code == city,
                         PapaakEggRate.category == "loading"
-                    ).order_by(PapaakEggRate.date.desc(), PapaakEggRate.id.asc()).first()
+                    ).order_by(PapaakEggRate.date.desc(), PapaakEggRate.id.desc()).first()
 
-                    prev_loading_val = prev_record.rate_value if prev_record else fallback_loading.get(city, 485)
+                    prev_loading_val = prev_record.rate_value if prev_record else fallback_loading.get(city, 500)
                     diff_val = r.rate_value - prev_loading_val
                 else:
                     diff_val = 0
@@ -703,7 +718,7 @@ def generate_daily_egg_rates_report(target_date=None, report_number: int = None)
                 PapaakEggRate.date < target_date,
                 PapaakEggRate.city_code == city,
                 PapaakEggRate.category == "paper"
-            ).order_by(PapaakEggRate.date.desc(), PapaakEggRate.id.asc()).first()
+            ).order_by(PapaakEggRate.date.desc(), PapaakEggRate.id.desc()).first()
 
             yesterday_rate = yesterday_paper.rate_value if yesterday_paper else fallback_paper.get(city, 540)
 
@@ -724,7 +739,7 @@ def generate_daily_egg_rates_report(target_date=None, report_number: int = None)
 
         # Assemble formatted report message (Without 🥚 emoji)
         lines = [
-            f"📊 *DAILY EGG LOADING & PAPER RATES REPORT - {report_number}*",
+            "📊 *DAILY EGG LOADING & PAPER RATES REPORT*",
             f"📅 *Date:* {date_str}",
             "",
             "*Loading Rates*"
@@ -760,7 +775,7 @@ def send_daily_papaak_egg_rates_report(target_phone: str = None, fetch_first: bo
         # Generate formatted report
         report_msg = generate_daily_egg_rates_report()
         if report_msg:
-            targets = [target_phone] if target_phone else PAPAAK_RECIPIENTS
+            targets = [target_phone] if target_phone else PAPAAK_EGG_RECIPIENTS
             for target in targets:
                 if not target.endswith("@c.us") and not target.endswith("@g.us"):
                     target = f"{target}@c.us"
@@ -794,7 +809,7 @@ def generate_daily_feed_rates_report(target_date=None, report_number: int = None
     db = get_db_session()
     try:
         lines = [
-            f"🌾 *DAILY PAPAAK FEED RATES REPORT - {report_number}*" if report_number else "🌾 *DAILY PAPAAK FEED RATES REPORT*",
+            "🌾 *DAILY PAPAAK FEED RATES REPORT*",
             f"📅 *Date:* {date_str}",
             ""
         ]
@@ -849,7 +864,7 @@ def send_daily_papaak_feed_rates_report(target_phone: str = None, fetch_first: b
             fetch_and_process_papaak_emails(notify_on_new=False)
         report_msg = generate_daily_feed_rates_report()
         if report_msg:
-            targets = [target_phone] if target_phone else PAPAAK_RECIPIENTS
+            targets = [target_phone] if target_phone else PAPAAK_FEED_RECIPIENTS
             for target in targets:
                 if not target.endswith("@c.us") and not target.endswith("@g.us"):
                     target = f"{target}@c.us"

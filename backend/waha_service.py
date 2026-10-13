@@ -11,11 +11,11 @@ logger = logging.getLogger(__name__)
 BLOCKED_PHONES = ['9346763549', '919346763549']
 
 def get_waha_url() -> str:
-    url = getattr(settings, 'WAHA_URL', '') or os.getenv("WAHA_URL", "http://localhost:3000")
+    url = getattr(settings, 'WAHA_URL', '') or os.getenv("WAHA_URL", "http://127.0.0.1:3000")
     if os.path.exists("/.dockerenv"):
-        url = url.replace("localhost", "waha").replace("host.docker.internal", "waha")
+        url = url.replace("localhost", "waha").replace("host.docker.internal", "waha").replace("127.0.0.1", "waha")
     elif os.name == 'nt':
-        url = url.replace("host.docker.internal", "localhost")
+        url = url.replace("host.docker.internal", "127.0.0.1").replace("localhost", "127.0.0.1")
     return url.rstrip("/")
 
 def send_waha_message(chat_id: str, text: str, session: str = None, mentions: list = None) -> bool:

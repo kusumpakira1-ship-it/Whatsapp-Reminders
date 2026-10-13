@@ -16,19 +16,19 @@
     "off_active": false
   },
   "5C-26-14-C4-0A-24": {
-    "last_off_alert_ts": 1791176100.176654,
-    "off_active": false
+    "last_off_alert_ts": 1791867309.789579,
+    "off_active": true
   },
   "5D-7E-24-33-4F-C4": {
     "last_off_alert_ts": 1790808600.008733,
     "off_active": false
   },
   "68-14-5F-0F-F0-A4": {
-    "last_off_alert_ts": 1790808900.017742,
-    "off_active": false
+    "last_off_alert_ts": 1791872400.053341,
+    "off_active": true
   },
   "88-F6-64-A5-05-28": {
-    "last_off_alert_ts": 1790808900.017742,
+    "last_off_alert_ts": 1791803100.036605,
     "off_active": false
   },
   "94-FD-BA-3B-01-5C": {
@@ -52,7 +52,7 @@
     "off_active": false
   },
   "F1-51-DC-2D-E6-B4": {
-    "last_off_alert_ts": 1791265200.42938,
+    "last_off_alert_ts": 1791811500.165985,
     "off_active": false
   },
   "F4-5F-90-BD-97-10": {
