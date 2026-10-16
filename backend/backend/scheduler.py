@@ -1043,6 +1043,17 @@ def poll_and_execute_unified_reminders():
     
     db = get_db_session()
     try:
+        # Auto-recover any reminders stuck in 'processing' (e.g. from WAHA restarts or DB disconnections)
+        stuck_reminders = db.query(UnifiedReminder).filter(
+            UnifiedReminder.status == 'processing',
+            UnifiedReminder.trigger_time <= now_ist
+        ).all()
+        if stuck_reminders:
+            for sr in stuck_reminders:
+                logger.warning(f"Auto-recovering stuck reminder ID {sr.id} ({sr.person_name}) from 'processing' to 'pending'.")
+                sr.status = 'pending'
+            db.commit()
+
         # (Midnight reset is handled by midnight_reset_job at 00:00 IST)
 
         pending = db.query(UnifiedReminder).filter(
@@ -1098,9 +1109,13 @@ def poll_and_execute_unified_reminders():
             freq = str(r.frequency or '').lower().strip()
             if freq in ('mon-sat', 'mon_to_sat', 'mon_sat') and now_ist.weekday() == 6:
                 logger.info(f"Skipping reminder ID {r.id} ({r.person_name}) because today is Sunday (Weekly Off) and frequency is '{r.frequency}'.")
+                r.status = 'skipped'
+                db.commit()
                 continue
             if freq in ('mon-fri', 'mon_to_fri', 'weekdays', 'weekday') and now_ist.weekday() in (5, 6):
                 logger.info(f"Skipping reminder ID {r.id} ({r.person_name}) because today is Weekend ({now_ist.strftime('%A')}) and frequency is '{r.frequency}'.")
+                r.status = 'skipped'
+                db.commit()
                 continue
 
             phones = [p.strip() for p in str(r.person_phone or '').split(',') if p.strip()]
@@ -1357,7 +1372,9 @@ def poll_and_execute_unified_reminders():
             if pending_assignees:
                 # Re-check WAHA is still WORKING right before sending
                 if get_session_status(primary_session) != "WORKING":
-                    logger.warning(f"WAHA went down before sending reminder for {r.person_name}. Will retry next cycle.")
+                    logger.warning(f"WAHA went down before sending reminder for {r.person_name}. Resetting status to pending for next cycle.")
+                    r.status = 'pending'
+                    db.commit()
                     continue
 
                 # If a WhatsApp group ID is set, send ONLY 1 combined group message. Otherwise, send ONLY 1 private message per assignee.
@@ -1410,6 +1427,7 @@ def poll_and_execute_unified_reminders():
                     
                     if minutes > 0 and now_ist.hour >= 6 and now_ist.hour < 23:
                         r.trigger_time = now_ist + timedelta(minutes=minutes)
+                        r.status = 'pending'
                         db.commit()
                         logger.info(f"Nagging reminder scheduled for {r.person_name} in {minutes} mins.")
                         continue
@@ -1730,6 +1748,16 @@ def poll_and_remind_tasks_job():
                 else:
                     return has_completion and has_identifier_match
 
+            today_start = now_ist.replace(hour=0, minute=0, second=0, microsecond=0)
+            all_raw_msgs = db.query(RawMessage).filter(
+                RawMessage.timestamp >= today_start
+            ).order_by(RawMessage.timestamp.desc()).all()
+
+            wa_msgs_map = {
+                w.message_id: (w.group_id, w.sender_id)
+                for w in db.query(WhatsAppMessage).filter(WhatsAppMessage.timestamp >= today_start).all()
+            }
+
             for t in tasks:
                 # Skip auto-complete for tasks not yet due
                 if now_ist < t.due_time:
@@ -1737,12 +1765,10 @@ def poll_and_remind_tasks_job():
                 
                 # Only check messages received on or after the task's due date
                 since = t.due_time.replace(hour=0, minute=0, second=0, microsecond=0)
+                raw_msgs_obj = [m for m in all_raw_msgs if m.timestamp and m.timestamp >= since]
                 
                 matched = False
                 matched_msg = None
-                raw_msgs_obj = db.query(RawMessage).filter(
-                    RawMessage.timestamp >= since
-                ).order_by(RawMessage.timestamp.desc()).all()
 
                 for rm_obj in raw_msgs_obj:
                     if not rm_obj.raw_text:
@@ -1754,9 +1780,9 @@ def poll_and_remind_tasks_job():
                     sender_matched = False
                     group_matched = False
 
-                    wa_msg = db.query(WhatsAppMessage).filter(WhatsAppMessage.message_id == rm_obj.message_id).first()
-                    raw_group_jid = wa_msg.group_id if wa_msg else None
-                    raw_sender_id = wa_msg.sender_id if wa_msg else None
+                    wa_info = wa_msgs_map.get(rm_obj.message_id)
+                    raw_group_jid = wa_info[0] if wa_info else None
+                    raw_sender_id = wa_info[1] if wa_info else None
 
                     # 1. Match Group
                     if t.whatsapp_group_id:
@@ -2007,12 +2033,12 @@ def build_7_company_escalation_reports(db, now_ist):
             name_to_jids.setdefault(gname, set()).add(gjid)
 
     static_dept_jids = {
-        'corporate': {'120363428349268084', '120363427470582988', '120363426659667927', '120363425581380088', '120363428748481277'},
-        'sunfra corporate': {'120363428349268084', '120363427470582988', '120363426659667927', '120363425581380088', '120363428748481277'},
+        'corporate': {'120363428349268084', '120363427470582988', '120363426659667927', '120363425581380088'},
+        'sunfra corporate': {'120363428349268084', '120363427470582988', '120363426659667927', '120363425581380088'},
         'accounts poultry': {'120363429481469212', '120363221285198390', '120363221211615047', '120363421181996594', '120363410607412989'},
         'farms': {'120363429481469212', '120363221285198390', '120363221211615047', '120363421181996594', '120363410607412989'},
         'raw material': {'120363413108636132', '120363412616266332', '120363410508859526', '120363421181996594'},
-        'feeds': {'120363413108636132', '120363412616266332', '120363410508859526'},
+        'feeds': {'120363413108636132', '120363412616266332', '120363410508859526', '120363428748481277'},
         'balaji': {'120363410684018393', '120363406924564250'}
     }
     for k, v in static_dept_jids.items():
@@ -2389,23 +2415,47 @@ def build_7_company_escalation_reports(db, now_ist):
                 return 4, 4, 18
             elif company_key == 'rental':
                 return today_failed_count, today_failed_count, today_failed_count
-        else:
-            # Day 13 Oct onwards: accumulate starting from 12 Oct EOD baseline
+        elif report_date.day == 13:
+            # Baseline for Tuesday 13 Oct 2026 as explicitly confirmed by user
             if company_key == 'balaji':
-                weekly_count = 1 + today_failed_count
-                monthly_count = 8 + today_failed_count
+                return 1, 2, 9
+            elif company_key == 'corporate':
+                return 6, 13, 15
+            elif company_key == 'feeds':
+                return 2, 2, 21
+            elif company_key == 'farms':
+                return 2, 6, 20
+            elif company_key == 'rental':
+                return today_failed_count, today_failed_count, today_failed_count
+        elif report_date.day == 14:
+            # Baseline for Wednesday 14 Oct 2026 as confirmed
+            if company_key == 'balaji':
+                return 1, 3, 10
+            elif company_key == 'corporate':
+                return 6, 19, 21
+            elif company_key == 'feeds':
+                return 1, 3, 22
+            elif company_key == 'farms':
+                return 2, 8, 22
+            elif company_key == 'rental':
+                return today_failed_count, today_failed_count, today_failed_count
+        else:
+            # Day 15 Oct onwards: accumulate starting from 14 Oct EOD baseline
+            if company_key == 'balaji':
+                weekly_count = 3 + today_failed_count
+                monthly_count = 10 + today_failed_count
                 return today_failed_count, weekly_count, monthly_count
             elif company_key == 'corporate':
-                weekly_count = 7 + today_failed_count
-                monthly_count = 9 + today_failed_count
+                weekly_count = 19 + today_failed_count
+                monthly_count = 21 + today_failed_count
                 return today_failed_count, weekly_count, monthly_count
             elif company_key == 'feeds':
                 weekly_count = 3 + today_failed_count
-                monthly_count = 19 + today_failed_count
+                monthly_count = 22 + today_failed_count
                 return today_failed_count, weekly_count, monthly_count
             elif company_key == 'farms':
-                weekly_count = 4 + today_failed_count
-                monthly_count = 18 + today_failed_count
+                weekly_count = 8 + today_failed_count
+                monthly_count = 22 + today_failed_count
                 return today_failed_count, weekly_count, monthly_count
             elif company_key == 'rental':
                 return today_failed_count, today_failed_count, today_failed_count
@@ -2446,16 +2496,38 @@ def build_7_company_escalation_reports(db, now_ist):
                 return 74
             elif company_key == 'rental':
                 return 3
-        else:
-            # Day 13 Oct onwards: 12 Oct base + today's tasks
+        elif report_date.day == 13:
             if company_key == 'balaji':
-                return 18 + 2
+                return 20
             elif company_key == 'corporate':
-                return 50 + (7 if is_sunday or is_monday else 6)
+                return 56
             elif company_key == 'feeds':
-                return 72 + (9 if is_sunday or is_monday else 8)
+                return 80
             elif company_key == 'farms':
-                return 74 + (9 if is_sunday or is_monday else 8)
+                return 82
+            elif company_key == 'rental':
+                return 3
+        elif report_date.day == 14:
+            if company_key == 'balaji':
+                return 22
+            elif company_key == 'corporate':
+                return 62
+            elif company_key == 'feeds':
+                return 88
+            elif company_key == 'farms':
+                return 90
+            elif company_key == 'rental':
+                return 3
+        else:
+            # Day 15 Oct onwards: 14 Oct base + today's tasks
+            if company_key == 'balaji':
+                return 22 + 2
+            elif company_key == 'corporate':
+                return 62 + (7 if is_sunday or is_monday else 6)
+            elif company_key == 'feeds':
+                return 88 + (9 if is_sunday or is_monday else 8)
+            elif company_key == 'farms':
+                return 90 + (9 if is_sunday or is_monday else 8)
             elif company_key == 'rental':
                 return 3
         return 0

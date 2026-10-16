@@ -1,0 +1,44 @@
+
+
+==================================================1️⃣ *Ai iOT Team Reports:*
+• Balaji (Approval Task): *Report Review & Approval* - ❌
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 2*
+🗓️ *Total Failed this Month: 9*
+📋 *Total Tasks this Month: 20*
+---
+
+2️⃣ *Corporate Company (P&L) Reports:*
+All reports and tasks have been submitted successfully today! ✅
+
+🚨 *Total Failed Today: 0*
+📅 *Total Failed this Week: 7*
+🗓️ *Total Failed this Month: 9*
+📋 *Total Tasks this Month: 56*
+---
+
+3️⃣ *Sunfra Feed Tasks & Reports:*
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ❌
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 4*
+🗓️ *Total Failed this Month: 20*
+📋 *Total Tasks this Month: 80*
+---
+
+4️⃣ *Sunfra Farms Tasks & Reports:*
+• Accounts Poultry: *CA Statement* - ❌
+• Accounts Poultry: *Daily Purchases* - ❌
+• Accounts Poultry: *Daily Sales* - ❌
+• Accounts Poultry: *Day Book* - ❌
+• Accounts Poultry: *Total Payables* - ❌
+• Accounts Poultry: *Total Receivables* - ❌
+• Rule Book: *Rule Book Updates* - ❌
+• Sunfra P&L: *Profit & Loss Summary* - ❌
+
+🚨 *Total Failed Today: 8*
+📅 *Total Failed this Week: 12*
+🗓️ *Total Failed this Month: 26*
+📋 *Total Tasks this Month: 82*
+---
