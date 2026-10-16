@@ -2597,6 +2597,10 @@ def manager_escalation_job():
         logger.info("Today is Sunday (Weekly Off). Skipping 9:30 PM Manager Escalation Report.")
         return
 
+    if now_ist.date() == datetime(2026, 10, 20).date():
+        logger.info("Today is 20th Oct 2026. Skipping 9:30 PM Manager Escalation Report as requested.")
+        return
+
     db = get_db_session()
     try:
         res_esc = build_7_company_escalation_reports(db, now_ist)
@@ -2622,6 +2626,10 @@ def company_wise_escalation_job(target_phones=None):
 
     if now_ist.weekday() == 6:  # Sunday is weekly off
         logger.info("Today is Sunday (Weekly Off). Skipping Company-Wise Manager Escalation Report.")
+        return
+
+    if now_ist.date() == datetime(2026, 10, 20).date():
+        logger.info("Today is 20th Oct 2026. Skipping Company-Wise Manager Escalation Report as requested.")
         return
 
     db = get_db_session()
