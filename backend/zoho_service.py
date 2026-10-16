@@ -204,6 +204,7 @@ def get_chart_of_accounts(access_token: str = None, org_id: str = None) -> dict:
         "sunfra_indian_bank": 0.0,
         "sunfra_feeds_bank": 0.0,
         "varadhi_agros_bank": 0.0,
+        "sunrise_farms": 0.0,
         "total_bank_balance": 0.0,
         "total_cash_balance": 0.0,
         "total_bank_and_cash": 0.0,
@@ -253,13 +254,15 @@ def get_chart_of_accounts(access_token: str = None, org_id: str = None) -> dict:
                 elif "varadhi" in name_lower:
                     accounts["varadhi_agros_bank"] = balance
                     accounts["total_bank_balance"] += balance
+                elif "sunrise" in name_lower:
+                    accounts["sunrise_farms"] = balance
                 elif acc_type == "cash":
                     accounts["total_cash_balance"] += balance
                 else:
                     accounts["total_bank_balance"] += balance
                     
                 accounts["details"].append({"name": acc_name, "balance": balance})
-            accounts["total_bank_and_cash"] = accounts["total_bank_balance"] + accounts["total_cash_balance"]
+            accounts["total_bank_and_cash"] = accounts["total_bank_balance"] + accounts["total_cash_balance"] + accounts["sunrise_farms"]
     except Exception as e:
         logger.error(f"Error fetching Zoho bank accounts: {e}")
         

@@ -108,6 +108,8 @@ try:
         "",
         format_reconciliation_block("Undeposited Funds", physical.get('undeposited_funds'), accounts.get('undeposited_funds', 0.0)),
         "",
+        format_reconciliation_block("Sunrise Farms", physical.get('sunrise_farms'), accounts.get('sunrise_farms', 0.0)),
+        "",
         format_reconciliation_block("Total Available Bank Balance", physical.get('bank_balance'), accounts.get('total_bank_balance', 0.0)),
         "",
         format_receivables_breakdown(receivables),

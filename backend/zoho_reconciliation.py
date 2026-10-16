@@ -44,7 +44,8 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str, target_date: 
         'sunfra_indian_bank': None,
         'bank_balance': None,
         'sbi_term_loan': None,
-        'sunfra_farm_od': None
+        'sunfra_farm_od': None,
+        'sunrise_farms': None
     }
     try:
         company_targets = {
@@ -136,6 +137,15 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str, target_date: 
                 if uf_match:
                     try:
                         res['undeposited_funds'] = float(uf_match.group(1).replace(',', ''))
+                    except ValueError:
+                        pass
+
+            # Extract Sunrise Farms
+            if res['sunrise_farms'] is None:
+                srf_match = re.search(r'(?:sunrise\s*farms?|sunrise)\s*[:=\-]?\s*(?:₹|rs\.?|inr)?\s*(-?[\d,]+(?:\.\d+)?)\s*(?:/\-)?', text, re.I)
+                if srf_match:
+                    try:
+                        res['sunrise_farms'] = float(srf_match.group(1).replace(',', ''))
                     except ValueError:
                         pass
 
@@ -595,6 +605,8 @@ def generate_and_send_sunfra_corporate_reconciliation_report(recipient_phone: st
         format_reconciliation_block("Petty Cash", physical.get('petty_cash'), accounts.get('petty_cash', 0.0)),
         "",
         format_reconciliation_block("Undeposited Funds", physical.get('undeposited_funds'), accounts.get('undeposited_funds', 0.0)),
+        "",
+        format_reconciliation_block("Sunrise Farms", physical.get('sunrise_farms'), accounts.get('sunrise_farms', 0.0)),
         "",
         format_reconciliation_block("Total Available Bank Balance", physical.get('bank_balance'), accounts.get('total_bank_balance', 0.0)),
         "",
