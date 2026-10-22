@@ -4,7 +4,7 @@
     "off_active": false
   },
   "04-BA-5F-0F-F0-A4": {
-    "last_off_alert_ts": 1792146300.011434,
+    "last_off_alert_ts": 1792254300.00916,
     "off_active": true
   },
   "34-3B-80-1D-16-F0": {
@@ -16,19 +16,19 @@
     "off_active": false
   },
   "5C-26-14-C4-0A-24": {
-    "last_off_alert_ts": 1791908700.437033,
+    "last_off_alert_ts": 1792490700.012648,
     "off_active": false
   },
   "5D-7E-24-33-4F-C4": {
-    "last_off_alert_ts": 1790808600.008733,
+    "last_off_alert_ts": 1792430700.010262,
     "off_active": false
   },
   "68-14-5F-0F-F0-A4": {
-    "last_off_alert_ts": 1791914700.017409,
+    "last_off_alert_ts": 1792250700.013739,
     "off_active": false
   },
   "88-F6-64-A5-05-28": {
-    "last_off_alert_ts": 1791803100.036605,
+    "last_off_alert_ts": 1792470300.012115,
     "off_active": false
   },
   "94-FD-BA-3B-01-5C": {
@@ -40,11 +40,11 @@
     "off_active": false
   },
   "B8-39-60-F5-76-30": {
-    "last_off_alert_ts": 1791184200.181918,
+    "last_off_alert_ts": 1792539600.009475,
     "off_active": false
   },
   "D8-3A-80-1D-16-F0": {
-    "last_off_alert_ts": 1791960600.017623,
+    "last_off_alert_ts": 1792207800.009594,
     "off_active": false
   },
   "DC-7A-57-DF-94-8C": {
@@ -60,15 +60,15 @@
     "off_active": false
   },
   "10-9A-BE-3B-01-5C": {
-    "last_off_alert_ts": 1792085700.010681,
+    "last_off_alert_ts": 1792341600.010139,
     "off_active": true
   },
   "D0-EC-E5-FE-8C-E0": {
-    "last_off_alert_ts": 1792076100.00809,
+    "last_off_alert_ts": 1792259700.019936,
     "off_active": true
   },
   "B0-0F-BF-3B-01-5C": {
-    "last_off_alert_ts": 1792085700.010681,
+    "last_off_alert_ts": 1792341600.010139,
     "off_active": true
   },
   "74-32-E6-FE-8C-E0": {
@@ -78,5 +78,13 @@
   "AA-BB-CC-DD-EE-FF": {
     "last_off_alert_ts": 1790879100.034674,
     "off_active": true
+  },
+  "B0-6F-DA-0D-50-20": {
+    "last_off_alert_ts": 1792341600.010139,
+    "off_active": true
+  },
+  "74-1F-53-D3-3F-B0": {
+    "last_off_alert_ts": 0,
+    "off_active": false
   }
 }

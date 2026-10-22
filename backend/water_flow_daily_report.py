@@ -97,7 +97,7 @@ def generate_water_flow_summary_message(target_date=None) -> str:
     msg += "📍 *Water Consumption Per Day*\n"
 
     for _, mac_short, name, liters in items:
-        msg += f"• {mac_short} *{name}*: {liters:,.2f} Liters\n"
+        msg += f"• {mac_short} *{name}*: {int(round(liters)):,} Liters\n"
 
     return msg
 
