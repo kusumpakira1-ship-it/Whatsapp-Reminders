@@ -55,6 +55,44 @@ def send_waha_message(chat_id: str, text: str, session: str = None, mentions: li
         time.sleep(1)
     return False
 
+def send_waha_poll(chat_id: str, title: str, options: list, multiple_answers: bool = True, session: str = None) -> bool:
+    """Send an interactive poll via WAHA with checkable circles/options."""
+    clean_chat = "".join(filter(str.isdigit, str(chat_id or '')))
+    if any(b in clean_chat for b in BLOCKED_PHONES):
+        logger.info(f"Blocked poll sending to {chat_id} per user directive.")
+        return False
+
+    if not chat_id.endswith('@c.us') and not chat_id.endswith('@g.us') and not chat_id.endswith('@lid'):
+        chat_id += '@c.us'
+
+    url = f"{get_waha_url()}/api/sendPoll"
+    payload = {
+        "chatId": chat_id,
+        "session": session if session else settings.WAHA_SESSION,
+        "poll": {
+            "name": title,
+            "options": options,
+            "multipleAnswers": multiple_answers
+        }
+    }
+    headers = {"Accept": "application/json"}
+    api_key = os.getenv("WAHA_API_KEY", "123")
+    if api_key:
+        headers["X-Api-Key"] = api_key
+
+    import time
+    for attempt in range(3):
+        try:
+            response = requests.post(url, json=payload, headers=headers, timeout=45)
+            if response.status_code in (200, 201):
+                return True
+            else:
+                logger.warning(f"WAHA sendPoll attempt {attempt+1} failed: {response.status_code} - {response.text}")
+        except Exception as e:
+            logger.error(f"WAHA sendPoll attempt {attempt+1} error: {e}")
+        time.sleep(1)
+    return False
+
 def send_waha_file(chat_id: str, file_path: str, caption: str = "", session: str = None) -> bool:
     """Send a file (PDF/Image/Excel) via WAHA using public HTTPS URL hosted on Hostinger for 100% reliable WhatsApp delivery."""
     clean_chat = "".join(filter(str.isdigit, str(chat_id or '')))

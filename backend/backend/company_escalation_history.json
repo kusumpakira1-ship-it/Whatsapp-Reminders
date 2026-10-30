@@ -1,0 +1,72 @@
+{
+  "_current_month": "2026-10",
+  "monthly_baselines_23oct": {
+    "balaji": 17,
+    "corporate": 47,
+    "feeds": 35,
+    "farms": 37,
+    "rental": 0
+  },
+  "baseline_27oct": {
+    "balaji": {
+      "weekly_failed": 2,
+      "monthly_failed": 19,
+      "monthly_tasks": 46
+    },
+    "corporate": {
+      "weekly_failed": 7,
+      "monthly_failed": 54,
+      "monthly_tasks": 129
+    },
+    "feeds": {
+      "weekly_failed": 2,
+      "monthly_failed": 37,
+      "monthly_tasks": 177
+    },
+    "farms": {
+      "weekly_failed": 5,
+      "monthly_failed": 42,
+      "monthly_tasks": 179
+    },
+    "rental": {
+      "weekly_failed": 0,
+      "monthly_failed": 0,
+      "monthly_tasks": 3
+    }
+  },
+  "daily_failures": {
+    "2026-10-24": {
+      "balaji": 0,
+      "corporate": 0,
+      "feeds": 0,
+      "farms": 0,
+      "rental": 0
+    },
+    "2026-10-26": {
+      "balaji": 1,
+      "corporate": 7,
+      "feeds": 1,
+      "farms": 3,
+      "rental": 0
+    },
+    "2026-10-27": {
+      "balaji": 1,
+      "corporate": 0,
+      "feeds": 1,
+      "farms": 2,
+      "rental": 0
+    },
+    "2026-10-28": {
+      "balaji": 1,
+      "corporate": 0,
+      "feeds": 2,
+      "farms": 2
+    },
+    "2026-10-29": {
+      "balaji": 1,
+      "corporate": 0,
+      "feeds": 8,
+      "farms": 8
+    }
+  }
+}

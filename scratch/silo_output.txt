@@ -1,0 +1,1009 @@
+=== TASK 141 FULL DETAILS ===
+{'id': 141, 'task_name': 'Silo Empty and Cleaning', 'task_type': 'Silo Empty and Cleaning', 'assigned_person_name': 'Team', 'assigned_person_phone': '1234567890', 'whatsapp_group_id': '120363429180468592@g.us', 'due_time': datetime.datetime(2026, 10, 23, 17, 1), 'completion_keywords': None, 'status': 'overdue', 'approver_phone': None, 'completion_details': 'Auto-completed: WhatsApp reply detected[OVERDUE_ALERT_SENT]', 'created_at': None, 'frequency': 'daily', 'repeat_interval': 'none', 'sub_reports_status': None}
+
+=== RAW MESSAGES TODAY (OCT 23) ===
+[2026-10-23 17:15:16] (2.0 Bongo Buddies in Bengaluru 2.0) [2.0 Bongo Buddies in Bengaluru 2.0] Debapriyo Chakraborty (11355927101646): https://www.instagram.com/reel/De1dI8-JJZP/?srtk=YTBoZmJvOTVqcXlm
+
+The only Traffic Jam you’d actually want to get stuck in! 🎸⚡️
+A quick look back at the unforgettable moments from our Durga Pujo 2026 gig!
+[2026-10-23 17:13:32] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 
+[2026-10-23 17:13:33] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 
+[2026-10-23 17:13:33] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 
+[2026-10-23 17:13:32] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 
+[2026-10-23 17:13:31] (120363429180468592) [120363429180468592] mahesh (238684318220422): 
+[2026-10-23 17:13:31] (120363429180468592) [120363429180468592] mahesh (238684318220422): 
+[2026-10-23 17:00:46] (BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️) [BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️] Sayani Mitra (37585946726533): 
+[2026-10-23 17:00:46] (BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️) [BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️] Sayani Mitra (37585946726533): 
+[2026-10-23 17:00:45] (BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️) [BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️] Sayani Mitra (37585946726533): 
+[2026-10-23 17:00:45] (BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️) [BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️] Sayani Mitra (37585946726533): 
+[2026-10-23 17:00:44] (BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️) [BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️] Sayani Mitra (37585946726533): 
+[2026-10-23 17:00:44] (BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️) [BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️] Sayani Mitra (37585946726533): 
+[2026-10-23 17:00:43] (BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️) [BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️] Sayani Mitra (37585946726533): 
+[2026-10-23 17:00:43] (BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️) [BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️] Sayani Mitra (37585946726533): 
+[2026-10-23 17:00:42] (BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️) [BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️] Sayani Mitra (37585946726533): 
+[2026-10-23 17:00:42] (BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️) [BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️] Sayani Mitra (37585946726533): 
+[2026-10-23 17:00:41] (BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️) [BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️] Sayani Mitra (37585946726533): 
+[2026-10-23 17:00:42] (BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️) [BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️] Sayani Mitra (37585946726533): 
+[2026-10-23 17:00:40] (BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️) [BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️] Sayani Mitra (37585946726533): 
+[2026-10-23 17:00:41] (BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️) [BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️] Sayani Mitra (37585946726533): 
+[2026-10-23 17:00:39] (BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️) [BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️] Sayani Mitra (37585946726533): 
+[2026-10-23 17:00:39] (BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️) [BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️] Sayani Mitra (37585946726533): 
+[2026-10-23 17:00:38] (BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️) [BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️] Sayani Mitra (37585946726533): 
+[2026-10-23 17:00:40] (BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️) [BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️] Sayani Mitra (37585946726533): 
+[2026-10-23 17:00:37] (BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️) [BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️] Sayani Mitra (37585946726533): 🪔✨ TramiFloma’s Diwali Candle Collection is Here! ✨🪔
+
+Radhey Radhey 🙏🏻💖
+
+This Diwali, brighten your homes and make your celebrations extra special with my handmade festive candle collection from TramiFloma 🕯️🌸 From beautiful diyas to festive urli candles and unique gifting hampers, there’s something for everyone! ❤️
+
+✨ Budget-friendly options available
+🌸 Customizable colours & fragrances
+🎁 Perfect for gifting and home décor
+💖 Personalization available as per your choice
+
+Each candle is handmade with love, care, and lots of festive warmth. 🪷
+
+If you’re looking for something beautiful and unique this Diwali, feel free to DM me to explore the collection and place your orders. Your support means a lot to my small business! 🥹❤️
+
+Let’s make this Diwali brighter, one candle at a time! 🪔✨
+[2026-10-23 17:00:38] (BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️) [BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️] Sayani Mitra (37585946726533): 
+[2026-10-23 17:00:36] (BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️) [BBB Promo Zone
+(For Promotions & Advertisements)🎯🚚🏦💵💰🏷️] Sayani Mitra (37585946726533): 
+[2026-10-23 16:54:19] (Doctor and Manager Daily Feedback) [Doctor and Manager Daily Feedback] Nabiya (241274569400567): Ok sir..
+[2026-10-23 16:51:24] (Triple B’s Job search only) [Triple B’s Job search only] AR (144354001850464): Startup’s mostly
+[2026-10-23 16:51:24] (Triple B’s Job search only) [Triple B’s Job search only] AR (144354001850464): Java dev 1-2 yr openings ache ki
+[2026-10-23 16:47:07] (Doctor and Manager Daily Feedback) [Doctor and Manager Daily Feedback] Nani Chinnam (112300593815672): Please get it cleaned tomorrow
+[2026-10-23 16:43:51] (Sunfra Mudah) [Sunfra Mudah] nisha_subbayya👻 (125795330740245): Signing off
+[2026-10-23 15:51:58] (None) Kusum (917259510983): To become a php developer what skills we need 
+
+To become a PHP Developer, you need to learn frontend development, PHP programming, databases, backend development, and basic deployment. Since you have already worked on converting your Egg ERP project from Python to PHP and connecting it to MySQL, you can use that project to practice these skills.
+
+1. Skills required to become a PHP Developer
+The Power of HTML, CSS, and JavaScript: The Building Blocks of the Modern Web - DEV Community
+
+
+Add to Favorites
+1. Frontend Development
+
+Must learn
+HTML5 — page structure and forms
+
+CSS3 — styling, layouts, responsive design
+
+JavaScript — validation, events, dynamic pages
+
+Bootstrap — responsive UI components
+
+Waifly - INEXPENSIVE & PAID 24/7 Hosting
+
+
+Add to Favorites
+2. Core PHP
+
+Most important
+Variables, data types and operators
+
+Conditions and loops
+
+Functions and arrays
+
+Forms and form handling (GET, POST)
+
+Sessions and cookies
+
+File handling
+
+Error handling and debugging
+
+Object-Oriented Programming (OOP): classes, objects, inheritance, interfaces and traits
+
+Kanbel Technologies
+
+
+Add to Favorites
+3. Database — MySQL
+
+SQL queries: SELECT, INSERT, UPDATE, DELETE
+
+Joins, subqueries and aggregate functions
+
+Primary keys and foreign keys
+
+Relationships between tables
+
+Indexes and transactions
+
+Connecting PHP with MySQL using PDO or MySQLi
+
+How to code a simple web API in 5 minutes with PHP
+
+
+Add to Favorites
+4. Backend Development
+
+CRUD operations
+
+MVC architecture
+
+REST APIs and JSON
+
+Authentication and authorization
+
+Form validation and secure database queries
+
+File uploads and business logic
+
+Laravel Logo .PNG and .AI, .EPS, .CDR, .PDF, .SVG - iconLogoVector
+
+
+Add to Favorites
+5. PHP Framework — Laravel
+
+Learn after Core PHP.
+
+Routing and controllers
+
+Models and migrations
+
+Blade templates
+
+Eloquent ORM
+
+Middleware and authentication
+
+API development
+
+Laravel validation and testing
+
+Mastering Git and GitHub: Best Practices for Developers
+
+
+Add to Favorites
+6. Developer Tools
+
+VS Code
+
+Git and GitHub
+
+XAMPP or a PHP development environment
+
+Composer (PHP dependency manager)
+
+Postman for API testing
+
+FTP/SFTP and hosting deployment
+
+Basic Linux commands and server logs
+[2026-10-23 15:40:16] (Sunfra Feeds) [Sunfra Feeds] 🕺🕺 (45586833240126): Back
+[2026-10-23 15:40:08] (None) 183163359879276: 
+[2026-10-23 15:24:19] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 
+[2026-10-23 15:23:04] (Triple B’s Job search only) [Triple B’s Job search only] as (51179031666806): I will refer asap
+[2026-10-23 15:22:44] (Triple B’s Job search only) [Triple B’s Job search only] souryadeep (213061080211693): I just shared u mine please confirm
+[2026-10-23 15:20:36] (Triple B’s Job search only) [Triple B’s Job search only] as (51179031666806): Anyone looking for a referral can? So absolutely
+[2026-10-23 15:20:07] (Triple B’s Job search only) [Triple B’s Job search only] Titli Roy (205866674454731): Hi, can I share mine as well?
+[2026-10-23 15:16:58] (Triple B’s Job search only) [Triple B’s Job search only] Bidyut (45204899934257): Sure
+[2026-10-23 15:16:41] (Triple B’s Job search only) [Triple B’s Job search only] Titli Roy (205866674454731): Hi, I'm holding an MBA Marketing degree as well, can I DM you regarding this?
+[2026-10-23 15:10:56] (Sunfra Farms) [Sunfra Farms] mahalakshmi (184791135711366): Back
+[2026-10-23 15:10:28] (Feed Rates) [Feed Rates] Kusum (917259510983): 🌾 *DAILY PAPAAK FEED RATES REPORT*
+📅 *Date:* 23 Oct 2026
+
+*BAJ*
+DLH: 2610(+10)
+
+*MAZ*
+DLH: 2740(+40)
+
+*DMC*
+KOTA GOYAL: 3000(0)
+KOTA SHIV: 3000(0)
+
+*DRB*
+HRY: 2150(+50)
+PJB: 2150(+50)
+
+*GNE45*
+ROC: 3810(0)
+
+*GNE40*
+ROC: 3560(0)
+
+*GNE 50*
+ROC: 3960(0)
+
+*SOY*
+DHULIYA: 6300(0)
+INDORE: 6370(0)
+KOTA GOYAL: 6400(0)
+KOTA SHIV: 6400(0)
+NADED: 6420(0)
+NAGPUR: 6320(0)
+SANGLI: 6370(0)
+SOLAPUR: 6400(0)
+
+*SOY HYP*
+KOTA: 7040(0)
+[2026-10-23 15:10:28] (None) Kusum (917259510983): 🌾 *DAILY PAPAAK FEED RATES REPORT*
+📅 *Date:* 23 Oct 2026
+
+*BAJ*
+DLH: 2610(+10)
+
+*MAZ*
+DLH: 2740(+40)
+
+*DMC*
+KOTA GOYAL: 3000(0)
+KOTA SHIV: 3000(0)
+
+*DRB*
+HRY: 2150(+50)
+PJB: 2150(+50)
+
+*GNE45*
+ROC: 3810(0)
+
+*GNE40*
+ROC: 3560(0)
+
+*GNE 50*
+ROC: 3960(0)
+
+*SOY*
+DHULIYA: 6300(0)
+INDORE: 6370(0)
+KOTA GOYAL: 6400(0)
+KOTA SHIV: 6400(0)
+NADED: 6420(0)
+NAGPUR: 6320(0)
+SANGLI: 6370(0)
+SOLAPUR: 6400(0)
+
+*SOY HYP*
+KOTA: 7040(0)
+[2026-10-23 15:10:25] (Feed Rates) [Feed Rates] Kusum (917259510983): 🌾 *New PAPAAK Feed Rate Message*
+
+[SMSForwarder] New message from CP-PAPAAK-S - 23/10, 3:02 pm
+From : CP-PAPAAK-S()
+15:02 Feed
+SOY-
+DHULIYA:6300
+INDORE:6370
+KOTA GOYAL:6400
+KOTA SHIV:6400
+NADED:6420
+NAGPUR:6320
+SANGLI:6370
+SOLAPUR:6400
+SOY HYP-
+KOTA:7040
+PAPAAK
+[2026-10-23 15:10:24] (None) Kusum (917259510983): 🌾 *New PAPAAK Feed Rate Message*
+
+[SMSForwarder] New message from CP-PAPAAK-S - 23/10, 3:02 pm
+From : CP-PAPAAK-S()
+15:02 Feed
+SOY-
+DHULIYA:6300
+INDORE:6370
+KOTA GOYAL:6400
+KOTA SHIV:6400
+NADED:6420
+NAGPUR:6320
+SANGLI:6370
+SOLAPUR:6400
+SOY HYP-
+KOTA:7040
+PAPAAK
+[2026-10-23 15:10:23] (Feed Rates) [Feed Rates] Kusum (917259510983): 🌾 *New PAPAAK Feed Rate Message*
+
+[SMSForwarder] New message from CP-PAPAAK-S - 23/10, 3:01 pm
+From : CP-PAPAAK-S()
+15:01 Feed
+BAJ-
+DLH:2610
+MAZ-
+DLH:2740
+DMC-
+KOTA GOYAL:3000
+KOTA SHIV:3000
+DRB-
+HRY:2150
+PJB:2150
+GNE45-
+ROC:3810
+GNE40-
+ROC:3560
+GNE 50-
+ROC:3960
+PAPAAK
+[2026-10-23 15:10:23] (None) Kusum (917259510983): 🌾 *New PAPAAK Feed Rate Message*
+
+[SMSForwarder] New message from CP-PAPAAK-S - 23/10, 3:01 pm
+From : CP-PAPAAK-S()
+15:01 Feed
+BAJ-
+DLH:2610
+MAZ-
+DLH:2740
+DMC-
+KOTA GOYAL:3000
+KOTA SHIV:3000
+DRB-
+HRY:2150
+PJB:2150
+GNE45-
+ROC:3810
+GNE40-
+ROC:3560
+GNE 50-
+ROC:3960
+PAPAAK
+
+=== RAW MESSAGES WITH SILO (ANY TIME) ===
+[2026-10-23 10:52:28] (Alliance) [Alliance] Akshay I H (206686828683301): Water Flow API: 
+https://sunfra.com/farm/sensor/water_flow_meter.php?pulses=60&mac=24-gb-56-hg-9j-y9&status=flowing
+
+Temperature API:
+https://sunfra.com/farm/sensor/temperature_with_nodemcu.php?mac_address=30-5g-hg-60-jb&temp=25&humidity=65
+
+Water Level API:
+https://sunfra.com/farm/water_level/api/telemetry.php?mac=C4-4F-33-24-7C-59&water_level=25&status=ON
+
+Silo API:
+https://sunfra.com/farm/sensor/indicator_reading.php
+
+Voltage API:
+https://sunfra.com/farm/voltage_sensor/api.php?endpoint=voltage-logs&voltage_value=230&mac_address=AA:BB:CC:DD:EE:FF&status=POWER_ON
+[2026-10-22 23:52:06] (Sunfra Group Of Companies) [Sunfra Group Of Companies] Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 22 Oct 2026
+• Summary - Sunfra Feeds: *Daily Purchases* - ❌
+• Summary - Sunfra Feeds: *Daily Sales* - ❌
+• Summary - Sunfra Feeds: *Day Book* - ❌
+• Summary - Sunfra Feeds: *Each Sales P&L* - ❌
+• Summary - Sunfra Feeds: *Total Payables* - ❌
+• Summary - Sunfra Feeds: *Total Receivables* - ❌
+• Raw Material Prices & Orders: *Stock/Website Updates* - ✅
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ✅
+
+🚨 *Total Failed Today: 6*
+📅 *Total Failed this Week: 9*
+🗓️ *Total Failed this Month: 28*
+📋 *Total Tasks this Month: 96*
+[2026-10-22 23:52:06] (None) Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 22 Oct 2026
+• Summary - Sunfra Feeds: *Daily Purchases* - ❌
+• Summary - Sunfra Feeds: *Daily Sales* - ❌
+• Summary - Sunfra Feeds: *Day Book* - ❌
+• Summary - Sunfra Feeds: *Each Sales P&L* - ❌
+• Summary - Sunfra Feeds: *Total Payables* - ❌
+• Summary - Sunfra Feeds: *Total Receivables* - ❌
+• Raw Material Prices & Orders: *Stock/Website Updates* - ✅
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ✅
+
+🚨 *Total Failed Today: 6*
+📅 *Total Failed this Week: 9*
+🗓️ *Total Failed this Month: 28*
+📋 *Total Tasks this Month: 96*
+[2026-10-22 23:52:08] (Sunfra Group Of Companies) [Sunfra Group Of Companies] Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 22 Oct 2026
+• Summary - Sunfra Feeds: *Daily Purchases* - ✅
+• Summary - Sunfra Feeds: *Daily Sales* - ✅
+• Summary - Sunfra Feeds: *Day Book* - ✅
+• Summary - Sunfra Feeds: *Each Sales P&L* - ❌
+• Summary - Sunfra Feeds: *Total Payables* - ✅
+• Summary - Sunfra Feeds: *Total Receivables* - ✅
+• Raw Material Prices & Orders: *Stock/Website Updates* - ✅
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 4*
+🗓️ *Total Failed this Month: 23*
+📋 *Total Tasks this Month: 97*
+[2026-10-22 23:47:13] (None) Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 22 Oct 2026
+• Summary - Sunfra Feeds: *Daily Purchases* - ✅
+• Summary - Sunfra Feeds: *Daily Sales* - ✅
+• Summary - Sunfra Feeds: *Day Book* - ✅
+• Summary - Sunfra Feeds: *Each Sales P&L* - ❌
+• Summary - Sunfra Feeds: *Total Payables* - ✅
+• Summary - Sunfra Feeds: *Total Receivables* - ✅
+• Raw Material Prices & Orders: *Stock/Website Updates* - ✅
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 4*
+🗓️ *Total Failed this Month: 23*
+📋 *Total Tasks this Month: 97*
+[2026-10-22 22:31:09] (None) Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 22 Oct 2026
+• Summary - Sunfra Feeds: *Daily Purchases* - ❌
+• Summary - Sunfra Feeds: *Daily Sales* - ❌
+• Summary - Sunfra Feeds: *Day Book* - ❌
+• Summary - Sunfra Feeds: *Each Sales P&L* - ❌
+• Summary - Sunfra Feeds: *Total Payables* - ❌
+• Summary - Sunfra Feeds: *Total Receivables* - ❌
+• Raw Material Prices & Orders: *Stock/Website Updates* - ✅
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ✅
+
+🚨 *Total Failed Today: 6*
+📅 *Total Failed this Week: 9*
+🗓️ *Total Failed this Month: 28*
+📋 *Total Tasks this Month: 96*
+[2026-10-22 08:54:23] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 8th shade feed  removed for silo
+[2026-10-21 23:54:22] (Sunfra Group Of Companies) [Sunfra Group Of Companies] Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 21 Oct 2026
+• Summary - Sunfra Feeds: *Daily Purchases* - ✅
+• Summary - Sunfra Feeds: *Daily Sales* - ✅
+• Summary - Sunfra Feeds: *Day Book* - ✅
+• Summary - Sunfra Feeds: *Each Sales P&L* - ❌
+• Summary - Sunfra Feeds: *Total Payables* - ✅
+• Summary - Sunfra Feeds: *Total Receivables* - ✅
+• Raw Material Prices & Orders: *Stock/Website Updates* - ✅
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ❌
+
+🚨 *Total Failed Today: 2*
+📅 *Total Failed this Week: 7*
+🗓️ *Total Failed this Month: 26*
+📋 *Total Tasks this Month: 96*
+[2026-10-21 23:52:22] (Sunfra Group Of Companies) [Sunfra Group Of Companies] Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 21 Oct 2026
+• Summary - Sunfra Feeds: *Daily Purchases* - ❌
+• Summary - Sunfra Feeds: *Daily Sales* - ❌
+• Summary - Sunfra Feeds: *Day Book* - ❌
+• Summary - Sunfra Feeds: *Each Sales P&L* - ❌
+• Summary - Sunfra Feeds: *Total Payables* - ❌
+• Summary - Sunfra Feeds: *Total Receivables* - ❌
+• Raw Material Prices & Orders: *Stock/Website Updates* - ✅
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ✅
+
+🚨 *Total Failed Today: 6*
+📅 *Total Failed this Week: 9*
+🗓️ *Total Failed this Month: 28*
+📋 *Total Tasks this Month: 96*
+[2026-10-21 23:52:21] (None) Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 21 Oct 2026
+• Summary - Sunfra Feeds: *Daily Purchases* - ❌
+• Summary - Sunfra Feeds: *Daily Sales* - ❌
+• Summary - Sunfra Feeds: *Day Book* - ❌
+• Summary - Sunfra Feeds: *Each Sales P&L* - ❌
+• Summary - Sunfra Feeds: *Total Payables* - ❌
+• Summary - Sunfra Feeds: *Total Receivables* - ❌
+• Raw Material Prices & Orders: *Stock/Website Updates* - ✅
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ✅
+
+🚨 *Total Failed Today: 6*
+📅 *Total Failed this Week: 9*
+🗓️ *Total Failed this Month: 28*
+📋 *Total Tasks this Month: 96*
+[2026-10-21 22:31:08] (None) Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 21 Oct 2026
+• Summary - Sunfra Feeds: *Daily Purchases* - ❌
+• Summary - Sunfra Feeds: *Daily Sales* - ❌
+• Summary - Sunfra Feeds: *Day Book* - ❌
+• Summary - Sunfra Feeds: *Each Sales P&L* - ❌
+• Summary - Sunfra Feeds: *Total Payables* - ❌
+• Summary - Sunfra Feeds: *Total Receivables* - ❌
+• Raw Material Prices & Orders: *Stock/Website Updates* - ✅
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ✅
+
+🚨 *Total Failed Today: 6*
+📅 *Total Failed this Week: 9*
+🗓️ *Total Failed this Month: 28*
+📋 *Total Tasks this Month: 96*
+[2026-10-21 19:24:59] (Ai iOT Team) [Ai iOT Team] Akshay I H (206686828683301): Hi Team,
+I am Akshay
+
+Today's work update,
+* Worked on the water flow monitoring system without the DHT sensor, configuring it as a dedicated flow-monitoring sender.
+* Worked on the water level monitoring system and integrated it with the same ESP32 LoRa receiver.
+* Updated the unified ESP32 LoRa gateway receiver to support multiple sensor types, including: Water Flow, Temperature & Humidity, Silo Weight Indicator and Water Level Monitoring.
+* Implemented a persistent LittleFS queue in the receiver to store and retransmit sensor data during network interruptions, preventing data loss.
+* Configured the receiver with dual-core operation, separating LoRa communication and ACK handling from Wi-Fi and data-upload operations.
+* Updated the OLED display to show rotating pages with live information from the connected sensor systems.
+* Fixed the ACK verification issue in the water flow sender by correcting the expected ACK format.
+* Assigned and verified TDMA transmission slots for the different sensor devices to avoid LoRa packet collisions.
+* Converted the water level monitoring system to LoRa communication, including ACK handling, retry mechanism, and LittleFS data queuing.
+* Resolved a GPIO pin conflict in the water level sender by moving the FLOAT_50 sensor from GPIO 26 to GPIO 33, allowing GPIO 26 to be used for the LoRa DIO0 connection.
+* Preserved the existing water level monitoring logic, including float-sensor calculations, splash debouncing, OLED display, and graphical water-level indication.
+* Discussed with Sir regarding the new requirements and updates for the previously presented systems.
+* Reviewed the ESP8266 Modbus silo weight indicator firmware, including EEPROM packet tracking, LoRa communication, and LittleFS queue operation.
+* Verified the device slot allocation to prevent communication collisions between the water flow, water level, and silo monitoring systems.
+* Discussed the server-side data processing and feed consumption/refill tracking for the silo monitoring system.
+* Verified that the updated sensor systems and LoRa communication setup are aligned and suitable for further long-term field testing and deployment.
+* Coordinated with Poornima regarding the required components list and matched the required components with the available stock, as requested by Sir.
+Thank you.
+[2026-10-21 18:16:22] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 1-3
+2-3
+3-3
+4-3
+5-3
+6-3
+8-3
+Total tones 21
+Salt use 84kgs
+Feed plant cleaning Done 
+Additional use stone gride 5 bags 
+Feed formula change complete 
+Silo cleaning no
+[2026-10-20 10:26:42] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): Silo cleaning
+[2026-10-19 23:52:08] (Sunfra Group Of Companies) [Sunfra Group Of Companies] Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 19 Oct 2026
+• Raw Material Prices & Orders: *Stock/Website Updates* - ❌
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ❌
+• Summary - Sunfra Feeds: *Daily Purchases* - ✅
+• Summary - Sunfra Feeds: *Daily Sales* - ✅
+• Summary - Sunfra Feeds: *Day Book* - ✅
+• Summary - Sunfra Feeds: *Each Sales P&L* - ✅
+• Summary - Sunfra Feeds: *Total Payables* - ✅
+• Summary - Sunfra Feeds: *Total Receivables* - ✅
+• Summary - Sunfra Feeds: *Weekly P&L* - ✅
+
+🚨 *Total Failed Today: 2*
+📅 *Total Failed this Week: 5*
+🗓️ *Total Failed this Month: 24*
+📋 *Total Tasks this Month: 97*
+[2026-10-19 23:52:08] (None) Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 19 Oct 2026
+• Raw Material Prices & Orders: *Stock/Website Updates* - ❌
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ❌
+• Summary - Sunfra Feeds: *Daily Purchases* - ✅
+• Summary - Sunfra Feeds: *Daily Sales* - ✅
+• Summary - Sunfra Feeds: *Day Book* - ✅
+• Summary - Sunfra Feeds: *Each Sales P&L* - ✅
+• Summary - Sunfra Feeds: *Total Payables* - ✅
+• Summary - Sunfra Feeds: *Total Receivables* - ✅
+• Summary - Sunfra Feeds: *Weekly P&L* - ✅
+
+🚨 *Total Failed Today: 2*
+📅 *Total Failed this Week: 5*
+🗓️ *Total Failed this Month: 24*
+📋 *Total Tasks this Month: 97*
+[2026-10-19 22:31:09] (None) Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 19 Oct 2026
+• Raw Material Prices & Orders: *Stock/Website Updates* - ❌
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ❌
+• Summary - Sunfra Feeds: *Daily Purchases* - ✅
+• Summary - Sunfra Feeds: *Daily Sales* - ✅
+• Summary - Sunfra Feeds: *Day Book* - ✅
+• Summary - Sunfra Feeds: *Each Sales P&L* - ✅
+• Summary - Sunfra Feeds: *Total Payables* - ✅
+• Summary - Sunfra Feeds: *Total Receivables* - ✅
+• Summary - Sunfra Feeds: *Weekly P&L* - ✅
+
+🚨 *Total Failed Today: 2*
+📅 *Total Failed this Week: 5*
+🗓️ *Total Failed this Month: 24*
+📋 *Total Tasks this Month: 97*
+[2026-10-17 23:52:13] (Sunfra Group Of Companies) [Sunfra Group Of Companies] Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 17 Oct 2026
+• Raw Material Prices & Orders: *Stock/Website Updates* - ❌
+• Summary - Sunfra Feeds: *Daily Sales* - ❌
+• Summary - Sunfra Feeds: *Each Sales P&L* - ❌
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ❌
+• Summary - Sunfra Feeds: *Daily Purchases* - ✅
+• Summary - Sunfra Feeds: *Day Book* - ✅
+• Summary - Sunfra Feeds: *Total Payables* - ✅
+• Summary - Sunfra Feeds: *Total Receivables* - ✅
+
+🚨 *Total Failed Today: 4*
+📅 *Total Failed this Week: 7*
+🗓️ *Total Failed this Month: 26*
+📋 *Total Tasks this Month: 96*
+[2026-10-17 23:52:12] (None) Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 17 Oct 2026
+• Raw Material Prices & Orders: *Stock/Website Updates* - ❌
+• Summary - Sunfra Feeds: *Daily Sales* - ❌
+• Summary - Sunfra Feeds: *Each Sales P&L* - ❌
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ❌
+• Summary - Sunfra Feeds: *Daily Purchases* - ✅
+• Summary - Sunfra Feeds: *Day Book* - ✅
+• Summary - Sunfra Feeds: *Total Payables* - ✅
+• Summary - Sunfra Feeds: *Total Receivables* - ✅
+
+🚨 *Total Failed Today: 4*
+📅 *Total Failed this Week: 7*
+🗓️ *Total Failed this Month: 26*
+📋 *Total Tasks this Month: 96*
+[2026-10-17 22:31:05] (None) Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 17 Oct 2026
+• Raw Material Prices & Orders: *Stock/Website Updates* - ❌
+• Summary - Sunfra Feeds: *Daily Sales* - ❌
+• Summary - Sunfra Feeds: *Each Sales P&L* - ❌
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ❌
+• Summary - Sunfra Feeds: *Daily Purchases* - ✅
+• Summary - Sunfra Feeds: *Day Book* - ✅
+• Summary - Sunfra Feeds: *Total Payables* - ✅
+• Summary - Sunfra Feeds: *Total Receivables* - ✅
+
+🚨 *Total Failed Today: 4*
+📅 *Total Failed this Week: 7*
+🗓️ *Total Failed this Month: 26*
+📋 *Total Tasks this Month: 96*
+[2026-10-16 22:31:14] (None) Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 16 Oct 2026
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ❌
+• Raw Material Prices & Orders: *Stock/Website Updates* - ✅
+• Summary - Sunfra Feeds: *Daily Purchases* - ✅
+• Summary - Sunfra Feeds: *Daily Sales* - ✅
+• Summary - Sunfra Feeds: *Day Book* - ✅
+• Summary - Sunfra Feeds: *Each Sales P&L* - ✅
+• Summary - Sunfra Feeds: *Total Payables* - ✅
+• Summary - Sunfra Feeds: *Total Receivables* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 4*
+🗓️ *Total Failed this Month: 23*
+📋 *Total Tasks this Month: 96*
+[2026-10-15 23:52:11] (Sunfra Group Of Companies) [Sunfra Group Of Companies] Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 15 Oct 2026
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ❌
+• Raw Material Prices & Orders: *Stock/Website Updates* - ✅
+• Summary - Sunfra Feeds: *Daily Purchases* - ✅
+• Summary - Sunfra Feeds: *Daily Sales* - ✅
+• Summary - Sunfra Feeds: *Day Book* - ✅
+• Summary - Sunfra Feeds: *Each Sales P&L* - ✅
+• Summary - Sunfra Feeds: *Total Payables* - ✅
+• Summary - Sunfra Feeds: *Total Receivables* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 4*
+🗓️ *Total Failed this Month: 23*
+📋 *Total Tasks this Month: 96*
+[2026-10-15 23:52:11] (None) Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 15 Oct 2026
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ❌
+• Raw Material Prices & Orders: *Stock/Website Updates* - ✅
+• Summary - Sunfra Feeds: *Daily Purchases* - ✅
+• Summary - Sunfra Feeds: *Daily Sales* - ✅
+• Summary - Sunfra Feeds: *Day Book* - ✅
+• Summary - Sunfra Feeds: *Each Sales P&L* - ✅
+• Summary - Sunfra Feeds: *Total Payables* - ✅
+• Summary - Sunfra Feeds: *Total Receivables* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 4*
+🗓️ *Total Failed this Month: 23*
+📋 *Total Tasks this Month: 96*
+[2026-10-15 22:31:23] (None) Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 15 Oct 2026
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ❌
+• Raw Material Prices & Orders: *Stock/Website Updates* - ✅
+• Summary - Sunfra Feeds: *Daily Purchases* - ✅
+• Summary - Sunfra Feeds: *Daily Sales* - ✅
+• Summary - Sunfra Feeds: *Day Book* - ✅
+• Summary - Sunfra Feeds: *Each Sales P&L* - ✅
+• Summary - Sunfra Feeds: *Total Payables* - ✅
+• Summary - Sunfra Feeds: *Total Receivables* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 4*
+🗓️ *Total Failed this Month: 23*
+📋 *Total Tasks this Month: 96*
+[2026-10-14 23:52:16] (Sunfra Group Of Companies) [Sunfra Group Of Companies] Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 14 Oct 2026
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ❌
+• Raw Material Prices & Orders: *Stock/Website Updates* - ✅
+• Summary - Sunfra Feeds: *Daily Purchases* - ✅
+• Summary - Sunfra Feeds: *Daily Sales* - ✅
+• Summary - Sunfra Feeds: *Day Book* - ✅
+• Summary - Sunfra Feeds: *Each Sales P&L* - ✅
+• Summary - Sunfra Feeds: *Total Payables* - ✅
+• Summary - Sunfra Feeds: *Total Receivables* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 3*
+🗓️ *Total Failed this Month: 22*
+📋 *Total Tasks this Month: 88*
+[2026-10-14 23:52:15] (None) Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 14 Oct 2026
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ❌
+• Raw Material Prices & Orders: *Stock/Website Updates* - ✅
+• Summary - Sunfra Feeds: *Daily Purchases* - ✅
+• Summary - Sunfra Feeds: *Daily Sales* - ✅
+• Summary - Sunfra Feeds: *Day Book* - ✅
+• Summary - Sunfra Feeds: *Each Sales P&L* - ✅
+• Summary - Sunfra Feeds: *Total Payables* - ✅
+• Summary - Sunfra Feeds: *Total Receivables* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 3*
+🗓️ *Total Failed this Month: 22*
+📋 *Total Tasks this Month: 88*
+[2026-10-14 22:31:13] (None) Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 14 Oct 2026
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ❌
+• Raw Material Prices & Orders: *Stock/Website Updates* - ✅
+• Summary - Sunfra Feeds: *Daily Purchases* - ✅
+• Summary - Sunfra Feeds: *Daily Sales* - ✅
+• Summary - Sunfra Feeds: *Day Book* - ✅
+• Summary - Sunfra Feeds: *Each Sales P&L* - ✅
+• Summary - Sunfra Feeds: *Total Payables* - ✅
+• Summary - Sunfra Feeds: *Total Receivables* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 3*
+🗓️ *Total Failed this Month: 22*
+📋 *Total Tasks this Month: 88*
+[2026-10-13 22:38:42] (None) Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 13 Oct 2026
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ❌
+• Raw Material Prices & Orders: *Stock/Website Updates* - ✅
+• Summary - Sunfra Feeds: *Daily Purchases* - ✅
+• Summary - Sunfra Feeds: *Daily Sales* - ✅
+• Summary - Sunfra Feeds: *Day Book* - ✅
+• Summary - Sunfra Feeds: *Each Sales P&L* - ✅
+• Summary - Sunfra Feeds: *Total Payables* - ✅
+• Summary - Sunfra Feeds: *Total Receivables* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 4*
+🗓️ *Total Failed this Month: 20*
+📋 *Total Tasks this Month: 80*
+[2026-10-12 23:56:45] (Sunfra Group Of Companies) [Sunfra Group Of Companies] Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 12 Oct 2026
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ❌
+• Raw Material Prices & Orders: *Stock/Website Updates* - ✅
+• Summary - Sunfra Feeds: *Daily Purchases* - ✅
+• Summary - Sunfra Feeds: *Daily Sales* - ✅
+• Summary - Sunfra Feeds: *Day Book* - ✅
+• Summary - Sunfra Feeds: *Each Sales P&L* - ❌
+• Summary - Sunfra Feeds: *Weekly P&L* - ❌
+• Summary - Sunfra Feeds: *Total Payables* - ✅
+• Summary - Sunfra Feeds: *Total Receivables* - ✅
+
+🚨 *Total Failed Today: 3*
+📅 *Total Failed this Week: 3*
+🗓️ *Total Failed this Month: 19*
+📋 *Total Tasks this Month: 72*
+[2026-10-09 22:31:32] (None) Kusum (917259510983): 3️⃣ *Sunfra Feed Tasks & Reports:* — 📊 *EOD Summary*
+📅 *Date:* 09 Oct 2026
+• Sunfra Feed Plant: *Silo Empty and Cleaning* - ❌
+• Raw Material Prices & Orders: *Stock/Website Updates* - ✅
+• Summary - Sunfra Feeds: *Daily Purchases* - ✅
+• Summary - Sunfra Feeds: *Daily Sales* - ✅
+• Summary - Sunfra Feeds: *Day Book* - ✅
+• Summary - Sunfra Feeds: *Each Sales P&L* - ✅
+• Summary - Sunfra Feeds: *Total Payables* - ✅
+• Summary - Sunfra Feeds: *Total Receivables* - ✅
+
+🚨 *Total Failed Today: 1*
+📅 *Total Failed this Week: 8*
+🗓️ *Total Failed this Month: 12*
+📋 *Total Tasks this Month: 47*
+
+=== MESSAGES IN GROUP 120363429180468592@g.us (OCT 22 & OCT 23) ===
+[2026-10-23 17:13:32] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 
+[2026-10-23 17:13:33] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 
+[2026-10-23 17:13:33] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 
+[2026-10-23 17:13:32] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 
+[2026-10-23 17:13:31] (120363429180468592) [120363429180468592] mahesh (238684318220422): 
+[2026-10-23 17:13:31] (120363429180468592) [120363429180468592] mahesh (238684318220422): 
+[2026-10-23 16:54:19] (Doctor and Manager Daily Feedback) [Doctor and Manager Daily Feedback] Nabiya (241274569400567): Ok sir..
+[2026-10-23 16:47:07] (Doctor and Manager Daily Feedback) [Doctor and Manager Daily Feedback] Nani Chinnam (112300593815672): Please get it cleaned tomorrow
+[2026-10-23 15:40:16] (Sunfra Feeds) [Sunfra Feeds] 🕺🕺 (45586833240126): Back
+[2026-10-23 15:24:19] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 
+[2026-10-23 15:10:28] (Feed Rates) [Feed Rates] Kusum (917259510983): 🌾 *DAILY PAPAAK FEED RATES REPORT*
+📅 *Date:* 23 Oct 2026
+
+*BAJ*
+DLH: 2610(+10)
+
+*MAZ*
+DLH: 2740(+40)
+
+*DMC*
+KOTA GOYAL: 3000(0)
+KOTA SHIV: 3000(0)
+
+*DRB*
+HRY: 2150(+50)
+PJB: 2150(+50)
+
+*GNE45*
+ROC: 3810(0)
+
+*GNE40*
+ROC: 3560(0)
+
+*GNE 50*
+ROC: 3960(0)
+
+*SOY*
+DHULIYA: 6300(0)
+INDORE: 6370(0)
+KOTA GOYAL: 6400(0)
+KOTA SHIV: 6400(0)
+NADED: 6420(0)
+NAGPUR: 6320(0)
+SANGLI: 6370(0)
+SOLAPUR: 6400(0)
+
+*SOY HYP*
+KOTA: 7040(0)
+[2026-10-23 15:10:25] (Feed Rates) [Feed Rates] Kusum (917259510983): 🌾 *New PAPAAK Feed Rate Message*
+
+[SMSForwarder] New message from CP-PAPAAK-S - 23/10, 3:02 pm
+From : CP-PAPAAK-S()
+15:02 Feed
+SOY-
+DHULIYA:6300
+INDORE:6370
+KOTA GOYAL:6400
+KOTA SHIV:6400
+NADED:6420
+NAGPUR:6320
+SANGLI:6370
+SOLAPUR:6400
+SOY HYP-
+KOTA:7040
+PAPAAK
+[2026-10-23 15:10:23] (Feed Rates) [Feed Rates] Kusum (917259510983): 🌾 *New PAPAAK Feed Rate Message*
+
+[SMSForwarder] New message from CP-PAPAAK-S - 23/10, 3:01 pm
+From : CP-PAPAAK-S()
+15:01 Feed
+BAJ-
+DLH:2610
+MAZ-
+DLH:2740
+DMC-
+KOTA GOYAL:3000
+KOTA SHIV:3000
+DRB-
+HRY:2150
+PJB:2150
+GNE45-
+ROC:3810
+GNE40-
+ROC:3560
+GNE 50-
+ROC:3960
+PAPAAK
+[2026-10-23 14:37:09] (Sunfra Feed Plant) [Sunfra Feed Plant] Prathiba (2169075933244): Plz unload maize
+[2026-10-23 14:35:17] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 
+[2026-10-23 14:32:44] (Sunfra Feeds) [Sunfra Feeds] 🕺🕺 (45586833240126): Break
+[2026-10-23 13:41:32] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): Broken maize
+[2026-10-23 13:41:27] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): Small maize
+[2026-10-23 13:41:19] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): Big maize
+[2026-10-23 10:08:41] (Sunfra Feeds) [Sunfra Feeds] 🕺🕺 (45586833240126): Login
+[2026-10-23 10:04:24] (Doctor and Manager Daily Feedback) [Doctor and Manager Daily Feedback] Nabiya (241274569400567): 5th shed visited sir
+Feed leveling one line low...fixed 
+Water ok
+Birds leveling going on
+[2026-10-23 10:01:48] (Doctor and Manager Daily Feedback) [Doctor and Manager Daily Feedback] Nabiya (241274569400567): We have 2 male birds in farm ...3rd and 5th shed
+[2026-10-23 10:01:34] (Doctor and Manager Daily Feedback) [Doctor and Manager Daily Feedback] Nabiya (241274569400567): One male birds
+[2026-10-23 09:58:18] (Doctor and Manager Daily Feedback) [Doctor and Manager Daily Feedback] Nabiya (241274569400567): 
+[2026-10-23 09:58:09] (Doctor and Manager Daily Feedback) [Doctor and Manager Daily Feedback] Nabiya (241274569400567): 5th shed one line low feed
+[2026-10-23 09:57:23] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 
+[2026-10-23 09:42:32] (Doctor and Manager Daily Feedback) [Doctor and Manager Daily Feedback] Nabiya (241274569400567): 
+[2026-10-23 09:42:32] (Doctor and Manager Daily Feedback) [Doctor and Manager Daily Feedback] Nabiya (241274569400567): 6th shed visited sir 
+Feed leveling ok 
+Platform cleaning ok 
+Water ok
+Birds good
+No birds in level
+[2026-10-23 09:42:32] (Doctor and Manager Daily Feedback) [Doctor and Manager Daily Feedback] Nabiya (241274569400567): 
+[2026-10-23 09:38:18] (Sunfra Feed Plant) [Sunfra Feed Plant] Prathiba (2169075933244): Good work Mahesh!
+[2026-10-23 09:02:31] (Doctor and Manager Daily Feedback) [Doctor and Manager Daily Feedback] Nabiya (241274569400567): Bacterial infection
+[2026-10-23 09:02:17] (Doctor and Manager Daily Feedback) [Doctor and Manager Daily Feedback] Nabiya (241274569400567): 
+[2026-10-23 08:56:14] (Doctor and Manager Daily Feedback) [Doctor and Manager Daily Feedback] Nabiya (241274569400567): 
+[2026-10-23 08:56:13] (Doctor and Manager Daily Feedback) [Doctor and Manager Daily Feedback] Nabiya (241274569400567): 
+[2026-10-23 08:56:13] (Doctor and Manager Daily Feedback) [Doctor and Manager Daily Feedback] Nabiya (241274569400567): 
+[2026-10-23 08:56:13] (Doctor and Manager Daily Feedback) [Doctor and Manager Daily Feedback] Nabiya (241274569400567): 
+[2026-10-23 08:56:12] (Doctor and Manager Daily Feedback) [Doctor and Manager Daily Feedback] Nabiya (241274569400567): Chick shed visited sir 
+Feed ok
+Water ok
+Temperature ok
+[2026-10-23 08:56:12] (Doctor and Manager Daily Feedback) [Doctor and Manager Daily Feedback] Nabiya (241274569400567): 
+[2026-10-23 08:55:42] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 
+[2026-10-23 08:43:42] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 
+[2026-10-23 08:43:44] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 
+[2026-10-22 18:26:42] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 
+[2026-10-22 18:26:39] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 
+[2026-10-22 18:25:27] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 1234568 shade morning medicine 
+Disan tablet 
+Each shade 2 tablets
+[2026-10-22 18:22:58] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 12456 shades morning medicine 
+Toxi heal 1lit
+[2026-10-22 18:22:16] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 3 8 shades morning medicine 
+Toxi heal 2 lits
+[2026-10-22 18:21:25] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): Chick night medicine 
+B complex 5lits 
+G pro 2lits
+[2026-10-22 17:14:49] (Sunfra Feed Plant) [Sunfra Feed Plant] mahesh (238684318220422): 
+[2026-10-22 15:10:15] (Feed Rates) [Feed Rates] Kusum (917259510983): 🌾 *DAILY PAPAAK FEED RATES REPORT*
+📅 *Date:* 22 Oct 2026
+
+*BAJ*
+DLH: 2600(0)
+
+*MAZ*
+DLH: 2700(0)
+
+*DMC*
+KOTA GOYAL: 3000(0)
+KOTA SHIV: 3000(0)
+
+*DRB*
+HRY: 2100(0)
+PJB: 2100(0)
+
+*GNE45*
+ROC: 3810(0)
+
+*GNE40*
+ROC: 3560(0)
+
+*GNE 50*
+ROC: 3960(0)
+
+*SOY*
+DHULIYA: 6300(0)
+INDORE: 6370(0)
+KOTA GOYAL: 6400(0)
+KOTA SHIV: 6400(0)
+NADED: 6420(0)
+NAGPUR: 6320(0)
+SANGLI: 6370(0)
+SOLAPUR: 6400(0)
+
+*SOY HYP*
+KOTA: 7040(0)
+[2026-10-22 15:10:14] (Feed Rates) [Feed Rates] Kusum (917259510983): 🌾 *New PAPAAK Feed Rate Message*
+
+[SMSForwarder] New message from CP-PAPAAK-S - 22/10, 3:09 pm
+From : CP-PAPAAK-S()
+15:09 Feed
+SOY-
+DHULIYA:6300
+INDORE:6370
+KOTA GOYAL:6400
+KOTA SHIV:6400
+NADED:6420
+NAGPUR:6320
+SANGLI:6370
+SOLAPUR:6400
+SOY HYP-
+KOTA:7040
+PAPAAK

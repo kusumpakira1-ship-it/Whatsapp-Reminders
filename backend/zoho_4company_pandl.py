@@ -42,6 +42,12 @@ COMPANIES_CONFIG = [
         'display_name': 'Indus',
         'emoji': '⚡',
         'org_id': '893416886'
+    },
+    {
+        'key': 'raj_farms',
+        'display_name': 'Raj Farms',
+        'emoji': '🌱',
+        'org_id': '904503869'
     }
 ]
 
@@ -236,8 +242,6 @@ def fetch_historical_net_positions(access_token: str, org_id: str, today_net_pos
     save_or_update_daily_net_position(org_id, today_dt, today_net_pos, company_name, allow_overwrite=True)
         
     intervals = [
-        ("-1 Day", 1),
-        ("-2 Days", 2),
         ("-1 Week", 7),
         ("-2 Weeks", 14),
         ("-1 Month", 30),
@@ -248,36 +252,36 @@ def fetch_historical_net_positions(access_token: str, org_id: str, today_net_pos
     today_formatted = today_dt.strftime("%d %b")
     historical = [(f"Today ({today_formatted})", today_net_pos)]
     
-    db = get_db_session()
-    try:
-        for label, days_back in intervals:
-            target_dt = today_dt - timedelta(days=days_back)
-            date_formatted = target_dt.strftime("%d %b %Y") if days_back >= 365 else target_dt.strftime("%d %b")
-            display_label = f"{label} ({date_formatted})"
-            
-            # Retrieve frozen snapshot directly from MySQL DB
+    for label, days_back in intervals:
+        target_dt = today_dt - timedelta(days=days_back)
+        date_formatted = target_dt.strftime("%d %b %Y") if days_back >= 365 else target_dt.strftime("%d %b")
+        display_label = f"{label} ({date_formatted})"
+        
+        # Retrieve frozen snapshot directly from MySQL DB
+        past_net = None
+        try:
+            db = get_db_session()
             row = db.query(DailyNetPositionHistory).filter(
                 DailyNetPositionHistory.org_id == str(org_id),
                 DailyNetPositionHistory.date == target_dt
             ).first()
-            
             if row:
                 past_net = float(row.net_position)
-            else:
-                # Initial calculation for missing past date & permanently cache in DB
-                start_str = target_dt.strftime("%Y-%m-%d")
-                end_str = today_dt.strftime("%Y-%m-%d")
-                sales, purch, _, _ = fetch_range_sales_and_purchases(access_token, org_id, start_str, end_str)
-                net_change = sales - purch
-                past_net = today_net_pos - net_change
-                
-                save_or_update_daily_net_position(org_id, target_dt, past_net, company_name, allow_overwrite=False)
-                
-            historical.append((display_label, past_net))
-    except Exception as e:
-        logger.error(f"Error fetching historical net positions from DB: {e}")
-    finally:
-        db.close()
+            db.close()
+        except Exception as e:
+            logger.error(f"Error querying past net position for {org_id} on {target_dt}: {e}")
+            
+        if past_net is None:
+            # Initial calculation for missing past date & permanently cache in DB
+            start_str = target_dt.strftime("%Y-%m-%d")
+            end_str = today_dt.strftime("%Y-%m-%d")
+            sales, purch, _, _ = fetch_range_sales_and_purchases(access_token, org_id, start_str, end_str)
+            net_change = sales - purch
+            past_net = today_net_pos - net_change
+            
+            save_or_update_daily_net_position(org_id, target_dt, past_net, company_name, allow_overwrite=False)
+            
+        historical.append((display_label, past_net))
         
     return historical
 
@@ -336,6 +340,74 @@ def fetch_today_sales_and_purchases(access_token: str, org_id: str, today_date_s
         logger.error(f"Error fetching today sales/purchases for org {org_id}: {e}")
         
     return today_sales, today_purchases, len(sales_list), len(purch_list), sales_list, purch_list
+
+
+def fetch_datewise_sales_and_purchases(access_token: str, org_id: str, start_date_str: str = "2026-10-23", end_date_str: str = "2026-10-29"):
+    """
+    Fetches Sales (Invoices) and Purchases (Bills & Expenses) date-wise between start_date_str and end_date_str.
+    Returns a dict mapping date string (YYYY-MM-DD) to details.
+    """
+    headers = {"Authorization": f"Zoho-oauthtoken {access_token}"}
+    
+    cur = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+    end = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+    data = {}
+    while cur <= end:
+        data[cur.strftime('%Y-%m-%d')] = {
+            'sales_total': 0.0, 'purch_total': 0.0,
+            'sales_cnt': 0, 'purch_cnt': 0,
+            'sales_list': [], 'purch_list': []
+        }
+        cur += timedelta(days=1)
+        
+    try:
+        # Invoices (Sales)
+        url_inv = f"{ZOHO_BOOKS_API_URL}/invoices?organization_id={org_id}&date_start={start_date_str}&date_end={end_date_str}"
+        res_inv = zoho_get(url_inv, headers=headers, timeout=20)
+        if res_inv.status_code == 200:
+            for i in res_inv.json().get('invoices', []):
+                d = i.get('date')
+                if d in data:
+                    cust = i.get('customer_name') or 'Customer'
+                    no = i.get('invoice_number') or ''
+                    amt = float(i.get('total', 0) or 0.0)
+                    data[d]['sales_list'].append((cust, no, amt))
+                    data[d]['sales_total'] += amt
+                    data[d]['sales_cnt'] += 1
+
+        # Bills (Purchases)
+        url_bill = f"{ZOHO_BOOKS_API_URL}/bills?organization_id={org_id}&date_start={start_date_str}&date_end={end_date_str}"
+        res_bill = zoho_get(url_bill, headers=headers, timeout=20)
+        if res_bill.status_code == 200:
+            for b in res_bill.json().get('bills', []):
+                d = b.get('date')
+                if d in data:
+                    vend = b.get('vendor_name') or 'Vendor'
+                    no = b.get('bill_number') or ''
+                    amt = float(b.get('total', 0) or 0.0)
+                    data[d]['purch_list'].append((vend, no, amt))
+                    data[d]['purch_total'] += amt
+                    data[d]['purch_cnt'] += 1
+
+        # Expenses
+        url_exp = f"{ZOHO_BOOKS_API_URL}/expenses?organization_id={org_id}&date_start={start_date_str}&date_end={end_date_str}"
+        res_exp = zoho_get(url_exp, headers=headers, timeout=20)
+        if res_exp.status_code == 200:
+            for e in res_exp.json().get('expenses', []):
+                d = e.get('date')
+                if d in data:
+                    vend = e.get('vendor_name') or e.get('biller_name') or e.get('account_name') or 'Expense'
+                    no = e.get('reference_number') or ''
+                    if str(no).strip().isdigit() and len(str(no).strip()) > 8:
+                        no = ''
+                    amt = float(e.get('total', 0) or e.get('amount', 0) or e.get('biller_amount', 0) or 0.0)
+                    data[d]['purch_list'].append((vend, no, amt))
+                    data[d]['purch_total'] += amt
+                    data[d]['purch_cnt'] += 1
+    except Exception as e:
+        logger.error(f"Error fetching datewise sales/purchases for org {org_id}: {e}")
+
+    return data
 
 
 def format_currency(val, show_symbol=True) -> str:

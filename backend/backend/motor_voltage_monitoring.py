@@ -19,6 +19,7 @@ REQUEST_HEADERS = {
 }
 
 OFF_VOLTAGE_THRESHOLD = 80.0
+MOTOR_ALERTS_ON_HOLD = True  # Set to False when ready to resume sending WhatsApp alerts
 
 
 def get_latest_motor_telemetry():
@@ -38,7 +39,11 @@ def get_latest_motor_telemetry():
         latest_by_motor = {}
         for log in logs:
             m_id = str(log.get("motorId", "")).strip()
+            mac = str(log.get("macAddress", "")).strip().upper()
             if not m_id:
+                continue
+            # Exclude test/mock sensor records (e.g., Motor 1 Test / AA-BB-CC-DD-EE-FF)
+            if "AA-BB" in mac or "TEST" in m_id.upper() or (m_id == "Motor 1" and mac.startswith("AA")):
                 continue
             # Keep first occurrence as logs are ordered descending by timestamp
             if m_id not in latest_by_motor:
@@ -92,6 +97,9 @@ def build_motor_off_alert_message(motor_data: dict) -> str:
 
 def check_and_dispatch_motor_voltage_alerts(target_recipients=None):
     """Checks motor statuses every 30 mins and sends alerts to Motor Alerts group if any motor is OFF."""
+    if MOTOR_ALERTS_ON_HOLD:
+        logger.info("Motor Voltage & Power Status Alerts are currently ON HOLD. Skipping alert dispatch.")
+        return True
     logger.info("Starting Motor Voltage & Power Status Check (30-Minute Cycle)...")
     if target_recipients is None:
         recipients = DEFAULT_TARGET_RECIPIENTS

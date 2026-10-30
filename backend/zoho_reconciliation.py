@@ -16,6 +16,7 @@ from database import SessionLocal, get_db_session
 from models import ProcessedData, RawMessage
 from zoho_4company_pandl import (
     fetch_today_sales_and_purchases,
+    fetch_datewise_sales_and_purchases,
     fetch_inventory_stock_data,
     fetch_egg_stock_count,
     fetch_historical_net_positions,
@@ -42,6 +43,7 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str, target_date: 
         'undeposited_funds': None,
         'sunfra_farms_bank': None,
         'sunfra_indian_bank': None,
+        'raj_farms_bank': None,
         'bank_balance': None,
         'sbi_term_loan': None,
         'sunfra_farm_od': None,
@@ -51,7 +53,8 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str, target_date: 
         company_targets = {
             'accounts poultry': ['accounts poultry', '120363042907512705'],
             'summary - sunfra feeds': ['summary - sunfra feeds', '120363428748481277'],
-            'sunfra corporate p&l': ['sunfra corporate p&l', '120363425581380088']
+            'sunfra corporate p&l': ['sunfra corporate p&l', '120363425581380088'],
+            'accounts - raj farms': ['accounts - raj farms', 'raj farms', '120363429586109002']
         }
         
         target_name_lower = exact_group_name.strip().lower()
@@ -160,10 +163,19 @@ def extract_physical_balances_from_whatsapp(exact_group_name: str, target_date: 
 
             # Extract Sunfra Indian Bank
             if res['sunfra_indian_bank'] is None:
-                ib_match = re.search(r'(?:indian\s*bank|sunfra\s*indian\s*bank|indian\s*bank\s*bal)\s*[:=\-]?\s*(?:₹|rs\.?|inr)?\s*(-?[\d,]+(?:\.\d+)?)\s*(?:/\-)?', text, re.I)
+                ib_match = re.search(r'(?:sunfra\s*farms?\s*indian\s*bank|sunfra\s*indian\s*bank|indian\s*bank|indian\s*bank\s*bal)\s*[:=\-]?\s*(?:₹|rs\.?|inr)?\s*(-?[\d,]+(?:\.\d+)?)\s*(?:/\-)?', text, re.I)
                 if ib_match:
                     try:
                         res['sunfra_indian_bank'] = float(ib_match.group(1).replace(',', ''))
+                    except ValueError:
+                        pass
+
+            # Extract RAJ Farms Bank
+            if res['raj_farms_bank'] is None:
+                rf_match = re.search(r'(?:raj\s*farms?\s*bank|raj\s*farms?|raj\s*bank)\s*[:=\-]?\s*(?:₹|rs\.?|inr)?\s*(-?[\d,]+(?:\.\d+)?)\s*(?:/\-)?', text, re.I)
+                if rf_match:
+                    try:
+                        res['raj_farms_bank'] = float(rf_match.group(1).replace(',', ''))
                     except ValueError:
                         pass
 
@@ -291,6 +303,65 @@ def format_payables_breakdown(payables_dict: dict):
     return "\n".join(lines)
 
 
+def format_zoho_account_balances_block(account_details: list, yesterday_str: str = None) -> str:
+    """
+    Formats the live Zoho Books account balances without physical WhatsApp comparison.
+    """
+    if not account_details:
+        return ""
+    lines = [
+        "💰 *Live Account Balances*:"
+    ]
+    for acc in account_details:
+        name = acc.get("name", "Account")
+        bal = acc.get("balance", 0.0)
+        lines.append(f"  • *{name}*: *{format_indian_currency(bal)}*")
+    return "\n".join(lines)
+
+
+def format_datewise_sales_purchases_breakdown(datewise_data: dict, start_date_str: str = "2026-10-23", end_date_str: str = "2026-10-29") -> str:
+    start_fmt = datetime.strptime(start_date_str, "%Y-%m-%d").strftime("%d %b")
+    end_fmt = datetime.strptime(end_date_str, "%Y-%m-%d").strftime("%d %b")
+    total_sales_all = sum(d['sales_total'] for d in datewise_data.values())
+    total_purch_all = sum(d['purch_total'] for d in datewise_data.values())
+    total_sales_cnt = sum(d['sales_cnt'] for d in datewise_data.values())
+    total_purch_cnt = sum(d['purch_cnt'] for d in datewise_data.values())
+    
+    lines = [
+        f"📊 *Sales & Purchases Breakdown ({start_fmt} - {end_fmt})*:",
+        f"• Total Sales ({start_fmt} - {end_fmt}): *{format_indian_currency(total_sales_all)}* ({total_sales_cnt} invoices)",
+        f"• Total Purchases/Costs ({start_fmt} - {end_fmt}): *{format_indian_currency(total_purch_all)}* ({total_purch_cnt} items)"
+    ]
+    if total_sales_cnt == 0 and total_purch_cnt == 0:
+        lines.append(f"• {start_fmt} to {end_fmt}: *No sales or purchases recorded*")
+        return "\n".join(lines)
+        
+    for d_str in sorted(datewise_data.keys()):
+        d_fmt = datetime.strptime(d_str, "%Y-%m-%d").strftime("%d %b %Y")
+        d_info = datewise_data[d_str]
+        s_cnt, p_cnt = d_info['sales_cnt'], d_info['purch_cnt']
+        s_tot, p_tot = d_info['sales_total'], d_info['purch_total']
+        if s_cnt == 0 and p_cnt == 0:
+            lines.append("")
+            lines.append(f"📅 *{d_fmt}*: *No sales or purchases recorded*")
+            continue
+        lines.append("")
+        lines.append(f"📅 *{d_fmt}*:")
+        lines.append(f"  • Sales: *{format_indian_currency(s_tot)}* ({s_cnt} invoices)")
+        if d_info['sales_list']:
+            for idx, (cust, no, amt) in enumerate(d_info['sales_list'], 1):
+                conn = "└" if idx == len(d_info['sales_list']) else "├"
+                inv_str = f" ({no})" if no else ""
+                lines.append(f"    {conn} {idx}. *{cust}*{inv_str}: *{format_indian_currency(amt)}*")
+        lines.append(f"  • Purchases/Costs: *{format_indian_currency(p_tot)}* ({p_cnt} items)")
+        if d_info['purch_list']:
+            for idx, (vend, no, amt) in enumerate(d_info['purch_list'], 1):
+                conn = "└" if idx == len(d_info['purch_list']) else "├"
+                bill_str = f" ({no})" if no else ""
+                lines.append(f"    {conn} {idx}. *{vend}*{bill_str}: *{format_indian_currency(amt)}*")
+    return "\n".join(lines)
+
+
 def format_today_sales_purchases_breakdown(today_sales, today_purchases, sales_cnt, purch_cnt, sales_list, purch_list) -> str:
     lines = [
         "📊 *Today's Sales & Purchases*:",
@@ -368,13 +439,14 @@ def format_loans_breakdown(access_token: str, org_id: str) -> str:
     return "\n".join(lines)
 
 
-def generate_and_send_zoho_reconciliation_report(recipient_phone: str = None, target_date: str = None) -> bool:
-    """Fetches live Zoho Books balances for Sunfra Farms and dispatches its consolidated Daily Comprehensive Report."""
+def generate_and_send_zoho_reconciliation_report(recipient_phone: str = None, target_date: str = None, is_weekly: bool = True, start_date: str = None, end_date: str = None) -> bool:
+    """Fetches live Zoho Books balances for Sunfra Farms and dispatches its Weekly/Daily Comprehensive Report."""
     target_phone = recipient_phone or settings.ZOHO_RECIPIENT_PHONE or "917259510983"
     if not target_phone.endswith("@c.us") and not target_phone.endswith("@g.us"):
         target_phone = f"{target_phone}@c.us"
         
-    logger.info(f"Generating Consolidated Sunfra Farms Report for recipient {target_phone}...")
+    rep_kind = "Weekly" if is_weekly else "Daily"
+    logger.info(f"Generating {rep_kind} Comprehensive Sunfra Farms Report for recipient {target_phone}...")
     
     access_token = get_access_token()
     if not access_token:
@@ -398,9 +470,34 @@ def generate_and_send_zoho_reconciliation_report(recipient_phone: str = None, ta
     accounts = get_chart_of_accounts(access_token, farms_org_id)
     receivables = get_receivables_summary(access_token, farms_org_id)
     payables = get_payables_summary(access_token, farms_org_id)
-    sales_total, purch_total, sales_cnt, purch_cnt, sales_list, purch_list = fetch_today_sales_and_purchases(access_token, farms_org_id, today_date_str)
     stock_val, neg_items = fetch_inventory_stock_data(access_token, farms_org_id)
     
+    # Datewise Sales & Purchases Range Calculation
+    if start_date and end_date:
+        start_sp_date = start_date
+        end_sp_date = end_date
+        start_sp_dt = datetime.strptime(start_date, "%Y-%m-%d").date()
+        end_sp_dt = datetime.strptime(end_date, "%Y-%m-%d").date()
+    elif is_weekly:
+        if target_date:
+            end_sp_dt = datetime.strptime(target_date, "%Y-%m-%d").date()
+        else:
+            end_sp_dt = datetime.now(IST).date()
+        start_sp_dt = end_sp_dt - timedelta(days=6)
+        start_sp_date = start_sp_dt.strftime("%Y-%m-%d")
+        end_sp_date = end_sp_dt.strftime("%Y-%m-%d")
+    else:
+        try:
+            t_dt = datetime.strptime(today_date_str, "%Y-%m-%d").date()
+        except Exception:
+            t_dt = datetime.now(IST).date()
+        end_sp_dt = t_dt - timedelta(days=1)
+        start_sp_dt = end_sp_dt - timedelta(days=6)
+        start_sp_date = start_sp_dt.strftime("%Y-%m-%d")
+        end_sp_date = end_sp_dt.strftime("%Y-%m-%d")
+
+    datewise_sp = fetch_datewise_sales_and_purchases(access_token, farms_org_id, start_sp_date, end_sp_date)
+
     # 2. Extract Physical Balances from WhatsApp Group 'Accounts Poultry'
     physical = extract_physical_balances_from_whatsapp('Accounts Poultry', today_date_str)
 
@@ -411,24 +508,19 @@ def generate_and_send_zoho_reconciliation_report(recipient_phone: str = None, ta
     net_financial_position = (stock_val + rec_total + bank_and_cash_total) - pay_total
 
     # 4. Assemble Consolidated Message
+    yesterday_str = end_sp_dt.strftime("%d %b")
+    acc_block = format_zoho_account_balances_block(accounts.get("details", []), yesterday_str)
+    
+    rep_title = "🌾 *Sunfra Farms — Weekly Comprehensive Report*" if is_weekly else "🌾 *Sunfra Farms — Daily Comprehensive Report*"
+    period_line = f"📅 *Period:* {start_sp_dt.strftime('%d %b %Y')} to {end_sp_dt.strftime('%d %b %Y')}" if is_weekly else f"📅 *Date:* {today_str}"
+    
     msg_lines = [
-        "🌾 *Sunfra Farms — Daily Comprehensive Report*",
-        f"📅 *Date:* {today_str}",
+        rep_title,
+        period_line,
         "==================================================",
-        "💰 *Active Account Balances (Sunfra Farms)*:",
-        format_reconciliation_block("Petty Cash", physical.get('petty_cash'), accounts.get('petty_cash', 0.0)),
+        acc_block,
         "",
-        format_reconciliation_block("Undeposited Funds", physical.get('undeposited_funds'), accounts.get('undeposited_funds', 0.0)),
-        "",
-        format_reconciliation_block("SUNFRA FARMS Bank", physical.get('sunfra_farms_bank'), accounts.get('sunfra_farms_bank', 0.0)),
-        "",
-        format_reconciliation_block("Sunfra Indian Bank", physical.get('sunfra_indian_bank'), accounts.get('sunfra_indian_bank', 0.0)),
-        "",
-        format_reconciliation_block("SBI TERM LOAN ACCOUNT (5637)", physical.get('sbi_term_loan'), accounts.get('sbi_term_loan', 0.0)),
-        "",
-        format_reconciliation_block("SUNFRA FARM OD-0718 (0718)", physical.get('sunfra_farm_od'), accounts.get('sunfra_farm_od', 0.0)),
-        "",
-        format_today_sales_purchases_breakdown(sales_total, purch_total, sales_cnt, purch_cnt, sales_list, purch_list),
+        format_datewise_sales_purchases_breakdown(datewise_sp, start_sp_date, end_sp_date),
         "",
         format_receivables_breakdown(receivables),
         "",
@@ -467,13 +559,14 @@ def generate_and_send_zoho_reconciliation_report(recipient_phone: str = None, ta
     return success
 
 
-def generate_and_send_sunfra_feeds_reconciliation_report(recipient_phone: str = None, target_date: str = None) -> bool:
-    """Fetches live Zoho Books balances for Sunfra Feeds and dispatches its consolidated Daily Comprehensive Report."""
+def generate_and_send_sunfra_feeds_reconciliation_report(recipient_phone: str = None, target_date: str = None, is_weekly: bool = True, start_date: str = None, end_date: str = None) -> bool:
+    """Fetches live Zoho Books balances for Sunfra Feeds and dispatches its Weekly/Daily Comprehensive Report."""
     target_phone = recipient_phone or settings.ZOHO_RECIPIENT_PHONE or "917259510983"
     if not target_phone.endswith("@c.us") and not target_phone.endswith("@g.us"):
         target_phone = f"{target_phone}@c.us"
         
-    logger.info(f"Generating Consolidated Sunfra Feeds Report for recipient {target_phone}...")
+    rep_kind = "Weekly" if is_weekly else "Daily"
+    logger.info(f"Generating {rep_kind} Comprehensive Sunfra Feeds Report for recipient {target_phone}...")
     
     access_token = get_access_token()
     if not access_token:
@@ -497,9 +590,34 @@ def generate_and_send_sunfra_feeds_reconciliation_report(recipient_phone: str = 
     accounts = get_chart_of_accounts(access_token, feeds_org_id)
     receivables = get_receivables_summary(access_token, feeds_org_id)
     payables = get_payables_summary(access_token, feeds_org_id)
-    sales_total, purch_total, sales_cnt, purch_cnt, sales_list, purch_list = fetch_today_sales_and_purchases(access_token, feeds_org_id, today_date_str)
     stock_val, neg_items = fetch_inventory_stock_data(access_token, feeds_org_id)
     
+    # Datewise Sales & Purchases Range Calculation
+    if start_date and end_date:
+        start_sp_date = start_date
+        end_sp_date = end_date
+        start_sp_dt = datetime.strptime(start_date, "%Y-%m-%d").date()
+        end_sp_dt = datetime.strptime(end_date, "%Y-%m-%d").date()
+    elif is_weekly:
+        if target_date:
+            end_sp_dt = datetime.strptime(target_date, "%Y-%m-%d").date()
+        else:
+            end_sp_dt = datetime.now(IST).date()
+        start_sp_dt = end_sp_dt - timedelta(days=6)
+        start_sp_date = start_sp_dt.strftime("%Y-%m-%d")
+        end_sp_date = end_sp_dt.strftime("%Y-%m-%d")
+    else:
+        try:
+            t_dt = datetime.strptime(today_date_str, "%Y-%m-%d").date()
+        except Exception:
+            t_dt = datetime.now(IST).date()
+        end_sp_dt = t_dt - timedelta(days=1)
+        start_sp_dt = end_sp_dt - timedelta(days=6)
+        start_sp_date = start_sp_dt.strftime("%Y-%m-%d")
+        end_sp_date = end_sp_dt.strftime("%Y-%m-%d")
+
+    datewise_sp = fetch_datewise_sales_and_purchases(access_token, feeds_org_id, start_sp_date, end_sp_date)
+
     # 2. Extract Physical Balances from WhatsApp Group 'Summary - Sunfra Feeds'
     physical = extract_physical_balances_from_whatsapp('Summary - Sunfra Feeds', today_date_str)
 
@@ -510,16 +628,19 @@ def generate_and_send_sunfra_feeds_reconciliation_report(recipient_phone: str = 
     net_financial_position = (stock_val + rec_total + bank_and_cash_total) - pay_total
 
     # 4. Assemble Consolidated Message
+    yesterday_str = end_sp_dt.strftime("%d %b")
+    acc_block = format_zoho_account_balances_block(accounts.get("details", []), yesterday_str)
+    
+    rep_title = "🐔 *Sunfra Feeds — Weekly Comprehensive Report*" if is_weekly else "🐔 *Sunfra Feeds — Daily Comprehensive Report*"
+    period_line = f"📅 *Period:* {start_sp_dt.strftime('%d %b %Y')} to {end_sp_dt.strftime('%d %b %Y')}" if is_weekly else f"📅 *Date:* {today_str}"
+    
     msg_lines = [
-        "🐔 *Sunfra Feeds — Daily Comprehensive Report*",
-        f"📅 *Date:* {today_str}",
+        rep_title,
+        period_line,
         "==================================================",
-        "💰 *Active Account Balances (Sunfra Feeds)*:",
-        format_reconciliation_block("Petty Cash", physical.get('petty_cash'), accounts.get('petty_cash', 0.0)),
+        acc_block,
         "",
-        format_reconciliation_block("Sunfra Feeds Bank Account", physical.get('bank_balance'), accounts.get('total_bank_balance', 0.0)),
-        "",
-        format_today_sales_purchases_breakdown(sales_total, purch_total, sales_cnt, purch_cnt, sales_list, purch_list),
+        format_datewise_sales_purchases_breakdown(datewise_sp, start_sp_date, end_sp_date),
         "",
         format_receivables_breakdown(receivables),
         "",
@@ -552,13 +673,14 @@ def generate_and_send_sunfra_feeds_reconciliation_report(recipient_phone: str = 
     return success
 
 
-def generate_and_send_sunfra_corporate_reconciliation_report(recipient_phone: str = None, target_date: str = None) -> bool:
-    """Fetches live Zoho Books balances for Sunfra Corporate and dispatches its consolidated Daily Comprehensive Report."""
+def generate_and_send_sunfra_corporate_reconciliation_report(recipient_phone: str = None, target_date: str = None, is_weekly: bool = True, start_date: str = None, end_date: str = None) -> bool:
+    """Fetches live Zoho Books balances for Sunfra Corporate and dispatches its Weekly/Daily Comprehensive Report."""
     target_phone = recipient_phone or settings.ZOHO_RECIPIENT_PHONE or "917259510983"
     if not target_phone.endswith("@c.us") and not target_phone.endswith("@g.us"):
         target_phone = f"{target_phone}@c.us"
         
-    logger.info(f"Generating Consolidated Sunfra Corporate Report for recipient {target_phone}...")
+    rep_kind = "Weekly" if is_weekly else "Daily"
+    logger.info(f"Generating {rep_kind} Comprehensive Sunfra Corporate Report for recipient {target_phone}...")
     
     access_token = get_access_token()
     if not access_token:
@@ -582,9 +704,34 @@ def generate_and_send_sunfra_corporate_reconciliation_report(recipient_phone: st
     accounts = get_chart_of_accounts(access_token, corp_org_id)
     receivables = get_receivables_summary(access_token, corp_org_id)
     payables = get_payables_summary(access_token, corp_org_id)
-    sales_total, purch_total, sales_cnt, purch_cnt, sales_list, purch_list = fetch_today_sales_and_purchases(access_token, corp_org_id, today_date_str)
     stock_val, neg_items = fetch_inventory_stock_data(access_token, corp_org_id)
     
+    # Datewise Sales & Purchases Range Calculation
+    if start_date and end_date:
+        start_sp_date = start_date
+        end_sp_date = end_date
+        start_sp_dt = datetime.strptime(start_date, "%Y-%m-%d").date()
+        end_sp_dt = datetime.strptime(end_date, "%Y-%m-%d").date()
+    elif is_weekly:
+        if target_date:
+            end_sp_dt = datetime.strptime(target_date, "%Y-%m-%d").date()
+        else:
+            end_sp_dt = datetime.now(IST).date()
+        start_sp_dt = end_sp_dt - timedelta(days=6)
+        start_sp_date = start_sp_dt.strftime("%Y-%m-%d")
+        end_sp_date = end_sp_dt.strftime("%Y-%m-%d")
+    else:
+        try:
+            t_dt = datetime.strptime(today_date_str, "%Y-%m-%d").date()
+        except Exception:
+            t_dt = datetime.now(IST).date()
+        end_sp_dt = t_dt - timedelta(days=1)
+        start_sp_dt = end_sp_dt - timedelta(days=6)
+        start_sp_date = start_sp_dt.strftime("%Y-%m-%d")
+        end_sp_date = end_sp_dt.strftime("%Y-%m-%d")
+
+    datewise_sp = fetch_datewise_sales_and_purchases(access_token, corp_org_id, start_sp_date, end_sp_date)
+
     # 2. Extract Physical Balances from WhatsApp Group 'Sunfra Corporate P&L'
     physical = extract_physical_balances_from_whatsapp('Sunfra Corporate P&L', today_date_str)
 
@@ -595,22 +742,19 @@ def generate_and_send_sunfra_corporate_reconciliation_report(recipient_phone: st
     net_financial_position = (stock_val + rec_total + bank_and_cash_total) - pay_total
 
     # 4. Assemble Consolidated Message
+    yesterday_str = end_sp_dt.strftime("%d %b")
+    acc_block = format_zoho_account_balances_block(accounts.get("details", []), yesterday_str)
+    
+    rep_title = "🏢 *Sunfra Corporate — Weekly Comprehensive Report*" if is_weekly else "🏢 *Sunfra Corporate — Daily Comprehensive Report*"
+    period_line = f"📅 *Period:* {start_sp_dt.strftime('%d %b %Y')} to {end_sp_dt.strftime('%d %b %Y')}" if is_weekly else f"📅 *Date:* {today_str}"
+    
     msg_lines = [
-        "🏢 *Sunfra Corporate — Daily Comprehensive Report*",
-        f"📅 *Date:* {today_str}",
+        rep_title,
+        period_line,
         "==================================================",
-        "💰 *Active Account Balances (Sunfra Corporate)*:",
-        format_reconciliation_block("Farm Petty Cash", physical.get('farm_petty_cash'), accounts.get('farm_petty_cash', 0.0)),
+        acc_block,
         "",
-        format_reconciliation_block("Petty Cash", physical.get('petty_cash'), accounts.get('petty_cash', 0.0)),
-        "",
-        format_reconciliation_block("Undeposited Funds", physical.get('undeposited_funds'), accounts.get('undeposited_funds', 0.0)),
-        "",
-        format_reconciliation_block("Sunrise Farms", physical.get('sunrise_farms'), accounts.get('sunrise_farms', 0.0)),
-        "",
-        format_reconciliation_block("Total Available Bank Balance", physical.get('bank_balance'), accounts.get('total_bank_balance', 0.0)),
-        "",
-        format_today_sales_purchases_breakdown(sales_total, purch_total, sales_cnt, purch_cnt, sales_list, purch_list),
+        format_datewise_sales_purchases_breakdown(datewise_sp, start_sp_date, end_sp_date),
         "",
         format_receivables_breakdown(receivables),
         "",
@@ -648,13 +792,14 @@ def generate_and_send_sunfra_corporate_reconciliation_report(recipient_phone: st
     return success
 
 
-def generate_and_send_indus_reconciliation_report(recipient_phone: str = None, target_date: str = None) -> bool:
-    """Fetches live Zoho Books balances for Indus and dispatches its consolidated Daily Comprehensive Report (Without Active Account Balances)."""
+def generate_and_send_indus_reconciliation_report(recipient_phone: str = None, target_date: str = None, is_weekly: bool = True, start_date: str = None, end_date: str = None) -> bool:
+    """Fetches live Zoho Books balances for Indus and dispatches its Weekly/Daily Comprehensive Report."""
     target_phone = recipient_phone or settings.ZOHO_RECIPIENT_PHONE or "917259510983"
     if not target_phone.endswith("@c.us") and not target_phone.endswith("@g.us"):
         target_phone = f"{target_phone}@c.us"
         
-    logger.info(f"Generating Consolidated Indus Report for recipient {target_phone}...")
+    rep_kind = "Weekly" if is_weekly else "Daily"
+    logger.info(f"Generating {rep_kind} Comprehensive Indus Report for recipient {target_phone}...")
     
     access_token = get_access_token()
     if not access_token:
@@ -678,8 +823,33 @@ def generate_and_send_indus_reconciliation_report(recipient_phone: str = None, t
     accounts = get_chart_of_accounts(access_token, indus_org_id)
     receivables = get_receivables_summary(access_token, indus_org_id)
     payables = get_payables_summary(access_token, indus_org_id)
-    sales_total, purch_total, sales_cnt, purch_cnt, sales_list, purch_list = fetch_today_sales_and_purchases(access_token, indus_org_id, today_date_str)
     stock_val, neg_items = fetch_inventory_stock_data(access_token, indus_org_id)
+
+    # Datewise Sales & Purchases Range Calculation
+    if start_date and end_date:
+        start_sp_date = start_date
+        end_sp_date = end_date
+        start_sp_dt = datetime.strptime(start_date, "%Y-%m-%d").date()
+        end_sp_dt = datetime.strptime(end_date, "%Y-%m-%d").date()
+    elif is_weekly:
+        if target_date:
+            end_sp_dt = datetime.strptime(target_date, "%Y-%m-%d").date()
+        else:
+            end_sp_dt = datetime.now(IST).date()
+        start_sp_dt = end_sp_dt - timedelta(days=6)
+        start_sp_date = start_sp_dt.strftime("%Y-%m-%d")
+        end_sp_date = end_sp_dt.strftime("%Y-%m-%d")
+    else:
+        try:
+            t_dt = datetime.strptime(today_date_str, "%Y-%m-%d").date()
+        except Exception:
+            t_dt = datetime.now(IST).date()
+        end_sp_dt = t_dt - timedelta(days=1)
+        start_sp_dt = end_sp_dt - timedelta(days=6)
+        start_sp_date = start_sp_dt.strftime("%Y-%m-%d")
+        end_sp_date = end_sp_dt.strftime("%Y-%m-%d")
+
+    datewise_sp = fetch_datewise_sales_and_purchases(access_token, indus_org_id, start_sp_date, end_sp_date)
 
     # 2. Calculate Overall Net Financial Position
     bank_and_cash_total, bs_cash, bs_bank = fetch_balance_sheet_cash_and_equivalents(access_token, indus_org_id)
@@ -687,12 +857,20 @@ def generate_and_send_indus_reconciliation_report(recipient_phone: str = None, t
     pay_total = payables.get('total_payable', 0.0) or payables.get('total_amount', 0.0)
     net_financial_position = (stock_val + rec_total + bank_and_cash_total) - pay_total
 
-    # 3. Assemble Consolidated Message (Without Active Account Balances for Indus)
+    # 3. Assemble Consolidated Message (Live Zoho Account Balances without physical matching)
+    yesterday_str = end_sp_dt.strftime("%d %b")
+    acc_block = format_zoho_account_balances_block(accounts.get("details", []), yesterday_str)
+    
+    rep_title = "⚡ *Indus — Weekly Comprehensive Report*" if is_weekly else "⚡ *Indus — Daily Comprehensive Report*"
+    period_line = f"📅 *Period:* {start_sp_dt.strftime('%d %b %Y')} to {end_sp_dt.strftime('%d %b %Y')}" if is_weekly else f"📅 *Date:* {today_str}"
+    
     msg_lines = [
-        "⚡ *Indus — Daily Comprehensive Report*",
-        f"📅 *Date:* {today_str}",
+        rep_title,
+        period_line,
         "==================================================",
-        format_today_sales_purchases_breakdown(sales_total, purch_total, sales_cnt, purch_cnt, sales_list, purch_list),
+        acc_block,
+        "",
+        format_datewise_sales_purchases_breakdown(datewise_sp, start_sp_date, end_sp_date),
         "",
         format_receivables_breakdown(receivables),
         "",
@@ -725,16 +903,130 @@ def generate_and_send_indus_reconciliation_report(recipient_phone: str = None, t
     return success
 
 
+def generate_and_send_raj_farms_reconciliation_report(recipient_phone: str = None, target_date: str = None, is_weekly: bool = True, start_date: str = None, end_date: str = None) -> bool:
+    """Fetches live Zoho Books balances for Raj Farms and dispatches its Weekly/Daily Comprehensive Report."""
+    target_phone = recipient_phone or settings.ZOHO_RECIPIENT_PHONE or "917259510983"
+    if not target_phone.endswith("@c.us") and not target_phone.endswith("@g.us"):
+        target_phone = f"{target_phone}@c.us"
+        
+    rep_kind = "Weekly" if is_weekly else "Daily"
+    logger.info(f"Generating {rep_kind} Comprehensive Raj Farms Report for recipient {target_phone}...")
+    
+    raj_org_id = "904503869"
+    access_token = get_access_token(raj_org_id)
+    if not access_token:
+        error_msg = (
+            "⚠️ *Zoho Books Integration Alert (Raj Farms)*\n\n"
+            "Unable to connect to Zoho Books API because no valid OAuth token was found."
+        )
+        send_waha_message(target_phone, error_msg)
+        return False
+
+    if target_date:
+        today_date_str = target_date
+        today_str = datetime.strptime(target_date, "%Y-%m-%d").strftime("%d %b %Y")
+    else:
+        now_ist = datetime.now(IST)
+        today_str = now_ist.strftime("%d %b %Y")
+        today_date_str = now_ist.strftime("%Y-%m-%d")
+    
+    # 1. Fetch Zoho Balances & Data for Raj Farms
+    accounts = get_chart_of_accounts(access_token, raj_org_id)
+    receivables = get_receivables_summary(access_token, raj_org_id)
+    payables = get_payables_summary(access_token, raj_org_id)
+    stock_val, neg_items = fetch_inventory_stock_data(access_token, raj_org_id)
+
+    # Datewise Sales & Purchases Range Calculation
+    if start_date and end_date:
+        start_sp_date = start_date
+        end_sp_date = end_date
+        start_sp_dt = datetime.strptime(start_date, "%Y-%m-%d").date()
+        end_sp_dt = datetime.strptime(end_date, "%Y-%m-%d").date()
+    elif is_weekly:
+        if target_date:
+            end_sp_dt = datetime.strptime(target_date, "%Y-%m-%d").date()
+        else:
+            end_sp_dt = datetime.now(IST).date()
+        start_sp_dt = end_sp_dt - timedelta(days=6)
+        start_sp_date = start_sp_dt.strftime("%Y-%m-%d")
+        end_sp_date = end_sp_dt.strftime("%Y-%m-%d")
+    else:
+        try:
+            t_dt = datetime.strptime(today_date_str, "%Y-%m-%d").date()
+        except Exception:
+            t_dt = datetime.now(IST).date()
+        end_sp_dt = t_dt - timedelta(days=1)
+        start_sp_dt = end_sp_dt - timedelta(days=6)
+        start_sp_date = start_sp_dt.strftime("%Y-%m-%d")
+        end_sp_date = end_sp_dt.strftime("%Y-%m-%d")
+
+    datewise_sp = fetch_datewise_sales_and_purchases(access_token, raj_org_id, start_sp_date, end_sp_date)
+
+    # 2. Extract Physical Balances from WhatsApp Group 'Accounts - Raj Farms'
+    physical = extract_physical_balances_from_whatsapp('Accounts - Raj Farms', today_date_str)
+
+    # 3. Calculate Overall Net Financial Position
+    bank_and_cash_total, bs_cash, bs_bank = fetch_balance_sheet_cash_and_equivalents(access_token, raj_org_id)
+    rec_total = receivables.get('total_receivable', 0.0) or receivables.get('total_amount', 0.0)
+    pay_total = payables.get('total_payable', 0.0) or payables.get('total_amount', 0.0)
+    net_financial_position = (stock_val + rec_total + bank_and_cash_total) - pay_total
+
+    # 4. Assemble Consolidated Message
+    yesterday_str = end_sp_dt.strftime("%d %b")
+    acc_block = format_zoho_account_balances_block(accounts.get("details", []), yesterday_str)
+    
+    rep_title = "🌱 *Raj Farms — Weekly Comprehensive Report*" if is_weekly else "🌱 *Raj Farms — Daily Comprehensive Report*"
+    period_line = f"📅 *Period:* {start_sp_dt.strftime('%d %b %Y')} to {end_sp_dt.strftime('%d %b %Y')}" if is_weekly else f"📅 *Date:* {today_str}"
+    
+    msg_lines = [
+        rep_title,
+        period_line,
+        "==================================================",
+        acc_block,
+        "",
+        format_datewise_sales_purchases_breakdown(datewise_sp, start_sp_date, end_sp_date),
+        "",
+        format_receivables_breakdown(receivables),
+        "",
+        format_payables_breakdown(payables),
+        "--------------------------------------------------",
+        f"📦 *Stock Valuation (Inventory Asset):* *{format_indian_currency(stock_val)}*",
+        f"💰 *Bank & Cash Balance:* *{format_indian_currency(bank_and_cash_total)}*"
+    ]
+
+    net_pos_status = "✅ Profit" if net_financial_position >= 0 else "⚠️ Deficit"
+    msg_lines.append(f"⚖️ *Overall Net Financial Position:* *{format_indian_currency(net_financial_position)}* ({net_pos_status})")
+    
+    hist_positions = fetch_historical_net_positions(access_token, raj_org_id, net_financial_position, today_date_str, "Raj Farms")
+    hist_lines = [f"  • {lbl}: *{format_indian_currency(pos)}*" for lbl, pos in hist_positions]
+    msg_lines.append("📊 *Net Position Breakdown (History):*\n" + "\n".join(hist_lines))
+
+    if neg_items:
+        neg_strs = [f"• {item_name}: *{qty:,.2f} units*" for item_name, qty in neg_items]
+        msg_lines.append(f"⚠️ *Negative Stock Warning ({len(neg_items)} items):*\n  " + "\n  ".join(neg_strs))
+    else:
+        msg_lines.append("⚠️ *Negative Stock:* *None* ✅")
+        
+    msg_lines.append("")
+    msg_lines.append(format_loans_breakdown(access_token, raj_org_id))
+    msg_lines.append("==================================================")
+
+    report_text = "\n".join(msg_lines)
+    logger.info(f"Sending Consolidated Raj Farms Report to {target_phone}...")
+    success = send_waha_message(target_phone, report_text)
+    return success
+
+
 def dispatch_all_4company_reconciliation_reports(recipient_phone: str = "917259510983@c.us", target_date: str = None) -> bool:
-    """Dispatches all 4 Consolidated Company Reconciliation Reports (Daily Comprehensive Reports) for Sunfra Farms, Sunfra Feeds, Sunfra Corporate, and Indus."""
+    """Dispatches all Consolidated Company Reconciliation Reports (Daily Comprehensive Reports) for Sunfra Farms, Sunfra Feeds, Sunfra Corporate, Indus, and Raj Farms."""
     import time
-    logger.info(f"Starting dispatch of all 4 Consolidated Company Reconciliation Reports to {recipient_phone} (date={target_date or 'today'})...")
+    logger.info(f"Starting dispatch of all Consolidated Company Reconciliation Reports to {recipient_phone} (date={target_date or 'today'})...")
     success_all = True
     
     # 1. Sunfra Farms
     try:
         ok1 = generate_and_send_zoho_reconciliation_report(recipient_phone, target_date=target_date)
-        logger.info(f"Sent 1/4 Sunfra Farms Reconciliation Report: {'Success' if ok1 else 'Failed'}")
+        logger.info(f"Sent 1/5 Sunfra Farms Reconciliation Report: {'Success' if ok1 else 'Failed'}")
         if not ok1: success_all = False
     except Exception as e:
         logger.error(f"Error sending Sunfra Farms Reconciliation Report: {e}")
@@ -744,7 +1036,7 @@ def dispatch_all_4company_reconciliation_reports(recipient_phone: str = "9172595
     # 2. Sunfra Feeds
     try:
         ok2 = generate_and_send_sunfra_feeds_reconciliation_report(recipient_phone, target_date=target_date)
-        logger.info(f"Sent 2/4 Sunfra Feeds Reconciliation Report: {'Success' if ok2 else 'Failed'}")
+        logger.info(f"Sent 2/5 Sunfra Feeds Reconciliation Report: {'Success' if ok2 else 'Failed'}")
         if not ok2: success_all = False
     except Exception as e:
         logger.error(f"Error sending Sunfra Feeds Reconciliation Report: {e}")
@@ -754,7 +1046,7 @@ def dispatch_all_4company_reconciliation_reports(recipient_phone: str = "9172595
     # 3. Sunfra Corporate
     try:
         ok3 = generate_and_send_sunfra_corporate_reconciliation_report(recipient_phone, target_date=target_date)
-        logger.info(f"Sent 3/4 Sunfra Corporate Reconciliation Report: {'Success' if ok3 else 'Failed'}")
+        logger.info(f"Sent 3/5 Sunfra Corporate Reconciliation Report: {'Success' if ok3 else 'Failed'}")
         if not ok3: success_all = False
     except Exception as e:
         logger.error(f"Error sending Sunfra Corporate Reconciliation Report: {e}")
@@ -764,11 +1056,83 @@ def dispatch_all_4company_reconciliation_reports(recipient_phone: str = "9172595
     # 4. Indus
     try:
         ok4 = generate_and_send_indus_reconciliation_report(recipient_phone, target_date=target_date)
-        logger.info(f"Sent 4/4 Indus Reconciliation Report: {'Success' if ok4 else 'Failed'}")
+        logger.info(f"Sent 4/5 Indus Reconciliation Report: {'Success' if ok4 else 'Failed'}")
         if not ok4: success_all = False
     except Exception as e:
         logger.error(f"Error sending Indus Reconciliation Report: {e}")
         success_all = False
+    time.sleep(2)
+
+    # 5. Raj Farms
+    try:
+        ok5 = generate_and_send_raj_farms_reconciliation_report(recipient_phone, target_date=target_date)
+        logger.info(f"Sent 5/5 Raj Farms Reconciliation Report: {'Success' if ok5 else 'Failed'}")
+        if not ok5: success_all = False
+    except Exception as e:
+        logger.error(f"Error sending Raj Farms Reconciliation Report: {e}")
+        success_all = False
 
     return success_all
+
+
+def dispatch_all_weekly_comprehensive_reports(recipient_phone: str = "917259510983@c.us", target_end_date: str = None, start_date: str = None, end_date: str = None) -> bool:
+    """
+    Dispatches all 5 Weekly Comprehensive Reports (Friday to Thursday)
+    for Sunfra Farms, Sunfra Feeds, Sunfra Corporate, Indus, and Raj Farms.
+    """
+    import time
+    logger.info(f"Starting dispatch of all 5 Weekly Comprehensive Reports to {recipient_phone}...")
+    success_all = True
+    
+    # 1. Sunfra Farms
+    try:
+        ok1 = generate_and_send_zoho_reconciliation_report(recipient_phone, target_date=target_end_date, is_weekly=True, start_date=start_date, end_date=end_date)
+        logger.info(f"Sent 1/5 Sunfra Farms Weekly Report: {'Success' if ok1 else 'Failed'}")
+        if not ok1: success_all = False
+    except Exception as e:
+        logger.error(f"Error sending Sunfra Farms Weekly Report: {e}")
+        success_all = False
+    time.sleep(2)
+
+    # 2. Sunfra Feeds
+    try:
+        ok2 = generate_and_send_sunfra_feeds_reconciliation_report(recipient_phone, target_date=target_end_date, is_weekly=True, start_date=start_date, end_date=end_date)
+        logger.info(f"Sent 2/5 Sunfra Feeds Weekly Report: {'Success' if ok2 else 'Failed'}")
+        if not ok2: success_all = False
+    except Exception as e:
+        logger.error(f"Error sending Sunfra Feeds Weekly Report: {e}")
+        success_all = False
+    time.sleep(2)
+
+    # 3. Sunfra Corporate
+    try:
+        ok3 = generate_and_send_sunfra_corporate_reconciliation_report(recipient_phone, target_date=target_end_date, is_weekly=True, start_date=start_date, end_date=end_date)
+        logger.info(f"Sent 3/5 Sunfra Corporate Weekly Report: {'Success' if ok3 else 'Failed'}")
+        if not ok3: success_all = False
+    except Exception as e:
+        logger.error(f"Error sending Sunfra Corporate Weekly Report: {e}")
+        success_all = False
+    time.sleep(2)
+
+    # 4. Indus
+    try:
+        ok4 = generate_and_send_indus_reconciliation_report(recipient_phone, target_date=target_end_date, is_weekly=True, start_date=start_date, end_date=end_date)
+        logger.info(f"Sent 4/5 Indus Weekly Report: {'Success' if ok4 else 'Failed'}")
+        if not ok4: success_all = False
+    except Exception as e:
+        logger.error(f"Error sending Indus Weekly Report: {e}")
+        success_all = False
+    time.sleep(2)
+
+    # 5. Raj Farms
+    try:
+        ok5 = generate_and_send_raj_farms_reconciliation_report(recipient_phone, target_date=target_end_date, is_weekly=True, start_date=start_date, end_date=end_date)
+        logger.info(f"Sent 5/5 Raj Farms Weekly Report: {'Success' if ok5 else 'Failed'}")
+        if not ok5: success_all = False
+    except Exception as e:
+        logger.error(f"Error sending Raj Farms Weekly Report: {e}")
+        success_all = False
+
+    return success_all
+
 

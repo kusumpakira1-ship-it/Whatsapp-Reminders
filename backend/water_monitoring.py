@@ -39,9 +39,18 @@ def save_monitoring_state(state):
 
 def check_and_dispatch_water_alerts():
     logger.info("Running Water Level & Device OFF Telemetry Monitoring Check...")
+    try:
+        from database import _is_mysql_in_cooldown, _set_mysql_cooldown
+        if _is_mysql_in_cooldown():
+            logger.info("MySQL in cooldown. Skipping water monitoring check to preserve quota.")
+            return True
+    except Exception:
+        pass
+
     now_ist = datetime.now(IST)
     now_ts = now_ist.timestamp()
     
+    conn = None
     try:
         conn = pymysql.connect(**DB_CONFIG)
         cur = conn.cursor()
@@ -207,8 +216,19 @@ def check_and_dispatch_water_alerts():
         save_monitoring_state(state)
         return True
     except Exception as e:
+        err_str = str(e)
+        if "1226" in err_str or "max_connections_per_hour" in err_str:
+            try:
+                from database import _set_mysql_cooldown
+                _set_mysql_cooldown(1200)
+            except Exception:
+                pass
         logger.error(f"Error in check_and_dispatch_water_alerts: {e}")
         return False
+    finally:
+        if conn:
+            try: conn.close()
+            except Exception: pass
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

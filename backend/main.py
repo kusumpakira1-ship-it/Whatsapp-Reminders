@@ -937,7 +937,6 @@ class FlockUpdate(BaseModel):
 
 
 
-
 @app.get("/api/settings/report_types")
 def get_report_types():
     db = SessionLocal()

@@ -277,6 +277,14 @@ try {
                 if ($freq === 'weekly')       { $dt->modify('+7 days'); }
                 elseif ($freq === 'monthly')  { $dt->modify('+1 month'); }
                 elseif ($freq === 'yearly')   { $dt->modify('+1 year'); }
+                elseif ($freq === 'mon-sat' || $freq === 'mon_sat' || $freq === 'mon_to_sat') {
+                    $dt->modify('+1 day');
+                    if ((int)$dt->format('N') === 7) { $dt->modify('+1 day'); }
+                }
+                elseif ($freq === 'mon-fri' || $freq === 'mon_fri' || $freq === 'mon_to_fri') {
+                    $dt->modify('+1 day');
+                    while (in_array((int)$dt->format('N'), [6, 7])) { $dt->modify('+1 day'); }
+                }
                 else                          { $dt->modify('+1 day'); } // daily default
                 $advanced = true;
             }

@@ -1,6 +1,6 @@
 {
   "08-3A-8D-D3-72-1F": {
-    "last_off_alert_ts": 1791907200.657232,
+    "last_off_alert_ts": 1793271600.00965,
     "off_active": false
   },
   "04-BA-5F-0F-F0-A4": {
@@ -16,7 +16,7 @@
     "off_active": false
   },
   "5C-26-14-C4-0A-24": {
-    "last_off_alert_ts": 1792490700.012648,
+    "last_off_alert_ts": 1792885200.053952,
     "off_active": false
   },
   "5D-7E-24-33-4F-C4": {
@@ -24,7 +24,7 @@
     "off_active": false
   },
   "68-14-5F-0F-F0-A4": {
-    "last_off_alert_ts": 1792250700.013739,
+    "last_off_alert_ts": 1793101800.010465,
     "off_active": false
   },
   "88-F6-64-A5-05-28": {
@@ -36,15 +36,15 @@
     "off_active": false
   },
   "A0-F4-66-7C-E5-A4": {
-    "last_off_alert_ts": 1790808900.017742,
+    "last_off_alert_ts": 1793320500.014135,
     "off_active": false
   },
   "B8-39-60-F5-76-30": {
-    "last_off_alert_ts": 1792539600.009475,
+    "last_off_alert_ts": 1793201100.012794,
     "off_active": false
   },
   "D8-3A-80-1D-16-F0": {
-    "last_off_alert_ts": 1792207800.009594,
+    "last_off_alert_ts": 1793250900.011784,
     "off_active": false
   },
   "DC-7A-57-DF-94-8C": {
@@ -52,7 +52,7 @@
     "off_active": false
   },
   "F1-51-DC-2D-E6-B4": {
-    "last_off_alert_ts": 1792080900.007148,
+    "last_off_alert_ts": 1793124900.023327,
     "off_active": false
   },
   "F4-5F-90-BD-97-10": {
@@ -65,7 +65,7 @@
   },
   "D0-EC-E5-FE-8C-E0": {
     "last_off_alert_ts": 1792259700.019936,
-    "off_active": true
+    "off_active": false
   },
   "B0-0F-BF-3B-01-5C": {
     "last_off_alert_ts": 1792341600.010139,
@@ -84,6 +84,14 @@
     "off_active": true
   },
   "74-1F-53-D3-3F-B0": {
+    "last_off_alert_ts": 0,
+    "off_active": false
+  },
+  "98-B8-60-0F-F0-A4": {
+    "last_off_alert_ts": 1792690800.011331,
+    "off_active": true
+  },
+  "04-4E-05-47-B2-04": {
     "last_off_alert_ts": 0,
     "off_active": false
   }

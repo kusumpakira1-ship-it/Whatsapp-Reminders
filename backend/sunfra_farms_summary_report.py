@@ -72,8 +72,8 @@ def calculate_water_consumption_status(water_litres: float, live_birds: int):
 
 
 def fetch_silo_and_water_data():
-    """Fetches Feed Consumed (Silo) and Water Consumed for Shead 1 from sunfra.com APIs."""
-    feed_tons = 0.0
+    """Fetches Feed Consumed (Silo in Kg) and Water Consumed for Shead 1 from sunfra.com APIs."""
+    feed_kg = 0.0
     water_litres = 0.0
 
     session = requests.Session()
@@ -83,7 +83,7 @@ def fetch_silo_and_water_data():
     try:
         session.post(login_url, data=login_data, headers=REQUEST_HEADERS, timeout=15)
 
-        # 1. Silo Feed Data for Shead 1
+        # 1. Silo Feed Data for Shead 1 (directly in Kg as shown on website)
         silo_url = "https://sunfra.com/farm/sunfra/sensor/indicator_last_value_json.php?client_id=1"
         resp_silo = session.get(silo_url, headers=REQUEST_HEADERS, timeout=15)
         if resp_silo.status_code == 200:
@@ -92,13 +92,12 @@ def fetch_silo_and_water_data():
                 for shed_name, shed_obj in s_data["data"].items():
                     if "shead-1" in shed_name.lower() or "shed-1" in shed_name.lower() or "shead 1" in shed_name.lower():
                         ind_val = shed_obj.get("indicator_data", {}).get("value", "0")
-                        val_kg = float(ind_val) if ind_val else 0.0
-                        feed_tons = round(val_kg / 1000.0, 2)
+                        feed_kg = float(ind_val) if ind_val else 0.0
                         break
-                if feed_tons == 0.0 and s_data["data"]:
+                if feed_kg == 0.0 and s_data["data"]:
                     first_item = list(s_data["data"].values())[0]
                     ind_val = first_item.get("indicator_data", {}).get("value", "0")
-                    feed_tons = round(float(ind_val) / 1000.0, 2)
+                    feed_kg = float(ind_val) if ind_val else 0.0
 
         # 2. Water Flow Data for Shead 1
         water_url = "https://sunfra.com/farm/sunfra/sensor/water_flow_last_value_json.php?client_id=1"
@@ -116,15 +115,15 @@ def fetch_silo_and_water_data():
     except Exception as e:
         logger.error(f"Error fetching IoT sensor data from sunfra.com: {e}")
 
-    return feed_tons, water_litres
+    return feed_kg, water_litres
 
 
 def fetch_chittoor_weather_data():
     """Fetches real-time weather and tomorrow forecast (including rain %) for Chittoor, AP, India."""
     weather_info = {
-        "today_temp": "32°C",
-        "today_feels": "34°C",
-        "today_wind": "13 km/h",
+        "today_temp": "Highest: 33°C | Lowest: 20°C",
+        "today_feels": "Highest: 34°C | Lowest: 20°C",
+        "today_wind": "Highest: 12 km/h | Lowest: 2 km/h",
         "tomorrow_temp": "21°C - 33°C",
         "tomorrow_feels": "25°C - 35°C",
         "tomorrow_wind": "14 km/h",
@@ -139,9 +138,15 @@ def fetch_chittoor_weather_data():
             today = data['weather'][0]
             tomorrow = data['weather'][1]
 
-            t_temp = f"{curr.get('temp_C', '32')}°C"
-            t_feels = f"{curr.get('FeelsLikeC', '34')}°C"
-            t_wind = f"{curr.get('windspeedKmph', '13')} km/h"
+            t_hourly = today.get('hourly', [])
+            t_min_t = today.get('mintempC', '20')
+            t_max_t = today.get('maxtempC', '33')
+            t_feels_list = [int(h.get('FeelsLikeC', 20)) for h in t_hourly] if t_hourly else [20, 34]
+            t_wind_list = [int(h.get('windspeedKmph', 2)) for h in t_hourly] if t_hourly else [2, 12]
+
+            t_temp = f"Highest: {t_max_t}°C | Lowest: {t_min_t}°C"
+            t_feels = f"Highest: {max(t_feels_list)}°C | Lowest: {min(t_feels_list)}°C"
+            t_wind = f"Highest: {max(t_wind_list)} km/h | Lowest: {min(t_wind_list)} km/h"
 
             tom_min_t = tomorrow.get('mintempC', '21')
             tom_max_t = tomorrow.get('maxtempC', '33')
@@ -150,7 +155,8 @@ def fetch_chittoor_weather_data():
             tom_hourly = tomorrow.get('hourly', [])
             feels_list = [int(h.get('FeelsLikeC', 25)) for h in tom_hourly] if tom_hourly else [25, 35]
             tom_feels = f"{min(feels_list)}°C - {max(feels_list)}°C" if feels_list else "25°C - 35°C"
-            tom_wind = f"{tomorrow.get('hourly', [{}])[0].get('windspeedKmph', '14')} km/h"
+            tom_wind_list = [int(h.get('windspeedKmph', 14)) for h in tom_hourly] if tom_hourly else [14]
+            tom_wind = f"{min(tom_wind_list)} km/h - {max(tom_wind_list)} km/h" if min(tom_wind_list) != max(tom_wind_list) else f"{tom_wind_list[0]} km/h"
 
             max_rain_chance = 0
             rain_timings = []
@@ -201,17 +207,19 @@ def generate_sunfra_farms_summary_report(target_date=None) -> str:
 
     date_str = target_date.strftime("%d %b %Y")
 
-    feed_tons, water_litres = fetch_silo_and_water_data()
+    feed_kg, water_litres = fetch_silo_and_water_data()
     live_birds = fetch_shead1_birds_count()
     water_avg_status = calculate_water_consumption_status(water_litres, live_birds)
     weather = fetch_chittoor_weather_data()
+
+    feed_display = f"{int(feed_kg)} Kg" if feed_kg.is_integer() else f"{feed_kg:.2f} Kg"
 
     report_lines = [
         "🌾*Sunfra Farm Report*",
         f"*Date:* {date_str}",
         "",
         "*Shead 1:*",
-        f"Feed Consumed: {feed_tons:.2f} Tons",
+        f"Feed Consumed: {feed_display}",
         f"Water Consumed: {water_litres:.2f} Litres",
         f"Avg Water Consumed: {water_avg_status}",
         "",

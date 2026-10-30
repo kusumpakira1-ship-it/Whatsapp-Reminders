@@ -1,10 +1,11 @@
 import logging
 import os
 import re
+import json
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from report_generator import generate_daily_reports, generate_custom_report
-from waha_service import send_waha_message, send_waha_file, get_session_status, get_session_qr, get_waha_url
+from waha_service import send_waha_message, send_waha_file, send_waha_poll, get_session_status, get_session_qr, get_waha_url
 from config import settings
 from apscheduler.triggers.date import DateTrigger
 from apscheduler.triggers.interval import IntervalTrigger
@@ -622,17 +623,16 @@ async def health_monitor_job():
     primary_session = settings.WAHA_SESSION
     status = get_session_status(primary_session)
     
-    # ── ONE single DB session for all reads/writes this run ──────────────────
-    db = get_db_session()
-    try:
-        # 1. Detect if status changed and log event (reuse same session)
-        if status != alert_state["last_status"]:
+    # 1. Detect if status changed and log event only when changed
+    if status != alert_state["last_status"]:
+        db = get_db_session()
+        try:
             log_waha_event("status_changed", status,
                            f"WAHA session status changed from {alert_state['last_status']} to {status}",
                            db=db)
             alert_state["last_status"] = status
-    finally:
-        db.close()
+        finally:
+            db.close()
 
     # 2. Get alert destinations from MEMORY CACHE (no extra DB connection)
     cfg = get_cached_settings()
@@ -999,6 +999,16 @@ def format_name_list(names):
     else:
         return ", ".join(bold_names[:-1]) + f" & {bold_names[-1]}"
 
+def clean_reminder_body(body_text: str) -> str:
+    """Strips duplicate headers, salutations, or footers if the user pasted a fully formatted template."""
+    if not body_text:
+        return ""
+    text = body_text.strip()
+    text = re.sub(r'^(?:⏰\s*)?\*?Reminder\*?\s*\n+', '', text, flags=re.IGNORECASE).strip()
+    text = re.sub(r'^(?:Hi|Hello|Dear)\s+[^,\n]+,\s*\n+', '', text, flags=re.IGNORECASE).strip()
+    text = re.sub(r'\n+(?:Thank\s*you!?\s*(?:🌱|🙏)?|Thanks!?\s*(?:🌱|🙏)?)\s*$', '', text, flags=re.IGNORECASE).strip()
+    return text
+
 def poll_and_execute_unified_reminders():
     logger.info("Polling database for pending unified reminders...")
     from datetime import datetime, timezone, timedelta
@@ -1107,7 +1117,7 @@ def poll_and_execute_unified_reminders():
                 continue
 
             freq = str(r.frequency or '').lower().strip()
-            if freq in ('mon-sat', 'mon_to_sat', 'mon_sat') and now_ist.weekday() == 6:
+            if (freq in ('mon-sat', 'mon_to_sat', 'mon_sat') or r.id == 979) and now_ist.weekday() == 6:
                 logger.info(f"Skipping reminder ID {r.id} ({r.person_name}) because today is Sunday (Weekly Off) and frequency is '{r.frequency}'.")
                 r.status = 'skipped'
                 db.commit()
@@ -1383,7 +1393,7 @@ def poll_and_execute_unified_reminders():
                     jids = [p['jid'] for p in pending_assignees]
                     
                     if not assigned_reports:
-                        group_body = r.task_notes
+                        group_body = clean_reminder_body(r.task_notes)
                     else:
                         all_missing = sorted(list(set([rep for p in pending_assignees for rep in p['missing_reports']])))
                         group_body = build_reminder_body(all_missing)
@@ -1400,7 +1410,7 @@ def poll_and_execute_unified_reminders():
                 else:
                     for p in pending_assignees:
                         if not assigned_reports:
-                            private_body = r.task_notes
+                            private_body = clean_reminder_body(r.task_notes)
                         else:
                             private_body = build_reminder_body(p['missing_reports'])
                         
@@ -1628,6 +1638,7 @@ def midnight_reset_job():
                 freq = str(r.frequency).lower()
                 r.trigger_time = get_next_occurrence(r.trigger_time, freq)
                 r.status = 'pending'
+                r.sub_reports_status = None
                 reset_count += 1
                 logger.info(f"Midnight reset reminder: {r.person_name} → next trigger: {r.trigger_time} (freq: {freq})")
 
@@ -1642,6 +1653,7 @@ def midnight_reset_job():
                 freq = str(t.frequency).lower()
                 t.due_time = get_next_occurrence(t.due_time, freq)
                 t.status = 'pending'
+                t.sub_reports_status = None
                 # Strip previous due reminder and overdue alert markers so task can alert fresh on its new due time
                 if t.completion_details:
                     t.completion_details = t.completion_details.replace('[DUE_REMINDER_SENT]', '').replace('[OVERDUE_ALERT_SENT]', '')
@@ -2009,7 +2021,74 @@ ESCALATION_REPORT_PHONES = [
     "917259510983@c.us",  # Kusum
 ]
 
-def build_7_company_escalation_reports(db, now_ist):
+def load_escalation_history():
+    hist_file = os.path.join(os.path.dirname(__file__), 'company_escalation_history.json')
+    if not os.path.exists(hist_file):
+        alt_file = os.path.join(os.path.dirname(__file__), 'backend', 'company_escalation_history.json')
+        if os.path.exists(alt_file):
+            hist_file = alt_file
+    try:
+        if os.path.exists(hist_file):
+            with open(hist_file, 'r', encoding='utf-8') as f:
+                return json.load(f)
+    except Exception as e:
+        logger.error(f"Error loading {hist_file}: {e}")
+    return {
+        "_current_month": "2026-10",
+        "monthly_baselines_23oct": {
+            "balaji": 17,
+            "corporate": 47,
+            "feeds": 35,
+            "farms": 37,
+            "rental": 0
+        },
+        "baseline_27oct": {
+            "balaji": {"weekly_failed": 2, "monthly_failed": 19, "monthly_tasks": 46},
+            "corporate": {"weekly_failed": 7, "monthly_failed": 54, "monthly_tasks": 129},
+            "feeds": {"weekly_failed": 2, "monthly_failed": 37, "monthly_tasks": 177},
+            "farms": {"weekly_failed": 5, "monthly_failed": 42, "monthly_tasks": 179},
+            "rental": {"weekly_failed": 0, "monthly_failed": 0, "monthly_tasks": 3}
+        },
+        "daily_failures": {}
+    }
+
+
+def save_escalation_history(date_str, daily_data):
+    candidate_paths = [
+        os.path.join(os.path.dirname(__file__), 'company_escalation_history.json'),
+        os.path.join(os.path.dirname(__file__), 'backend', 'company_escalation_history.json')
+    ]
+    for p in candidate_paths:
+        try:
+            if not os.path.exists(os.path.dirname(p)):
+                continue
+            hist = {}
+            if os.path.exists(p):
+                with open(p, 'r', encoding='utf-8') as f:
+                    hist = json.load(f)
+            else:
+                hist = {
+                    "_current_month": "2026-10",
+                    "monthly_baselines_23oct": {
+                        "balaji": 17,
+                        "corporate": 47,
+                        "feeds": 35,
+                        "farms": 37,
+                        "rental": 0
+                    },
+                    "daily_failures": {}
+                }
+            if 'daily_failures' not in hist:
+                hist['daily_failures'] = {}
+            hist['daily_failures'][date_str] = daily_data
+            with open(p, 'w', encoding='utf-8') as f:
+                json.dump(hist, f, indent=2)
+            logger.info(f"Updated escalation history for {date_str} in {p}")
+        except Exception as e:
+            logger.error(f"Error saving escalation history to {p}: {e}")
+
+
+def build_7_company_escalation_reports(db, now_ist, persist_eod=False):
     """Builds escalation reports for the 7 distinct company departments with day-of-week awareness and bullet points."""
     today_date_str = now_ist.strftime("%d %b %Y")
     day_of_week = now_ist.strftime("%a").lower()  # e.g. 'wed'
@@ -2019,7 +2098,7 @@ def build_7_company_escalation_reports(db, now_ist):
     is_monday = (day_of_week == 'mon')
     is_first_of_month = (day_of_month == 1)
 
-    from datetime import timedelta
+    from datetime import datetime, timedelta
     start_of_day = now_ist.replace(hour=0, minute=0, second=0, microsecond=0)
     end_of_grace_period = start_of_day + timedelta(days=1, hours=13)  # Next day 1:00 PM (13:00 IST) grace period cutoff
 
@@ -2088,7 +2167,7 @@ def build_7_company_escalation_reports(db, now_ist):
         import re
         approval_kws = ["approved", "approve", "reviewed", "review", "checked", "check", "accepted", "accept", "ok", "verified", "verify", "looks good", "fine"]
         
-        # 0. Check manual website toggles (sub_reports_status) FIRST for explicit Done or Undone overrides
+        # 0. Check manual negative overrides (explicit force pending/undone)
         for r in reminders_today_all:
             r_group = (r.whatsapp_group_id or '').lower()
             grp_ok = not group_target or (group_target.lower() in r_group)
@@ -2099,9 +2178,7 @@ def build_7_company_escalation_reports(db, now_ist):
                         for k, v in sub_dict.items():
                             if 'approval' in k.lower() or 'review' in k.lower() or 'balaji' in k.lower():
                                 val_str = str(v).lower()
-                                if val_str in ['done', 'completed', 'submitted', 'ok', '1', 'true']:
-                                    return True
-                                elif val_str in ['pending', 'undone', 'false', '0']:
+                                if val_str in ['pending', 'undone', 'false', '0']:
                                     return False
                 except Exception:
                     pass
@@ -2126,9 +2203,9 @@ def build_7_company_escalation_reports(db, now_ist):
                     return True
         return False
 
-    # Fetch active reminders and tasks to check manual website toggles/overrides
+    # Fetch active reminders and today's tasks to check manual website toggles/overrides
     reminders_today_all = db.query(UnifiedReminder).all()
-    tasks_today_all = db.query(Task).all()
+    tasks_today_all = db.query(Task).filter(Task.due_time >= start_of_day, Task.due_time <= end_of_grace_period).all()
 
     def is_kw_match(text: str, kw: str) -> bool:
         kw = kw.strip().lower()
@@ -2145,7 +2222,7 @@ def build_7_company_escalation_reports(db, now_ist):
             if group_target_lower and (group_target_lower in gname or gname in group_target_lower):
                 target_jids.update(jids)
 
-        # 0. Check manual website toggles (sub_reports_status) FIRST for explicit Done or Undone overrides
+        # 0. Check manual negative overrides (explicit force pending/undone)
         for r in reminders_today_all:
             r_group = (r.whatsapp_group_id or '').lower()
             grp_ok = not group_target or (group_target_lower in r_group) or any(jid in r_group for jid in target_jids)
@@ -2157,9 +2234,7 @@ def build_7_company_escalation_reports(db, now_ist):
                             val_str = str(v).lower()
                             k_lower = k.lower()
                             if rep_lower == k_lower or rep_lower in k_lower or k_lower in rep_lower:
-                                if val_str in ['done', 'completed', 'submitted', 'ok', '1', 'true']:
-                                    return True
-                                elif val_str in ['pending', 'undone', 'false', '0']:
+                                if val_str in ['pending', 'undone', 'false', '0']:
                                     # Explicit manual undone override: force pending
                                     return False
                 except Exception:
@@ -2177,9 +2252,7 @@ def build_7_company_escalation_reports(db, now_ist):
                             val_str = str(v).lower()
                             k_lower = k.lower()
                             if rep_lower == k_lower or rep_lower in k_lower or k_lower in rep_lower:
-                                if val_str in ['done', 'completed', 'submitted', 'ok', '1', 'true']:
-                                    return True
-                                elif val_str in ['pending', 'undone', 'false', '0']:
+                                if val_str in ['pending', 'undone', 'false', '0']:
                                     return False
                 except Exception:
                     pass
@@ -2439,98 +2512,131 @@ def build_7_company_escalation_reports(db, now_ist):
                 return 2, 8, 22
             elif company_key == 'rental':
                 return today_failed_count, today_failed_count, today_failed_count
-        else:
-            # Day 15 Oct onwards: accumulate starting from 14 Oct EOD baseline
+        elif report_date.day <= 23:
+            # Baseline as of Friday 23 Oct 2026 confirmed by management
             if company_key == 'balaji':
-                weekly_count = 3 + today_failed_count
-                monthly_count = 10 + today_failed_count
-                return today_failed_count, weekly_count, monthly_count
+                return today_failed_count, 4, 17
             elif company_key == 'corporate':
-                weekly_count = 19 + today_failed_count
-                monthly_count = 21 + today_failed_count
-                return today_failed_count, weekly_count, monthly_count
+                return today_failed_count, 20, 47
             elif company_key == 'feeds':
-                weekly_count = 3 + today_failed_count
-                monthly_count = 22 + today_failed_count
-                return today_failed_count, weekly_count, monthly_count
+                return today_failed_count, 6, 35
             elif company_key == 'farms':
-                weekly_count = 8 + today_failed_count
-                monthly_count = 22 + today_failed_count
-                return today_failed_count, weekly_count, monthly_count
+                return today_failed_count, 9, 37
             elif company_key == 'rental':
                 return today_failed_count, today_failed_count, today_failed_count
+        elif report_date.day == 26:
+            # Baseline as of Monday 26 Oct 2026
+            if company_key == 'balaji':
+                return today_failed_count, 1, 19
+            elif company_key == 'corporate':
+                return today_failed_count, 7, 54
+            elif company_key == 'feeds':
+                return today_failed_count, 2, 37
+            elif company_key == 'farms':
+                return today_failed_count, 3, 42
+            elif company_key == 'rental':
+                return today_failed_count, today_failed_count, today_failed_count
+        elif report_date.day == 27:
+            # Baseline as of Tuesday 27 Oct 2026 explicitly confirmed by user
+            if company_key == 'balaji':
+                return today_failed_count, 2, 19
+            elif company_key == 'corporate':
+                return today_failed_count, 7, 54
+            elif company_key == 'feeds':
+                return today_failed_count, 2, 37
+            elif company_key == 'farms':
+                return today_failed_count, 5, 42
+            elif company_key == 'rental':
+                return today_failed_count, today_failed_count, today_failed_count
+        else:
+            # Rental is monthly only
+            if company_key == 'rental':
+                return today_failed_count, today_failed_count, today_failed_count
+
+            hist = load_escalation_history()
+            r_date = report_date.date() if hasattr(report_date, 'date') else report_date
+
+            # If current month is Oct 2026, anchor starting from 27 Oct confirmed baseline
+            if r_date.year == 2026 and r_date.month == 10:
+                base_27 = hist.get("baseline_27oct", {}).get(company_key, {})
+                base_wk = base_27.get("weekly_failed", 0)
+                base_mo = base_27.get("monthly_failed", 0)
+
+                daily_failures = hist.get("daily_failures", {})
+
+                # Sum failures for days strictly between 28 Oct and report_date
+                past_fails = 0
+                cur_d = datetime(2026, 10, 28).date()
+                while cur_d < r_date:
+                    d_str = cur_d.strftime("%Y-%m-%d")
+                    day_fails = daily_failures.get(d_str, {})
+                    past_fails += day_fails.get(company_key, 0)
+                    cur_d += timedelta(days=1)
+
+                weekly_count = base_wk + past_fails + today_failed_count
+                monthly_count = base_mo + past_fails + today_failed_count
+                return today_failed_count, weekly_count, monthly_count
+            else:
+                # Future months: standard week and month accumulation
+                daily_failures = hist.get("daily_failures", {})
+                monday_date = r_date - timedelta(days=r_date.weekday())
+                weekly_count = 0
+                cur_d = monday_date
+                while cur_d <= r_date:
+                    if cur_d == r_date:
+                        weekly_count += today_failed_count
+                    else:
+                        d_str = cur_d.strftime("%Y-%m-%d")
+                        weekly_count += daily_failures.get(d_str, {}).get(company_key, 0)
+                    cur_d += timedelta(days=1)
+
+                monthly_count = 0
+                cur_m = r_date.replace(day=1)
+                while cur_m <= r_date:
+                    if cur_m == r_date:
+                        monthly_count += today_failed_count
+                    else:
+                        d_str = cur_m.strftime("%Y-%m-%d")
+                        monthly_count += daily_failures.get(d_str, {}).get(company_key, 0)
+                    cur_m += timedelta(days=1)
+
+                return today_failed_count, weekly_count, monthly_count
 
         return today_failed_count, today_failed_count, today_failed_count
 
     def get_company_monthly_total_tasks(company_key, report_date):
-        if report_date.day == 7:
-            if company_key == 'balaji':
-                return 10
-            elif company_key == 'corporate':
-                return 31
-            elif company_key == 'feeds':
-                return 39
-            elif company_key == 'farms':
-                return 41
-            elif company_key == 'rental':
-                return 3
-        elif report_date.day <= 11:
-            if company_key == 'balaji':
-                return 16
-            elif company_key == 'corporate':
-                return 43
-            elif company_key == 'feeds':
-                return 63
-            elif company_key == 'farms':
-                return 65
-            elif company_key == 'rental':
-                return 3
-        elif report_date.day == 12:
-            if company_key == 'balaji':
-                return 18
-            elif company_key == 'corporate':
-                return 50
-            elif company_key == 'feeds':
-                return 72
-            elif company_key == 'farms':
-                return 74
-            elif company_key == 'rental':
-                return 3
-        elif report_date.day == 13:
-            if company_key == 'balaji':
-                return 20
-            elif company_key == 'corporate':
-                return 56
-            elif company_key == 'feeds':
-                return 80
-            elif company_key == 'farms':
-                return 82
-            elif company_key == 'rental':
-                return 3
-        elif report_date.day == 14:
-            if company_key == 'balaji':
-                return 22
-            elif company_key == 'corporate':
-                return 62
-            elif company_key == 'feeds':
-                return 88
-            elif company_key == 'farms':
-                return 90
-            elif company_key == 'rental':
-                return 3
+        daily_rates = {
+            'balaji': 2,
+            'corporate': 6,
+            'feeds': 8,
+            'farms': 8,
+            'rental': 0
+        }
+        r_date = report_date.date() if hasattr(report_date, 'date') else report_date
+
+        if r_date.year == 2026 and r_date.month == 10:
+            if r_date.day <= 23:
+                base_tasks_23 = {'balaji': 38, 'corporate': 105, 'feeds': 145, 'farms': 147, 'rental': 3}
+                return base_tasks_23.get(company_key, 0)
+            elif r_date.day <= 27:
+                # Confirmed by user as of 27 Oct 2026 EOD
+                base_tasks_27 = {'balaji': 46, 'corporate': 129, 'feeds': 177, 'farms': 179, 'rental': 3}
+                return base_tasks_27.get(company_key, 0)
+            else:
+                # 28 Oct onwards: 27 Oct baseline + days after 27 * daily rate
+                days_after_27 = r_date.day - 27
+                base_tasks_27 = {'balaji': 46, 'corporate': 129, 'feeds': 177, 'farms': 179, 'rental': 3}
+                return base_tasks_27.get(company_key, 0) + (days_after_27 * daily_rates.get(company_key, 0))
         else:
-            # Day 15 Oct onwards: 14 Oct base + today's tasks
-            if company_key == 'balaji':
-                return 22 + 2
-            elif company_key == 'corporate':
-                return 62 + (7 if is_sunday or is_monday else 6)
-            elif company_key == 'feeds':
-                return 88 + (9 if is_sunday or is_monday else 8)
-            elif company_key == 'farms':
-                return 90 + (9 if is_sunday or is_monday else 8)
-            elif company_key == 'rental':
-                return 3
-        return 0
+            # Future months: sum working days from 1st of month
+            working_days = 0
+            cur = r_date.replace(day=1)
+            while cur <= r_date:
+                if cur.weekday() != 6:
+                    working_days += 1
+                cur += timedelta(days=1)
+            rental_extra = 3 if (company_key == 'rental' and r_date.day >= 1) else 0
+            return (working_days * daily_rates.get(company_key, 0)) + rental_extra
 
 
     messages_930 = []
@@ -2583,6 +2689,14 @@ def build_7_company_escalation_reports(db, now_ist):
             combined_1159_lines.append(format_bold_item(it))
         combined_1159_lines.append(f"\n{footer_str}\n---")
 
+    if persist_eod:
+        today_str = now_ist.strftime("%Y-%m-%d")
+        daily_snapshot = {}
+        for title, items, company_key in sections_config:
+            if items:
+                daily_snapshot[company_key] = sum(1 for it in items if not it[1])
+        save_escalation_history(today_str, daily_snapshot)
+
     combined_1159_text = "\n".join(combined_1159_lines)
     return messages_930, messages_1159, combined_1159_text
 
@@ -2634,7 +2748,7 @@ def company_wise_escalation_job(target_phones=None):
 
     db = get_db_session()
     try:
-        res_esc = build_7_company_escalation_reports(db, now_ist)
+        res_esc = build_7_company_escalation_reports(db, now_ist, persist_eod=True)
         messages_1159 = res_esc[1]
         phones = target_phones if target_phones else ESCALATION_REPORT_PHONES
         for msg in messages_1159:
@@ -2829,24 +2943,28 @@ def scheduled_4company_consolidated_reports_job():
     except Exception as e:
         logger.error(f"Error sending 4 Consolidated Company Reports: {e}")
 
-def scheduled_4company_consolidated_reports_job():
-    """Dispatches all 4 Consolidated Company Reconciliation Reports (Daily Comprehensive Reports) for Sunfra Farms, Sunfra Feeds, Sunfra Corporate, and Indus at 6:50 PM IST."""
-    logger.info("Starting scheduled 6:50 PM 4-Company Consolidated Reports dispatch (to 7259510983)...")
+def scheduled_weekly_comprehensive_reports_job():
+    """Dispatches all 5 Weekly Comprehensive Reports (Friday to Thursday) for Sunfra Farms, Sunfra Feeds, Sunfra Corporate, Indus, and Raj Farms every Thursday at 11:59 PM IST to 7259510983."""
+    logger.info("Executing Thursday 11:59 PM Weekly Comprehensive Reports Dispatcher (to 7259510983)...")
     try:
-        from zoho_reconciliation import dispatch_all_4company_reconciliation_reports
-        dispatch_all_4company_reconciliation_reports("917259510983@c.us")
-        logger.info("Successfully dispatched all 4 Consolidated Company Reports to 917259510983@c.us")
+        from zoho_reconciliation import dispatch_all_weekly_comprehensive_reports
+        dispatch_all_weekly_comprehensive_reports("917259510983@c.us")
+        logger.info("Successfully dispatched all 5 Weekly Comprehensive Reports to 917259510983@c.us")
     except Exception as e:
-        logger.error(f"Error in scheduled_4company_consolidated_reports_job: {e}")
+        logger.error(f"Error in scheduled_weekly_comprehensive_reports_job: {e}")
+
+def scheduled_4company_consolidated_reports_job():
+    """[ON HOLD] Formerly dispatched all Consolidated Company Reconciliation Reports daily at 6:50 PM IST."""
+    logger.info("scheduled_4company_consolidated_reports_job is currently ON HOLD (switched to Weekly Comprehensive Reports on Thursdays at 11:59 PM).")
 
 def send_all_10pm_daily_reports_job():
     logger.info("Executing 10:30 PM Daily Reports Dispatcher...")
-    try:
-        # 1. 4 Consolidated Company Reports (Daily Comprehensive Reports for Sunfra Farms, Sunfra Feeds, Corporate, Indus)
-        from zoho_reconciliation import dispatch_all_4company_reconciliation_reports
-        dispatch_all_4company_reconciliation_reports("917259510983@c.us")
-    except Exception as e:
-        logger.error(f"Error sending 4 Consolidated Company Reports at 10 PM: {e}")
+    # 1. Consolidated Company Reports: ON HOLD per user request (switched to Weekly Comprehensive Reports on Thursdays at 11:59 PM)
+    # try:
+    #     from zoho_reconciliation import dispatch_all_4company_reconciliation_reports
+    #     dispatch_all_4company_reconciliation_reports("917259510983@c.us")
+    # except Exception as e:
+    #     logger.error(f"Error sending 4 Consolidated Company Reports at 10 PM: {e}")
 
     try:
         # 2. Daily Rental & Vacancy Loss Report
@@ -2854,31 +2972,32 @@ def send_all_10pm_daily_reports_job():
     except Exception as e:
         logger.error(f"Error sending Daily Rental & Vacancy Loss Report at 10 PM: {e}")
 
-    try:
-        # 3. Company-Wise Manager Escalation EOD Summary Report (Mon-Sat)
-        company_wise_escalation_job()
-    except Exception as e:
-        logger.error(f"Error sending Company-Wise Escalation Report at 10 PM: {e}")
+    # 3. Company-Wise Manager Escalation EOD Summary Report: ON HOLD at 10:30 PM per user request (only sent at 11:50 PM)
+    # try:
+    #     company_wise_escalation_job()
+    # except Exception as e:
+    #     logger.error(f"Error sending Company-Wise Escalation Report at 10 PM: {e}")
 
 
 SUNFRA_GROUP_OF_COMPANIES_JID = "120363410727174477@g.us"
 
 def send_all_1150pm_daily_reports_job():
     """11:50 PM Final Wrap Dispatcher:
-    Dispatches 4 Consolidated Company reports, Rental Vacancy loss & Escalations
-    to 7259510983 and Sunfra Group Of Companies (120363410727174477@g.us).
+    Rental Vacancy loss to 7259510983 & Sunfra Group Of Companies.
+    Manager Escalations dispatched ONLY to 7259510983 per user request.
+    (Company Reconciliation reports ON HOLD per user request).
     """
-    logger.info("Executing 11:50 PM Final Wrap Daily Reports Dispatcher (to 7259510983 & Sunfra Group Of Companies)...")
+    logger.info("Executing 11:50 PM Final Wrap Daily Reports Dispatcher...")
     targets = ["917259510983@c.us", SUNFRA_GROUP_OF_COMPANIES_JID]
 
-    # 1. 4 Consolidated Company Reports
-    try:
-        from zoho_reconciliation import dispatch_all_4company_reconciliation_reports
-        for target in targets:
-            logger.info(f"Dispatching 4 Consolidated Company Reports (11:50 PM) to {target}...")
-            dispatch_all_4company_reconciliation_reports(target)
-    except Exception as e:
-        logger.error(f"Error sending 4 Consolidated Company Reports at 11:50 PM: {e}")
+    # 1. Consolidated Company Reports: ON HOLD per user request (switched to Weekly Comprehensive Reports on Thursdays at 11:59 PM)
+    # try:
+    #     from zoho_reconciliation import dispatch_all_4company_reconciliation_reports
+    #     for target in targets:
+    #         logger.info(f"Dispatching 4 Consolidated Company Reports (11:50 PM) to {target}...")
+    #         dispatch_all_4company_reconciliation_reports(target)
+    # except Exception as e:
+    #     logger.error(f"Error sending 4 Consolidated Company Reports at 11:50 PM: {e}")
 
     # 2. Daily Rental & Vacancy Loss Report
     try:
@@ -2886,13 +3005,134 @@ def send_all_1150pm_daily_reports_job():
     except Exception as e:
         logger.error(f"Error sending Daily Rental & Vacancy Loss Report at 11:50 PM: {e}")
 
-    # 3. Company-Wise Manager Escalation EOD Summary Report
+    # 3. Company-Wise Manager Escalation EOD Summary Report (ONLY to 7259510983 per user directive)
     try:
-        company_wise_escalation_job(target_phones=targets)
+        company_wise_escalation_job(target_phones=["917259510983@c.us"])
+        logger.info("Company-Wise Escalation Report sent at 11:50 PM to 917259510983@c.us ONLY.")
     except Exception as e:
         logger.error(f"Error sending Company-Wise Escalation Report at 11:50 PM: {e}")
 
 
+def send_month_end_reports_approval_reminder_job():
+    """6:15 PM Month-End Approval Reminder:
+    Sends reminder to review & approve monthly reports to Sunfra Group Of Companies (120363410727174477@g.us)
+    only on days 26, 27, 28, 29, 30, and 31 of each month.
+    """
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST)
+
+    # Only run from 26th to end of month (26, 27, 28, 29, 30, 31)
+    if now_ist.day < 26:
+        logger.info(f"Skipping 6:15 PM month-end reminder: today is {now_ist.strftime('%d %b %Y')} (day {now_ist.day} < 26).")
+        return
+
+    primary_session = settings.WAHA_SESSION
+    if get_session_status(primary_session) != "WORKING":
+        logger.warning("WAHA session is not WORKING — skipping 6:15 PM month-end reminder.")
+        return
+
+    target_jid = SUNFRA_GROUP_OF_COMPANIES_JID
+    msg = (
+        "⏰ *Reminder*\n\n"
+        "Hi Team,\n\n"
+        "Please review and approve all the necessary monthly reports in the group so daily records can be completed accurately.\n\n"
+        "Thank you! 🌱"
+    )
+
+    logger.info(f"Dispatching 6:15 PM Month-End Approval Reminder to Sunfra Group Of Companies ({target_jid})...")
+    res = send_waha_message(target_jid, msg)
+    if res:
+        logger.info("Successfully dispatched 6:15 PM Month-End Approval Reminder.")
+        try:
+            db = get_db_session()
+            log = ReminderLog(
+                reminder_id=0,
+                report_types="Monthly Reports Review & Approval",
+                person_name="Team",
+                person_phone=target_jid,
+                whatsapp_group_id=target_jid,
+                trigger_time=now_ist.replace(tzinfo=None),
+                executed_at=now_ist.replace(tzinfo=None),
+                status='sent',
+                details="Please review and approve all the necessary monthly reports in the group so daily records can be completed accurately."
+            )
+            db.add(log)
+            db.commit()
+            db.close()
+        except Exception as e:
+            logger.error(f"Failed to log 6:15 PM month-end reminder: {e}")
+    else:
+        logger.warning(f"Failed to dispatch 6:15 PM Month-End Approval Reminder to {target_jid}.")
+
+
+OFFICE_MANAGEMENT_TEAM_JID = "120363432470281187@g.us"
+
+def send_daily_office_management_checklist_job():
+    """6:15 PM Daily Checklist for Office Management Team:
+    Sends daily office management inspection checklist as 1 complete interactive poll with checkable boxes
+    to Office Management Team (120363432470281187@g.us) every day at 6:15 PM IST.
+    """
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST)
+    if now_ist.weekday() == 6:  # Sunday
+        logger.info("Today is Sunday — skipping 6:15 PM Office Management Checklist.")
+        return
+    date_str = now_ist.strftime("%d %b %Y")
+
+    primary_session = settings.WAHA_SESSION
+    if get_session_status(primary_session) != "WORKING":
+        logger.warning("WAHA session is not WORKING — skipping 6:15 PM Office Management Checklist.")
+        return
+
+    target_jid = OFFICE_MANAGEMENT_TEAM_JID
+    poll_title = (
+        f"📋 Daily Evening Checklist\n"
+        f"🕒 Time: 6:15 PM\n"
+        f"📅 Date: {date_str}\n\n"
+        f"Please check and complete today's checklist items:"
+    )
+
+    checklist_options = [
+        "1. Reception Area (Cleanliness, sofa, dustbin)",
+        "2. Conference Room (Cleanliness, chairs, arrangement)",
+        "3. Office In & Out (Entrance & exit cleanliness)",
+        "4. Terrace Inspection (Cleanliness, chairs & tables)",
+        "5. Coffee Machine & Supplies (Machine, powder, sugar)",
+        "6. Dustbins (All floor dustbins available)",
+        "7. Office Supplies & Stock (Items & stock check)"
+    ]
+
+    logger.info(f"Dispatching 6:15 PM Daily Office Management Interactive Checklist Poll to {target_jid}...")
+    res = send_waha_poll(
+        chat_id=target_jid,
+        title=poll_title,
+        options=checklist_options,
+        multiple_answers=True
+    )
+    if res:
+        logger.info("Successfully dispatched 6:15 PM Daily Office Management Checklist Poll.")
+        try:
+            db = get_db_session()
+            log = ReminderLog(
+                reminder_id=None,
+                report_types="Office Management Checklist",
+                person_name="Office Management Team",
+                person_phone=target_jid,
+                whatsapp_group_id=target_jid,
+                trigger_time=now_ist.replace(tzinfo=None),
+                executed_at=now_ist.replace(tzinfo=None),
+                status='sent',
+                details="Daily 7-point Office Management Checklist interactive poll dispatched to group."
+            )
+            db.add(log)
+            db.commit()
+            db.close()
+        except Exception as e:
+            logger.error(f"Failed to log 6:15 PM office management checklist: {e}")
+    else:
+        logger.warning(f"Failed to dispatch 6:15 PM Office Management Checklist Poll to {target_jid}.")
 
 
 # Recipients for vaccine approval requests
@@ -3388,13 +3628,13 @@ def scheduled_egg_production_crosscheck_650pm_job():
         logger.error(f"Error in scheduled_egg_production_crosscheck_650pm_job: {e}")
 
 def scheduled_egg_production_crosscheck_930pm_job():
-    """Dispatches the Daily Egg Production vs Godown Stock Cross-Check Report at 9:30 PM IST to 7259510983 ONLY."""
-    logger.info("Executing 9:30 PM Daily Egg Production vs Godown Stock Cross-Check Job (to 7259510983)...")
+    """Dispatches the Daily Egg Production vs Godown Stock Cross-Check Report at 9:30 PM IST to all 3 numbers (Kusum, 8985779911, 6364817749)."""
+    logger.info("Executing 9:30 PM Daily Egg Production vs Godown Stock Cross-Check Job (to 3 numbers)...")
     try:
         from egg_production_crosscheck import generate_egg_production_crosscheck_report
         from waha_service import send_waha_message
         report_text = generate_egg_production_crosscheck_report()
-        recipients = ["917259510983@c.us"]
+        recipients = ["917259510983@c.us", "918985779911@c.us", "916364817749@c.us"]
         for phone in recipients:
             send_waha_message(phone, report_text)
             logger.info(f"9:30 PM Egg Production Cross-Check Report sent to {phone}")
@@ -3422,28 +3662,67 @@ def scheduled_daily_attendance_summary_job():
     except Exception as e:
         logger.error(f"Error in scheduled_daily_attendance_summary_job: {e}")
 
-def scheduled_daily_attendance_summary_1115pm_job():
-    """Dispatches the 11:15 PM EOD Final Lock Attendance Summary and locks in today's monthly absence increments."""
-    logger.info("Executing 11:15 PM EOD Final Lock Attendance Summary Job...")
+def scheduled_daily_attendance_summary_645pm_job():
+    """Dispatches the Daily Sunfra Community Complete Attendance Summary at 6:45 PM IST to Kusum (7259510983)."""
+    logger.info("Executing 6:45 PM Daily Attendance Summary Job...")
     try:
-        from attendance_tracker import evaluate_attendance_for_date, generate_attendance_summary_message, generate_company_attendance_messages, update_daily_absence_increments
+        from attendance_tracker import evaluate_attendance_for_date, generate_attendance_summary_message
         from waha_service import send_waha_message
         data = evaluate_attendance_for_date()
-        
-        # 1. Lock in today's absence increments into monthly baselines file at 11:15 PM EOD
-        update_daily_absence_increments(data)
-
-        # 2. Send complete consolidated report across all 10 companies to Kusum (7259510983)
         summary_msg = generate_attendance_summary_message(data)
         send_waha_message("917259510983@c.us", summary_msg)
-        logger.info("Complete 11:15 PM EOD Lock Attendance Summary sent to 917259510983@c.us")
+        logger.info("Complete Daily Attendance Summary successfully sent to 917259510983@c.us at 6:45 PM")
+    except Exception as e:
+        logger.error(f"Error in scheduled_daily_attendance_summary_645pm_job: {e}")
+
+def scheduled_daily_attendance_summary_1115pm_job():
+    """Dispatches the 11:45 PM EOD Final Lock Attendance Summary to Kusum (7259510983) and locks in today's monthly absence increments."""
+    logger.info("Executing 11:45 PM EOD Final Lock Attendance Summary Job...")
+    try:
+        from attendance_tracker import evaluate_attendance_for_date, generate_attendance_summary_message, update_daily_absence_increments
+        from waha_service import send_waha_message
+        data = evaluate_attendance_for_date(is_eod_check=True)
         
-        # 3. Generate company-wise attendance reports and send to Kusum
-        company_msgs = generate_company_attendance_messages(data)
-        for comp_name, comp_msg in company_msgs.items():
-            send_waha_message("917259510983@c.us", comp_msg)
+        # 1. Lock in today's absence increments into monthly baselines file at 11:45 PM EOD
+        update_daily_absence_increments(data)
+
+        # 2. Send complete consolidated report across all companies to Kusum (7259510983)
+        summary_msg = generate_attendance_summary_message(data)
+        send_waha_message("917259510983@c.us", summary_msg)
+        logger.info("Complete 11:45 PM EOD Lock Attendance Summary sent to 917259510983@c.us")
     except Exception as e:
         logger.error(f"Error in scheduled_daily_attendance_summary_1115pm_job: {e}")
+
+def scheduled_company_wise_attendance_1155pm_job():
+    """Dispatches Company-Wise Attendance Reports at 11:55 PM IST directly to all 12 department WhatsApp groups."""
+    logger.info("Executing 11:55 PM Company-Wise Attendance Reports Dispatcher (to all 12 groups)...")
+    try:
+        from attendance_tracker import evaluate_attendance_for_date, generate_company_attendance_messages, COMMUNITY_EMPLOYEES
+        from waha_service import send_waha_message
+        data = evaluate_attendance_for_date(is_eod_check=True)
+        company_msgs = generate_company_attendance_messages(data)
+
+        # Build mapping from group name to its primary WhatsApp group JID
+        group_jid_map = {}
+        for g in COMMUNITY_EMPLOYEES:
+            g_name = g.get("group")
+            jids = g.get("group_jids", [])
+            if g_name and jids:
+                primary_jid = jids[0]
+                if not primary_jid.endswith("@g.us"):
+                    primary_jid = f"{primary_jid}@g.us"
+                group_jid_map[g_name] = primary_jid
+
+        for comp_name, comp_msg in company_msgs.items():
+            target_group_jid = group_jid_map.get(comp_name)
+            if target_group_jid:
+                logger.info(f"Dispatching 11:55 PM attendance report for {comp_name} to {target_group_jid}...")
+                send_waha_message(target_group_jid, comp_msg)
+            else:
+                logger.warning(f"No target group JID found for department {comp_name}")
+        logger.info("Successfully dispatched all 11:55 PM company-wise attendance reports to all 12 groups.")
+    except Exception as e:
+        logger.error(f"Error in scheduled_company_wise_attendance_1155pm_job: {e}")
 
 def scheduled_monthly_attendance_report_job():
     """Dispatches the Monthly Attendance Summary Report on the last day of every month at 9:00 PM IST to 7259510983."""
@@ -3573,8 +3852,14 @@ def setup_scheduler():
     # Schedule media/report cleanup daily at 12:05 AM IST
     scheduler.add_job(cleanup_old_files_job, CronTrigger(hour=0, minute=5, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="cleanup_old_files_job", replace_existing=True)
     
-    # Schedule 4 Consolidated Company Reports daily at 6:50 PM IST (to 7259510983)
-    scheduler.add_job(scheduled_4company_consolidated_reports_job, CronTrigger(hour=18, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_reports_650pm_job", replace_existing=True)
+    # Schedule Daily Sunfra Community Complete Attendance Summary at 6:45 PM IST (to 7259510983)
+    scheduler.add_job(scheduled_daily_attendance_summary_645pm_job, CronTrigger(hour=18, minute=45, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_645pm_job", replace_existing=True)
+
+    # Daily Consolidated Company Reports: ON HOLD (per user request)
+    # scheduler.add_job(scheduled_4company_consolidated_reports_job, CronTrigger(hour=18, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_reports_650pm_job", replace_existing=True)
+
+    # Schedule Weekly Comprehensive Reports for all 5 companies every Thursday at 11:59 PM IST (to 7259510983)
+    scheduler.add_job(scheduled_weekly_comprehensive_reports_job, CronTrigger(day_of_week='thu', hour=23, minute=59, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_weekly_comprehensive_reports_job", replace_existing=True)
 
     # Schedule Egg Production vs Godown Stock Cross-Check daily at 6:50 PM IST (to 7259510983 ONLY) & 9:30 PM IST (to 3 admins)
     scheduler.add_job(scheduled_egg_production_crosscheck_650pm_job, CronTrigger(hour=18, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_production_crosscheck_650pm_job", replace_existing=True)
@@ -3586,6 +3871,9 @@ def setup_scheduler():
     # Combined 10:30 PM & 11:50 PM Dispatcher: 4 Consolidated Company Reports, Daily Rental Loss, and Company-Wise Escalation
     scheduler.add_job(send_all_10pm_daily_reports_job, CronTrigger(hour=22, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="send_all_10pm_daily_reports_job", replace_existing=True)
     scheduler.add_job(send_all_1150pm_daily_reports_job, CronTrigger(hour=23, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="send_all_1150pm_daily_reports_job", replace_existing=True)
+    
+    # Schedule Company-Wise Attendance Reports daily at 11:55 PM IST directly to all 12 department groups
+    scheduler.add_job(scheduled_company_wise_attendance_1155pm_job, CronTrigger(hour=23, minute=55, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_company_wise_attendance_1155pm_job", replace_existing=True)
     
     # Schedule Weekly 4-Company P&L & Stock Report every Saturday at 10:30 PM IST (to 7259510983)
     scheduler.add_job(scheduled_4company_weekly_pandl_job, CronTrigger(day_of_week='sat', hour=22, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_weekly_pandl_job", replace_existing=True)
@@ -3630,9 +3918,15 @@ def setup_scheduler():
     from water_flow_daily_report import send_daily_water_flow_report_job
     scheduler.add_job(send_daily_water_flow_report_job, CronTrigger(hour=23, minute=58, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="daily_water_flow_report_job", replace_existing=True)
 
-    # Schedule Motor Voltage & Power Status Check every 30 minutes to Motor Alerts WhatsApp Group
-    from motor_voltage_monitoring import check_and_dispatch_motor_voltage_alerts
-    scheduler.add_job(check_and_dispatch_motor_voltage_alerts, CronTrigger(minute="*/30", timezone="Asia/Kolkata"), misfire_grace_time=300, id="check_motor_voltage_alerts_job", replace_existing=True)
+    # Schedule Month-End Report Review & Approval Reminder at 6:15 PM IST on days 26-31 to Sunfra Group Of Companies
+    scheduler.add_job(send_month_end_reports_approval_reminder_job, CronTrigger(day="26-31", hour=18, minute=15, timezone="Asia/Kolkata"), misfire_grace_time=300, id="month_end_reports_approval_reminder_job", replace_existing=True)
+
+    # Schedule Daily Office Management Checklist at 6:15 PM IST (Mon-Sat, excluding Sunday) to Office Management Team (120363432470281187@g.us)
+    scheduler.add_job(send_daily_office_management_checklist_job, CronTrigger(day_of_week="mon-sat", hour=18, minute=15, timezone="Asia/Kolkata"), misfire_grace_time=300, id="office_management_checklist_job", replace_existing=True)
+
+    # Motor Voltage & Power Status Check (ON HOLD per user request)
+    # from motor_voltage_monitoring import check_and_dispatch_motor_voltage_alerts
+    # scheduler.add_job(check_and_dispatch_motor_voltage_alerts, CronTrigger(minute="*/30", timezone="Asia/Kolkata"), misfire_grace_time=300, id="check_motor_voltage_alerts_job", replace_existing=True)
 
     scheduler.start()
     logger.info("APScheduler started.")

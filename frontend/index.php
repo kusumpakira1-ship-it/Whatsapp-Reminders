@@ -2,23 +2,32 @@
 // ─── Timezone: Asia/Kolkata ───────────────────────────────────────────────
 date_default_timezone_set('Asia/Kolkata');
 
-// Helper PDO Connection
+// Helper PDO Connection with Circuit Breaker
 function getDb() {
     static $pdo = null;
     if ($pdo !== null) return $pdo;
-    $dbName = 'u632391467_kusumpakira';
-    $user   = 'u632391467_kusumpakira';
-    $pass   = 'Kusum@2026Bb!';
-    $hosts  = ['localhost', '127.0.0.1', '145.223.17.70'];
-    foreach ($hosts as $host) {
+
+    $cooldownFile = sys_get_temp_dir() . '/.mysql_cooldown';
+    $inCooldown = file_exists($cooldownFile) && (time() - filemtime($cooldownFile) < 1200);
+
+    if (!$inCooldown) {
+        $dbName = 'u632391467_kusumpakira';
+        $user   = 'u632391467_kusumpakira';
+        $pass   = 'Kusum@2026Bb!';
+        $host   = '145.223.17.70';
         try {
             $pdo = new PDO("mysql:host={$host};dbname={$dbName};charset=utf8mb4", $user, $pass, [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_TIMEOUT => 2
+                PDO::ATTR_PERSISTENT => true,
+                PDO::ATTR_TIMEOUT => 3
             ]);
             if ($pdo) return $pdo;
-        } catch (Throwable $e) {}
+        } catch (Throwable $e) {
+            if (strpos($e->getMessage(), '1226') !== false || strpos($e->getMessage(), 'max_connections_per_hour') !== false) {
+                @touch($cooldownFile);
+            }
+        }
     }
     // Fallback SQLite
     $sqlitePath = __DIR__ . '/mac_water_monitoring.sqlite';
@@ -41,10 +50,20 @@ function getDb() {
 // REST API Handling
 if (isset($_GET['api'])) {
     header('Content-Type: application/json; charset=utf-8');
-    $pdo = getDb();
     $action = $_GET['api'];
 
     if ($action === 'get_devices') {
+        // Fast 30-second server-side file cache to drastically minimize MySQL connections
+        $cacheFile = sys_get_temp_dir() . '/devices_cache.json';
+        if (file_exists($cacheFile) && (time() - filemtime($cacheFile) < 30)) {
+            $cached = @file_get_contents($cacheFile);
+            if ($cached) {
+                echo $cached;
+                exit;
+            }
+        }
+
+        $pdo = getDb();
         try {
             $stmt = $pdo->query("SELECT id, mac_address, location AS device_name, 'Level_sensor' AS location, water_level, status AS power_status, timestamp AS last_seen FROM device_readings ORDER BY timestamp DESC LIMIT 50");
             $devices = $stmt->fetchAll();
@@ -54,7 +73,9 @@ if (isset($_GET['api'])) {
                 $devices = $stmt->fetchAll();
             }
             
-            echo json_encode(['status' => 'success', 'data' => $devices]);
+            $res = json_encode(['status' => 'success', 'data' => $devices]);
+            @file_put_contents($cacheFile, $res);
+            echo $res;
         } catch (Throwable $e) {
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
@@ -858,7 +879,7 @@ if (isset($_GET['api'])) {
   }
 
   loadDevices();
-  setInterval(loadDevices, 10000); // Auto-update live telemetry data every 10 seconds
+  setInterval(loadDevices, 60000); // Auto-update live telemetry data every 60 seconds (prevents connection exhaustion)
 </script>
 </body>
 </html>

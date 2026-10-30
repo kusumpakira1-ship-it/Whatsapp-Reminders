@@ -1,0 +1,68 @@
+📋 *Daily Attendance Report*
+📅 *Date:* 26 Oct 2026
+==================================================
+
+🏢 *AI & IOT*
+  • *Akshay* (Ab - 1) : 🟢 Present
+  • *Poornima* (Ab - 0) : 🟢 Present
+  • *Ramya* (Ab - 3.5) : 🟡 Half Day (Late Login)
+
+🏢 *Sunfra AI*
+  • *Kusum* (Ab - 3) : 🟢 Present
+
+🏢 *Sunfra OLX CEE*
+  • *Asif* (Ab - 3) : 🟢 Present
+  • *Prasanna* (Ab - 1) : 🟢 Present
+  • *Yashaswini* (Ab - 6) : 🔵 On Leave
+
+🏢 *Jataayu*
+  • *Roopa* (Ab - 14) : 🔴 Absent
+
+🏢 *Sunfra Corporate*
+  • *Divya* (Ab - 2) : 🟢 Present
+  • *Prajwal* (Ab - 4.5) : 🟢 Present
+
+🏢 *Sunfra Mudah*
+  • *Aishwarya* (Ab - 6) : 🟢 Present
+  • *Akshay* (Ab - 0) : 🟢 Present
+  • *Bharath* (Ab - 1) : 🟢 Present
+  • *Krishna* (Ab - 1.5) : 🟢 Present
+  • *Lakshmi* (Ab - 8) : 🟢 Present
+  • *Nisha* (Ab - 1) : 🟢 Present
+  • *Ravi Teja* (Ab - 9.5) : 🔴 Absent
+  • *Thanuja* (Ab - 0) : 🟢 Present
+
+🏢 *Sunfra HR Team*
+  • *Bhanushree* (Ab - 1) : 🟢 Present
+
+🏢 *Indus*
+  • *Girija* (Ab - 20) : 🔴 Absent
+  • *Jagadish* (Ab - 7.5) : 🟢 Present
+  • *RaviTeja* (Ab - 0) : 🟢 Present
+
+🏢 *Sunfra Farms*
+  • *Mahalakshmi* (Ab - 0) : 🟢 Present
+
+🏢 *Sunfra Feeds*
+  • *Venkat* (Ab - 1.5) : 🔴 Absent
+
+🏢 *Management Team*
+  • *Balaji* (Ab - 16.5) : 🔴 Absent
+  • *Nani* (Ab - 2) : 🟢 Present
+  • *Nikhil* (Ab - 11) : 🔴 Absent
+  • *Prasad* (Ab - 17) : 🔴 Absent
+  • *Prathiba* (Ab - 11.5) : 🔴 Absent
+  • *Vamsi* (Ab - 9) : 🔴 Absent
+
+🏢 *Tendered*
+  • *Ganga* (Ab - 6) : 🟢 Present
+
+==================================================
+📊 *OVERALL STATS:*
+👥 Total Employees: *31*
+🟢 Present (Full Day): *20*
+⚪ Half Day Present: *0*
+🟡 Half Day: *1*
+🔵 On Leave: *1*
+🔴 Absent: *9*
+==================================================

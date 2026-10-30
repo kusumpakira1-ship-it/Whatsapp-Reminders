@@ -16,16 +16,18 @@ COMMUNITY_EMPLOYEES = [
         "group": "AI & IOT",
         "group_jids": ["120363429469512014", "ai & iot"],
         "employees": [
-            {"name": "Poornima", "phone": "7204484516", "aliases": ["poornima", "poorna", "207627359363311", "7204484516", "917204484516"]},
             {"name": "Akshay", "phone": "9019713446", "aliases": ["akshay", "akshay i h", "akshay - a", "206686828683301", "9019713446", "919019713446"]},
+            {"name": "Poornima", "phone": "7204484516", "aliases": ["poornima", "poorna", "207627359363311", "7204484516", "917204484516"]},
             {"name": "Ramya", "phone": "7019063646", "aliases": ["ramya", "259149770277018", "7019063646", "917019063646"]},
         ]
     },
     {
         "group": "Sunfra AI",
-        "group_jids": ["120363429469512014", "ai attendance", "ai", "sunfra ai"],
+        "group_jids": ["120363429752031220", "ai attendance", "ai", "sunfra ai"],
         "employees": [
-            {"name": "Kusum", "phone": "7975209680", "aliases": ["kusum", "kusumpakira", "7975209680", "917975209680", "183300681367688"]},
+            {"name": "Kusum", "phone": "7975209680", "aliases": ["kusum", "kusumpakira", "7975209680", "917975209680", "7259510983", "917259510983", "183300681367688"]},
+            {"name": "Shareef", "phone": "6303896125", "aliases": ["shareef", "sharif", "sk md shareef", "6303896125", "916303896125", "207399910654120", "207399910654120@lid"]},
+            {"name": "Kaveri", "phone": "8790550230", "aliases": ["kaveri", "ss kaveri", "rivi", "8790550230", "918790550230", "1864183640196", "1864183640196@lid"]},
         ]
     },
     {
@@ -39,14 +41,16 @@ COMMUNITY_EMPLOYEES = [
     },
     {
         "group": "Jataayu",
-        "group_jids": ["120363428872126006", "120363428881117777", "120363422729608263", "jataayu"],
+        "group_jids": ["120363428872126006", "jataayu attendance"],
+        "excluded_kws": ["updates", "digital team", "jewellers", "bongo", "bbb"],
         "employees": [
             {"name": "Roopa", "phone": "8686856459", "aliases": ["roopa", "rupa", "rupakamalapuram", "147635256201243", "8686856459", "918686856459"]},
         ]
     },
     {
         "group": "Sunfra Corporate",
-        "group_jids": ["120363428349268084", "120363427470582988", "120363426659667927", "120363425581380088", "sunfra corporate"],
+        "group_jids": ["120363428349268084", "sunfra corporate"],
+        "excluded_kws": ["p&l", "p & l", "payments", "sales", "receivables"],
         "employees": [
             {"name": "Divya", "phone": "9381255565", "aliases": ["divya", "9381255565", "919381255565", "56556230058144"]},
             {"name": "Prajwal", "phone": "9036597989", "aliases": ["prajwal", "68195624992799", "9036597989", "919036597989"]},
@@ -60,7 +64,6 @@ COMMUNITY_EMPLOYEES = [
             {"name": "Bharath", "phone": "7989525010", "aliases": ["bharath", "g r bharath", "166683486466210", "7989525010", "917989525010"]},
             {"name": "Krishna", "phone": "9182535260", "aliases": ["krishna", "chaitanya bandaru", "96074157031436", "9182535260", "919182535260"]},
             {"name": "Nisha", "phone": "9740828621", "aliases": ["nisha", "nisha_subbayya", "125795330740245", "9740828621", "919740828621"]},
-            {"name": "Ravi Teja", "phone": "7981745785", "aliases": ["ravi teja", "ravi", "159313775583316", "7981745785", "917981745785"]},
             {"name": "Thanuja", "phone": "8978331872", "aliases": ["thanuja", "thota thanuja", "125889819983939", "8978331872", "918978331872"]},
             {"name": "Aishwarya", "phone": "8495004826", "aliases": ["aishwarya", "20551502401730", "8495004826", "918495004826"]},
             {"name": "Lakshmi", "phone": "137812783452345", "aliases": ["lakshmi", "lakshmy", "137812783452345", "137812783452345@lid"]},
@@ -79,26 +82,30 @@ COMMUNITY_EMPLOYEES = [
         "employees": [
             {"name": "Girija", "phone": "8618580633", "aliases": ["girija", "girijaa dn", "133522631176396", "8618580633", "918618580633"]},
             {"name": "Jagadish", "phone": "7676711899", "aliases": ["jagadish", "7676711899", "917676711899"]},
-            {"name": "RaviTeja", "phone": "9535843064", "aliases": ["raviteja", "ravi teja", "9535843064", "919535843064"]},
+            {"name": "RaviTeja", "phone": "9535843064", "aliases": ["raviteja", "ravi teja", "ravi tej v", "ravi tej", "51110463168709", "51110463168709@lid", "9535843064", "919535843064"]},
         ]
     },
     {
         "group": "Sunfra Farms",
-        "group_jids": ["120363429481469212", "120363221285198390", "120363221211615047", "120363421181996594", "120363410607412989", "sunfra farms"],
+        "group_jids": ["120363429481469212", "sunfra farms"],
+        "excluded_kws": ["payment", "payments", "accounts", "gate manager", "feed formula", "raw material", "prices", "team", "sales", "receivables"],
         "employees": [
             {"name": "Mahalakshmi", "phone": "6364817749", "aliases": ["mahalakshmi", "184791135711366", "6364817749", "916364817749"]},
+            {"name": "Sai Kishore", "phone": "9398796968", "aliases": ["sai kishore", "sai", "kishore", "9398796968", "919398796968"], "not_started_yet": True},
         ]
     },
     {
         "group": "Sunfra Feeds",
-        "group_jids": ["120363413108636132", "120363412616266332", "120363410508859526", "sunfra feeds"],
+        "group_jids": ["120363413108636132", "sunfra feeds"],
+        "excluded_kws": ["summary", "accounts", "sales", "plant", "payments", "doctor", "formula", "prices", "orders"],
         "employees": [
             {"name": "Venkat", "phone": "8247586860", "aliases": ["venkat", "45586833240126", "8247586860", "918247586860"]},
         ]
     },
     {
         "group": "Management Team",
-        "group_jids": ["120363410684018393", "120363406924564250", "management team"],
+        "group_jids": ["120363410684018393", "management team"],
+        "excluded_kws": ["balaji team", "ai & iot", "ai iot", "digital team", "final year", "hyperscale", "p&l", "rule book", "feed plant", "formula"],
         "employees": [
             {"name": "Balaji", "phone": "9493928388", "aliases": ["balaji", "balaji reddy", "242695733772318", "9493928388", "919493928388"]},
             {"name": "Prathiba", "phone": "8951520293", "aliases": ["prathiba", "2169075933244", "8951520293", "918951520293"]},
@@ -125,7 +132,6 @@ SATURDAY_OFF_EMPLOYEES = {
     ("Sunfra Mudah", "Krishna"),
     ("Sunfra Mudah", "Lakshmi"),
     ("Sunfra Mudah", "Nisha"),
-    ("Sunfra Mudah", "Ravi Teja"),
     ("Sunfra Mudah", "Thanuja"),
     # Sunfra OLX CEE
     ("Sunfra OLX CEE", "Prasanna"),
@@ -136,9 +142,15 @@ SATURDAY_OFF_EMPLOYEES = {
     ("Tendered", "Ganga"),
 }
 
-def evaluate_attendance_for_date(target_date_str: str = None) -> dict:
+def evaluate_attendance_for_date(target_date_str: str = None, is_eod_check: bool = False) -> dict:
     if not target_date_str:
         target_date_str = date.today().strftime('%Y-%m-%d')
+
+    from datetime import timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST)
+    today_str = now_ist.date().strftime('%Y-%m-%d')
+    is_eod = is_eod_check or (target_date_str < today_str) or (target_date_str == today_str and (now_ist.hour == 23 and now_ist.minute >= 45))
 
     db = get_db_session()
     try:
@@ -174,6 +186,29 @@ def evaluate_attendance_for_date(target_date_str: str = None) -> dict:
         for wt in wa_tuples:
             raws.append(SimpleMsg(wt[0], wt[1], wt[2], wt[3]))
 
+        # Also query local SQLite fallback database to ensure zero lost messages
+        try:
+            import sqlite3
+            sqlite_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "whatsapp_reminders.sqlite")
+            if os.path.exists(sqlite_path):
+                sconn = sqlite3.connect(sqlite_path)
+                scur = sconn.cursor()
+                srows = scur.execute(
+                    "SELECT sender, group_name, raw_text, timestamp FROM sunfra_raw_messages WHERE timestamp >= ? AND timestamp <= ?",
+                    (f"{target_date_str} 00:00:00", f"{target_date_str} 23:59:59")
+                ).fetchall()
+                for sr in srows:
+                    ts_val = sr[3]
+                    if isinstance(ts_val, str):
+                        try:
+                            ts_val = datetime.strptime(ts_val[:19], '%Y-%m-%d %H:%M:%S')
+                        except:
+                            pass
+                    raws.append(SimpleMsg(sr[0], sr[1], sr[2], ts_val))
+                sconn.close()
+        except Exception as sqle:
+            logger.warning(f"Failed to query SQLite fallback in attendance_tracker: {sqle}")
+
         group_records = []
         tot_present = 0
         tot_half_day_present = 0
@@ -189,6 +224,7 @@ def evaluate_attendance_for_date(target_date_str: str = None) -> dict:
             grp_name = grp_data["group"]
             grp_name_lower = grp_name.lower()
             grp_jids = [j.lower() for j in grp_data.get("group_jids", [])]
+            grp_excluded_kws = [k.lower() for k in grp_data.get("excluded_kws", [])]
             emp_list = []
 
             for emp in grp_data["employees"]:
@@ -200,11 +236,11 @@ def evaluate_attendance_for_date(target_date_str: str = None) -> dict:
                 grp_target_name = grp_name.lower()
                 grp_jids_lower = [j.lower() for j in grp_data.get("group_jids", [])] + [grp_target_name]
 
-                # Match all messages sent by this employee across community groups
+                # Match messages sent by this employee in their specific group
                 matched_msgs = []
                 for r in raws:
-                    s_str = str(r.sender or "").lower()
-                    g_str = str(r.group_name or "").lower()
+                    s_str = str(r.sender or "").strip().lower()
+                    g_str = str(r.group_name or "").strip().lower()
                     
                     # Direct phone match
                     is_sender_match = (phone in s_str) or (("91" + phone) in s_str)
@@ -220,11 +256,27 @@ def evaluate_attendance_for_date(target_date_str: str = None) -> dict:
                                 is_sender_match = True
                                 break
                     
-                    # Match if sender matches (employee activity across community groups)
-                    if is_sender_match:
-                        matched_msgs.append(r)
+                    if not is_sender_match:
+                        continue
 
-                matched_msgs.sort(key=lambda x: x.timestamp)
+                    # Check if message is in the employee's designated group
+                    matches_jid = any(jid in g_str or f"[{jid}]" in s_str for jid in grp_jids_lower)
+                    matches_name = any(name in g_str or f"[{name}]" in s_str for name in grp_jids_lower)
+                    if not (matches_jid or matches_name):
+                        continue
+
+                    # Check if message matches any excluded keywords
+                    is_excluded = False
+                    for ex in grp_excluded_kws:
+                        if ex in g_str or f"[{ex}" in s_str or f"{ex}]" in s_str:
+                            is_excluded = True
+                            break
+                    if is_excluded:
+                        continue
+
+                    matched_msgs.append(r)
+
+                matched_msgs.sort(key=lambda x: str(x.timestamp))
 
                 login_time = None
                 logout_time = None
@@ -237,7 +289,7 @@ def evaluate_attendance_for_date(target_date_str: str = None) -> dict:
                 curr_break_start = None
                 last_break_type = None
 
-                login_kws = ["login", "log in", "logged in", "loged in", "logedin", "logging in", "loging in", "sign in", "signing in", "signed in", "morning team", "good morning team", "good morning", "morning", "present", "in", "im in", "i'm in"]
+                login_kws = ["login", "log in", "logged in", "loged in", "logedin", "logging in", "loging in", "sign in", "signing in", "signed in", "sing in", "singin", "singed in", "morning team", "good morning team", "good morning", "morning", "present", "in", "im in", "i'm in"]
                 logout_kws = ["logout", "log out", "logged out", "loged out", "logedout", "logging out", "loging out", "sign out", "signout", "signing out", "signed out", "sign off", "signoff", "signing off", "signed off", "bye team", "bye all", "signing off team", "out", "im out", "i'm out"]
                 lunch_kws = ["lunch", "lunch break", "out for lunch", "going for lunch", "leaving for lunch"]
                 break_kws = ["break", "tea", "tea break", "tea-break", "snacks", "coffee", "brb", "afk", "taking break", "on break", "short break"]
@@ -280,38 +332,7 @@ def evaluate_attendance_for_date(target_date_str: str = None) -> dict:
                         is_half_day_leave = True
                         leave_time = m.timestamp
 
-                    is_no_break = any(neg in txt for neg in ["no tea", "no break", "no lunch", "without break", "nobreak", "notea"])
-
-                    # Check lunch start
-                    if not is_no_break and is_keyword_match(txt, lunch_kws):
-                        if not lunch_start_time:
-                            lunch_start_time = m.timestamp
-                        if not curr_break_start:
-                            curr_break_start = m.timestamp
-                            last_break_type = "lunch"
-                        continue
-
-                    # Check general break start
-                    if not is_no_break and is_keyword_match(txt, break_kws):
-                        if not break_start_time:
-                            break_start_time = m.timestamp
-                        if not curr_break_start:
-                            curr_break_start = m.timestamp
-                            last_break_type = "tea"
-                        continue
-
-                    # Check break / lunch end
-                    if is_keyword_match(txt, break_end_kws):
-                        if curr_break_start:
-                            if lunch_start_time and not lunch_end_time:
-                                lunch_end_time = m.timestamp
-                            elif break_start_time and not break_end_time:
-                                break_end_time = m.timestamp
-                            break_sec = (m.timestamp - curr_break_start).total_seconds()
-                            total_break_seconds += break_sec
-                            curr_break_start = None
-                            last_break_type = None
-                        continue
+                    # Break and lunch evaluations removed per user request (only login and logout evaluated)
 
                     # Check login keywords
                     if is_keyword_match(txt, login_kws):
@@ -338,106 +359,145 @@ def evaluate_attendance_for_date(target_date_str: str = None) -> dict:
                                 logger.info(f"Admin approved login time for {emp_name}: {login_time}")
                                 break
 
-                # Check Divya presence if mentioned by name e.g. "Divya ma'am came"
+                # Check Divya presence if mentioned by name e.g. "Divya ma'am came" in Sunfra Corporate
                 if emp_name == "Divya" and not login_time:
                     for r in raws:
-                        raw_low = (r.raw_text or "").lower()
-                        if "divya" in raw_low and ("came" in raw_low or "in" in raw_low or "present" in raw_low):
-                            login_time = r.timestamp
-                            break
+                        g_str = str(r.group_name or "").lower()
+                        s_str = str(r.sender or "").lower()
+                        if any(k in g_str or f"[{k}]" in s_str for k in ["120363428349268084", "sunfra corporate"]) and "p&l" not in g_str and "[sunfra corporate p&l]" not in s_str:
+                            raw_low = (r.raw_text or "").lower()
+                            if "divya" in raw_low and ("came" in raw_low or "in" in raw_low or "present" in raw_low):
+                                login_time = r.timestamp
+                                break
 
-                # Prasad Leave override
+                # Prasad Leave override in Management Team
                 if emp_name == "Prasad" and not leave_time:
                     for r in raws:
-                        raw_low = (r.raw_text or "").lower()
-                        if "prasad" in raw_low and ("leave" in raw_low or "on leave" in raw_low):
-                            leave_time = r.timestamp
-                            break
+                        g_str = str(r.group_name or "").lower()
+                        s_str = str(r.sender or "").lower()
+                        if any(k in g_str or f"[{k}]" in s_str for k in ["120363410684018393", "management team"]) and "balaji team" not in g_str:
+                            raw_low = (r.raw_text or "").lower()
+                            if "prasad" in raw_low and ("leave" in raw_low or "on leave" in raw_low):
+                                leave_time = r.timestamp
+                                break
 
-                # User confirmation override: Balaji logged in on 2026-09-19
+                # User confirmation override: Balaji logged in on 2026-09-19 or 2026-10-29
                 if emp_name == "Balaji" and not login_time and target_date_str == "2026-09-19":
                     login_time = datetime.strptime(f"{target_date_str} 09:00:00", "%Y-%m-%d %H:%M:%S")
+                if emp_name == "Balaji" and not login_time and target_date_str == "2026-10-29":
+                    login_time = datetime.strptime(f"{target_date_str} 10:47:00", "%Y-%m-%d %H:%M:%S")
 
-                # Fallback login time for active employees who posted work/break messages today
-                if not login_time and matched_msgs:
+                # Fallback login time for active employees who posted work/break messages today (not for leave messages)
+                if not login_time and not leave_time and matched_msgs:
                     login_time = matched_msgs[0].timestamp
-
-                has_unclosed_break = False
-                if curr_break_start:
-                    has_unclosed_break = True
-                    if logout_time and logout_time > curr_break_start:
-                        total_break_seconds += (logout_time - curr_break_start).total_seconds()
 
                 gross_hours = 0.0
                 net_hours = 0.0
                 if login_time and logout_time:
                     gross_seconds = (logout_time - login_time).total_seconds()
                     gross_hours = gross_seconds / 3600.0
-                    net_seconds = max(0, gross_seconds - total_break_seconds)
-                    net_hours = net_seconds / 3600.0
-                elif login_time and not logout_time and curr_break_start:
-                    # If logged in and went on break without back message or logout
-                    gross_seconds = (curr_break_start - login_time).total_seconds()
-                    net_seconds = max(0, gross_seconds)
-                    net_hours = net_seconds / 3600.0
+                    net_hours = gross_hours
+                elif login_time:
+                    gross_seconds = (datetime.now() - login_time).total_seconds() if target_date_str == date.today().strftime('%Y-%m-%d') else 0.0
+                    net_hours = gross_seconds / 3600.0
 
                 # Late login threshold is 11:00 AM (login posted after 11:00 AM)
                 is_late = login_time and (login_time.hour > 11 or (login_time.hour == 11 and login_time.minute > 0))
                 is_sat_off = is_saturday and (grp_name, emp_name) in SATURDAY_OFF_EMPLOYEES
 
-                # Apply Attendance Rules:
-                if is_sat_off and not (login_time and net_hours >= 4.0):
-                    status_type = "day_off"
-                    status_badge = "⚪ Day Off"
-                    detail = "Saturday Day Off"
-                    tot_day_off += 1
+                # Apply Attendance Rules (Login & Logout based):
+                if is_sat_off:
+                    if login_time and net_hours >= 8.0:
+                        status_type = "present"
+                        status_badge = "🟢 Present"
+                        detail = f"{login_time.strftime('%I:%M %p')} - {logout_time.strftime('%I:%M %p')}" if (login_time and logout_time) else f"Login at {login_time.strftime('%I:%M %p')} ({round(net_hours, 1)} hrs)"
+                        tot_present += 1
+                    elif login_time and net_hours >= 4.5:
+                        status_type = "half_day_weekend_work"
+                        status_badge = "🟡 Half Day Present"
+                        detail = f"{login_time.strftime('%I:%M %p')} - {logout_time.strftime('%I:%M %p')}" if (login_time and logout_time) else f"Login at {login_time.strftime('%I:%M %p')} ({round(net_hours, 1)} hrs)"
+                        tot_half_day += 1
+                        tot_half_day_present += 1
+                    else:
+                        status_type = "day_off"
+                        status_badge = "⚪ Day Off"
+                        detail = "Saturday Day Off"
+                        tot_day_off += 1
                 elif is_half_day_leave:
-                    if login_time and (net_hours >= 4.5 or not logout_time):
+                    if login_time:
                         status_type = "half_day_approved_leave"
                         status_badge = "🟡 Half Day (Half Day Leave)"
-                        detail = f"Applied Half Day Leave ({'Logged in at ' + login_time.strftime('%I:%M %p') if login_time else 'Approved'})"
+                        detail = f"Applied Half Day Leave (Logged in at {login_time.strftime('%I:%M %p')})"
                         tot_half_day += 1
                     else:
                         status_type = "on_leave"
                         status_badge = "🔵 On Leave"
-                        detail = "Half Day Leave requested but < 4.5 hrs worked"
+                        detail = "Half Day Leave requested"
                         tot_leave += 1
                 elif leave_time and not login_time:
                     status_type = "on_leave"
                     status_badge = "🔵 On Leave"
                     detail = f"Leave message at {leave_time.strftime('%I:%M %p')}"
                     tot_leave += 1
+                elif emp.get("not_started_yet") and not login_time and not logout_time:
+                    # Check if employee has ever logged in previously
+                    has_prior_login = False
+                    try:
+                        prior = db.query(DailyAttendance).filter(
+                            DailyAttendance.employee_name == emp_name,
+                            DailyAttendance.login_time.isnot(None)
+                        ).first()
+                        if prior:
+                            has_prior_login = True
+                    except Exception:
+                        pass
+
+                    if not has_prior_login:
+                        status_type = "not_started"
+                        status_badge = "-"
+                        detail = "Not started yet"
+                        tot_employees = max(0, tot_employees - 1)
+                    else:
+                        status_type = "absent"
+                        status_badge = "🔴 Absent"
+                        detail = "No login or logout message"
+                        tot_absent += 1
                 elif not login_time and not logout_time:
                     status_type = "absent"
                     status_badge = "🔴 Absent"
                     detail = "No login or logout message"
                     tot_absent += 1
-                elif has_unclosed_break:
-                    if last_break_type == "lunch":
-                        status_type = "half_day_unclosed_lunch"
-                        status_badge = "🟡 Half Day (Unclosed Lunch Break)"
-                        detail = f"Unclosed lunch break / No back message | Net: {net_hours:.1f} hrs"
-                    else:
-                        status_type = "half_day_unclosed_tea"
-                        status_badge = "🟡 Half Day (Unclosed Break)"
-                        detail = f"Unclosed tea/general break / No back message | Net: {net_hours:.1f} hrs"
-                    tot_half_day += 1
                 elif emp_name == "Ramya" or is_late:
-                    status_type = "half_day_late"
-                    status_badge = "🟡 Half Day (Late Login)"
-                    detail = f"Login at {login_time.strftime('%I:%M %p')}" if login_time else "Late Login"
                     tot_half_day += 1
-                elif emp_name in ["Prasanna", "Nikhil", "Prathiba"] and not logout_time:
+                    if login_time and logout_time:
+                        status_type = "half_day_late"
+                        status_badge = "🟡 Half Day (Late Login)"
+                        detail = f"{login_time.strftime('%I:%M %p')} - {logout_time.strftime('%I:%M %p')}"
+                    elif is_eod and not logout_time:
+                        # At 11:45 PM EOD lock (or past dates): late login and forgot to log out
+                        status_type = "half_day_late_no_logout"
+                        status_badge = "🟡 Half Day (Late Login & No Logout)"
+                        detail = f"Login at {login_time.strftime('%I:%M %p')} (Late & No Logout)" if login_time else "Late Login & No Logout"
+                    else:
+                        # Before 11:45 PM EOD lock on current day
+                        status_type = "half_day_late"
+                        status_badge = "🟡 Half Day (Late Login)"
+                        detail = f"Login at {login_time.strftime('%I:%M %p')}" if login_time else "Late Login"
+                elif is_eod and not logout_time:
+                    # Logged in on time, but forgot to log out by 11:45 PM EOD -> Half Day (No Logout)
                     status_type = "half_day_no_logout"
                     status_badge = "🟡 Half Day (No Logout)"
-                    detail = f"Login at {login_time.strftime('%I:%M %p')} | No Logout" if login_time else "No Logout"
+                    detail = f"Login at {login_time.strftime('%I:%M %p')} (No Logout)"
                     tot_half_day += 1
-                elif net_hours < 8.0:
-                    status_type = "half_day_short"
-                    status_badge = "🟡 Half Day"
-                    detail = f"Net hours {net_hours:.1f} hrs (< 8 hrs)"
+                elif (login_time and logout_time and net_hours < 6.5) or (emp_name == "Mahalakshmi" and target_date_str == "2026-10-29"):
+                    # Early logout / half day hours (e.g. Mahalakshmi 10:15 AM - 02:50 PM = 4.58 hrs)
+                    status_type = "half_day_early_logout"
+                    status_badge = "🟡 Half Day Present"
+                    detail = f"{login_time.strftime('%I:%M %p')} - {logout_time.strftime('%I:%M %p')}"
                     tot_half_day += 1
+                    tot_half_day_present += 1
                 else:
+                    # Valid login & logout (or active login before EOD) -> Full Day Present
                     status_type = "present"
                     status_badge = "🟢 Present"
                     detail = f"{login_time.strftime('%I:%M %p')} - {logout_time.strftime('%I:%M %p')}" if (login_time and logout_time) else (f"Login at {login_time.strftime('%I:%M %p')}" if login_time else "Present")
@@ -496,8 +556,8 @@ def evaluate_attendance_for_date(target_date_str: str = None) -> dict:
                     "break_end_time": break_end_time.strftime('%I:%M %p') if break_end_time else "-",
                     "logout_time": logout_time.strftime('%I:%M %p') if logout_time else "-"
                 })
-
-            emp_list.sort(key=lambda x: x['name'].lower())
+            
+            # Preserves configured order in COMMUNITY_EMPLOYEES (e.g. Kusum, Shareef, Kaveri)
 
             group_records.append({
                 "group_name": grp_name,
@@ -579,8 +639,13 @@ def update_daily_absence_increments(data: dict):
                 status_type = emp.get("status_type", "")
                 badge = emp.get("status_badge", "")
 
+                if target_date_str == "2026-10-29" and emp_name == "Mahalakshmi":
+                    continue  # Already included as 0.5 per user directive
+
                 inc = 0.0
-                if "Absent" in badge or "On Leave" in badge or "Leave" in badge or status_type in ["absent", "on_leave"]:
+                if status_type in ["day_off", "half_day_weekend_work", "not_started"]:
+                    inc = 0.0
+                elif "Absent" in badge or "On Leave" in badge or "Leave" in badge or status_type in ["absent", "on_leave"]:
                     inc = 1.0
                 elif "Half Day" in badge or status_type.startswith("half_day"):
                     inc = 0.5
@@ -590,6 +655,8 @@ def update_daily_absence_increments(data: dict):
                     if key not in baselines:
                         key = emp_name
                     current_val = baselines.get(key, 0.0)
+                    if current_val == "-" or current_val is None:
+                        current_val = 0.0
                     baselines[key] = round(current_val + inc, 1)
 
         with open(BASELINES_FILE, "w") as f:
@@ -625,6 +692,8 @@ def get_employee_absence_label(emp_name: str, grp_name: str) -> str:
             key = emp_name
             
         cnt = baselines.get(key, 0.0)
+        if cnt == "-" or cnt is None:
+            return " (Ab - -)"
         cnt_str = str(int(cnt)) if cnt == int(cnt) else str(cnt)
         return f" (Ab - {cnt_str})"
     except Exception:
@@ -653,7 +722,6 @@ def generate_attendance_summary_message(data: dict) -> str:
         f"📊 *OVERALL STATS:*",
         f"👥 Total Employees: *{data['total_employees']}*",
         f"🟢 Present (Full Day): *{data['total_present']}*",
-        f"⚪ Half Day Present: *{data.get('total_half_day_present', 0)}*",
         f"🟡 Half Day: *{data['total_half_day']}*",
         f"🔵 On Leave: *{data.get('total_leave', 0)}*",
     ]

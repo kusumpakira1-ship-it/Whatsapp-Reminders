@@ -105,11 +105,16 @@ def exchange_grant_code(grant_code: str, redirect_uri: str = None) -> dict:
         logger.error(f"Error exchanging Zoho grant code: {e}")
         return {"error": str(e)}
 
-def get_access_token() -> str:
-    """Retrieves valid access_token, refreshing it only if expired or missing."""
+def get_access_token(org_id: str = None) -> str:
+    """Retrieves valid access_token, refreshing it only if expired or missing. Supports dedicated account tokens (e.g. Raj Farms)."""
     import time
-    cached_access = get_setting("zoho_access_token")
-    expiry_str = get_setting("zoho_access_expiry", "0")
+
+    # Check if this request is for Raj Farms (separate Zoho account)
+    is_raj = org_id and str(org_id) in ['904503869', 'raj_farms']
+    
+    prefix = "raj_farms_" if is_raj else "zoho_"
+    cached_access = get_setting(f"{prefix}access_token")
+    expiry_str = get_setting(f"{prefix}access_expiry", "0")
     try:
         expiry_ts = float(expiry_str)
     except Exception:
@@ -118,16 +123,24 @@ def get_access_token() -> str:
     if cached_access and time.time() < (expiry_ts - 60):
         return cached_access
 
-    refresh_token = get_setting("zoho_refresh_token", os.getenv("ZOHO_REFRESH_TOKEN", ""))
+    if is_raj:
+        refresh_token = get_setting("raj_farms_refresh_token", "1000.7c59fea5714f993ac878b37d256e3783.aa78348ecdeb3f906d825cbc130f0d6b")
+        client_id = get_setting("raj_farms_client_id", "1000.B9KFRFFVSCJ0SN1DJ0PCZEFK4P5ANE")
+        client_secret = get_setting("raj_farms_client_secret", "67726abb28b0e5b870d2996106d02c8047f7610f4e")
+    else:
+        refresh_token = get_setting("zoho_refresh_token", os.getenv("ZOHO_REFRESH_TOKEN", ""))
+        client_id = settings.ZOHO_CLIENT_ID
+        client_secret = settings.ZOHO_CLIENT_SECRET
+
     if not refresh_token:
-        logger.warning("No Zoho refresh_token found. Please authorize Zoho Books OAuth.")
+        logger.warning(f"No refresh_token found for {prefix}. Please authorize Zoho Books OAuth.")
         return cached_access or ""
 
     url = f"{ZOHO_ACCOUNTS_URL}/oauth/v2/token"
     params = {
         "refresh_token": refresh_token,
-        "client_id": settings.ZOHO_CLIENT_ID,
-        "client_secret": settings.ZOHO_CLIENT_SECRET,
+        "client_id": client_id,
+        "client_secret": client_secret,
         "grant_type": "refresh_token"
     }
     try:
@@ -136,14 +149,14 @@ def get_access_token() -> str:
         if "access_token" in data:
             new_access = data["access_token"]
             expires_in = data.get("expires_in", 3600)
-            save_setting("zoho_access_token", new_access)
-            save_setting("zoho_access_expiry", str(time.time() + expires_in))
+            save_setting(f"{prefix}access_token", new_access)
+            save_setting(f"{prefix}access_expiry", str(time.time() + expires_in))
             return new_access
         else:
-            logger.error(f"Failed to refresh Zoho token: {data}")
+            logger.error(f"Failed to refresh Zoho token ({prefix}): {data}")
             return cached_access
     except Exception as e:
-        logger.error(f"Error calling Zoho token refresh API: {e}")
+        logger.error(f"Error calling Zoho token refresh API ({prefix}): {e}")
         return cached_access
 
 def zoho_get(url: str, headers: dict, timeout=20, max_retries=3):
@@ -190,7 +203,7 @@ def get_organization_id(access_token: str = None) -> str:
 def get_chart_of_accounts(access_token: str = None, org_id: str = None) -> dict:
     """Retrieves exact balances for Petty Cash, SBI Term Loan, Sunfra Farm OD, Sunfra Farms Bank, and Sunfra Indian Bank."""
     if not access_token:
-        access_token = get_access_token()
+        access_token = get_access_token(org_id)
     if not org_id:
         org_id = get_organization_id(access_token)
         
@@ -203,6 +216,7 @@ def get_chart_of_accounts(access_token: str = None, org_id: str = None) -> dict:
         "sunfra_farms_bank": 0.0,
         "sunfra_indian_bank": 0.0,
         "sunfra_feeds_bank": 0.0,
+        "raj_farms_bank": 0.0,
         "varadhi_agros_bank": 0.0,
         "sunrise_farms": 0.0,
         "total_bank_balance": 0.0,
@@ -248,6 +262,9 @@ def get_chart_of_accounts(access_token: str = None, org_id: str = None) -> dict:
                 elif "sunfra feeds" in name_lower:
                     accounts["sunfra_feeds_bank"] = balance
                     accounts["total_bank_balance"] += balance
+                elif "raj farms" in name_lower or "raj farm" in name_lower:
+                    accounts["raj_farms_bank"] = balance
+                    accounts["total_bank_balance"] += balance
                 elif "sunfra farms" in name_lower or "sunfra farm" in name_lower:
                     accounts["sunfra_farms_bank"] = balance
                     accounts["total_bank_balance"] += balance
@@ -271,7 +288,7 @@ def get_chart_of_accounts(access_token: str = None, org_id: str = None) -> dict:
 def get_egg_godown_stock(access_token: str = None, org_id: str = None) -> dict:
     """Queries item inventory stock for Egg Godown."""
     if not access_token:
-        access_token = get_access_token()
+        access_token = get_access_token(org_id)
     if not org_id:
         org_id = get_organization_id(access_token)
         
@@ -303,7 +320,7 @@ def get_egg_godown_stock(access_token: str = None, org_id: str = None) -> dict:
 def get_receivables_summary(access_token: str = None, org_id: str = None) -> dict:
     """Calculates total unpaid customer receivables count and balance."""
     if not access_token:
-        access_token = get_access_token()
+        access_token = get_access_token(org_id)
     if not org_id:
         org_id = get_organization_id(access_token)
         
@@ -347,7 +364,7 @@ def get_receivables_summary(access_token: str = None, org_id: str = None) -> dic
 def get_payables_summary(access_token: str = None, org_id: str = None) -> dict:
     """Calculates total unpaid vendor payables count and balance."""
     if not access_token:
-        access_token = get_access_token()
+        access_token = get_access_token(org_id)
     if not org_id:
         org_id = get_organization_id(access_token)
         
@@ -391,7 +408,7 @@ def get_payables_summary(access_token: str = None, org_id: str = None) -> dict:
 def get_today_zoho_sales_out(access_token: str = None, org_id: str = None) -> dict:
     """Calculates total sales quantity out and amount billed in Zoho Books today."""
     if not access_token:
-        access_token = get_access_token()
+        access_token = get_access_token(org_id)
     if not org_id:
         org_id = get_organization_id(access_token)
         
