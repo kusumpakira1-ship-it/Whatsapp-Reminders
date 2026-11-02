@@ -1455,6 +1455,84 @@ def trigger_zoho_reconciliation_report(background_tasks: BackgroundTasks, phone:
     background_tasks.add_task(generate_and_send_zoho_reconciliation_report, target_phone)
     return {"status": "success", "message": f"Zoho reconciliation report generation queued for {target_phone}."}
 
+@app.api_route("/api/send-message", methods=["GET", "POST"])
+async def send_direct_whatsapp_message(
+    request: Request,
+    phone: Optional[str] = None,
+    message: Optional[str] = None
+):
+    """
+    Direct API endpoint to send a WhatsApp message to any phone number or group JID.
+    Accepts GET query params (?phone=...&message=...) or POST JSON ({"phone": "...", "message": "..."}).
+    Returns HTTP 200 with JSON payload upon successful dispatch.
+    """
+    from fastapi.responses import JSONResponse
+    import re
+
+    phone_val = phone
+    msg_val = message
+
+    if request.method == "POST":
+        try:
+            body = await request.json()
+            if isinstance(body, dict):
+                phone_val = body.get("phone") or body.get("phone_number") or body.get("recipient") or phone_val
+                msg_val = body.get("message") or body.get("text") or body.get("msg") or msg_val
+        except Exception:
+            pass
+
+    if not phone_val or not msg_val:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "status": 400,
+                "success": False,
+                "message": "Both 'phone' and 'message' parameters are required."
+            }
+        )
+
+    phone_str = str(phone_val).strip()
+    msg_str = str(msg_val).strip()
+
+    # Format phone number to WhatsApp JID
+    clean_target = re.sub(r'[^0-9@a-zA-Z._-]', '', phone_str)
+    if clean_target.endswith('@g.us') or clean_target.endswith('@c.us') or clean_target.endswith('@lid'):
+        target_jid = clean_target
+    else:
+        digits = re.sub(r'\D', '', clean_target)
+        if len(digits) == 10:
+            digits = f"91{digits}"
+        target_jid = f"{digits}@c.us"
+
+    from waha_service import send_waha_message
+    success = send_waha_message(target_jid, msg_str)
+
+    if success:
+        now_str = datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S")
+        return JSONResponse(
+            status_code=200,
+            content={
+                "status": 200,
+                "success": True,
+                "message": "Message sent successfully",
+                "data": {
+                    "phone": phone_str,
+                    "target_jid": target_jid,
+                    "message": msg_str,
+                    "sent_at": now_str
+                }
+            }
+        )
+    else:
+        return JSONResponse(
+            status_code=500,
+            content={
+                "status": 500,
+                "success": False,
+                "message": "Failed to send WhatsApp message via WAHA. Please ensure WAHA session is connected."
+            }
+        )
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=False)
