@@ -18,6 +18,7 @@ COMMUNITY_EMPLOYEES = [
         "employees": [
             {"name": "Akshay", "phone": "9019713446", "aliases": ["akshay", "akshay i h", "akshay - a", "206686828683301", "9019713446", "919019713446"]},
             {"name": "Poornima", "phone": "7204484516", "aliases": ["poornima", "poorna", "207627359363311", "7204484516", "917204484516"]},
+            {"name": "Sharan", "phone": "8217593642", "aliases": ["sharan", "211905264263392", "211905264263392@lid", "8217593642", "918217593642"]},
             {"name": "Ramya", "phone": "7019063646", "aliases": ["ramya", "259149770277018", "7019063646", "917019063646"]},
         ]
     },
@@ -219,6 +220,7 @@ def evaluate_attendance_for_date(target_date_str: str = None, is_eod_check: bool
         tot_employees = 0
 
         is_saturday = datetime.strptime(target_date_str, '%Y-%m-%d').weekday() == 5
+        is_sunday = datetime.strptime(target_date_str, '%Y-%m-%d').weekday() == 6
 
         for grp_data in COMMUNITY_EMPLOYEES:
             grp_name = grp_data["group"]
@@ -406,7 +408,24 @@ def evaluate_attendance_for_date(target_date_str: str = None, is_eod_check: bool
                 is_sat_off = is_saturday and (grp_name, emp_name) in SATURDAY_OFF_EMPLOYEES
 
                 # Apply Attendance Rules (Login & Logout based):
-                if is_sat_off:
+                if is_sunday:
+                    if login_time and net_hours >= 8.0:
+                        status_type = "present"
+                        status_badge = "🟢 Present"
+                        detail = f"{login_time.strftime('%I:%M %p')} - {logout_time.strftime('%I:%M %p')}" if (login_time and logout_time) else f"Login at {login_time.strftime('%I:%M %p')} ({round(net_hours, 1)} hrs)"
+                        tot_present += 1
+                    elif login_time and net_hours >= 4.5:
+                        status_type = "half_day_weekend_work"
+                        status_badge = "🟡 Half Day Present"
+                        detail = f"{login_time.strftime('%I:%M %p')} - {logout_time.strftime('%I:%M %p')}" if (login_time and logout_time) else f"Login at {login_time.strftime('%I:%M %p')} ({round(net_hours, 1)} hrs)"
+                        tot_half_day += 1
+                        tot_half_day_present += 1
+                    else:
+                        status_type = "day_off"
+                        status_badge = "⚪ Day Off"
+                        detail = "Sunday Weekly Off"
+                        tot_day_off += 1
+                elif is_sat_off:
                     if login_time and net_hours >= 8.0:
                         status_type = "present"
                         status_badge = "🟢 Present"
@@ -467,7 +486,7 @@ def evaluate_attendance_for_date(target_date_str: str = None, is_eod_check: bool
                     status_badge = "🔴 Absent"
                     detail = "No login or logout message"
                     tot_absent += 1
-                elif emp_name == "Ramya" or is_late:
+                elif is_late:
                     tot_half_day += 1
                     if login_time and logout_time:
                         status_type = "half_day_late"
@@ -601,6 +620,14 @@ def update_daily_absence_increments(data: dict):
     target_date_str = data.get("date")
     if not target_date_str:
         return
+
+    # Skip Sundays (Weekly Off) — never increment monthly absence on Sundays
+    try:
+        if datetime.strptime(target_date_str, '%Y-%m-%d').weekday() == 6:
+            logger.info(f"Skipping daily absence increments for {target_date_str} as it is Sunday (Weekly Off).")
+            return
+    except Exception:
+        pass
 
     processed = set()
     try:

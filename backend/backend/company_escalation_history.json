@@ -67,6 +67,18 @@
       "corporate": 0,
       "feeds": 8,
       "farms": 8
+    },
+    "2026-10-30": {
+      "balaji": 1,
+      "corporate": 6,
+      "feeds": 8,
+      "farms": 8
+    },
+    "2026-10-31": {
+      "balaji": 1,
+      "corporate": 0,
+      "feeds": 1,
+      "farms": 8
     }
   }
 }

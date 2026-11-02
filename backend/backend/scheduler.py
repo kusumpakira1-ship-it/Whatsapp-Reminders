@@ -3680,7 +3680,14 @@ def scheduled_daily_attendance_summary_1115pm_job():
         logger.error(f"Error in scheduled_daily_attendance_summary_1115pm_job: {e}")
 
 def scheduled_company_wise_attendance_1155pm_job():
-    """Dispatches Company-Wise Attendance Reports at 11:55 PM IST directly to all 12 department WhatsApp groups."""
+    """Dispatches Company-Wise Attendance Reports at 11:55 PM IST directly to all 12 department WhatsApp groups (Skipped on Sunday)."""
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST)
+    if now_ist.weekday() == 6:  # Sunday
+        logger.info("Today is Sunday (Weekly Off). Skipping 11:55 PM Company-Wise Attendance Reports.")
+        return
+
     logger.info("Executing 11:55 PM Company-Wise Attendance Reports Dispatcher (to all 12 groups)...")
     try:
         from attendance_tracker import evaluate_attendance_for_date, generate_company_attendance_messages, COMMUNITY_EMPLOYEES
@@ -3795,8 +3802,8 @@ def setup_scheduler():
         logger.info("Scheduler is already running. Skipping duplicate setup_scheduler().")
         return
     
-    # Schedule Health Monitor every 1 minute
-    scheduler.add_job(health_monitor_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="health_monitor_job", replace_existing=True)
+    # Schedule Health Monitor every 5 minutes
+    scheduler.add_job(health_monitor_job, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="health_monitor_job", replace_existing=True)
     
     # Schedule PAPAAK email fetching & WhatsApp auto-forwarding every 5 minutes
     scheduler.add_job(scheduled_papaak_email_fetch_job, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="papaak_email_fetch_job", replace_existing=True)
@@ -3820,8 +3827,8 @@ def setup_scheduler():
     # [ON HOLD] Schedule Feed stage transition check daily at 8:00 AM IST
     # scheduler.add_job(check_feed_change_transitions_job, CronTrigger(hour=8, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="check_feed_change_transitions_job", replace_existing=True)
     
-    # Schedule Task Overdue Checker & Nagging alert every 1 minute
-    scheduler.add_job(poll_and_remind_tasks_job, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="poll_tasks_job", replace_existing=True)
+    # Schedule Task Overdue Checker & Nagging alert every 5 minutes
+    scheduler.add_job(poll_and_remind_tasks_job, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="poll_tasks_job", replace_existing=True)
 
     # [ON HOLD] Schedule Vaccine Approval Request to manager at 6:30 AM IST
     # scheduler.add_job(scheduled_vaccine_approval_request_job, CronTrigger(hour=6, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_vaccine_approval_request_job", replace_existing=True)
@@ -3855,8 +3862,8 @@ def setup_scheduler():
     scheduler.add_job(send_all_10pm_daily_reports_job, CronTrigger(hour=22, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="send_all_10pm_daily_reports_job", replace_existing=True)
     scheduler.add_job(send_all_1150pm_daily_reports_job, CronTrigger(hour=23, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="send_all_1150pm_daily_reports_job", replace_existing=True)
     
-    # Schedule Company-Wise Attendance Reports daily at 11:55 PM IST directly to all 12 department groups
-    scheduler.add_job(scheduled_company_wise_attendance_1155pm_job, CronTrigger(hour=23, minute=55, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_company_wise_attendance_1155pm_job", replace_existing=True)
+    # Schedule Company-Wise Attendance Reports at 11:55 PM IST (Mon-Sat, skipping Sunday) directly to all 12 department groups
+    scheduler.add_job(scheduled_company_wise_attendance_1155pm_job, CronTrigger(day_of_week='mon-sat', hour=23, minute=55, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_company_wise_attendance_1155pm_job", replace_existing=True)
     
     # Schedule Weekly 4-Company P&L & Stock Report every Saturday at 10:30 PM IST (to 7259510983)
     scheduler.add_job(scheduled_4company_weekly_pandl_job, CronTrigger(day_of_week='sat', hour=22, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_weekly_pandl_job", replace_existing=True)
@@ -3880,14 +3887,14 @@ def setup_scheduler():
     if os.getenv("USE_N8N", "false").lower() == "true":
         logger.info("USE_N8N is enabled. Live Alarms, Group Sync, and Unified Reminders are delegated to n8n.")
     else:
-        # Schedule live alarms polling every 1 minute
-        scheduler.add_job(poll_live_alarms, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="poll_live_alarms_job", replace_existing=True)
+        # Schedule live alarms polling every 5 minutes
+        scheduler.add_job(poll_live_alarms, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="poll_live_alarms_job", replace_existing=True)
         
-        # Schedule group syncing to live PHP server every 5 minutes
-        scheduler.add_job(sync_groups_to_live, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="sync_groups_job", replace_existing=True)
+        # Schedule group syncing to live PHP server every 15 minutes
+        scheduler.add_job(sync_groups_to_live, CronTrigger(minute="*/15", timezone="Asia/Kolkata"), misfire_grace_time=600, id="sync_groups_job", replace_existing=True)
         
-        # Schedule database polling for unified reminders every 1 minute
-        scheduler.add_job(poll_and_execute_unified_reminders, CronTrigger(minute="*", timezone="Asia/Kolkata"), misfire_grace_time=60, id="poll_unified_reminders_job", replace_existing=True)
+        # Schedule database polling for unified reminders every 5 minutes
+        scheduler.add_job(poll_and_execute_unified_reminders, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="poll_unified_reminders_job", replace_existing=True)
         
     # Schedule Water Telemetry & Device OFF monitoring every 5 minutes
     from water_monitoring import check_and_dispatch_water_alerts
