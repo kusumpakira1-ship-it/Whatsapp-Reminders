@@ -28,7 +28,6 @@ COMMUNITY_EMPLOYEES = [
         "employees": [
             {"name": "Kusum", "phone": "7975209680", "aliases": ["kusum", "kusumpakira", "7975209680", "917975209680", "7259510983", "917259510983", "183300681367688"]},
             {"name": "Shareef", "phone": "6303896125", "aliases": ["shareef", "sharif", "sk md shareef", "6303896125", "916303896125", "207399910654120", "207399910654120@lid"]},
-            {"name": "Kaveri", "phone": "8790550230", "aliases": ["kaveri", "ss kaveri", "rivi", "8790550230", "918790550230", "1864183640196", "1864183640196@lid"]},
         ]
     },
     {
@@ -292,7 +291,7 @@ def evaluate_attendance_for_date(target_date_str: str = None, is_eod_check: bool
                 last_break_type = None
 
                 login_kws = ["login", "log in", "logged in", "loged in", "logedin", "logging in", "loging in", "sign in", "signing in", "signed in", "sing in", "singin", "singed in", "morning team", "good morning team", "good morning", "morning", "present", "in", "im in", "i'm in"]
-                logout_kws = ["logout", "log out", "logged out", "loged out", "logedout", "logging out", "loging out", "sign out", "signout", "signing out", "signed out", "sign off", "signoff", "signing off", "signed off", "bye team", "bye all", "signing off team", "out", "im out", "i'm out"]
+                logout_kws = ["logout", "log out", "logged out", "loged out", "logedout", "logging out", "loging out", "sign out", "signout", "signing out", "signed out", "sign off", "signoff", "signing off", "signed off", "signing at", "signed at", "bye team", "bye all", "signing off team", "out", "im out", "i'm out"]
                 lunch_kws = ["lunch", "lunch break", "out for lunch", "going for lunch", "leaving for lunch"]
                 break_kws = ["break", "tea", "tea break", "tea-break", "snacks", "coffee", "brb", "afk", "taking break", "on break", "short break"]
                 break_start_kws = lunch_kws + break_kws
@@ -304,6 +303,7 @@ def evaluate_attendance_for_date(target_date_str: str = None, is_eod_check: bool
                     r'\b('
                     r'log\s*out|logged\s*out|loged\s*out|loging\s*out|logging\s*out|'
                     r'sign\s*out|signed\s*out|signing\s*out|sign\s*off|signed\s*off|signing\s*off|'
+                    r'sign\s*at|signed\s*at|signing\s*at|'
                     r'signout|signoff|singout|singed\s*out|'
                     r'bye|bye\s+team|bye\s+all|good\s*night|gn|gn\s+team|'
                     r'done\s+for\s+today|done\s+for\s+the\s+day|work\s+done|work\s+completed|completed\s+for\s+today|'
@@ -340,8 +340,8 @@ def evaluate_attendance_for_date(target_date_str: str = None, is_eod_check: bool
                     if is_keyword_match(txt, login_kws):
                         if not login_time:
                             login_time = m.timestamp
-                    # Check logout keywords
-                    if is_keyword_match(txt, logout_kws) or logout_regex.search(txt):
+                    # Check logout keywords (including common keyboard typo 'our' for 'out')
+                    if is_keyword_match(txt, logout_kws) or logout_regex.search(txt) or re.match(r'^(?:im\s+|i\'m\s+)?(?:our|out)[\s\.!]*$', txt):
                         logout_time = m.timestamp
 
                 # Admin Approved Login Time Override for forgotten login

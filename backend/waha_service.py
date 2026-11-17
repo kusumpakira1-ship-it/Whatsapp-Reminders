@@ -239,58 +239,64 @@ def download_waha_media(message_id: str, media_url: str = None, mimetype: str = 
         print(f"Failed to download media for {message_id}: {e}")
     return ""
 
-def get_waha_chat_name(chat_id: str) -> str:
-    """Fetch chat/group name from WAHA API."""
+def get_waha_chat_name(chat_id: str, session: str = None) -> str:
+    """Fetch chat/group name from WAHA API across sessions."""
+    if not chat_id:
+        return ""
     if not chat_id.endswith('@g.us') and not chat_id.endswith('@c.us') and not chat_id.endswith('@s.whatsapp.net') and not chat_id.endswith('@lid'):
         if '-' in chat_id or len(chat_id) > 15:
             chat_id += '@g.us'
         else:
             chat_id += '@c.us'
 
-    # If it is a group, try fetching from the groups endpoint first (more reliable in NOWEB)
-    if chat_id.endswith('@g.us'):
-        url = f"{settings.WAHA_URL}/api/{settings.WAHA_SESSION}/groups"
-        headers = {"Accept": "application/json"}
-        api_key = os.getenv("WAHA_API_KEY", "123")
-        if api_key:
-            headers["X-Api-Key"] = api_key
-        try:
-            response = requests.get(url, headers=headers, timeout=5)
-            if response.status_code == 200:
-                groups_dict = response.json()
-                if isinstance(groups_dict, dict):
-                    group_info = groups_dict.get(chat_id)
-                    if group_info and group_info.get("subject"):
-                        return group_info.get("subject")
-                elif isinstance(groups_dict, list):
-                    for g in groups_dict:
-                        g_id = g.get("id")
-                        if g_id == chat_id and g.get("subject"):
-                            return g.get("subject")
-        except Exception as e:
-            print(f"Failed to fetch group name from groups API: {e}")
+    sessions_to_check = [session] if session else []
+    for s in [getattr(settings, "WAHA_SESSION", "default"), "secondary"]:
+        if s and s not in sessions_to_check:
+            sessions_to_check.append(s)
 
-    # Fallback to the chats endpoint
-    url = f"{settings.WAHA_URL}/api/{settings.WAHA_SESSION}/chats"
-    headers = {"Accept": "application/json"}
-    
     api_key = os.getenv("WAHA_API_KEY", "123")
+    headers = {"Accept": "application/json"}
     if api_key:
         headers["X-Api-Key"] = api_key
-        
-    try:
-        response = requests.get(url, headers=headers, timeout=5)
-        if response.status_code == 200:
-            chats = response.json()
-            for chat in chats:
-                chat_id_val = chat.get('id')
-                if isinstance(chat_id_val, dict):
-                    chat_id_val = chat_id_val.get('_serialized')
-                
-                if chat_id_val == chat_id:
-                    return chat.get('name', chat_id)
-    except Exception as e:
-        print(f"Failed to fetch chat name for {chat_id}: {e}")
+
+    for s_name in sessions_to_check:
+        try:
+            # Fallback to the chats endpoint (fast and comprehensive)
+            url = f"{settings.WAHA_URL}/api/{s_name}/chats"
+            response = requests.get(url, headers=headers, timeout=5)
+            if response.status_code == 200:
+                chats = response.json()
+                for chat in chats:
+                    chat_id_val = chat.get('id')
+                    if isinstance(chat_id_val, dict):
+                        chat_id_val = chat_id_val.get('_serialized')
+                    if chat_id_val == chat_id or (isinstance(chat_id_val, str) and chat_id in chat_id_val):
+                        name = chat.get('name')
+                        if name:
+                            return name
+        except Exception:
+            pass
+
+        if chat_id.endswith('@g.us'):
+            try:
+                url = f"{settings.WAHA_URL}/api/{s_name}/groups"
+                response = requests.get(url, headers=headers, timeout=5)
+                if response.status_code == 200:
+                    groups_dict = response.json()
+                    if isinstance(groups_dict, dict):
+                        group_info = groups_dict.get(chat_id)
+                        if group_info and group_info.get("subject"):
+                            return group_info.get("subject")
+                    elif isinstance(groups_dict, list):
+                        for g in groups_dict:
+                            g_id = g.get("id")
+                            if isinstance(g_id, dict):
+                                g_id = g_id.get("_serialized")
+                            if (g_id == chat_id or (isinstance(g_id, str) and chat_id in str(g_id))) and g.get("subject"):
+                                return g.get("subject")
+            except Exception:
+                pass
+
     return chat_id
 
 def get_session_status(session: str) -> str:

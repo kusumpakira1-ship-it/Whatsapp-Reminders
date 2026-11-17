@@ -20,6 +20,7 @@ COMMUNITY_EMPLOYEES = [
             {"name": "Poornima", "phone": "7204484516", "aliases": ["poornima", "poorna", "207627359363311", "7204484516", "917204484516"]},
             {"name": "Sharan", "phone": "8217593642", "aliases": ["sharan", "211905264263392", "211905264263392@lid", "8217593642", "918217593642"]},
             {"name": "Ramya", "phone": "7019063646", "aliases": ["ramya", "259149770277018", "7019063646", "917019063646"]},
+        {"name": "Mythili", "phone": "9809135193", "aliases": ["mythili", "9809135193"]},
         ]
     },
     {
@@ -28,7 +29,7 @@ COMMUNITY_EMPLOYEES = [
         "employees": [
             {"name": "Kusum", "phone": "7975209680", "aliases": ["kusum", "kusumpakira", "7975209680", "917975209680", "7259510983", "917259510983", "183300681367688"]},
             {"name": "Shareef", "phone": "6303896125", "aliases": ["shareef", "sharif", "sk md shareef", "6303896125", "916303896125", "207399910654120", "207399910654120@lid"]},
-            {"name": "Kaveri", "phone": "8790550230", "aliases": ["kaveri", "ss kaveri", "rivi", "8790550230", "918790550230", "1864183640196", "1864183640196@lid"]},
+            {"name": "Shruthi", "phone": "8886973517", "aliases": ["shruthi", "sruthi", "sruthi raj", "163303313649767", "163303313649767@lid", "8886973517", "918886973517"]},
         ]
     },
     {
@@ -37,7 +38,6 @@ COMMUNITY_EMPLOYEES = [
         "employees": [
             {"name": "Asif", "phone": "6364063475", "aliases": ["asif", "unfazed", "42932509909155", "6364063475", "916364063475"]},
             {"name": "Prasanna", "phone": "9618803740", "aliases": ["prasanna", "prasanna choudhary", "215538974326819", "9618803740", "919618803740"]},
-            {"name": "Yashaswini", "phone": "9573630573", "aliases": ["yashaswini", "124798881513608", "9573630573", "919573630573"]},
         ]
     },
     {
@@ -68,6 +68,7 @@ COMMUNITY_EMPLOYEES = [
             {"name": "Thanuja", "phone": "8978331872", "aliases": ["thanuja", "thota thanuja", "125889819983939", "8978331872", "918978331872"]},
             {"name": "Aishwarya", "phone": "8495004826", "aliases": ["aishwarya", "20551502401730", "8495004826", "918495004826"]},
             {"name": "Lakshmi", "phone": "137812783452345", "aliases": ["lakshmi", "lakshmy", "137812783452345", "137812783452345@lid"]},
+            {"name": "Yashaswini", "phone": "9573630573", "aliases": ["yashaswini", "124798881513608", "9573630573", "919573630573"]},
         ]
     },
     {
@@ -81,7 +82,6 @@ COMMUNITY_EMPLOYEES = [
         "group": "Indus",
         "group_jids": ["120363431080782528", "indus"],
         "employees": [
-            {"name": "Girija", "phone": "8618580633", "aliases": ["girija", "girijaa dn", "133522631176396", "8618580633", "918618580633"]},
             {"name": "Jagadish", "phone": "7676711899", "aliases": ["jagadish", "7676711899", "917676711899"]},
             {"name": "RaviTeja", "phone": "9535843064", "aliases": ["raviteja", "ravi teja", "ravi tej v", "ravi tej", "51110463168709", "51110463168709@lid", "9535843064", "919535843064"]},
         ]
@@ -122,21 +122,32 @@ COMMUNITY_EMPLOYEES = [
         "employees": [
             {"name": "Ganga", "phone": "213795016290432", "aliases": ["ganga", "213795016290432", "213795016290432@lid"]},
         ]
-    }
+    },
+    {
+        "group": "Rentals",
+        "group_jids": ["120363416666806174@g.us", "120363416666806174", "rentals"],
+        "employees": [
+            {"name": "Srinivas", "phone": "7799287321", "aliases": ["srinivas", "sreenivas", "sreenivassreenu918", "11544956027035", "11544956027035@lid", "7799287321", "917799287321"]},
+            {"name": "Naveen", "phone": "8328076142", "aliases": ["naveen", "8328076142"]}
+        ]
+    },
+
 ]
 
 # Employees who have Day Off on Saturdays (All others have normal working Saturdays)
 SATURDAY_OFF_EMPLOYEES = {
     # Sunfra Mudah
+    ("Sunfra Mudah", "Akshay"),
     ("Sunfra Mudah", "Aishwarya"),
     ("Sunfra Mudah", "Bharath"),
     ("Sunfra Mudah", "Krishna"),
     ("Sunfra Mudah", "Lakshmi"),
     ("Sunfra Mudah", "Nisha"),
     ("Sunfra Mudah", "Thanuja"),
+    ("Sunfra Mudah", "Yashaswini"),
     # Sunfra OLX CEE
+    ("Sunfra OLX CEE", "Asif"),
     ("Sunfra OLX CEE", "Prasanna"),
-    ("Sunfra OLX CEE", "Yashaswini"),
     # Sunfra Corporate
     ("Sunfra Corporate", "Prajwal"),
     # Tendered
@@ -291,8 +302,8 @@ def evaluate_attendance_for_date(target_date_str: str = None, is_eod_check: bool
                 curr_break_start = None
                 last_break_type = None
 
-                login_kws = ["login", "log in", "logged in", "loged in", "logedin", "logging in", "loging in", "sign in", "signing in", "signed in", "sing in", "singin", "singed in", "morning team", "good morning team", "good morning", "morning", "present", "in", "im in", "i'm in"]
-                logout_kws = ["logout", "log out", "logged out", "loged out", "logedout", "logging out", "loging out", "sign out", "signout", "signing out", "signed out", "sign off", "signoff", "signing off", "signed off", "bye team", "bye all", "signing off team", "out", "im out", "i'm out"]
+                login_kws = ["login", "log in", "logged in", "loged in", "logedin", "logging in", "loging in", "sign in", "signing in", "signed in", "sing in", "singin", "singed in", "morning team", "good morning team", "good morning", "morning", "gm", "gm team", "present", "in", "im in", "i'm in"]
+                logout_kws = ["logout", "log out", "logged out", "loged out", "logedout", "logging out", "loging out", "sign out", "signout", "signing out", "signed out", "sign off", "signoff", "signing off", "signed off", "signing at", "signed at", "bye team", "bye all", "signing off team", "out", "im out", "i'm out"]
                 lunch_kws = ["lunch", "lunch break", "out for lunch", "going for lunch", "leaving for lunch"]
                 break_kws = ["break", "tea", "tea break", "tea-break", "snacks", "coffee", "brb", "afk", "taking break", "on break", "short break"]
                 break_start_kws = lunch_kws + break_kws
@@ -304,6 +315,7 @@ def evaluate_attendance_for_date(target_date_str: str = None, is_eod_check: bool
                     r'\b('
                     r'log\s*out|logged\s*out|loged\s*out|loging\s*out|logging\s*out|'
                     r'sign\s*out|signed\s*out|signing\s*out|sign\s*off|signed\s*off|signing\s*off|'
+                    r'sign\s*at|signed\s*at|signing\s*at|'
                     r'signout|signoff|singout|singed\s*out|'
                     r'bye|bye\s+team|bye\s+all|good\s*night|gn|gn\s+team|'
                     r'done\s+for\s+today|done\s+for\s+the\s+day|work\s+done|work\s+completed|completed\s+for\s+today|'
@@ -340,8 +352,8 @@ def evaluate_attendance_for_date(target_date_str: str = None, is_eod_check: bool
                     if is_keyword_match(txt, login_kws):
                         if not login_time:
                             login_time = m.timestamp
-                    # Check logout keywords
-                    if is_keyword_match(txt, logout_kws) or logout_regex.search(txt):
+                    # Check logout keywords (including common keyboard typo 'our' for 'out')
+                    if is_keyword_match(txt, logout_kws) or logout_regex.search(txt) or re.match(r'^(?:im\s+|i\'m\s+)?(?:our|out)[\s\.!]*$', txt):
                         logout_time = m.timestamp
 
                 # Admin Approved Login Time Override for forgotten login
@@ -390,8 +402,9 @@ def evaluate_attendance_for_date(target_date_str: str = None, is_eod_check: bool
                     login_time = datetime.strptime(f"{target_date_str} 10:47:00", "%Y-%m-%d %H:%M:%S")
 
                 # Fallback login time for active employees who posted work/break messages today (not for leave messages)
-                if not login_time and not leave_time and matched_msgs:
-                    login_time = matched_msgs[0].timestamp
+                # Note: Do not fallback if an employee only posted logout or work messages without an actual login message
+                # if not login_time and not leave_time and matched_msgs:
+                #     login_time = matched_msgs[0].timestamp
 
                 gross_hours = 0.0
                 net_hours = 0.0
@@ -486,6 +499,12 @@ def evaluate_attendance_for_date(target_date_str: str = None, is_eod_check: bool
                     status_badge = "🔴 Absent"
                     detail = "No login or logout message"
                     tot_absent += 1
+                elif not login_time and logout_time:
+                    # Forgot to send login message, but sent logout message -> Half Day (No Login)
+                    status_type = "half_day_no_login"
+                    status_badge = "🟡 Half Day (No Login)"
+                    detail = f"Logout at {logout_time.strftime('%I:%M %p')} (No Login)"
+                    tot_half_day += 1
                 elif is_late:
                     tot_half_day += 1
                     if login_time and logout_time:
@@ -594,6 +613,7 @@ def evaluate_attendance_for_date(target_date_str: str = None, is_eod_check: bool
             "total_absent": tot_absent,
             "groups": group_records
         }
+
     finally:
         db.close()
 

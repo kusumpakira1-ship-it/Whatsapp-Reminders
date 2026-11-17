@@ -79,6 +79,88 @@
       "corporate": 0,
       "feeds": 1,
       "farms": 8
+    },
+    "2026-11-02": {
+      "balaji": 1,
+      "corporate": 7,
+      "feeds": 2,
+      "farms": 3,
+      "rental": 0
+    },
+    "2026-11-03": {
+      "balaji": 1,
+      "corporate": 6,
+      "feeds": 1,
+      "farms": 2,
+      "rental": 0
+    },
+    "2026-11-04": {
+      "balaji": 1,
+      "corporate": 6,
+      "feeds": 1,
+      "farms": 2,
+      "rental": 0
+    },
+    "2026-11-05": {
+      "balaji": 1,
+      "corporate": 6,
+      "feeds": 1,
+      "farms": 2,
+      "rental": 0
+    },
+    "2026-11-06": {
+      "balaji": 1,
+      "corporate": 6,
+      "feeds": 1,
+      "farms": 2
+    },
+    "2026-11-07": {
+      "balaji": 2,
+      "corporate": 6,
+      "feeds": 8,
+      "farms": 8
+    },
+    "2026-11-09": {
+      "balaji": 1,
+      "corporate": 7,
+      "feeds": 2,
+      "farms": 3
+    },
+    "2026-11-10": {
+      "balaji": 1,
+      "corporate": 6,
+      "feeds": 2,
+      "farms": 2
+    },
+    "2026-11-11": {
+      "balaji": 1,
+      "corporate": 6,
+      "feeds": 0,
+      "farms": 2
+    },
+    "2026-11-12": {
+      "balaji": 1,
+      "corporate": 6,
+      "feeds": 2,
+      "farms": 2
+    },
+    "2026-11-13": {
+      "balaji": 1,
+      "corporate": 6,
+      "feeds": 8,
+      "farms": 2
+    },
+    "2026-11-14": {
+      "balaji": 1,
+      "corporate": 6,
+      "feeds": 2,
+      "farms": 2
+    },
+    "2026-11-16": {
+      "balaji": 1,
+      "corporate": 7,
+      "feeds": 1,
+      "farms": 3
     }
   }
 }

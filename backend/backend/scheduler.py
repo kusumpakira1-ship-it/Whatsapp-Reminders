@@ -2711,6 +2711,10 @@ def manager_escalation_job():
         logger.info("Today is Sunday (Weekly Off). Skipping 9:30 PM Manager Escalation Report.")
         return
 
+    if now_ist.date() == datetime(2026, 10, 20).date():
+        logger.info("Today is 20th Oct 2026. Skipping 9:30 PM Manager Escalation Report as requested.")
+        return
+
     db = get_db_session()
     try:
         res_esc = build_7_company_escalation_reports(db, now_ist)
@@ -2736,6 +2740,10 @@ def company_wise_escalation_job(target_phones=None):
 
     if now_ist.weekday() == 6:  # Sunday is weekly off
         logger.info("Today is Sunday (Weekly Off). Skipping Company-Wise Manager Escalation Report.")
+        return
+
+    if now_ist.date() == datetime(2026, 10, 20).date():
+        logger.info("Today is 20th Oct 2026. Skipping Company-Wise Manager Escalation Report as requested.")
         return
 
     db = get_db_session()
@@ -2935,24 +2943,28 @@ def scheduled_4company_consolidated_reports_job():
     except Exception as e:
         logger.error(f"Error sending 4 Consolidated Company Reports: {e}")
 
-def scheduled_4company_consolidated_reports_job():
-    """Dispatches all 4 Consolidated Company Reconciliation Reports (Daily Comprehensive Reports) for Sunfra Farms, Sunfra Feeds, Sunfra Corporate, and Indus at 6:50 PM IST."""
-    logger.info("Starting scheduled 6:50 PM 4-Company Consolidated Reports dispatch (to 7259510983)...")
+def scheduled_weekly_comprehensive_reports_job():
+    """Dispatches all 5 Weekly Comprehensive Reports (Friday to Thursday) for Sunfra Farms, Sunfra Feeds, Sunfra Corporate, Indus, and Raj Farms on Thursdays (at 6:45 PM, 10:30 PM, and 11:59 PM IST) to 7259510983."""
+    logger.info("Executing Thursday Weekly Comprehensive Reports Dispatcher (to 7259510983)...")
     try:
-        from zoho_reconciliation import dispatch_all_4company_reconciliation_reports
-        dispatch_all_4company_reconciliation_reports("917259510983@c.us")
-        logger.info("Successfully dispatched all 4 Consolidated Company Reports to 917259510983@c.us")
+        from zoho_reconciliation import dispatch_all_weekly_comprehensive_reports
+        dispatch_all_weekly_comprehensive_reports("917259510983@c.us")
+        logger.info("Successfully dispatched all 5 Weekly Comprehensive Reports to 917259510983@c.us")
     except Exception as e:
-        logger.error(f"Error in scheduled_4company_consolidated_reports_job: {e}")
+        logger.error(f"Error in scheduled_weekly_comprehensive_reports_job: {e}")
+
+def scheduled_4company_consolidated_reports_job():
+    """[ON HOLD] Formerly dispatched all Consolidated Company Reconciliation Reports daily at 6:50 PM IST."""
+    logger.info("scheduled_4company_consolidated_reports_job is currently ON HOLD (switched to Weekly Comprehensive Reports on Thursdays at 11:59 PM).")
 
 def send_all_10pm_daily_reports_job():
     logger.info("Executing 10:30 PM Daily Reports Dispatcher...")
-    try:
-        # 1. 4 Consolidated Company Reports (Daily Comprehensive Reports for Sunfra Farms, Sunfra Feeds, Corporate, Indus)
-        from zoho_reconciliation import dispatch_all_4company_reconciliation_reports
-        dispatch_all_4company_reconciliation_reports("917259510983@c.us")
-    except Exception as e:
-        logger.error(f"Error sending 4 Consolidated Company Reports at 10 PM: {e}")
+    # 1. Consolidated Company Reports: ON HOLD per user request (switched to Weekly Comprehensive Reports on Thursdays at 11:59 PM)
+    # try:
+    #     from zoho_reconciliation import dispatch_all_4company_reconciliation_reports
+    #     dispatch_all_4company_reconciliation_reports("917259510983@c.us")
+    # except Exception as e:
+    #     logger.error(f"Error sending 4 Consolidated Company Reports at 10 PM: {e}")
 
     try:
         # 2. Daily Rental & Vacancy Loss Report
@@ -2960,31 +2972,32 @@ def send_all_10pm_daily_reports_job():
     except Exception as e:
         logger.error(f"Error sending Daily Rental & Vacancy Loss Report at 10 PM: {e}")
 
-    try:
-        # 3. Company-Wise Manager Escalation EOD Summary Report (Mon-Sat)
-        company_wise_escalation_job()
-    except Exception as e:
-        logger.error(f"Error sending Company-Wise Escalation Report at 10 PM: {e}")
+    # 3. Company-Wise Manager Escalation EOD Summary Report: ON HOLD at 10:30 PM per user request (only sent at 11:50 PM)
+    # try:
+    #     company_wise_escalation_job()
+    # except Exception as e:
+    #     logger.error(f"Error sending Company-Wise Escalation Report at 10 PM: {e}")
 
 
 SUNFRA_GROUP_OF_COMPANIES_JID = "120363410727174477@g.us"
 
 def send_all_1150pm_daily_reports_job():
     """11:50 PM Final Wrap Dispatcher:
-    Dispatches 4 Consolidated Company reports, Rental Vacancy loss & Escalations
-    to 7259510983 and Sunfra Group Of Companies (120363410727174477@g.us).
+    Rental Vacancy loss to 7259510983 & Sunfra Group Of Companies.
+    Manager Escalations dispatched ONLY to 7259510983 per user request.
+    (Company Reconciliation reports ON HOLD per user request).
     """
-    logger.info("Executing 11:50 PM Final Wrap Daily Reports Dispatcher (to 7259510983 & Sunfra Group Of Companies)...")
+    logger.info("Executing 11:50 PM Final Wrap Daily Reports Dispatcher...")
     targets = ["917259510983@c.us", SUNFRA_GROUP_OF_COMPANIES_JID]
 
-    # 1. 4 Consolidated Company Reports
-    try:
-        from zoho_reconciliation import dispatch_all_4company_reconciliation_reports
-        for target in targets:
-            logger.info(f"Dispatching 4 Consolidated Company Reports (11:50 PM) to {target}...")
-            dispatch_all_4company_reconciliation_reports(target)
-    except Exception as e:
-        logger.error(f"Error sending 4 Consolidated Company Reports at 11:50 PM: {e}")
+    # 1. Consolidated Company Reports: ON HOLD per user request (switched to Weekly Comprehensive Reports on Thursdays at 11:59 PM)
+    # try:
+    #     from zoho_reconciliation import dispatch_all_4company_reconciliation_reports
+    #     for target in targets:
+    #         logger.info(f"Dispatching 4 Consolidated Company Reports (11:50 PM) to {target}...")
+    #         dispatch_all_4company_reconciliation_reports(target)
+    # except Exception as e:
+    #     logger.error(f"Error sending 4 Consolidated Company Reports at 11:50 PM: {e}")
 
     # 2. Daily Rental & Vacancy Loss Report
     try:
@@ -2992,9 +3005,10 @@ def send_all_1150pm_daily_reports_job():
     except Exception as e:
         logger.error(f"Error sending Daily Rental & Vacancy Loss Report at 11:50 PM: {e}")
 
-    # 3. Company-Wise Manager Escalation EOD Summary Report
+    # 3. Company-Wise Manager Escalation EOD Summary Report (ONLY to 7259510983 per user directive)
     try:
-        company_wise_escalation_job(target_phones=targets)
+        company_wise_escalation_job(target_phones=["917259510983@c.us"])
+        logger.info("Company-Wise Escalation Report sent at 11:50 PM to 917259510983@c.us ONLY.")
     except Exception as e:
         logger.error(f"Error sending Company-Wise Escalation Report at 11:50 PM: {e}")
 
@@ -3679,6 +3693,26 @@ def scheduled_daily_attendance_summary_1115pm_job():
     except Exception as e:
         logger.error(f"Error in scheduled_daily_attendance_summary_1115pm_job: {e}")
 
+def scheduled_sunfra_group_attendance_summary_1155pm_job():
+    """Dispatches the Daily Attendance Final Lock Summary Report at 11:55 PM IST to Sunfra Group Of Companies (120363410727174477@g.us) (Skipped on Sunday)."""
+    from datetime import datetime, timezone, timedelta
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST)
+    if now_ist.weekday() == 6:  # Sunday
+        logger.info("Today is Sunday (Weekly Off). Skipping 11:55 PM Sunfra Group Attendance Final Lock Summary.")
+        return
+
+    logger.info("Executing 11:55 PM Daily Attendance Final Lock Summary Job for Sunfra Group Of Companies...")
+    try:
+        from attendance_tracker import evaluate_attendance_for_date, generate_attendance_summary_message
+        from waha_service import send_waha_message
+        data = evaluate_attendance_for_date(is_eod_check=True)
+        summary_msg = generate_attendance_summary_message(data)
+        send_waha_message(SUNFRA_GROUP_OF_COMPANIES_JID, summary_msg)
+        logger.info(f"Complete Daily Attendance Final Lock Summary sent at 11:55 PM to Sunfra Group Of Companies ({SUNFRA_GROUP_OF_COMPANIES_JID})")
+    except Exception as e:
+        logger.error(f"Error in scheduled_sunfra_group_attendance_summary_1155pm_job: {e}")
+
 def scheduled_company_wise_attendance_1155pm_job():
     """Dispatches Company-Wise Attendance Reports at 11:55 PM IST directly to all 12 department WhatsApp groups (Skipped on Sunday)."""
     from datetime import datetime, timezone, timedelta
@@ -3716,6 +3750,20 @@ def scheduled_company_wise_attendance_1155pm_job():
         logger.info("Successfully dispatched all 11:55 PM company-wise attendance reports to all 12 groups.")
     except Exception as e:
         logger.error(f"Error in scheduled_company_wise_attendance_1155pm_job: {e}")
+
+def poll_and_send_draft_messages_job():
+    """Checks the whatsapp_messages table for any status='draft' messages and sends them via the 1st WhatsApp number."""
+    try:
+        from main import dispatch_draft_messages
+        db = get_db_session()
+        try:
+            summary = dispatch_draft_messages(db, session_name="default")
+            if summary.get("total_drafts_found", 0) > 0:
+                logger.info(f"Draft messages background job: {summary['sent_count']} sent, {summary['failed_count']} failed.")
+        finally:
+            db.close()
+    except Exception as e:
+        logger.error(f"Error in poll_and_send_draft_messages_job: {e}")
 
 def scheduled_monthly_attendance_report_job():
     """Dispatches the Monthly Attendance Summary Report on the last day of every month at 9:00 PM IST to 7259510983."""
@@ -3812,6 +3860,10 @@ def setup_scheduler():
     from sunfra_batch_sync import sync_flocks_from_sunfra_web
     scheduler.add_job(sync_flocks_from_sunfra_web, CronTrigger(hour="*/4", minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="sync_sunfra_flocks_job", replace_existing=True)
     
+    # Schedule Daily Feed Rates Summary Report at 6:30 PM IST (to Egg Rates & Weather Forecast group & Feed Rates group)
+    from daily_feed_rates_summary import scheduled_daily_feed_rates_summary_job
+    scheduler.add_job(scheduled_daily_feed_rates_summary_job, CronTrigger(hour=18, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_feed_rates_summary_job", replace_existing=True)
+
     # Schedule Daily Sunfra Farm Report at 6:55 PM IST (to 7259510983) & 8:30 PM IST (to 7259510983 & Egg Rates & Weather Forecast group)
     scheduler.add_job(scheduled_sunfra_farms_summary_report_job, CronTrigger(hour=18, minute=55, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="sunfra_farms_summary_655pm_job", replace_existing=True)
     scheduler.add_job(scheduled_sunfra_farms_summary_report_830pm_job, CronTrigger(hour=20, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="sunfra_farms_summary_830pm_job", replace_existing=True)
@@ -3848,8 +3900,13 @@ def setup_scheduler():
     # Schedule Daily Sunfra Community Complete Attendance Summary at 6:45 PM IST (to 7259510983)
     scheduler.add_job(scheduled_daily_attendance_summary_645pm_job, CronTrigger(hour=18, minute=45, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_daily_attendance_summary_645pm_job", replace_existing=True)
 
-    # Schedule 4 Consolidated Company Reports daily at 6:50 PM IST (to 7259510983)
-    scheduler.add_job(scheduled_4company_consolidated_reports_job, CronTrigger(hour=18, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_reports_650pm_job", replace_existing=True)
+    # Daily Consolidated Company Reports: ON HOLD (per user request)
+    # scheduler.add_job(scheduled_4company_consolidated_reports_job, CronTrigger(hour=18, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_reports_650pm_job", replace_existing=True)
+
+    # Schedule Weekly Comprehensive Reports for all 5 companies every Thursday at 6:45 PM, 10:30 PM, and 11:59 PM IST (to 7259510983)
+    scheduler.add_job(scheduled_weekly_comprehensive_reports_job, CronTrigger(day_of_week='thu', hour=18, minute=45, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_weekly_comprehensive_reports_645pm_job", replace_existing=True)
+    scheduler.add_job(scheduled_weekly_comprehensive_reports_job, CronTrigger(day_of_week='thu', hour=22, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_weekly_comprehensive_reports_1030pm_job", replace_existing=True)
+    scheduler.add_job(scheduled_weekly_comprehensive_reports_job, CronTrigger(day_of_week='thu', hour=23, minute=59, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_weekly_comprehensive_reports_job", replace_existing=True)
 
     # Schedule Egg Production vs Godown Stock Cross-Check daily at 6:50 PM IST (to 7259510983 ONLY) & 9:30 PM IST (to 3 admins)
     scheduler.add_job(scheduled_egg_production_crosscheck_650pm_job, CronTrigger(hour=18, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_production_crosscheck_650pm_job", replace_existing=True)
@@ -3865,6 +3922,9 @@ def setup_scheduler():
     # Schedule Company-Wise Attendance Reports at 11:55 PM IST (Mon-Sat, skipping Sunday) directly to all 12 department groups
     scheduler.add_job(scheduled_company_wise_attendance_1155pm_job, CronTrigger(day_of_week='mon-sat', hour=23, minute=55, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_company_wise_attendance_1155pm_job", replace_existing=True)
     
+    # Schedule Daily Attendance Final Lock Summary Report to Sunfra Group Of Companies at 11:55 PM IST (Mon-Sat, skipping Sunday)
+    scheduler.add_job(scheduled_sunfra_group_attendance_summary_1155pm_job, CronTrigger(day_of_week='mon-sat', hour=23, minute=55, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_sunfra_group_attendance_summary_1155pm_job", replace_existing=True)
+    
     # Schedule Weekly 4-Company P&L & Stock Report every Saturday at 10:30 PM IST (to 7259510983)
     scheduler.add_job(scheduled_4company_weekly_pandl_job, CronTrigger(day_of_week='sat', hour=22, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_weekly_pandl_job", replace_existing=True)
 
@@ -3874,14 +3934,14 @@ def setup_scheduler():
     # Schedule Monthly Attendance Report on the last day of every month at 9:00 PM IST (to 7259510983)
     scheduler.add_job(scheduled_monthly_attendance_report_job, CronTrigger(hour=21, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_monthly_attendance_report_job", replace_existing=True)
     
-    # Schedule weekly report at 11:00 PM IST on Sunday
-    scheduler.add_job(scheduled_weekly_report_job, CronTrigger(day_of_week='sun', hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_weekly_report_job", replace_existing=True)
+    # [ON HOLD] Schedule weekly report at 11:00 PM IST on Sunday (per user request)
+    # scheduler.add_job(scheduled_weekly_report_job, CronTrigger(day_of_week='sun', hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_weekly_report_job", replace_existing=True)
     
-    # Schedule monthly report at 11:00 PM IST on the 1st day of every month
-    scheduler.add_job(scheduled_monthly_report_job, CronTrigger(day='1', hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_monthly_report_job", replace_existing=True)
+    # [ON HOLD] Schedule monthly report at 11:00 PM IST on the 1st day of every month (per user request)
+    # scheduler.add_job(scheduled_monthly_report_job, CronTrigger(day='1', hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_monthly_report_job", replace_existing=True)
 
-    # Schedule yearly report at 11:00 PM IST on Dec 31
-    scheduler.add_job(scheduled_yearly_report_job, CronTrigger(month=12, day=31, hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_yearly_report_job", replace_existing=True)
+    # [ON HOLD] Schedule yearly report at 11:00 PM IST on Dec 31 (per user request)
+    # scheduler.add_job(scheduled_yearly_report_job, CronTrigger(month=12, day=31, hour=23, minute=0, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_yearly_report_job", replace_existing=True)
     
     import os
     if os.getenv("USE_N8N", "false").lower() == "true":
@@ -3913,6 +3973,9 @@ def setup_scheduler():
 
     # Schedule Daily Office Management Checklist at 6:15 PM IST (Mon-Sat, excluding Sunday) to Office Management Team (120363432470281187@g.us)
     scheduler.add_job(send_daily_office_management_checklist_job, CronTrigger(day_of_week="mon-sat", hour=18, minute=15, timezone="Asia/Kolkata"), misfire_grace_time=300, id="office_management_checklist_job", replace_existing=True)
+
+    # Schedule Outbox Draft WhatsApp Messages Processor every 5 minutes (sends from 1st WhatsApp number)
+    scheduler.add_job(poll_and_send_draft_messages_job, CronTrigger(minute="*/5", timezone="Asia/Kolkata"), misfire_grace_time=300, id="poll_draft_messages_job", replace_existing=True)
 
     # Motor Voltage & Power Status Check (ON HOLD per user request)
     # from motor_voltage_monitoring import check_and_dispatch_motor_voltage_alerts

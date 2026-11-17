@@ -629,10 +629,14 @@ def fetch_and_process_papaak_emails(notify_on_new: bool = True):
                 date_key = today_date.strftime("%Y-%m-%d")
                 rep_num = get_next_report_number(date_key)
                 report_msg = generate_daily_egg_rates_report(target_date=today_date, report_number=rep_num)
+                comparison_msg = generate_chennai_loading_comparison_report(target_date=today_date)
                 if report_msg:
                     for target in PAPAAK_EGG_RECIPIENTS:
                         logger.info(f"Auto-dispatching formatted Egg report to {target}...")
                         send_waha_message(target, report_msg)
+                        if comparison_msg:
+                            logger.info(f"Auto-dispatching separate Chennai loading comparison to {target}...")
+                            send_waha_message(target, comparison_msg)
 
             if has_batch_feed_rates:
                 today_date = latest_msg_dt.date()
@@ -762,9 +766,71 @@ def generate_daily_egg_rates_report(target_date=None, report_number: int = None)
         db.close()
 
 
+def generate_chennai_loading_comparison_report(target_date=None) -> str:
+    """
+    Generates the comparison report comparing city loading rates against Chennai loading rate (NECC - 0.65).
+    Example:
+    *Loading Rates Comparison with Chennai:*
+    HPT: +0.05
+    HYD: +0.10
+    NKL: -0.30
+    MYS: 0.00
+
+    Note: Chennai loading rate is NECC -0.65
+    """
+    from datetime import datetime
+    now_ist = datetime.now(IST)
+    if not target_date:
+        target_date = now_ist.date()
+    elif isinstance(target_date, str):
+        target_date = datetime.strptime(target_date, "%Y-%m-%d").date()
+
+    db = get_db_session()
+    try:
+        # Get latest Chennai paper rate
+        che_paper = db.query(PapaakEggRate).filter(
+            PapaakEggRate.date <= target_date,
+            PapaakEggRate.city_code == "CHE",
+            PapaakEggRate.category == "paper"
+        ).order_by(PapaakEggRate.date.desc(), PapaakEggRate.id.desc()).first()
+
+        che_paper_val = che_paper.rate_value if che_paper else 670
+        che_loading_benchmark = (che_paper_val / 100.0) - 0.65
+
+        comparison_cities = ["HPT", "HYD", "NKL", "MYS"]
+        fallback_loading = {"HPT": 500, "HYD": 520, "NKL": 540, "MYS": 605}
+
+        lines = [
+            "*Loading Rates Comparison with Chennai:*"
+        ]
+
+        for city in comparison_cities:
+            r = db.query(PapaakEggRate).filter(
+                PapaakEggRate.date <= target_date,
+                PapaakEggRate.city_code == city,
+                PapaakEggRate.category == "loading"
+            ).order_by(PapaakEggRate.date.desc(), PapaakEggRate.id.desc()).first()
+
+            city_val = r.rate_value if r else fallback_loading.get(city, 500)
+            city_single = city_val / 100.0
+            diff = round(city_single - che_loading_benchmark, 2)
+            diff_str = f"+{diff:.2f}" if diff > 0 else (f"{diff:.2f}" if diff < 0 else "0.00")
+            lines.append(f"{city}: {diff_str}")
+
+        lines.append("")
+        lines.append("Note: Chennai loading rate is NECC -0.65")
+        return "\n".join(lines)
+    except Exception as e:
+        logger.error(f"Error generating Chennai loading comparison report: {e}")
+        return ""
+    finally:
+        db.close()
+
+
 def send_daily_papaak_egg_rates_report(target_phone: str = None, fetch_first: bool = True):
     """
-    Fetches latest emails and dispatches the daily report to target recipients.
+    Fetches latest emails and dispatches the daily report to target recipients,
+    followed by the separate Chennai loading comparison report.
     """
     logger.info("Executing Egg Loading & Paper Rates Report Dispatcher...")
     try:
@@ -772,8 +838,11 @@ def send_daily_papaak_egg_rates_report(target_phone: str = None, fetch_first: bo
         if fetch_first:
             fetch_and_process_papaak_emails(notify_on_new=False)
         
-        # Generate formatted report
+        # 1. Generate & send formatted egg rates report
         report_msg = generate_daily_egg_rates_report()
+        # 2. Generate separate Chennai loading comparison report
+        comparison_msg = generate_chennai_loading_comparison_report()
+
         if report_msg:
             targets = [target_phone] if target_phone else PAPAAK_EGG_RECIPIENTS
             for target in targets:
@@ -782,6 +851,9 @@ def send_daily_papaak_egg_rates_report(target_phone: str = None, fetch_first: bo
                     
                 logger.info(f"Sending Daily Egg Loading & Paper Rates Report to {target}...")
                 send_waha_message(target, report_msg)
+                if comparison_msg:
+                    logger.info(f"Sending separate Chennai loading comparison to {target}...")
+                    send_waha_message(target, comparison_msg)
     except Exception as e:
         logger.error(f"Error in send_daily_papaak_egg_rates_report: {e}")
 

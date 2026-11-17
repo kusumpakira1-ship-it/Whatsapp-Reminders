@@ -11,7 +11,7 @@ from contextlib import asynccontextmanager
 
 from config import settings
 from database import engine, Base, SessionLocal, get_db_session
-from models import Whitelist, RawMessage, ProcessedData, Group, Employee, SystemSetting, CustomAlarm, WhatsAppMessage, WAHAEvent, Task, EggGodownInventory, ReminderLog, Flock, BookStandard
+from models import Whitelist, RawMessage, ProcessedData, Group, Employee, SystemSetting, CustomAlarm, WhatsAppMessage, WAHAEvent, Task, EggGodownInventory, ReminderLog, Flock, BookStandard, OutboxMessage, SecondFeedRate
 from ai_processor import process_text, process_image, process_document
 from waha_service import download_waha_media, get_waha_chat_name, send_waha_message, send_waha_file
 from scheduler import setup_scheduler, scheduler, schedule_custom_alarm
@@ -725,11 +725,12 @@ async def waha_webhook(request: Request, background_tasks: BackgroundTasks):
         sender_name = sender_name.strip()
 
     group_id_clean = group_id.replace('@g.us', '') if group_id else None
+    waha_session = payload.get("session") or settings.WAHA_SESSION
     
     if is_group:
         group_name_str = msg.get("groupName") or msg.get("_data", {}).get("groupName") or msg.get("chat", {}).get("name")
         if not group_name_str and group_id:
-            group_name_str = get_waha_chat_name(group_id)
+            group_name_str = get_waha_chat_name(group_id, session=waha_session)
             if group_name_str == group_id:
                 group_name_str = group_id_clean
         
@@ -756,6 +757,15 @@ async def waha_webhook(request: Request, background_tasks: BackgroundTasks):
         
     timestamp_val = msg.get("timestamp", 0)
     msg_time = datetime.fromtimestamp(timestamp_val, tz=IST).replace(tzinfo=None) if timestamp_val else datetime.now(IST).replace(tzinfo=None)
+
+    # Check if incoming message is from the 2nd WhatsApp group 'ANATHALAXMI NEWS HUBLI M!!!'
+    target_feed_keywords = ["anathalaxmi", "hubli m"]
+    target_feed_jids = ["120363407787694059", "120363404628706297"]
+    is_target_feed = False
+    if group_name_str and any(k in group_name_str.lower() for k in target_feed_keywords):
+        is_target_feed = True
+    elif group_id and any(jid in str(group_id) for jid in target_feed_jids):
+        is_target_feed = True
 
     # 1. Save Raw Data synchronously (takes < 5ms)
     db = get_db_session()
@@ -785,6 +795,22 @@ async def waha_webhook(request: Request, background_tasks: BackgroundTasks):
             timestamp=msg_time
         )
         db.add(whatsapp_msg)
+
+        # Store in second_feed_rates table if target feed group
+        if is_target_feed:
+            feed_group_name = group_name_str or "ANATHALAXMI NEWS HUBLI M!!!"
+            feed_rec = SecondFeedRate(
+                message_id=message_id,
+                sender=sender_phone,
+                sender_name=sender_name,
+                group_id=group_id,
+                group_name=feed_group_name,
+                raw_text=text or (f"[{message_type}]" if has_media else ""),
+                timestamp=msg_time
+            )
+            db.add(feed_rec)
+            logger.info(f"Stored message {message_id} into second_feed_rates for group '{feed_group_name}'.")
+
         db.commit()
 
         # Always dual-save to local SQLite fallback database as fail-safe
@@ -810,6 +836,26 @@ async def waha_webhook(request: Request, background_tasks: BackgroundTasks):
                 INSERT OR IGNORE INTO sunfra_raw_messages (message_id, sender, group_name, timestamp, message_type, raw_text, full_webhook_json)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             """, (message_id, display_sender, group_name_str, str(msg_time), message_type, text, json.dumps(payload)))
+
+            if is_target_feed:
+                sqlite_cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS second_feed_rates (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        message_id VARCHAR(255) UNIQUE,
+                        sender VARCHAR(100),
+                        sender_name VARCHAR(255),
+                        group_id VARCHAR(255),
+                        group_name VARCHAR(255),
+                        raw_text TEXT,
+                        timestamp DATETIME,
+                        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                    );
+                """)
+                sqlite_cursor.execute("""
+                    INSERT OR IGNORE INTO second_feed_rates (message_id, sender, sender_name, group_id, group_name, raw_text, timestamp)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                """, (message_id, sender_phone, sender_name, group_id, group_name_str or "ANATHALAXMI NEWS HUBLI M!!!", text or (f"[{message_type}]" if has_media else ""), str(msg_time)))
+
             sqlite_conn.commit()
             sqlite_conn.close()
         except Exception as sqle:
@@ -821,6 +867,24 @@ async def waha_webhook(request: Request, background_tasks: BackgroundTasks):
         return {"status": "error saving raw"}
     finally:
         db.close()
+
+    if is_target_feed:
+        logger.info(f"Incoming message from feed group '{group_name_str}' stored in second_feed_rates.")
+        # Forward message with header to Egg Rates & Weather Forecast and Feed Rates groups
+        if text:
+            fwd_text = f"📩 *Forwarded from ANATHALAXMI:*\n\n{text}"
+            target_fwd_groups = [
+                ("120363411797923836@g.us", "Egg Rates & Weather Forecast"),
+                ("120363411665097967@g.us", "Feed Rates")
+            ]
+            for fwd_jid, fwd_label in target_fwd_groups:
+                try:
+                    logger.info(f"Forwarding ANATHALAXMI message to '{fwd_label}' ({fwd_jid})...")
+                    send_waha_message(fwd_jid, fwd_text)
+                except Exception as fe:
+                    logger.error(f"Failed to forward ANATHALAXMI message to '{fwd_label}': {fe}")
+
+        return {"status": "saved to second_feed_rates and forwarded"}
 
     if is_from_me and not text.startswith('!'):
         return {"status": "saved fromMe message"}
@@ -1455,22 +1519,46 @@ def trigger_zoho_reconciliation_report(background_tasks: BackgroundTasks, phone:
     background_tasks.add_task(generate_and_send_zoho_reconciliation_report, target_phone)
     return {"status": "success", "message": f"Zoho reconciliation report generation queued for {target_phone}."}
 
+_last_secondary_check = 0
+_secondary_working_cached = False
+
+def is_secondary_waha_session_working() -> bool:
+    global _last_secondary_check, _secondary_working_cached
+    import time
+    now = time.time()
+    if now - _last_secondary_check < 15:
+        return _secondary_working_cached
+    try:
+        from waha_service import get_waha_url
+        url = f"{get_waha_url()}/api/sessions/secondary"
+        headers = {"X-Api-Key": os.getenv("WAHA_API_KEY", "123")}
+        r = requests.get(url, headers=headers, timeout=2)
+        _secondary_working_cached = (r.status_code == 200 and r.json().get("status") == "WORKING")
+    except Exception:
+        _secondary_working_cached = False
+    _last_secondary_check = now
+    return _secondary_working_cached
+
 @app.api_route("/api/send-message", methods=["GET", "POST"])
 async def send_direct_whatsapp_message(
     request: Request,
     phone: Optional[str] = None,
-    message: Optional[str] = None
+    message: Optional[str] = None,
+    session: Optional[str] = None
 ):
     """
     Direct API endpoint to send a WhatsApp message to any phone number or group JID.
-    Accepts GET query params (?phone=...&message=...) or POST JSON ({"phone": "...", "message": "..."}).
-    Returns HTTP 200 with JSON payload upon successful dispatch.
+    Supports Multi-Session:
+      - Automatically sends from 2nd WhatsApp number ('secondary') when connected.
+      - Gracefully falls back to 1st WhatsApp number ('default') if 2nd is not scanned.
+      - Allows explicit override via ?session=secondary or ?session=default.
     """
     from fastapi.responses import JSONResponse
     import re
 
     phone_val = phone
     msg_val = message
+    session_val = session
 
     if request.method == "POST":
         try:
@@ -1478,6 +1566,7 @@ async def send_direct_whatsapp_message(
             if isinstance(body, dict):
                 phone_val = body.get("phone") or body.get("phone_number") or body.get("recipient") or phone_val
                 msg_val = body.get("message") or body.get("text") or body.get("msg") or msg_val
+                session_val = body.get("session") or session_val
         except Exception:
             pass
 
@@ -1504,8 +1593,14 @@ async def send_direct_whatsapp_message(
             digits = f"91{digits}"
         target_jid = f"{digits}@c.us"
 
+    # Determine which WhatsApp session to use (2nd number 'secondary' prioritized, fallback to 'default')
+    if session_val:
+        target_session = str(session_val).strip()
+    else:
+        target_session = "secondary" if is_secondary_waha_session_working() else "default"
+
     from waha_service import send_waha_message
-    success = send_waha_message(target_jid, msg_str)
+    success = send_waha_message(target_jid, msg_str, session=target_session)
 
     if success:
         now_str = datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S")
@@ -1519,6 +1614,7 @@ async def send_direct_whatsapp_message(
                     "phone": phone_str,
                     "target_jid": target_jid,
                     "message": msg_str,
+                    "sender_session": target_session,
                     "sent_at": now_str
                 }
             }
@@ -1529,9 +1625,247 @@ async def send_direct_whatsapp_message(
             content={
                 "status": 500,
                 "success": False,
-                "message": "Failed to send WhatsApp message via WAHA. Please ensure WAHA session is connected."
+                "message": f"Failed to send WhatsApp message via session '{target_session}'. Please ensure WhatsApp session is connected."
             }
         )
+
+def dispatch_draft_messages(db, session_name: str = "default") -> dict:
+    """
+    Finds all records in whatsapp_messages where status = 'draft',
+    sends each message via WAHA using the 1st WhatsApp number (session='default'),
+    and updates status to 'sent' (or 'failed') with sent_at timestamp.
+    """
+    from models import OutboxMessage
+    from waha_service import send_waha_message
+    import re
+    
+    drafts = db.query(OutboxMessage).filter(OutboxMessage.status == "draft").all()
+    results = []
+    sent_count = 0
+    failed_count = 0
+    now_dt = datetime.now(IST).replace(tzinfo=None)
+
+    for item in drafts:
+        raw_phone = str(item.mobile_number or "").strip()
+        msg_text = str(item.text or "").strip()
+        
+        # Clean and format WhatsApp JID
+        clean_target = re.sub(r'[^0-9@a-zA-Z._-]', '', raw_phone)
+        if clean_target.endswith('@g.us') or clean_target.endswith('@c.us') or clean_target.endswith('@lid'):
+            target_jid = clean_target
+        else:
+            digits = re.sub(r'\D', '', clean_target)
+            if len(digits) == 10:
+                digits = f"91{digits}"
+            target_jid = f"{digits}@c.us"
+
+        logger.info(f"Dispatching draft message #{item.id} to {target_jid} via session '{session_name}'...")
+        success = send_waha_message(target_jid, msg_text, session=session_name)
+        if success:
+            item.status = "sent"
+            item.sent_at = now_dt
+            sent_count += 1
+            results.append({
+                "id": item.id,
+                "mobile_number": raw_phone,
+                "target_jid": target_jid,
+                "status": "sent",
+                "sent_at": now_dt.strftime("%Y-%m-%d %H:%M:%S")
+            })
+        else:
+            item.status = "failed"
+            failed_count += 1
+            results.append({
+                "id": item.id,
+                "mobile_number": raw_phone,
+                "target_jid": target_jid,
+                "status": "failed",
+                "error": "WAHA dispatch failed"
+            })
+        db.commit()
+
+    return {
+        "total_drafts_found": len(drafts),
+        "sent_count": sent_count,
+        "failed_count": failed_count,
+        "items": results
+    }
+
+@app.api_route("/api/whatsapp-messages/process-drafts", methods=["GET", "POST"])
+def process_draft_messages_endpoint(session: Optional[str] = "default"):
+    """
+    Scans the whatsapp_messages table for all 'draft' messages,
+    sends them via WhatsApp using the 1st WhatsApp number, and updates status to 'sent'.
+    """
+    from fastapi.responses import JSONResponse
+    db = get_db_session()
+    try:
+        session_to_use = session or "default"
+        summary = dispatch_draft_messages(db, session_name=session_to_use)
+        return JSONResponse(
+            status_code=200,
+            content={
+                "status": 200,
+                "success": True,
+                "message": f"Processed {summary['total_drafts_found']} draft messages ({summary['sent_count']} sent, {summary['failed_count']} failed).",
+                "data": summary
+            }
+        )
+    finally:
+        db.close()
+
+@app.get("/api/whatsapp-messages")
+def get_whatsapp_messages(status: Optional[str] = None):
+    """
+    Retrieves messages from whatsapp_messages table (optionally filtered by ?status=draft or ?status=sent).
+    """
+    from models import OutboxMessage
+    db = get_db_session()
+    try:
+        query = db.query(OutboxMessage)
+        if status:
+            query = query.filter(OutboxMessage.status == status)
+        records = query.order_by(OutboxMessage.id.desc()).limit(100).all()
+        return {
+            "status": 200,
+            "count": len(records),
+            "messages": [
+                {
+                    "id": r.id,
+                    "mobile_number": r.mobile_number,
+                    "text": r.text,
+                    "status": r.status,
+                    "created_at": str(r.created_at) if r.created_at else None,
+                    "sent_at": str(r.sent_at) if r.sent_at else None
+                }
+                for r in records
+            ]
+        }
+    finally:
+        db.close()
+
+@app.post("/api/whatsapp-messages")
+async def insert_whatsapp_message(request: Request):
+    """
+    Inserts a new message into the whatsapp_messages table with status 'draft'.
+    """
+    from fastapi.responses import JSONResponse
+    from models import OutboxMessage
+    body = await request.json()
+    mobile = body.get("mobile_number") or body.get("phone")
+    text = body.get("text") or body.get("message")
+    status = body.get("status", "draft")
+
+    if not mobile or not text:
+        return JSONResponse(
+            status_code=400,
+            content={"status": 400, "success": False, "message": "mobile_number and text are required."}
+        )
+
+    db = get_db_session()
+    try:
+        msg = OutboxMessage(mobile_number=str(mobile).strip(), text=str(text).strip(), status=status)
+        db.add(msg)
+        db.commit()
+        db.refresh(msg)
+        return JSONResponse(
+            status_code=200,
+            content={
+                "status": 200,
+                "success": True,
+                "message": "Message draft created successfully.",
+                "data": {
+                    "id": msg.id,
+                    "mobile_number": msg.mobile_number,
+                    "text": msg.text,
+                    "status": msg.status,
+                    "created_at": str(msg.created_at)
+                }
+            }
+        )
+    finally:
+        db.close()
+
+@app.get("/api/second-feed-rates")
+def get_second_feed_rates(limit: int = 50):
+    """
+    Returns stored feed rates from the second_feed_rates table.
+    """
+    db = get_db_session()
+    try:
+        rates = db.query(SecondFeedRate).order_by(SecondFeedRate.id.desc()).limit(limit).all()
+        return {
+            "status": 200,
+            "count": len(rates),
+            "data": [
+                {
+                    "id": r.id,
+                    "message_id": r.message_id,
+                    "sender": r.sender,
+                    "sender_name": r.sender_name,
+                    "group_id": r.group_id,
+                    "group_name": r.group_name,
+                    "raw_text": r.raw_text,
+                    "timestamp": str(r.timestamp) if r.timestamp else None,
+                    "created_at": str(r.created_at) if r.created_at else None,
+                }
+                for r in rates
+            ]
+        }
+    except Exception as e:
+        logger.error(f"Error fetching second_feed_rates: {e}")
+        try:
+            import sqlite3
+            conn = sqlite3.connect("whatsapp_reminders.sqlite")
+            cursor = conn.cursor()
+            rows = cursor.execute("""
+                SELECT id, message_id, sender, sender_name, group_id, group_name, raw_text, timestamp, created_at
+                FROM second_feed_rates ORDER BY id DESC LIMIT ?
+            """, (limit,)).fetchall()
+            conn.close()
+            return {
+                "status": 200,
+                "source": "sqlite_fallback",
+                "count": len(rows),
+                "data": [
+                    {
+                        "id": row[0],
+                        "message_id": row[1],
+                        "sender": row[2],
+                        "sender_name": row[3],
+                        "group_id": row[4],
+                        "group_name": row[5],
+                        "raw_text": row[6],
+                        "timestamp": row[7],
+                        "created_at": row[8],
+                    }
+                    for row in rows
+                ]
+            }
+        except Exception as sqle:
+            return {"status": 500, "error": str(sqle)}
+    finally:
+        db.close()
+
+@app.get("/api/feed-rates/summary")
+def get_daily_feed_rates_summary_api():
+    """Returns today's Daily Feed Rates Summary Report."""
+    from daily_feed_rates_summary import generate_daily_feed_rates_summary
+    try:
+        report_text = generate_daily_feed_rates_summary()
+        return {"status": 200, "report": report_text}
+    except Exception as e:
+        return {"status": 500, "error": str(e)}
+
+@app.post("/api/feed-rates/dispatch")
+def dispatch_daily_feed_rates_summary_api():
+    """Manually dispatches the Daily Feed Rates Summary Report to both target groups."""
+    from daily_feed_rates_summary import send_daily_feed_rates_summary
+    try:
+        results = send_daily_feed_rates_summary()
+        return {"status": 200, "results": results}
+    except Exception as e:
+        return {"status": 500, "error": str(e)}
 
 if __name__ == "__main__":
     import uvicorn

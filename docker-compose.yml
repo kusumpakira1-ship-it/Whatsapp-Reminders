@@ -26,7 +26,7 @@ services:
       - WAHA_WEBHOOK_EVENTS=message,message.any
       - WHATSAPP_HOOK_URL=http://fastapi-backend.com:8000/webhook
       - WHATSAPP_HOOK_EVENTS=message,message.any
-      - WAHA_SESSIONS=default
+      - WAHA_SESSIONS=default,secondary
       - WHATSAPP_CLIENT_PUPS_TIMEOUT=0
       - WHATSAPP_RESTART_ALL_SESSIONS=true
       - WAHA_LOCAL_STORE_PATH=/app/.waha

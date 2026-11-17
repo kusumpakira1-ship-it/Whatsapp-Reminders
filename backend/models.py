@@ -51,6 +51,27 @@ class WhatsAppMessage(Base):
     message_text = Column(Text)
     timestamp = Column(DateTime, nullable=False)
 
+class OutboxMessage(Base):
+    __tablename__ = "whatsapp_messages"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    mobile_number = Column(String(50), nullable=False)
+    text = Column(Text, nullable=False)
+    status = Column(String(20), default="draft", index=True)  # 'draft', 'sent', 'failed'
+    created_at = Column(DateTime, default=func.now())
+    sent_at = Column(DateTime, nullable=True)
+
+class SecondFeedRate(Base):
+    __tablename__ = "second_feed_rates"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    message_id = Column(String(255), unique=True, index=True, nullable=True)
+    sender = Column(String(100), nullable=True)
+    sender_name = Column(String(255), nullable=True)
+    group_id = Column(String(255), index=True, nullable=True)
+    group_name = Column(String(255), nullable=True)
+    raw_text = Column(Text, nullable=True)
+    timestamp = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, default=func.now())
+
 class ProcessedData(Base):
     __tablename__ = "sunfra_processed_data"
     id = Column(Integer, primary_key=True, index=True)

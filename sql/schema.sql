@@ -1,4 +1,4 @@
--- Drop old tables if they exist
+      -- Drop old tables if they exist
 DROP TABLE IF EXISTS sunfra_processed_data;
 DROP TABLE IF EXISTS sunfra_raw_messages;
 DROP TABLE IF EXISTS sunfra_whitelist;
