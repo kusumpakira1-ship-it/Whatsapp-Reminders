@@ -796,9 +796,10 @@ def generate_chennai_loading_comparison_report(target_date=None) -> str:
 
         che_paper_val = che_paper.rate_value if che_paper else 670
         che_loading_benchmark = (che_paper_val / 100.0) - 0.65
+        che_paper_single = che_paper_val / 100.0
 
-        comparison_cities = ["HPT", "HYD", "NKL", "MYS"]
-        fallback_loading = {"HPT": 500, "HYD": 520, "NKL": 540, "MYS": 605}
+        comparison_cities = ["HPT", "HYD", "NKL"]
+        fallback_loading = {"HPT": 500, "HYD": 520, "NKL": 540}
 
         lines = [
             "*Loading Rates Comparison with Chennai:*"
@@ -819,6 +820,30 @@ def generate_chennai_loading_comparison_report(target_date=None) -> str:
 
         lines.append("")
         lines.append("Note: Chennai loading rate is NECC -0.65")
+        lines.append("")
+        lines.append("*NECC Rates Comparison with Chennai:*")
+
+        necc_cities = ["BLR", "KOL", "MYS"]
+        fallback_necc = {"BLR": 620, "KOL": 640, "MYS": 620}
+
+        for city in necc_cities:
+            r = db.query(PapaakEggRate).filter(
+                PapaakEggRate.date <= target_date,
+                PapaakEggRate.city_code == city,
+                PapaakEggRate.category == "paper"
+            ).order_by(PapaakEggRate.date.desc(), PapaakEggRate.id.desc()).first()
+
+            city_val = r.rate_value if r else fallback_necc.get(city, 620)
+            city_paper_single = city_val / 100.0
+            diff = round(city_paper_single - che_paper_single, 2)
+            if diff == 0:
+                diff_str = "0"
+            else:
+                diff_str = f"+{diff:.2f}" if diff > 0 else f"{diff:.2f}"
+                if diff_str.endswith("0") and "." in diff_str:
+                    diff_str = diff_str[:-1]
+            lines.append(f"{city}: {diff_str}")
+
         return "\n".join(lines)
     except Exception as e:
         logger.error(f"Error generating Chennai loading comparison report: {e}")

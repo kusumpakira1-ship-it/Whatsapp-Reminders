@@ -336,9 +336,20 @@ def evaluate_attendance_for_date(target_date_str: str = None, is_eod_check: bool
                                 return True
                     return False
 
+                # Find first login time first
+                for m in matched_msgs:
+                    txt = (m.raw_text or "").strip().lower()
+                    if is_keyword_match(txt, login_kws):
+                        if not login_time:
+                            login_time = m.timestamp
+                            break
+
                 for m in matched_msgs:
                     txt = (m.raw_text or "").strip().lower()
                     
+                    # Ignore missed/forgotten past logout explanation messages from triggering today's logout
+                    is_past_logout_explanation = any(k in txt for k in ["missed to logout", "forgot to logout", "forget to logout", "missed logout", "forgot logout"])
+
                     # Check leave keywords
                     if leave_regex.search(txt):
                         leave_time = m.timestamp
@@ -346,15 +357,26 @@ def evaluate_attendance_for_date(target_date_str: str = None, is_eod_check: bool
                         is_half_day_leave = True
                         leave_time = m.timestamp
 
-                    # Break and lunch evaluations removed per user request (only login and logout evaluated)
-
-                    # Check login keywords
+                    # Check login keywords (fallback if not already set)
                     if is_keyword_match(txt, login_kws):
                         if not login_time:
                             login_time = m.timestamp
+
                     # Check logout keywords (including common keyboard typo 'our' for 'out')
-                    if is_keyword_match(txt, logout_kws) or logout_regex.search(txt) or re.match(r'^(?:im\s+|i\'m\s+)?(?:our|out)[\s\.!]*$', txt):
-                        logout_time = m.timestamp
+                    # Do not consider logouts that occurred before login time (e.g. midnight 00:xx AM from previous day's shift)
+                    if not is_past_logout_explanation:
+                        if is_keyword_match(txt, logout_kws) or logout_regex.search(txt) or re.match(r'^(?:im\s+|i\'m\s+)?(?:our|out)[\s\.!]*$', txt):
+                            if login_time:
+                                if m.timestamp > login_time:
+                                    logout_time = m.timestamp
+                            else:
+                                # If no login message yet, ignore midnight logouts before 06:00 AM as they belong to previous day's shift
+                                if m.timestamp.hour >= 6:
+                                    logout_time = m.timestamp
+
+                # Final guard: A logout cannot be earlier than or equal to login time
+                if login_time and logout_time and logout_time <= login_time:
+                    logout_time = None
 
                 # Admin Approved Login Time Override for forgotten login
                 for m in matched_msgs:

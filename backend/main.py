@@ -884,7 +884,16 @@ async def waha_webhook(request: Request, background_tasks: BackgroundTasks):
                 except Exception as fe:
                     logger.error(f"Failed to forward ANATHALAXMI message to '{fwd_label}': {fe}")
 
-        return {"status": "saved to second_feed_rates and forwarded"}
+
+        # Auto-send updated Daily Feed Rates Summary Report immediately after receiving ANATHALAXMI message
+        try:
+            from daily_feed_rates_summary import send_daily_feed_rates_summary
+            logger.info("Scheduling immediate Daily Feed Rates Summary Report dispatch in background...")
+            background_tasks.add_task(send_daily_feed_rates_summary)
+        except Exception as se:
+            logger.error(f"Failed to queue Daily Feed Rates Summary dispatch: {se}")
+
+        return {"status": "saved to second_feed_rates, forwarded, and summary dispatched"}
 
     if is_from_me and not text.startswith('!'):
         return {"status": "saved fromMe message"}

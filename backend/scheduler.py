@@ -2943,15 +2943,25 @@ def scheduled_4company_consolidated_reports_job():
     except Exception as e:
         logger.error(f"Error sending 4 Consolidated Company Reports: {e}")
 
-def scheduled_weekly_comprehensive_reports_job():
-    """Dispatches all 5 Weekly Comprehensive Reports (Friday to Thursday) for Sunfra Farms, Sunfra Feeds, Sunfra Corporate, Indus, and Raj Farms on Thursdays (at 6:45 PM, 10:30 PM, and 11:59 PM IST) to 7259510983."""
-    logger.info("Executing Thursday Weekly Comprehensive Reports Dispatcher (to 7259510983)...")
+def scheduled_weekly_comprehensive_reports_job(target_recipients: list = None):
+    """Dispatches all 5 Weekly Comprehensive Reports (Friday to Thursday) for Sunfra Farms, Sunfra Feeds, Sunfra Corporate, Indus, and Raj Farms.
+    Defaults to 917259510983@c.us, but can accept a list of recipients (e.g. including Sunfra Group Of Companies for 11:59 PM run).
+    """
+    recipients = target_recipients or ["917259510983@c.us"]
+    logger.info(f"Executing Thursday Weekly Comprehensive Reports Dispatcher to {recipients}...")
     try:
         from zoho_reconciliation import dispatch_all_weekly_comprehensive_reports
-        dispatch_all_weekly_comprehensive_reports("917259510983@c.us")
-        logger.info("Successfully dispatched all 5 Weekly Comprehensive Reports to 917259510983@c.us")
+        for recipient in recipients:
+            logger.info(f"Dispatching Weekly Comprehensive Reports to {recipient}...")
+            dispatch_all_weekly_comprehensive_reports(recipient)
+            logger.info(f"Successfully dispatched all 5 Weekly Comprehensive Reports to {recipient}")
     except Exception as e:
         logger.error(f"Error in scheduled_weekly_comprehensive_reports_job: {e}")
+
+def scheduled_weekly_comprehensive_reports_1159pm_job():
+    """Thursday 11:59 PM Run: dispatches all 5 Weekly Comprehensive Reports to both Kusum and Sunfra Group Of Companies."""
+    logger.info("Executing Thursday 11:59 PM Weekly Comprehensive Reports Dispatcher (Kusum & Sunfra Group Of Companies)...")
+    scheduled_weekly_comprehensive_reports_job(target_recipients=["917259510983@c.us", SUNFRA_GROUP_OF_COMPANIES_JID])
 
 def scheduled_4company_consolidated_reports_job():
     """[ON HOLD] Formerly dispatched all Consolidated Company Reconciliation Reports daily at 6:50 PM IST."""
@@ -3903,10 +3913,12 @@ def setup_scheduler():
     # Daily Consolidated Company Reports: ON HOLD (per user request)
     # scheduler.add_job(scheduled_4company_consolidated_reports_job, CronTrigger(hour=18, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_4company_reports_650pm_job", replace_existing=True)
 
-    # Schedule Weekly Comprehensive Reports for all 5 companies every Thursday at 6:45 PM, 10:30 PM, and 11:59 PM IST (to 7259510983)
+    # Schedule Weekly Comprehensive Reports for all 5 companies every Thursday
+    # 6:45 PM and 10:30 PM runs go to Kusum (7259510983)
+    # 11:59 PM run goes to Kusum (7259510983) AND Sunfra Group Of Companies (120363410727174477@g.us)
     scheduler.add_job(scheduled_weekly_comprehensive_reports_job, CronTrigger(day_of_week='thu', hour=18, minute=45, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_weekly_comprehensive_reports_645pm_job", replace_existing=True)
     scheduler.add_job(scheduled_weekly_comprehensive_reports_job, CronTrigger(day_of_week='thu', hour=22, minute=30, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_weekly_comprehensive_reports_1030pm_job", replace_existing=True)
-    scheduler.add_job(scheduled_weekly_comprehensive_reports_job, CronTrigger(day_of_week='thu', hour=23, minute=59, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_weekly_comprehensive_reports_job", replace_existing=True)
+    scheduler.add_job(scheduled_weekly_comprehensive_reports_1159pm_job, CronTrigger(day_of_week='thu', hour=23, minute=59, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_weekly_comprehensive_reports_job", replace_existing=True)
 
     # Schedule Egg Production vs Godown Stock Cross-Check daily at 6:50 PM IST (to 7259510983 ONLY) & 9:30 PM IST (to 3 admins)
     scheduler.add_job(scheduled_egg_production_crosscheck_650pm_job, CronTrigger(hour=18, minute=50, timezone="Asia/Kolkata"), misfire_grace_time=3600, id="scheduled_egg_production_crosscheck_650pm_job", replace_existing=True)

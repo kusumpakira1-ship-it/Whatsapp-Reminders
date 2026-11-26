@@ -12,3 +12,4 @@ try:
             print(f"ID: {k}, Name: {v.get('subject') or v.get('name')}")
 except Exception as e:
     print(f"Error: {e}")
+        

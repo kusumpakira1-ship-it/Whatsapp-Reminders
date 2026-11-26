@@ -207,7 +207,7 @@ try:
             if clean_group_jid:
                 group_name = waha_groups_map.get(clean_group_jid)
                 match_group_raw = (
-                    raw_msg.group_name
+                    raw_msg.group_name   
                     and group_name
                     and str(raw_msg.group_name).lower() in str(group_name).lower()
                 )

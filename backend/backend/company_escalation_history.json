@@ -161,6 +161,54 @@
       "corporate": 7,
       "feeds": 1,
       "farms": 3
+    },
+    "2026-11-17": {
+      "balaji": 1,
+      "corporate": 6,
+      "feeds": 1,
+      "farms": 2
+    },
+    "2026-11-18": {
+      "balaji": 1,
+      "corporate": 6,
+      "feeds": 2,
+      "farms": 2
+    },
+    "2026-11-19": {
+      "balaji": 1,
+      "corporate": 6,
+      "feeds": 1,
+      "farms": 2
+    },
+    "2026-11-20": {
+      "balaji": 1,
+      "corporate": 6,
+      "feeds": 1,
+      "farms": 2
+    },
+    "2026-11-21": {
+      "balaji": 1,
+      "corporate": 6,
+      "feeds": 8,
+      "farms": 2
+    },
+    "2026-11-23": {
+      "balaji": 1,
+      "corporate": 7,
+      "feeds": 8,
+      "farms": 3
+    },
+    "2026-11-24": {
+      "balaji": 1,
+      "corporate": 6,
+      "feeds": 8,
+      "farms": 2
+    },
+    "2026-11-25": {
+      "balaji": 1,
+      "corporate": 6,
+      "feeds": 1,
+      "farms": 2
     }
   }
 }
